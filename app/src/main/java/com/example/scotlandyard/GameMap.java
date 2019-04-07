@@ -10,8 +10,11 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.json.JSONObject;
 
 public class GameMap extends FragmentActivity implements OnMapReadyCallback {
     private static final String TAG = GameMap.class.getSimpleName();
@@ -40,6 +43,16 @@ public class GameMap extends FragmentActivity implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        /*
+            "north":  46.623354,
+            "east":   14.271578,
+            "south":  46.612225,
+            "west":   14.261226
+         */
+        final LatLngBounds map_bounds = new LatLngBounds(
+                new LatLng(46.612225, 14.261226),
+                new LatLng(46.623354, 14.271578)
+        );
         try {
             // Customise the styling of the base map using a JSON object defined
             // in a raw resource file.
@@ -53,11 +66,19 @@ public class GameMap extends FragmentActivity implements OnMapReadyCallback {
         } catch (Resources.NotFoundException e) {
             Log.e(TAG, "Can't find style. Error: ", e);
         }
+        //get width and height to current display screen
+        int width = getResources().getDisplayMetrics().widthPixels;
+        int height = getResources().getDisplayMetrics().heightPixels;
+
+        // 20% padding
+        int padding = (int) (width * 0.20);
         // Add a marker in Sydney and move the camera
         LatLng aau = new LatLng(46.616389, 14.265);
-        float zoom_factor = 15f;
+        float zoom_factor = 16f;
         mMap.addMarker(new MarkerOptions().position(aau).title("Marker in AAU"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(aau, zoom_factor));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(map_bounds, width, height, padding));
         mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+        mMap.setLatLngBoundsForCameraTarget(map_bounds);
+        mMap.setMinZoomPreference(mMap.getCameraPosition().zoom);
     }
 }
