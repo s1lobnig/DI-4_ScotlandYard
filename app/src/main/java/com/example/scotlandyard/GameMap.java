@@ -35,7 +35,7 @@ public class GameMap extends FragmentActivity implements OnMapReadyCallback {
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
      * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
+     * we just add a marker at the University Klagenfurt.
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
@@ -72,7 +72,7 @@ public class GameMap extends FragmentActivity implements OnMapReadyCallback {
 
         // 20% padding
         int padding = (int) (width * 0.20);
-        // Add a marker in Sydney and move the camera
+        // Add a marker at the University Klagenfurt and move the camera
         LatLng aau = new LatLng(46.616389, 14.265);
         float zoom_factor = 16f;
         mMap.addMarker(new MarkerOptions().position(aau).title("Marker in AAU"));
