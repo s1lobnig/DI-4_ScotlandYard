@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">ScotlandYard</string>
+    <string name="weiter">Weiter</string>
+    <string name="beitreten">Beitreten</string>
+    <string name="spielername">Spielername</string>
+
 </resources>
