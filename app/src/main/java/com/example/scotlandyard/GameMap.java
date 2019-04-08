@@ -1,6 +1,8 @@
 package com.example.scotlandyard;
 
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,9 +11,12 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONObject;
@@ -19,6 +24,7 @@ import org.json.JSONObject;
 public class GameMap extends FragmentActivity implements OnMapReadyCallback {
     private static final String TAG = GameMap.class.getSimpleName();
     private GoogleMap mMap;
+    private Points points = new Points();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,5 +86,23 @@ public class GameMap extends FragmentActivity implements OnMapReadyCallback {
         mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         mMap.setLatLngBoundsForCameraTarget(map_bounds);
         mMap.setMinZoomPreference(mMap.getCameraPosition().zoom);
+
+        initializeMarker(R.drawable.player1);
+    }
+
+    //Creates a new Marker with given icon
+    private Marker initializeMarker(int icon){
+        int position = (int) (Math.random()*points.getDots().length);
+        LatLng latLng = new LatLng(points.getXfromP(position), points.getYfromP(position));
+        Marker marker = mMap.addMarker(new MarkerOptions().position(latLng));
+        marker.setIcon(BitmapDescriptorFactory.fromResource(icon));
+        return marker;
+    }
+
+    //Places the marker on the position of point number
+    public boolean positionMarker(Marker marker, int number){
+        if(marker == null || number<1 || number>=points.getDots().length) return false;
+        marker.setPosition(new LatLng(points.getXfromP(number), points.getYfromP(number)));
+        return true;
     }
 }
