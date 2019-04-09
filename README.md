@@ -4,35 +4,25 @@ Repository für das SE2 Projekt der Gruppe DI-4. Mit Hilfe von SCRUM wird versuc
 
 ## Rollen
 
-**ArchitektIn**
-Rene
+**ArchitektIn**: Rene
 
-**ArchitektIn Stv.**
-Stefan und Johann
+**ArchitektIn Stv.**: Stefan und Johann
 
-**GUI-Mensch**
-Corinna
+**GUI-Mensch**: Corinna
 
-**GUI-Mensch Stv.**
-Alem
+**GUI-Mensch Stv.**: Alem
 
-**TesterIn**
-Stefan
+**TesterIn**: Stefan
 
-**TesterIn Stv.**
-Selene und Rene
+**TesterIn Stv.**: Selene und Rene
 
-**CI-ManagerIn**
-Selene
+**CI-ManagerIn**: Selene
 
-**CI-ManagerIn Stv.**
-Corinna
+**CI-ManagerIn Stv.**: Corinna
 
-**ProduktmanagerIn**
-Johann
+**ProduktmanagerIn**: Johann
 
-**ProduktmanagerIn**
-Alem
+**ProduktmanagerIn**: Alem
 
 ## Zusätzliche Informationen
 
