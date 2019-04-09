@@ -70,11 +70,12 @@ public class GameList extends AppCompatActivity {
 
                 mainViewHolder.gameName = (TextView) convertView.findViewById(R.id.txtgameName);
                 mainViewHolder.currentMembers = (TextView) convertView.findViewById(R.id.txtMemberCount);
-                mainViewHolder.playGame= (Button) convertView.findViewById(R.id.btnPlayGame);
+                mainViewHolder.playGame = (Button) convertView.findViewById(R.id.btnPlayGame);
                 mainViewHolder.playGame.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View view) {
-                        //goTo activity to enter nickname
+                    public void onClick(View v) {
+                        Intent intent = new Intent(GameList.this, RegistrationActivty.class);
+                        startActivity(intent);
                     }
                 });
                 convertView.setTag(mainViewHolder);
