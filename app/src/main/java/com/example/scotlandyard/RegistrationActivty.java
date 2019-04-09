@@ -21,7 +21,7 @@ public class RegistrationActivty extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration_activty);
 
-        startGame = (Button) findViewById(R.id.buttonStartGame);
+        startGame = (Button) findViewById(R.id.btnStartGame);
         inputField = (EditText) findViewById(R.id.editTextInputField);
 
         inputField.addTextChangedListener(new TextWatcher() {

@@ -7,11 +7,13 @@
     tools:context=".RegistrationActivty">
 
     <Button
-        android:id="@+id/buttonStartGame"
+        android:id="@+id/btnStartGame"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
-        android:text="@string/beitreten"
+        android:background="@color/colorPrimary"
+        android:text="Beitreten"
+        android:textColor="@color/colorText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextInputField" />
