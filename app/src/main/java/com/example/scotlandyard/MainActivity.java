@@ -8,8 +8,8 @@ import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button createGame;
-    Button existingGames;
+    private static Button createGame;
+    private static Button existingGames;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +21,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(MainActivity.this, GameList.class));
+            }
+        });
+        createGame = findViewById(R.id.btnCreateGame);
+        createGame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // temporary, to get to the map
+                startActivity(new Intent(MainActivity.this, GameMap.class));
             }
         });
     }
