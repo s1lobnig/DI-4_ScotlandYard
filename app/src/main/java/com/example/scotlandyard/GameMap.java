@@ -77,11 +77,7 @@ public class GameMap extends FragmentActivity implements OnMapReadyCallback {
         int height = getResources().getDisplayMetrics().heightPixels;
 
         // 20% padding
-        int padding = (int) (width * 0.20);
-        // Add a marker at the University Klagenfurt and move the camera
-        LatLng aau = new LatLng(46.616389, 14.265);
-        float zoom_factor = 16f;
-        mMap.addMarker(new MarkerOptions().position(aau).title("Marker in AAU"));
+        int padding = (int) (width * 0.02);
         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(map_bounds, width, height, padding));
         mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         mMap.setLatLngBoundsForCameraTarget(map_bounds);
