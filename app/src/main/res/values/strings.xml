@@ -15,4 +15,7 @@
     <string name="action_example">Example action</string>
     <string name="title_activity_game_map">Map</string>
     <string name="title_activity_game_list">GameList</string>
+    <string name="beitreten">Beitreten</string>
+    <string name="spielername">Spielername</string>
+
 </resources>
