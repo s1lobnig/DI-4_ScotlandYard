@@ -72,6 +72,7 @@ public class RegistrationActivty extends AppCompatActivity {
             Intent intent = new Intent(RegistrationActivty.this, GameActivity.class);
             intent.putExtra(passNickname, nickname);
             startActivity(intent);
+            // Simulate waiting time to join game
             Thread.sleep(2000);
         }
     }
