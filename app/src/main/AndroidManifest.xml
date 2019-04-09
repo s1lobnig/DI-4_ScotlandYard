@@ -33,6 +33,10 @@
         <activity
             android:name=".GameMap"
             android:label="@string/title_activity_game_map"></activity>
+        <activity
+            android:name=".GameList"
+            android:label="@string/title_activity_game_list"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
