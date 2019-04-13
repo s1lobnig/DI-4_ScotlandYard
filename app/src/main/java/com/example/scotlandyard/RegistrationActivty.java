@@ -69,7 +69,7 @@ public class RegistrationActivty extends AppCompatActivity {
         String nickname = inputField.getText().toString().trim();
 
         if (!nickname.isEmpty()) {
-            Intent intent = new Intent(RegistrationActivty.this, GameActivity.class);
+            Intent intent = new Intent(RegistrationActivty.this, GameMap.class);
             intent.putExtra(passNickname, nickname);
             startActivity(intent);
             // Simulate waiting time to join game

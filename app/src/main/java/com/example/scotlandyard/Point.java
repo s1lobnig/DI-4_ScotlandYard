@@ -1,19 +1,25 @@
 package com.example.scotlandyard;
 
 public class Point {
-    private double x;
-    private double y;
+    private double latitude;
+    private double longitude;
 
-    public Point(double x, double y) {
-        this.x = x;
-        this.y = y;
+    public Point(double latitude, double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
-    public double getX() {
-        return x;
+    public double getLatitude() {
+        return latitude;
     }
 
-    public double getY() {
-        return y;
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public boolean equals(Point p) {
+        if (p.getLatitude() == latitude && p.getLongitude() == longitude)
+            return true;
+        return false;
     }
 }

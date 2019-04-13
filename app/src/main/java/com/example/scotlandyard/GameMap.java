@@ -1,9 +1,7 @@
 package com.example.scotlandyard;
 
+import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -11,31 +9,115 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
-import org.json.JSONObject;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 
-public class GameMap extends FragmentActivity implements OnMapReadyCallback {
+
+public class GameMap extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
     private static final String TAG = GameMap.class.getSimpleName();
     private GoogleMap mMap;
-    private Points points = new Points();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_game_map);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        setContentView(R.layout.activity_game_navigation);
+
+        Intent intent = getIntent();
+        String getNickname = intent.getStringExtra(RegistrationActivty.passNickname);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(getNickname);
+        setSupportActionBar(toolbar);
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        Menu menu = navigationView.getMenu();
+        navigationView.setNavigationItemSelectedListener(this);
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        Fragment fragment = null;
+        try {
+            fragment = getSupportFragmentManager().findFragmentById(R.id.map);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.map, fragment).commit();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        Fragment fragment = null;
+        Class fragmentClass;
+        if (id == R.id.action_settings) {
+            fragmentClass = GameMap.class;
+            try {
+                fragment = (Fragment) fragmentClass.newInstance();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.map, fragment).commit();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+        Fragment fragment;
+        if (id == R.id.nav_game) {
+            fragment = getSupportFragmentManager().findFragmentById(R.id.map);
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.map, fragment).commit();
+        } else {
+
+        }
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
 
     /**
      * Manipulates the map once available.
@@ -78,6 +160,11 @@ public class GameMap extends FragmentActivity implements OnMapReadyCallback {
 
         // 20% padding
         int padding = (int) (width * 0.02);
+        for (Point p : Points.getPoints()) {
+            LatLng p_LatLng = new LatLng(p.getLatitude(), p.getLongitude());
+            mMap.addMarker(new MarkerOptions().position(p_LatLng).title("" + (Points.getIndex(p) + 1)));
+        }
+        drawRoutes();
         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(map_bounds, width, height, padding));
         mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         mMap.setLatLngBoundsForCameraTarget(map_bounds);
@@ -86,19 +173,38 @@ public class GameMap extends FragmentActivity implements OnMapReadyCallback {
         initializeMarker(R.drawable.player1);
     }
 
+    private void drawRoutes() {
+        drawByFoot();
+    }
+
+    private void drawByFoot() {
+        for (Route r : Routes.getByFootRoutes()) {
+            Point startPoint = Points.getPoints()[r.getStart_point() - 1];
+            Point endPoint = Points.getPoints()[r.getEnd_point() - 1];
+            LatLng start = new LatLng(startPoint.getLatitude(), startPoint.getLongitude());
+            LatLng end = new LatLng(endPoint.getLatitude(), endPoint.getLongitude());
+            PolylineOptions route = new PolylineOptions().add(start);
+            if (r.getIntermediates() != null) {
+
+            }
+            route.add(end).color(Routes.getByFootColor()).width(Routes.ROUTE_WIDTH);
+            mMap.addPolyline(route);
+        }
+    }
+
     //Creates a new Marker with given icon
-    private Marker initializeMarker(int icon){
-        int position = (int) (Math.random()*points.getDots().length);
-        LatLng latLng = new LatLng(points.getXfromP(position), points.getYfromP(position));
+    private Marker initializeMarker(int icon) {
+        int position = (int) (Math.random() * Points.getPoints().length);
+        LatLng latLng = new LatLng(Points.getLatFromP(position), Points.getLngfromP(position));
         Marker marker = mMap.addMarker(new MarkerOptions().position(latLng));
         marker.setIcon(BitmapDescriptorFactory.fromResource(icon));
         return marker;
     }
 
     //Places the marker on the position of point number
-    public boolean positionMarker(Marker marker, int number){
-        if(marker == null || number<1 || number>=points.getDots().length) return false;
-        marker.setPosition(new LatLng(points.getXfromP(number), points.getYfromP(number)));
+    public boolean positionMarker(Marker marker, int number) {
+        if (marker == null || number < 1 || number >= Points.getPoints().length) return false;
+        marker.setPosition(new LatLng(Points.getLatFromP(number), Points.getLngfromP(number)));
         return true;
     }
 }
