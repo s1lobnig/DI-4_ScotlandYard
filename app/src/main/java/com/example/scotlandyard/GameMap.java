@@ -131,12 +131,7 @@ public class GameMap extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        /*
-            "north":  46.623354,
-            "east":   14.271578,
-            "south":  46.612225,
-            "west":   14.261226
-         */
+
         final LatLngBounds map_bounds = new LatLngBounds(
                 new LatLng(46.612225, 14.261226),
                 new LatLng(46.623354, 14.271578)
@@ -170,7 +165,17 @@ public class GameMap extends AppCompatActivity
         mMap.setLatLngBoundsForCameraTarget(map_bounds);
         mMap.setMinZoomPreference(mMap.getCameraPosition().zoom);
 
-        initializeMarker(R.drawable.player1);
+        generateFields();
+        final Marker player1 = initializeMarker(R.drawable.player1);
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                //ToDo check if Position is reachable from players current position
+                player1.setPosition(marker.getPosition());
+                return true;
+            }
+        });
     }
 
     private void drawRoutes() {
@@ -198,6 +203,7 @@ public class GameMap extends AppCompatActivity
         LatLng latLng = new LatLng(Points.getLatFromP(position), Points.getLngfromP(position));
         Marker marker = mMap.addMarker(new MarkerOptions().position(latLng));
         marker.setIcon(BitmapDescriptorFactory.fromResource(icon));
+        marker.setAnchor(0.5f,0.5f); //So the image is centered on the given position
         return marker;
     }
 
@@ -206,5 +212,11 @@ public class GameMap extends AppCompatActivity
         if (marker == null || number < 1 || number >= Points.getPoints().length) return false;
         marker.setPosition(new LatLng(Points.getLatFromP(number), Points.getLngfromP(number)));
         return true;
+        
+    //Generates all Feeld-Marker
+    private void generateFields(){
+        for (int i = 1; i<points.length; i++) {
+            putMarker(points[i].getFieldIcon(), i);
+        }
     }
 }
