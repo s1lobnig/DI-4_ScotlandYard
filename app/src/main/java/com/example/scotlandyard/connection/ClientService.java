@@ -19,12 +19,25 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * class representing a client in the service
+ * logTag:                  log tag for log messages
+ * discoveredEndpoints      list of current discovered endpoints
+ * connection               current active connection
+ * client                   interface to client activity
+ */
 public class ClientService extends ConnectionService {
     private String logTag;
     private Map<String, Endpoint> discoveredEndpoints;
     private Endpoint connection;
     private ClientInterface client;
 
+    /**
+     * Constructor
+     * @param clientInterface       object implementing client interface
+     * @param endpointName          name of the device (nickname)
+     * @param activity              current activity
+     */
     ClientService(@NonNull ClientInterface clientInterface, String endpointName, Activity activity) {
         super(endpointName, activity);
         discoveredEndpoints = new HashMap<>();
@@ -32,6 +45,9 @@ public class ClientService extends ConnectionService {
         this.client = clientInterface;
     }
 
+    /**
+     * function starts discovery of client
+     */
     public void startDiscovery() {
         if (connectionState == ConnectionState.DISCONNECTED) {
             connectionState = ConnectionState.DISCOVERING;
@@ -63,6 +79,9 @@ public class ClientService extends ConnectionService {
         }
     }
 
+    /**
+     * callback function, when an endpoint is found or lost
+     */
     private final EndpointDiscoveryCallback endpointDiscoveryCallback = new EndpointDiscoveryCallback() {
         @Override
         public void onEndpointFound(@NonNull String endpointId, @NonNull DiscoveredEndpointInfo info) {
@@ -87,6 +106,9 @@ public class ClientService extends ConnectionService {
         }
     };
 
+    /**
+     * function stops discovery
+     */
     public void stopDiscovery() {
         if (connectionState == ConnectionState.DISCOVERING) {
             Log.d(logTag, "stopped discovering");
@@ -96,6 +118,10 @@ public class ClientService extends ConnectionService {
         }
     }
 
+    /**
+     * function for connecting to an endpoint
+     * @param endpoint          endpoint to connect to
+     */
     public void connectToEndpoint(@NonNull final Endpoint endpoint) {
         if (connectionState != ConnectionState.CONNECTING) {
             if (connectionState == ConnectionState.DISCOVERING) {
@@ -117,6 +143,9 @@ public class ClientService extends ConnectionService {
         }
     }
 
+    /**
+     * callback function for connection lifecycle (connection, disconnection)
+     */
     private final ConnectionLifecycleCallback connectionLifecycleCallback =
             new ConnectionLifecycleCallback() {
                 @Override
@@ -142,7 +171,7 @@ public class ClientService extends ConnectionService {
                     Log.d(logTag, String.format("connection response (endpointId=%s, result=%s)", endpointId, result));
                     if (result.getStatus().isSuccess()) {
                         connectionState = ConnectionState.CONNECTED;
-                        client.onConnected();
+                        client.onConnected(connection);
                     } else {
                         connectionState = ConnectionState.DISCONNECTED;
                         client.onFailedConnecting(connection);
@@ -152,12 +181,16 @@ public class ClientService extends ConnectionService {
                 @Override
                 public void onDisconnected(@NonNull String endpointId) {
                     Log.d(logTag, String.format("disconnected from endpoint (endpoint=%s)", endpointId));
-                    connectionState = ConnectionState.DISCONNECTED;
-                    client.onDisconnected();
+                    if (connection != null) {
+                        if (connection.getId().equals(endpointId)) {
+                            connectionState = ConnectionState.DISCONNECTED;
+                            client.onDisconnected(connection);
+                        }
+                    }
                 }
             };
 
-    //TODO
+    //TODO implement
     private final PayloadCallback payloadCallback =
             new PayloadCallback() {
                 @Override
@@ -171,7 +204,7 @@ public class ClientService extends ConnectionService {
                 }
             };
 
-    //TODO
+    //TODO implement
     private void sendPayload(Payload payload) {
         if (connectionState == ConnectionState.CONNECTED) {
             Log.d(logTag, "sending payload");
@@ -187,4 +220,15 @@ public class ClientService extends ConnectionService {
         }
     }
 
+    public Map<String, Endpoint> getDiscoveredEndpoints() {
+        return discoveredEndpoints;
+    }
+
+    public Endpoint getConnection() {
+        return connection;
+    }
+
+    public void setClient(@NonNull ClientInterface client) {
+        this.client = client;
+    }
 }

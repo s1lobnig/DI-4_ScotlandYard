@@ -19,12 +19,26 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+
+/**
+ * class representing a server in the service
+ * logTag:                  log tag for log messages
+ * pendingConnections:      current pending connections
+ * establishedConnections:  current established connections
+ * server:                  interface to server activity
+ */
 public class ServerService extends ConnectionService {
     private String logTag = "ServerService";
     private Map<String, Endpoint> pendingConnections;
     private Map<String, Endpoint> establishedConnections;
     private ServerInterface server;
 
+    /**
+     * Constructor
+     * @param server            object implementing server interface
+     * @param endpointName      name of the device (nickname)
+     * @param activity          current activity
+     */
     ServerService(@NonNull ServerInterface server, String endpointName, Activity activity) {
         super(endpointName, activity);
         pendingConnections = new HashMap<>();
@@ -32,6 +46,9 @@ public class ServerService extends ConnectionService {
         this.server = server;
     }
 
+    /**
+     * function starts advertising of server
+     */
     public void startAdvertising() {
         if (connectionState == ConnectionState.DISCONNECTED) {
             connectionState = ConnectionState.ADVERTISING;
@@ -63,6 +80,9 @@ public class ServerService extends ConnectionService {
         }
     }
 
+    /**
+     * function stops advertising of server
+     */
     public void stopAdvertising() {
         if (connectionState == ConnectionState.ADVERTISING) {
             Log.d(logTag, "stopped advertising");
@@ -76,6 +96,9 @@ public class ServerService extends ConnectionService {
         }
     }
 
+    /**
+     * callback function for connection lifecycle (connection, disconnection)
+     */
     private final ConnectionLifecycleCallback connectionLifecycleCallback =
             new ConnectionLifecycleCallback() {
                 @Override
@@ -112,6 +135,10 @@ public class ServerService extends ConnectionService {
                 }
             };
 
+    /**
+     * function for accepting a connection
+     * @param endpoint          endpoint, where connection is accepted
+     */
     public void acceptConnection(final Endpoint endpoint) {
         connectionsClient
                 .acceptConnection(endpoint.getId(), payloadCallback)
@@ -159,5 +186,15 @@ public class ServerService extends ConnectionService {
         }
     }
 
+    public Map<String, Endpoint> getPendingConnections() {
+        return pendingConnections;
+    }
 
+    public Map<String, Endpoint> getEstablishedConnections() {
+        return establishedConnections;
+    }
+
+    public void setServer(ServerInterface server) {
+        this.server = server;
+    }
 }

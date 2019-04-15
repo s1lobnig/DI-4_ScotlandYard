@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 
 /**
  * Class representing a device in ConnectionService
+ * id:          identification of endpoint
+ * name:        name of endpoint
  */
 public class Endpoint {
     @NonNull private final String id;

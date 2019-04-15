@@ -7,6 +7,14 @@ import com.google.android.gms.nearby.Nearby;
 import com.google.android.gms.nearby.connection.ConnectionsClient;
 import com.google.android.gms.nearby.connection.Strategy;
 
+/**
+ * abstract basic class of the service
+ * connectionsClient:       main API class
+ * strategy:                network strategy
+ * serviceID:               service id of app for identification
+ * endpointName             name of local device
+ * connectionState          state of the service
+ */
 abstract public class ConnectionService {
     ConnectionsClient connectionsClient;
     Strategy strategy;
@@ -14,6 +22,11 @@ abstract public class ConnectionService {
     String endpointName;
     ConnectionState connectionState;
 
+    /**
+     * Constructor
+     * @param endpointName      name of the device (nickname)
+     * @param activity          current activity
+     */
     ConnectionService(@NonNull String endpointName, @NonNull Activity activity) {
         connectionsClient = Nearby.getConnectionsClient(activity);
         strategy = Strategy.P2P_STAR;
@@ -22,4 +35,7 @@ abstract public class ConnectionService {
         connectionState = ConnectionState.DISCONNECTED;
     }
 
+    public ConnectionState getConnectionState() {
+        return connectionState;
+    }
 }
