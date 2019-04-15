@@ -33,4 +33,10 @@ public interface ConnectionInterface {
      * @param endpoint      endpoint, where accept connection failed
      */
     void onFailedAcceptConnection(Endpoint endpoint);
+
+    /**
+     * function is called, when sending data failed
+     * @param object        game data or chat message, which failed
+     */
+    void onSendingFailed(Object object);
 }

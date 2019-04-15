@@ -4,9 +4,12 @@ import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.example.scotlandyard.Game;
+import com.example.scotlandyard.Message;
 import com.google.android.gms.nearby.connection.ConnectionInfo;
 import com.google.android.gms.nearby.connection.ConnectionLifecycleCallback;
 import com.google.android.gms.nearby.connection.ConnectionResolution;
+import com.google.android.gms.nearby.connection.ConnectionsClient;
 import com.google.android.gms.nearby.connection.DiscoveredEndpointInfo;
 import com.google.android.gms.nearby.connection.DiscoveryOptions;
 import com.google.android.gms.nearby.connection.EndpointDiscoveryCallback;
@@ -16,6 +19,7 @@ import com.google.android.gms.nearby.connection.PayloadTransferUpdate;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -190,22 +194,66 @@ public class ClientService extends ConnectionService {
                 }
             };
 
-    //TODO implement
+    /**
+     * callback function for a received payload
+     */
     private final PayloadCallback payloadCallback =
             new PayloadCallback() {
                 @Override
                 public void onPayloadReceived(@NonNull String endpointId,@NonNull Payload payload) {
                     Log.d(logTag, String.format("payload received (endpointId=%s, payload=%s)", endpointId, payload));
+                    Object object = null;
+                    try {
+                        object = deserialize(payload.asBytes());
+                    } catch (Exception ex) {
+                        Log.d(logTag, "error in deserialization", ex);
+                    }
+                    if (object != null) {
+                        if (object instanceof Message) {
+                            client.onMessage(object);
+                        }
+                        if (object instanceof  Game) {
+                            client.onGameData(object);
+                        }
+                    }
                 }
 
+                // no need for implementation for byte[] payload
                 @Override
                 public void onPayloadTransferUpdate(@NonNull String endpointId, @NonNull PayloadTransferUpdate update) {
                     Log.d(logTag, String.format("payload update (endpointId=%s, update=%s)", endpointId, update));
                 }
             };
 
-    //TODO implement
-    private void sendPayload(Payload payload) {
+    /**
+     * function for sending a chat message or game data
+     * @param object       object to send (game data or chat message)
+     */
+    public void send(Object object) {
+        if (object instanceof Message || object instanceof Game) {
+            byte[] data = null;
+            try {
+                data = serialize(object);
+            } catch (IOException ex) {
+                Log.d(logTag, "error in serialization", ex);
+                client.onSendingFailed(object);
+            }
+            if (data != null) {
+                if (data.length > ConnectionsClient.MAX_BYTES_DATA_SIZE) {
+                    Log.d(logTag, "byte array size > MAX_BYTES_DATA_SIZE");
+                    // will this be a problem ?
+                }
+                Payload payload = Payload.fromBytes(data);
+                sendPayload(payload);
+            }
+        }
+    }
+
+    /**
+     * function for sending a payload
+     * @param payload       payload to send
+     */
+    private void sendPayload(final Payload payload) {
         if (connectionState == ConnectionState.CONNECTED) {
             Log.d(logTag, "sending payload");
             connectionsClient
@@ -215,6 +263,13 @@ public class ClientService extends ConnectionService {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
                                     Log.d(logTag, "sending payload failed", e);
+                                    Object object = null;
+                                    try {
+                                        object = deserialize(payload.asBytes());
+                                    } catch (Exception ex) {
+                                        Log.d(logTag, "error in deserialization", ex);
+                                    }
+                                    client.onSendingFailed(object);
                                 }
                             });
         }
