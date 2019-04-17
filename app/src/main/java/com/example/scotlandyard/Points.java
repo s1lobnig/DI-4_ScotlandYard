@@ -1,7 +1,7 @@
 package com.example.scotlandyard;
 
 public class Points {
-    private static final Point[] POINTS =
+    public static final Point[] POINTS =
             {
                     new Point(46.621253, 14.262028, R.drawable.field1),
                     new Point(46.620646, 14.262115, R.drawable.field2),

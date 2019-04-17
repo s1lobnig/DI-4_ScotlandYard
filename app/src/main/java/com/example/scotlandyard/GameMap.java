@@ -1,11 +1,16 @@
 package com.example.scotlandyard;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -31,6 +36,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
+
+import java.util.ArrayList;
 
 
 public class GameMap extends AppCompatActivity
@@ -167,10 +175,134 @@ public class GameMap extends AppCompatActivity
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
-            public boolean onMarkerClick(Marker marker) {
-                // check if Position is reachable from players current position
-                player1.setPosition(marker.getPosition());
-                return true;
+            public boolean onMarkerClick(final Marker marker) {
+                LatLng current = player1.getPosition();
+                Point currentPoint = new Point(current.latitude, current.longitude);
+                Point newLocation = new Point(marker.getPosition().latitude, marker.getPosition().longitude);
+                Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
+                boolean isValid = (Boolean) routeToTake[0];
+                if (isValid) {
+                    Route r = (Route) routeToTake[1];
+                    Log.d("ROUTE", r.toString());
+                    String txt = "";
+                    int icon = -1;
+                    int vehicle = (int) routeToTake[2];
+                    switch (vehicle) {
+                        case 0:
+                            icon = R.drawable.pedestrian;
+                            txt = "foot route";
+                            break;
+                        case 1:
+                            icon = R.drawable.bicycle;
+                            txt = "bicycle route";
+                            break;
+                        case 2:
+                            icon = R.drawable.bus;
+                            txt = "bus route";
+                            break;
+                        case 3:
+                            icon = R.drawable.taxi;
+                            txt = "taxi route";
+                            break;
+                        case -1:
+                            break;
+                    }
+                    Toast.makeText(GameMap.this, txt, Snackbar.LENGTH_LONG).show();
+
+                    int animation_duration = 3000;
+                    if (r.getIntermediates() != null) {
+                        double routeLength = r.getLength();
+                        int duration;
+                        player1.setIcon(BitmapDescriptorFactory.fromResource(icon));
+                        final ArrayList<ObjectAnimator> animations = new ArrayList<>();
+                        if (Points.getIndex(currentPoint) == r.getStart_point() - 1) {
+                            for (int i = 0; i <= r.getIntermediates().length; i++) {
+                                double x1;
+                                double y1;
+                                double x2;
+                                double y2;
+                                if (i == 0) {
+                                    x1 = Points.POINTS[r.getStart_point() - 1].getLatitude();
+                                    y1 = Points.POINTS[r.getStart_point() - 1].getLongitude();
+                                } else {
+                                    x1 = r.getIntermediates()[i - 1].getLatitude();
+                                    y1 = r.getIntermediates()[i - 1].getLongitude();
+                                }
+                                if (i == r.getIntermediates().length) {
+                                    x2 = Points.POINTS[r.getEnd_point() - 1].getLatitude();
+                                    y2 = Points.POINTS[r.getEnd_point() - 1].getLongitude();
+                                } else {
+                                    x2 = r.getIntermediates()[i].getLatitude();
+                                    y2 = r.getIntermediates()[i].getLongitude();
+                                }
+                                LatLng intermediate = new LatLng(x2, x1);
+                                duration = (int) (animation_duration * ((Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) / routeLength));
+                                Log.d("ANIMATION", "" + duration);
+                                animations.add(MarkerAnimation.animateMarkerToICS(player1, intermediate, new LatLngInterpolator.Linear(), duration, icon));
+                            }
+                        } else {
+                            for (int i = r.getIntermediates().length; i >= 0; i--) {
+                                double x1;
+                                double y1;
+                                double x2;
+                                double y2;
+                                if (i == r.getIntermediates().length) {
+                                    x1 = Points.POINTS[r.getEnd_point() - 1].getLatitude();
+                                    y1 = Points.POINTS[r.getEnd_point() - 1].getLongitude();
+                                } else {
+                                    x1 = r.getIntermediates()[i].getLatitude();
+                                    y1 = r.getIntermediates()[i].getLongitude();
+                                }
+                                if (i == 0) {
+                                    x2 = Points.POINTS[r.getStart_point() - 1].getLatitude();
+                                    y2 = Points.POINTS[r.getStart_point() - 1].getLongitude();
+                                } else {
+                                    x2 = r.getIntermediates()[i - 1].getLatitude();
+                                    y2 = r.getIntermediates()[i - 1].getLongitude();
+                                }
+                                LatLng intermediate = new LatLng(x2, x1);
+                                duration = (int) (animation_duration * ((Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) / routeLength));
+                                Log.d("ANIMATION", "" + duration);
+                                animations.add(MarkerAnimation.animateMarkerToICS(player1, intermediate, new LatLngInterpolator.Linear(), duration, icon));
+                            }
+                        }
+                        for (int i = 0; i < animations.size(); i++) {
+                            final int finalI = i;
+                            animations.get(i).addListener(new Animator.AnimatorListener() {
+                                @Override
+                                public void onAnimationStart(Animator animation) {
+                                }
+
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    Log.d("ANIMATION", "" + finalI);
+                                    if (finalI != animations.size() - 1) {
+                                        animations.get(finalI + 1).start();
+                                    } else {
+                                        player1.setPosition(marker.getPosition());
+                                        player1.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.player1));
+                                    }
+                                }
+
+                                @Override
+                                public void onAnimationCancel(Animator animation) {
+
+                                }
+
+                                @Override
+                                public void onAnimationRepeat(Animator animation) {
+
+                                }
+                            });
+                        }
+                        animations.get(0).start();
+                    } else {
+                        MarkerAnimation.animateMarkerToGB(player1, marker.getPosition(), new LatLngInterpolator.Spherical(), animation_duration, icon);
+                    }
+                    return true;
+                }
+                Toast.makeText(GameMap.this, "Unreachable Point :(", Snackbar.LENGTH_LONG).show();
+                return false;
             }
         });
     }
