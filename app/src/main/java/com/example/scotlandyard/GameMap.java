@@ -2,6 +2,9 @@ package com.example.scotlandyard;
 
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -9,13 +12,13 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import android.support.design.widget.NavigationView;
@@ -155,46 +158,83 @@ public class GameMap extends AppCompatActivity
 
         // 20% padding
         int padding = (int) (width * 0.02);
-        for (Point p : Points.getPoints()) {
-            LatLng p_LatLng = new LatLng(p.getLatitude(), p.getLongitude());
-            mMap.addMarker(new MarkerOptions().position(p_LatLng).title("" + (Points.getIndex(p) + 1)));
-        }
-        drawRoutes();
         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(map_bounds, width, height, padding));
         mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         mMap.setLatLngBoundsForCameraTarget(map_bounds);
         mMap.setMinZoomPreference(mMap.getCameraPosition().zoom);
-
-        generateFields();
+        setFields();
         final Marker player1 = initializeMarker(R.drawable.player1);
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                //ToDo check if Position is reachable from players current position
+                // check if Position is reachable from players current position
                 player1.setPosition(marker.getPosition());
                 return true;
             }
         });
     }
 
+    private void setFields() {
+        for (Point p : Points.getPoints()) {
+            LatLng p_LatLng = new LatLng(p.getLatitude(), p.getLongitude());
+            Drawable myDrawable = getResources().getDrawable(p.getIcon());
+            Bitmap bmp = ((BitmapDrawable) myDrawable).getBitmap();
+            BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(bmp);
+            mMap.addMarker(
+                    new MarkerOptions()
+                            .position(p_LatLng)
+                            .icon(icon)
+                            .anchor(0.5f, 0.5f)
+            );
+        }
+        drawRoutes();
+    }
+
     private void drawRoutes() {
         drawByFoot();
+        drawByBicycle();
+        drawByBus();
+        drawByTaxiDragan();
+    }
+
+    private void drawByBus() {
+        for (Route r : Routes.getBusRoutes()) {
+            addRoute(r, Routes.getBusColor());
+        }
+    }
+
+    private void drawByTaxiDragan() {
+        for (Route r : Routes.getTaxiDraganRoutes()) {
+            addRoute(r, Routes.getTaxiDraganColor());
+        }
     }
 
     private void drawByFoot() {
         for (Route r : Routes.getByFootRoutes()) {
-            Point startPoint = Points.getPoints()[r.getStart_point() - 1];
-            Point endPoint = Points.getPoints()[r.getEnd_point() - 1];
-            LatLng start = new LatLng(startPoint.getLatitude(), startPoint.getLongitude());
-            LatLng end = new LatLng(endPoint.getLatitude(), endPoint.getLongitude());
-            PolylineOptions route = new PolylineOptions().add(start);
-            if (r.getIntermediates() != null) {
-
-            }
-            route.add(end).color(Routes.getByFootColor()).width(Routes.ROUTE_WIDTH);
-            mMap.addPolyline(route);
+            addRoute(r, Routes.getByFootColor());
         }
+    }
+
+    private void drawByBicycle() {
+        for (Route r : Routes.getBicycleRoutes()) {
+            addRoute(r, Routes.getBicycleColor());
+        }
+    }
+
+    private void addRoute(Route r, int color) {
+        Point startPoint = Points.getPoints()[r.getStart_point() - 1];
+        Point endPoint = Points.getPoints()[r.getEnd_point() - 1];
+        LatLng start = new LatLng(startPoint.getLatitude(), startPoint.getLongitude());
+        LatLng end = new LatLng(endPoint.getLatitude(), endPoint.getLongitude());
+        PolylineOptions route = new PolylineOptions().add(start);
+        if (r.getIntermediates() != null) {
+            for (Point p : r.getIntermediates()) {
+                route.add(new LatLng(p.getLatitude(), p.getLongitude()));
+            }
+        }
+        route.add(end).color(color).width(Routes.ROUTE_WIDTH);
+        mMap.addPolyline(route);
     }
 
     //Creates a new Marker with given icon
@@ -203,7 +243,7 @@ public class GameMap extends AppCompatActivity
         LatLng latLng = new LatLng(Points.getLatFromP(position), Points.getLngfromP(position));
         Marker marker = mMap.addMarker(new MarkerOptions().position(latLng));
         marker.setIcon(BitmapDescriptorFactory.fromResource(icon));
-        marker.setAnchor(0.5f,0.5f); //So the image is centered on the given position
+//        marker.setAnchor(0.5f, 0.5f); //So the image is centered on the given position
         return marker;
     }
 
@@ -212,11 +252,5 @@ public class GameMap extends AppCompatActivity
         if (marker == null || number < 1 || number >= Points.getPoints().length) return false;
         marker.setPosition(new LatLng(Points.getLatFromP(number), Points.getLngfromP(number)));
         return true;
-        
-    //Generates all Feeld-Marker
-    private void generateFields(){
-        for (int i = 1; i<points.length; i++) {
-            putMarker(points[i].getFieldIcon(), i);
-        }
     }
 }

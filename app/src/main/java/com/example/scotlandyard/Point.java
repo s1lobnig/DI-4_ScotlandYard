@@ -16,7 +16,7 @@ public class Point {
     public Point(double latitude, double longitude, int icon) {
         this.latitude = latitude;
         this.longitude = longitude;
-        this.fieldIcon = fieldIcon;
+        this.icon = icon;
     }
 
     public double getLongitude() {
