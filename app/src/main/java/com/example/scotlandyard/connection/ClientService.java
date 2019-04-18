@@ -38,9 +38,10 @@ public class ClientService extends ConnectionService {
 
     /**
      * Constructor
-     * @param clientInterface       object implementing client interface
-     * @param endpointName          name of the device (nickname)
-     * @param activity              current activity
+     *
+     * @param clientInterface object implementing client interface
+     * @param endpointName    name of the device (nickname)
+     * @param activity        current activity
      */
     ClientService(@NonNull ClientInterface clientInterface, String endpointName, Activity activity) {
         super(endpointName, activity);
@@ -76,7 +77,7 @@ public class ClientService extends ConnectionService {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
                                     connectionState = ConnectionState.DISCONNECTED;
-                                    Log.d(logTag,"starting discovering failed", e);
+                                    Log.d(logTag, "starting discovering failed", e);
                                     client.onFailedDiscovery();
                                 }
                             });
@@ -124,26 +125,26 @@ public class ClientService extends ConnectionService {
 
     /**
      * function for connecting to an endpoint
-     * @param endpoint          endpoint to connect to
+     *
+     * @param endpoint endpoint to connect to
      */
     public void connectToEndpoint(@NonNull final Endpoint endpoint) {
-        if (connectionState != ConnectionState.CONNECTING) {
-            if (connectionState == ConnectionState.DISCOVERING) {
-                stopDiscovery();
-                connectionState = ConnectionState.CONNECTING;
-                Log.d(logTag, "sending a connection request to endpoint " + endpoint);
-                connectionsClient
-                        .requestConnection(endpointName, endpoint.getId(), connectionLifecycleCallback)
-                        .addOnFailureListener(
-                                new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.d(logTag, "requestConnection failed", e);
-                                        connectionState = ConnectionState.DISCONNECTED;
-                                        client.onFailedConnecting(endpoint);
-                                    }
-                                });
-            }
+        if (connectionState != ConnectionState.CONNECTING && connectionState == ConnectionState.DISCOVERING) {
+            stopDiscovery();
+            connectionState = ConnectionState.CONNECTING;
+            Log.d(logTag, "sending a connection request to endpoint " + endpoint);
+            connectionsClient
+                    .requestConnection(endpointName, endpoint.getId(), connectionLifecycleCallback)
+                    .addOnFailureListener(
+                            new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.d(logTag, "requestConnection failed", e);
+                                    connectionState = ConnectionState.DISCONNECTED;
+                                    client.onFailedConnecting(endpoint);
+                                }
+                            });
+
         }
     }
 
@@ -155,7 +156,7 @@ public class ClientService extends ConnectionService {
                 @Override
                 public void onConnectionInitiated(@NonNull String endpointId, final ConnectionInfo connectionInfo) {
                     Log.d(logTag, String.format("connection initiated (endpointId=%s, endpointName=%s)",
-                                    endpointId, connectionInfo.getEndpointName()));
+                            endpointId, connectionInfo.getEndpointName()));
                     connection = new Endpoint(endpointId, connectionInfo.getEndpointName());
                     connectionsClient
                             .acceptConnection(connection.getId(), payloadCallback)
@@ -185,11 +186,9 @@ public class ClientService extends ConnectionService {
                 @Override
                 public void onDisconnected(@NonNull String endpointId) {
                     Log.d(logTag, String.format("disconnected from endpoint (endpoint=%s)", endpointId));
-                    if (connection != null) {
-                        if (connection.getId().equals(endpointId)) {
-                            connectionState = ConnectionState.DISCONNECTED;
-                            client.onDisconnected(connection);
-                        }
+                    if (connection != null && connection.getId().equals(endpointId)) {
+                        connectionState = ConnectionState.DISCONNECTED;
+                        client.onDisconnected(connection);
                     }
                 }
             };
@@ -200,7 +199,7 @@ public class ClientService extends ConnectionService {
     private final PayloadCallback payloadCallback =
             new PayloadCallback() {
                 @Override
-                public void onPayloadReceived(@NonNull String endpointId,@NonNull Payload payload) {
+                public void onPayloadReceived(@NonNull String endpointId, @NonNull Payload payload) {
                     Log.d(logTag, String.format("payload received (endpointId=%s, payload=%s)", endpointId, payload));
                     Object object = null;
                     try {
@@ -212,7 +211,7 @@ public class ClientService extends ConnectionService {
                         if (object instanceof Message) {
                             client.onMessage(object);
                         }
-                        if (object instanceof  Game) {
+                        if (object instanceof Game) {
                             client.onGameData(object);
                         }
                     }
@@ -227,7 +226,8 @@ public class ClientService extends ConnectionService {
 
     /**
      * function for sending a chat message or game data
-     * @param object       object to send (game data or chat message)
+     *
+     * @param object object to send (game data or chat message)
      */
     public void send(Object object) {
         if (object instanceof Message || object instanceof Game) {
@@ -251,7 +251,8 @@ public class ClientService extends ConnectionService {
 
     /**
      * function for sending a payload
-     * @param payload       payload to send
+     *
+     * @param payload payload to send
      */
     private void sendPayload(final Payload payload) {
         if (connectionState == ConnectionState.CONNECTED) {

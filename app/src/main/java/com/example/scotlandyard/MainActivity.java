@@ -12,14 +12,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import com.example.scotlandyard.connection.ConnectionService;
-
-import java.sql.Connection;
-
 public class MainActivity extends AppCompatActivity {
 
     private static final String[] REQUIRED_PERMISSIONS =
-            new String[] {
+            new String[]{
                     Manifest.permission.BLUETOOTH,
                     Manifest.permission.BLUETOOTH_ADMIN,
                     Manifest.permission.ACCESS_WIFI_STATE,
@@ -30,20 +26,18 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
 
-    private static Button createGame;           // why static?
+    private static Button createGame;
     private static Button existingGames;
 
     @Override
     protected void onStart() {
         super.onStart();
         if (!hasPermissions(this, getRequiredPermissions())) {
-            if (!hasPermissions(this, getRequiredPermissions())) {
-                if (Build.VERSION.SDK_INT < 23) {
-                    ActivityCompat.requestPermissions(
-                            this, getRequiredPermissions(), REQUEST_CODE_REQUIRED_PERMISSIONS);
-                } else {
-                    requestPermissions(getRequiredPermissions(), REQUEST_CODE_REQUIRED_PERMISSIONS);
-                }
+            if (Build.VERSION.SDK_INT < 23) {
+                ActivityCompat.requestPermissions(
+                        this, getRequiredPermissions(), REQUEST_CODE_REQUIRED_PERMISSIONS);
+            } else {
+                requestPermissions(getRequiredPermissions(), REQUEST_CODE_REQUIRED_PERMISSIONS);
             }
         }
     }
