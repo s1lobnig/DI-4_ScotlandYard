@@ -1,8 +1,6 @@
 package com.example.scotlandyard;
 
 import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -211,93 +209,14 @@ public class GameMap extends AppCompatActivity
 
                     int animation_duration = 3000;
                     if (r.getIntermediates() != null) {
-                        double routeLength = r.getLength();
-                        int duration;
+
                         player1.setIcon(BitmapDescriptorFactory.fromResource(icon));
-                        final ArrayList<ObjectAnimator> animations = new ArrayList<>();
-                        if (Points.getIndex(currentPoint) == r.getStart_point() - 1) {
-                            for (int i = 0; i <= r.getIntermediates().length; i++) {
-                                double x1;
-                                double y1;
-                                double x2;
-                                double y2;
-                                if (i == 0) {
-                                    x1 = Points.POINTS[r.getStart_point() - 1].getLatitude();
-                                    y1 = Points.POINTS[r.getStart_point() - 1].getLongitude();
-                                } else {
-                                    x1 = r.getIntermediates()[i - 1].getLatitude();
-                                    y1 = r.getIntermediates()[i - 1].getLongitude();
-                                }
-                                if (i == r.getIntermediates().length) {
-                                    x2 = Points.POINTS[r.getEnd_point() - 1].getLatitude();
-                                    y2 = Points.POINTS[r.getEnd_point() - 1].getLongitude();
-                                } else {
-                                    x2 = r.getIntermediates()[i].getLatitude();
-                                    y2 = r.getIntermediates()[i].getLongitude();
-                                }
-                                LatLng intermediate = new LatLng(x2, x1);
-                                duration = (int) (animation_duration * ((Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) / routeLength));
-                                Log.d("ANIMATION", "" + duration);
-                                animations.add(MarkerAnimation.animateMarkerToICS(player1, intermediate, new LatLngInterpolator.Linear(), duration, icon));
-                            }
-                        } else {
-                            for (int i = r.getIntermediates().length; i >= 0; i--) {
-                                double x1;
-                                double y1;
-                                double x2;
-                                double y2;
-                                if (i == r.getIntermediates().length) {
-                                    x1 = Points.POINTS[r.getEnd_point() - 1].getLatitude();
-                                    y1 = Points.POINTS[r.getEnd_point() - 1].getLongitude();
-                                } else {
-                                    x1 = r.getIntermediates()[i].getLatitude();
-                                    y1 = r.getIntermediates()[i].getLongitude();
-                                }
-                                if (i == 0) {
-                                    x2 = Points.POINTS[r.getStart_point() - 1].getLatitude();
-                                    y2 = Points.POINTS[r.getStart_point() - 1].getLongitude();
-                                } else {
-                                    x2 = r.getIntermediates()[i - 1].getLatitude();
-                                    y2 = r.getIntermediates()[i - 1].getLongitude();
-                                }
-                                LatLng intermediate = new LatLng(x2, x1);
-                                duration = (int) (animation_duration * ((Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) / routeLength));
-                                Log.d("ANIMATION", "" + duration);
-                                animations.add(MarkerAnimation.animateMarkerToICS(player1, intermediate, new LatLngInterpolator.Linear(), duration, icon));
-                            }
-                        }
-                        for (int i = 0; i < animations.size(); i++) {
-                            final int finalI = i;
-                            animations.get(i).addListener(new Animator.AnimatorListener() {
-                                @Override
-                                public void onAnimationStart(Animator animation) {
-                                }
-
-                                @Override
-                                public void onAnimationEnd(Animator animation) {
-                                    Log.d("ANIMATION", "" + finalI);
-                                    if (finalI != animations.size() - 1) {
-                                        animations.get(finalI + 1).start();
-                                    } else {
-                                        player1.setPosition(marker.getPosition());
-                                        player1.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.player1));
-                                    }
-                                }
-
-                                @Override
-                                public void onAnimationCancel(Animator animation) {
-
-                                }
-
-                                @Override
-                                public void onAnimationRepeat(Animator animation) {
-
-                                }
-                            });
-                        }
-                        animations.get(0).start();
+                        Object[] routeSliceTimings = getRouteSlicesAndTimings(r, animation_duration, Points.getIndex(currentPoint) + 1);
+                        final ArrayList<LatLng> route_points = (ArrayList) routeSliceTimings[0];
+                        final ArrayList<Float> timeSlices = (ArrayList) routeSliceTimings[1];
+                        MarkerAnimation.moveMarkerToTarget(player1, route_points, timeSlices, marker.getPosition(), new LatLngInterpolator.Linear(), animation_duration, icon);
                     } else {
-                        MarkerAnimation.animateMarkerToGB(player1, marker.getPosition(), new LatLngInterpolator.Spherical(), animation_duration, icon);
+                        MarkerAnimation.moveMarkerToTarget(player1, marker.getPosition(), new LatLngInterpolator.Linear(), animation_duration, icon);
                     }
                     return true;
                 }
@@ -305,6 +224,67 @@ public class GameMap extends AppCompatActivity
                 return false;
             }
         });
+    }
+
+    private Object[] getRouteSlicesAndTimings(Route r, int animation_duration, int startPos) {
+        Object[] routeSlicesAndTimings = new Object[2];
+        float duration;
+        ArrayList<LatLng> route_points = new ArrayList<>();
+        ArrayList<Float> timeSlices = new ArrayList<>();
+        if (startPos == r.getStart_point()) {
+            for (int i = 0; i <= r.getIntermediates().length; i++) {
+                double x1;
+                double y1;
+                double x2;
+                double y2;
+                if (i == 0) {
+                    x1 = Points.POINTS[r.getStart_point() - 1].getLatitude();
+                    y1 = Points.POINTS[r.getStart_point() - 1].getLongitude();
+                } else {
+                    x1 = r.getIntermediates()[i - 1].getLatitude();
+                    y1 = r.getIntermediates()[i - 1].getLongitude();
+                }
+                if (i == r.getIntermediates().length) {
+                    x2 = Points.POINTS[r.getEnd_point() - 1].getLatitude();
+                    y2 = Points.POINTS[r.getEnd_point() - 1].getLongitude();
+                } else {
+                    x2 = r.getIntermediates()[i].getLatitude();
+                    y2 = r.getIntermediates()[i].getLongitude();
+                }
+                LatLng intermediate = new LatLng(x2, y2);
+                duration = (float) (animation_duration * ((Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) / r.getLength()));
+                timeSlices.add(duration);
+                route_points.add(intermediate);
+            }
+        } else {
+            for (int i = r.getIntermediates().length; i >= 0; i--) {
+                double x1;
+                double y1;
+                double x2;
+                double y2;
+                if (i == r.getIntermediates().length) {
+                    x1 = Points.POINTS[r.getEnd_point() - 1].getLatitude();
+                    y1 = Points.POINTS[r.getEnd_point() - 1].getLongitude();
+                } else {
+                    x1 = r.getIntermediates()[i].getLatitude();
+                    y1 = r.getIntermediates()[i].getLongitude();
+                }
+                if (i == 0) {
+                    x2 = Points.POINTS[r.getStart_point() - 1].getLatitude();
+                    y2 = Points.POINTS[r.getStart_point() - 1].getLongitude();
+                } else {
+                    x2 = r.getIntermediates()[i-1].getLatitude();
+                    y2 = r.getIntermediates()[i-1].getLongitude();
+                }
+                LatLng intermediate = new LatLng(x2, y2);
+                duration = (float) (animation_duration * ((Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) / r.getLength()));
+                timeSlices.add(duration);
+                route_points.add(intermediate);
+            }
+        }
+        routeSlicesAndTimings[0] = route_points;
+        routeSlicesAndTimings[1] = timeSlices;
+        return routeSlicesAndTimings;
     }
 
     private void setFields() {
