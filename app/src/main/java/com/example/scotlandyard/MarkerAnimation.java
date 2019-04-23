@@ -1,17 +1,12 @@
-/* Copyright 2013 Google Inc.
-   Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0.html */
 package com.example.scotlandyard;
-
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
-
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-
 import java.util.ArrayList;
 
 public class MarkerAnimation {
@@ -43,14 +38,14 @@ public class MarkerAnimation {
                     if (!marker.getPosition().equals(finalPosition)) {
                         marker.setPosition(finalPosition);
                     }
-                    marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.player1));
+                    marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.player));
                 }
             }
         });
     }
 
     static void moveMarkerToTarget(final Marker marker, final ArrayList<LatLng> route, final ArrayList<Float> timeSlices, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, final float duration, int icon) {
-        final LatLng[] startPosition = {marker.getPosition()};
+        //final LatLng[] startPosition = {marker.getPosition()};
         final Handler handler = new Handler();
         final long start = SystemClock.uptimeMillis();
         final Interpolator interpolator = new AccelerateDecelerateInterpolator();
@@ -63,7 +58,7 @@ public class MarkerAnimation {
             int i = 0;
             float elpasedTime = 0;
             LatLng next = route.get(i);
-
+            LatLng current = marker.getPosition();
             @Override
             public void run() {
                 elapsed = SystemClock.uptimeMillis() - start;
@@ -75,18 +70,17 @@ public class MarkerAnimation {
                 v = interpolator.getInterpolation(t);
                 if (closeEnough(marker, next)) {
                     marker.setPosition(next);
-                    startPosition[0] = next;
+                    current = next;
                     i++;
                     if (i >= route.size()) {
                         next = finalPosition;
+                        elpasedTime = 1f;
                     } else {
                         next = route.get(i);
                     }
                     Log.d("ROUTE_ANIMATION_NP", "" + i);
-                    Log.d("ROUTE_ANIMATION_NP", "" + marker.getPosition());
-                    Log.d("ROUTE_ANIMATION_NP", "" + next);
                 }
-                marker.setPosition(latLngInterpolator.interpolate(v, startPosition[0], next));
+                marker.setPosition(latLngInterpolator.interpolate(v, current, next));
 
                 Log.d("ROUTE_ANIMATION", "" + marker.getPosition() + " --> " + next + "; deltaLat: " + (marker.getPosition().latitude - next.latitude) + "; deltaLng: " + (marker.getPosition().longitude - next.longitude));
                 if (elpasedTime < 1.0) {
@@ -96,7 +90,7 @@ public class MarkerAnimation {
                         if (!marker.getPosition().equals(finalPosition)) {
                             marker.setPosition(finalPosition);
                         }
-                        marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.player1));
+                        marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.player));
                     }
                 }
             }

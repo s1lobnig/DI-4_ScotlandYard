@@ -10,19 +10,15 @@
         <item
             android:id="@+id/nav_game"
             android:icon="@android:drawable/ic_menu_mapmode"
-            android:title="Profil" />
+            android:title="Game" />
         <item
-            android:id="@+id/nav_appointments"
-            android:icon="@android:drawable/ic_menu_my_calendar"
-            android:title="Meine Termine" />
-        <item
-            android:id="@+id/nav_news"
-            android:icon="@android:drawable/sym_action_email"
-            android:title="News" />
+            android:id="@+id/nav_overview"
+            android:icon="@android:drawable/ic_menu_info_details"
+            android:title="Player Overview" />
         <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Einstellungen" />
+            android:title="Settings" />
     </group>
 
 </menu>

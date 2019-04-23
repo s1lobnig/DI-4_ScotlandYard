@@ -6,11 +6,5 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/action_edit_profile"
-        android:enabled="true"
-        android:orderInCategory="100"
-        android:title="Profil bearbeiten"
-        android:visible="true"
-        app:showAsAction="never" />
+
 </menu>

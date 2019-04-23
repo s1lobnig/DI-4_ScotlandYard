@@ -1,7 +1,5 @@
 package com.example.scotlandyard;
 
-import android.animation.Animator;
-import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -34,9 +32,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 
 public class GameMap extends AppCompatActivity
@@ -44,6 +45,9 @@ public class GameMap extends AppCompatActivity
     private static final String TAG = GameMap.class.getSimpleName();
     private GoogleMap mMap;
 
+    /**
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,9 +67,7 @@ public class GameMap extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        Menu menu = navigationView.getMenu();
         navigationView.setNavigationItemSelectedListener(this);
-
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -79,52 +81,61 @@ public class GameMap extends AppCompatActivity
         fragmentManager.beginTransaction().replace(R.id.map, fragment).commit();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
+    /**
+     * Method is called after onCreate and sets the menu-items (3-dot-menu, top right corner)
+     *
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
+    /**
+     * Selection-Handler which is triggered by selecting a menu-item
+     *
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        Fragment fragment = null;
-        Class fragmentClass;
         if (id == R.id.action_settings) {
-            fragmentClass = GameMap.class;
-            try {
-                fragment = (Fragment) fragmentClass.newInstance();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.map, fragment).commit();
+            Intent settings = new Intent(this, Settings.class);
+            startActivity(settings);
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Selection-Handler which is triggered by selecting an item in the navigation-drawer
+     *
+     * @param item
+     * @return
+     */
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
         Fragment fragment;
+        Intent intent = null;
         if (id == R.id.nav_game) {
             fragment = getSupportFragmentManager().findFragmentById(R.id.map);
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.map, fragment).commit();
-        } else {
-
+        } else if (id == R.id.nav_overview) {
+            intent = new Intent(this, Settings.class);
+        } else if (id == R.id.nav_settings) {
+            intent = new Intent(this, PlayersOverview.class);
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+        if (intent != null) {
+            startActivity(intent);
+        }
         return true;
     }
 
@@ -140,50 +151,44 @@ public class GameMap extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
+        // Restrict the map to a certain area
         final LatLngBounds map_bounds = new LatLngBounds(
                 new LatLng(46.612225, 14.261226),
                 new LatLng(46.623354, 14.271578)
         );
+        // Styling the map with a JSON-File
         try {
-            // Customise the styling of the base map using a JSON object defined
-            // in a raw resource file.
             boolean success = googleMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
                             this, R.raw.style_json));
-
             if (!success) {
                 Log.e(TAG, "Style parsing failed.");
             }
         } catch (Resources.NotFoundException e) {
             Log.e(TAG, "Can't find style. Error: ", e);
         }
-        //get width and height to current display screen
         int width = getResources().getDisplayMetrics().widthPixels;
         int height = getResources().getDisplayMetrics().heightPixels;
-
-        // 20% padding
         int padding = (int) (width * 0.02);
         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(map_bounds, width, height, padding));
         mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         mMap.setLatLngBoundsForCameraTarget(map_bounds);
         mMap.setMinZoomPreference(mMap.getCameraPosition().zoom);
         setFields();
-        final Marker player1 = initializeMarker(R.drawable.player1);
-
+        final Marker player = initializeMarker(R.drawable.player);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(player.getPosition(), 16f));
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker marker) {
-                LatLng current = player1.getPosition();
+                LatLng current = player.getPosition();
                 Point currentPoint = new Point(current.latitude, current.longitude);
                 Point newLocation = new Point(marker.getPosition().latitude, marker.getPosition().longitude);
                 Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
                 boolean isValid = (Boolean) routeToTake[0];
                 if (isValid) {
                     Route r = (Route) routeToTake[1];
-                    Log.d("ROUTE", r.toString());
                     String txt = "";
-                    int icon = -1;
+                    int icon;
                     int vehicle = (int) routeToTake[2];
                     switch (vehicle) {
                         case 0:
@@ -202,30 +207,39 @@ public class GameMap extends AppCompatActivity
                             icon = R.drawable.taxi;
                             txt = "taxi route";
                             break;
-                        case -1:
-                            break;
+                        default:
+                            icon = -1;
                     }
+                    // Toast to indicate which type of route is taken
                     Toast.makeText(GameMap.this, txt, Snackbar.LENGTH_LONG).show();
-
                     int animation_duration = 3000;
                     if (r.getIntermediates() != null) {
-
-                        player1.setIcon(BitmapDescriptorFactory.fromResource(icon));
+                        player.setIcon(BitmapDescriptorFactory.fromResource(icon));
                         Object[] routeSliceTimings = getRouteSlicesAndTimings(r, animation_duration, Points.getIndex(currentPoint) + 1);
                         final ArrayList<LatLng> route_points = (ArrayList) routeSliceTimings[0];
                         final ArrayList<Float> timeSlices = (ArrayList) routeSliceTimings[1];
-                        MarkerAnimation.moveMarkerToTarget(player1, route_points, timeSlices, marker.getPosition(), new LatLngInterpolator.Linear(), animation_duration, icon);
+                        MarkerAnimation.moveMarkerToTarget(player, route_points, timeSlices, marker.getPosition(), new LatLngInterpolator.Linear(), animation_duration, icon);
                     } else {
-                        MarkerAnimation.moveMarkerToTarget(player1, marker.getPosition(), new LatLngInterpolator.Linear(), animation_duration, icon);
+                        MarkerAnimation.moveMarkerToTarget(player, marker.getPosition(), new LatLngInterpolator.Linear(), animation_duration, icon);
                     }
                     return true;
                 }
+                // Toast to indicate that the clicked location is not reachable from the current location
                 Toast.makeText(GameMap.this, "Unreachable Point :(", Snackbar.LENGTH_LONG).show();
                 return false;
             }
         });
     }
 
+    /**
+     * @param r                  Route-Object
+     * @param animation_duration Duration of the whole animation
+     * @param startPos           Current location-index
+     * @return {
+     * ArrayList<LatLang> in the correct order (either original (if current position = route.StartPos) or revered)
+     * ArrayList<Float> which contains the animation-duration-slices according to the route-part-length
+     * }
+     */
     private Object[] getRouteSlicesAndTimings(Route r, int animation_duration, int startPos) {
         Object[] routeSlicesAndTimings = new Object[2];
         float duration;
@@ -273,8 +287,8 @@ public class GameMap extends AppCompatActivity
                     x2 = Points.POINTS[r.getStart_point() - 1].getLatitude();
                     y2 = Points.POINTS[r.getStart_point() - 1].getLongitude();
                 } else {
-                    x2 = r.getIntermediates()[i-1].getLatitude();
-                    y2 = r.getIntermediates()[i-1].getLongitude();
+                    x2 = r.getIntermediates()[i - 1].getLatitude();
+                    y2 = r.getIntermediates()[i - 1].getLongitude();
                 }
                 LatLng intermediate = new LatLng(x2, y2);
                 duration = (float) (animation_duration * ((Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) / r.getLength()));
@@ -287,6 +301,9 @@ public class GameMap extends AppCompatActivity
         return routeSlicesAndTimings;
     }
 
+    /**
+     * Adds all Points to the map and calls drawRoutes() at the end
+     */
     private void setFields() {
         for (Point p : Points.getPoints()) {
             LatLng p_LatLng = new LatLng(p.getLatitude(), p.getLongitude());
@@ -303,6 +320,9 @@ public class GameMap extends AppCompatActivity
         drawRoutes();
     }
 
+    /**
+     * Draws all Routes
+     */
     private void drawRoutes() {
         drawByFoot();
         drawByBicycle();
@@ -310,30 +330,48 @@ public class GameMap extends AppCompatActivity
         drawByTaxiDragan();
     }
 
+    /**
+     * Draws all "BUS"-Routes
+     */
     private void drawByBus() {
         for (Route r : Routes.getBusRoutes()) {
             addRoute(r, Routes.getBusColor());
         }
     }
 
+    /**
+     * Draws all "TAXI DRAGAN"-Routes
+     */
     private void drawByTaxiDragan() {
         for (Route r : Routes.getTaxiDraganRoutes()) {
             addRoute(r, Routes.getTaxiDraganColor());
         }
     }
 
+    /**
+     * Draws all "FOOT"-Routes
+     */
     private void drawByFoot() {
         for (Route r : Routes.getByFootRoutes()) {
             addRoute(r, Routes.getByFootColor());
         }
     }
 
+    /**
+     * Draws all "BICYCLE"-Routes
+     */
     private void drawByBicycle() {
         for (Route r : Routes.getBicycleRoutes()) {
             addRoute(r, Routes.getBicycleColor());
         }
     }
 
+    /**
+     * Adds a polyline to the map
+     *
+     * @param r     A Route-Object which contains start- & end-point and, if necessary also intermediate points for drawing the route
+     * @param color An int-value which represents the color of the route to be drawn
+     */
     private void addRoute(Route r, int color) {
         Point startPoint = Points.getPoints()[r.getStart_point() - 1];
         Point endPoint = Points.getPoints()[r.getEnd_point() - 1];
@@ -349,20 +387,17 @@ public class GameMap extends AppCompatActivity
         mMap.addPolyline(route);
     }
 
-    //Creates a new Marker with given icon
+    /**
+     * Initializes the player-marker and sets its icon to param icon
+     *
+     * @param icon player-icon
+     * @return the resulting player-marker
+     */
     private Marker initializeMarker(int icon) {
-        int position = (int) (Math.random() * Points.getPoints().length);
+        int position = (new Random()).nextInt(Points.getPoints().length);
         LatLng latLng = new LatLng(Points.getLatFromP(position), Points.getLngfromP(position));
         Marker marker = mMap.addMarker(new MarkerOptions().position(latLng));
         marker.setIcon(BitmapDescriptorFactory.fromResource(icon));
-//        marker.setAnchor(0.5f, 0.5f); //So the image is centered on the given position
         return marker;
-    }
-
-    //Places the marker on the position of point number
-    public boolean positionMarker(Marker marker, int number) {
-        if (marker == null || number < 1 || number >= Points.getPoints().length) return false;
-        marker.setPosition(new LatLng(Points.getLatFromP(number), Points.getLngfromP(number)));
-        return true;
     }
 }
