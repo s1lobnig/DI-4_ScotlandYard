@@ -34,6 +34,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -73,7 +74,7 @@ public class GameMap extends AppCompatActivity
         try {
             fragment = getSupportFragmentManager().findFragmentById(R.id.map);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
         }
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.map, fragment).commit();
@@ -210,15 +211,15 @@ public class GameMap extends AppCompatActivity
                     }
                     // Toast to indicate which type of route is taken
                     Toast.makeText(GameMap.this, txt, Snackbar.LENGTH_LONG).show();
-                    int animation_duration = 3000;
+                    int animationDuration = 3000;
                     if (r.getIntermediates() != null) {
                         player.setIcon(BitmapDescriptorFactory.fromResource(icon));
-                        Object[] routeSliceTimings = getRouteSlicesAndTimings(r, animation_duration, Points.getIndex(currentPoint) + 1);
+                        Object[] routeSliceTimings = getRouteSlicesAndTimings(r, animationDuration, Points.getIndex(currentPoint) + 1);
                         final ArrayList<LatLng> routePoints = (ArrayList) routeSliceTimings[0];
                         final ArrayList<Float> timeSlices = (ArrayList) routeSliceTimings[1];
-                        MarkerAnimation.moveMarkerToTarget(player, routePoints, timeSlices, marker.getPosition(), new LatLngInterpolator.Linear(), animation_duration, icon);
+                        MarkerAnimation.moveMarkerToTarget(player, routePoints, timeSlices, marker.getPosition(), new LatLngInterpolator.Linear(), animationDuration, icon);
                     } else {
-                        MarkerAnimation.moveMarkerToTarget(player, marker.getPosition(), new LatLngInterpolator.Linear(), animation_duration, icon);
+                        MarkerAnimation.moveMarkerToTarget(player, marker.getPosition(), new LatLngInterpolator.Linear(), animationDuration, icon);
                     }
                     return true;
                 }
@@ -230,74 +231,82 @@ public class GameMap extends AppCompatActivity
     }
 
     /**
-     * @param r                  Route-Object
-     * @param animation_duration Duration of the whole animation
-     * @param startPos           Current location-index
+     * @param r                 Route-Object
+     * @param animationDuration Duration of the whole animation
+     * @param startPos          Current location-index
      * @return {
      * ArrayList<LatLang> in the correct order (either original (if current position = route.StartPos) or revered)
      * ArrayList<Float> which contains the animation-duration-slices according to the route-part-length
      * }
      */
-    private Object[] getRouteSlicesAndTimings(Route r, int animation_duration, int startPos) {
-        /* TODO: Refractor method */
-        Object[] routeSlicesAndTimings = new Object[2];
-        float duration;
-        ArrayList<LatLng> routePoints = new ArrayList<>();
-        ArrayList<Float> timeSlices = new ArrayList<>();
+    private Object[] getRouteSlicesAndTimings(Route r, int animationDuration, int startPos) {
         if (startPos == r.getStartPoint()) {
-            for (int i = 0; i <= r.getIntermediates().length; i++) {
-                double x1;
-                double y1;
-                double x2;
-                double y2;
-                if (i == 0) {
-                    x1 = Points.POINTS[r.getStartPoint() - 1].getLatitude();
-                    y1 = Points.POINTS[r.getStartPoint() - 1].getLongitude();
-                } else {
-                    x1 = r.getIntermediates()[i - 1].getLatitude();
-                    y1 = r.getIntermediates()[i - 1].getLongitude();
-                }
-                if (i == r.getIntermediates().length) {
-                    x2 = Points.POINTS[r.getEndPoint() - 1].getLatitude();
-                    y2 = Points.POINTS[r.getEndPoint() - 1].getLongitude();
-                } else {
-                    x2 = r.getIntermediates()[i].getLatitude();
-                    y2 = r.getIntermediates()[i].getLongitude();
-                }
-                LatLng intermediate = new LatLng(x2, y2);
-                duration = (float) (animation_duration * ((Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) / r.getLength()));
-                timeSlices.add(duration);
-                routePoints.add(intermediate);
-            }
+            return regularOrder(r, animationDuration);
         } else {
-            for (int i = r.getIntermediates().length; i >= 0; i--) {
-                double x1;
-                double y1;
-                double x2;
-                double y2;
-                if (i == r.getIntermediates().length) {
-                    x1 = Points.POINTS[r.getEndPoint() - 1].getLatitude();
-                    y1 = Points.POINTS[r.getEndPoint() - 1].getLongitude();
-                } else {
-                    x1 = r.getIntermediates()[i].getLatitude();
-                    y1 = r.getIntermediates()[i].getLongitude();
-                }
-                if (i == 0) {
-                    x2 = Points.POINTS[r.getStartPoint() - 1].getLatitude();
-                    y2 = Points.POINTS[r.getStartPoint() - 1].getLongitude();
-                } else {
-                    x2 = r.getIntermediates()[i - 1].getLatitude();
-                    y2 = r.getIntermediates()[i - 1].getLongitude();
-                }
-                LatLng intermediate = new LatLng(x2, y2);
-                duration = (float) (animation_duration * ((Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) / r.getLength()));
-                timeSlices.add(duration);
-                routePoints.add(intermediate);
-            }
+            return reverseOrder(r, animationDuration);
         }
-        routeSlicesAndTimings[0] = routePoints;
-        routeSlicesAndTimings[1] = timeSlices;
-        return routeSlicesAndTimings;
+    }
+
+    private Object[] reverseOrder(Route r, int animationDuration) {
+        float duration;
+        ArrayList<Float> timeSlices = new ArrayList<>();
+        ArrayList<LatLng> routePoints = new ArrayList<>();
+        for (int i = r.getIntermediates().length; i >= 0; i--) {
+            double x1;
+            double y1;
+            double x2;
+            double y2;
+            if (i == r.getIntermediates().length) {
+                x1 = Points.POINTS[r.getEndPoint() - 1].getLatitude();
+                y1 = Points.POINTS[r.getEndPoint() - 1].getLongitude();
+            } else {
+                x1 = r.getIntermediates()[i].getLatitude();
+                y1 = r.getIntermediates()[i].getLongitude();
+            }
+            if (i == 0) {
+                x2 = Points.POINTS[r.getStartPoint() - 1].getLatitude();
+                y2 = Points.POINTS[r.getStartPoint() - 1].getLongitude();
+            } else {
+                x2 = r.getIntermediates()[i - 1].getLatitude();
+                y2 = r.getIntermediates()[i - 1].getLongitude();
+            }
+            LatLng intermediate = new LatLng(x2, y2);
+            duration = (float) (animationDuration * ((Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) / r.getLength()));
+            timeSlices.add(duration);
+            routePoints.add(intermediate);
+        }
+        return new Object[]{routePoints, timeSlices};
+    }
+
+    private Object[] regularOrder(Route r, int animationDuration) {
+        float duration;
+        ArrayList<Float> timeSlices = new ArrayList<>();
+        ArrayList<LatLng> routePoints = new ArrayList<>();
+        for (int i = 0; i <= r.getIntermediates().length; i++) {
+            double x1;
+            double y1;
+            double x2;
+            double y2;
+            if (i == 0) {
+                x1 = Points.POINTS[r.getStartPoint() - 1].getLatitude();
+                y1 = Points.POINTS[r.getStartPoint() - 1].getLongitude();
+            } else {
+                x1 = r.getIntermediates()[i - 1].getLatitude();
+                y1 = r.getIntermediates()[i - 1].getLongitude();
+            }
+            if (i == r.getIntermediates().length) {
+                x2 = Points.POINTS[r.getEndPoint() - 1].getLatitude();
+                y2 = Points.POINTS[r.getEndPoint() - 1].getLongitude();
+            } else {
+                x2 = r.getIntermediates()[i].getLatitude();
+                y2 = r.getIntermediates()[i].getLongitude();
+            }
+            LatLng intermediate = new LatLng(x2, y2);
+            duration = (float) (animationDuration * ((Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) / r.getLength()));
+            timeSlices.add(duration);
+            routePoints.add(intermediate);
+        }
+        return new Object[]{routePoints, timeSlices};
     }
 
     /**

@@ -7,7 +7,6 @@ package com.example.scotlandyard;
 
 import android.os.Handler;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 
@@ -25,7 +24,7 @@ import java.util.ArrayList;
  */
 public class MarkerAnimation {
 
-    private MarkerAnimation(){
+    private MarkerAnimation() {
 
     }
 
@@ -33,11 +32,12 @@ public class MarkerAnimation {
 
     /**
      * animates the given marker between its current position ans @finalPosition for the time span @duration
-     * @param marker ...............marker on the map (contains current position)
-     * @param finalPosition ........position to be reached at the end of the animation
+     *
+     * @param marker             ...............marker on the map (contains current position)
+     * @param finalPosition      ........position to be reached at the end of the animation
      * @param latLngInterpolator ...an Interpolator to calculate the values during the animation
-     * @param duration .............time the animation should last
-     * @param icon .................marker icon during the animation
+     * @param duration           .............time the animation should last
+     * @param icon               .................marker icon during the animation
      */
     static void moveMarkerToTarget(final Marker marker, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, float duration, int icon) {
         final LatLng startPosition = marker.getPosition();
@@ -73,14 +73,16 @@ public class MarkerAnimation {
 
     /**
      * animates the given marker between its current position ans @finalPosition for the time span @duration
-     * @param marker ...............marker on the map (contains current position)
-     * @param route ................intermediate points between current position and final position
-     * @param finalPosition ........position to be reached at the end of the animation
+     *
+     * @param marker             ...............marker on the map (contains current position)
+     * @param route              ................intermediate points between current position and final position
+     * @param finalPosition      ........position to be reached at the end of the animation
      * @param latLngInterpolator ...an Interpolator to calculate the values during the animation
-     * @param duration .............time the animation should last
-     * @param icon .................marker icon during the animation
+     * @param duration           .............time the animation should last
+     * @param icon               .................marker icon during the animation
      */
     static void moveMarkerToTarget(final Marker marker, final ArrayList<LatLng> route, final ArrayList<Float> timeSlices, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, final float duration, int icon) {
+        /* TODO: refractor method */
         //final LatLng[] startPosition = {marker.getPosition()};
         final Handler handler = new Handler();
         final long start = SystemClock.uptimeMillis();
@@ -111,15 +113,13 @@ public class MarkerAnimation {
                     i++;
                     if (i >= route.size()) {
                         next = finalPosition;
-                        elpasedTime = 1f;
+                        elpasedTime = timeSlices.get(i - 1);
                     } else {
                         next = route.get(i);
                     }
-                    Log.d("ROUTE_ANIMATION_NP", "" + i);
                 }
                 marker.setPosition(latLngInterpolator.interpolate(v, current, next));
 
-                Log.d("ROUTE_ANIMATION", "" + marker.getPosition() + " --> " + next + "; deltaLat: " + (marker.getPosition().latitude - next.latitude) + "; deltaLng: " + (marker.getPosition().longitude - next.longitude));
                 if (elpasedTime < 1.0) {
                     handler.postDelayed(this, 16);
                 } else {

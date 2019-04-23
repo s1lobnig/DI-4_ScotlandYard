@@ -9,7 +9,7 @@ import com.google.android.gms.maps.model.LatLng;
  */
 public class Points {
 
-    public Points() {
+    private Points() {
 
     }
 
