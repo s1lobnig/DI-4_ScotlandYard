@@ -32,8 +32,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -54,10 +52,10 @@ public class GameMap extends AppCompatActivity
         setContentView(R.layout.activity_game_navigation);
 
         Intent intent = getIntent();
-        String getNickname = intent.getStringExtra(RegistrationActivty.passNickname);
+        String nickname = intent.getStringExtra(RegistrationActivty.passNickname);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(getNickname);
+        toolbar.setTitle(nickname);
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -152,7 +150,7 @@ public class GameMap extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         // Restrict the map to a certain area
-        final LatLngBounds map_bounds = new LatLngBounds(
+        final LatLngBounds mapBounds = new LatLngBounds(
                 new LatLng(46.612225, 14.261226),
                 new LatLng(46.623354, 14.271578)
         );
@@ -170,9 +168,9 @@ public class GameMap extends AppCompatActivity
         int width = getResources().getDisplayMetrics().widthPixels;
         int height = getResources().getDisplayMetrics().heightPixels;
         int padding = (int) (width * 0.02);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(map_bounds, width, height, padding));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, width, height, padding));
         mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-        mMap.setLatLngBoundsForCameraTarget(map_bounds);
+        mMap.setLatLngBoundsForCameraTarget(mapBounds);
         mMap.setMinZoomPreference(mMap.getCameraPosition().zoom);
         setFields();
         final Marker player = initializeMarker(R.drawable.player);
@@ -216,9 +214,9 @@ public class GameMap extends AppCompatActivity
                     if (r.getIntermediates() != null) {
                         player.setIcon(BitmapDescriptorFactory.fromResource(icon));
                         Object[] routeSliceTimings = getRouteSlicesAndTimings(r, animation_duration, Points.getIndex(currentPoint) + 1);
-                        final ArrayList<LatLng> route_points = (ArrayList) routeSliceTimings[0];
+                        final ArrayList<LatLng> routePoints = (ArrayList) routeSliceTimings[0];
                         final ArrayList<Float> timeSlices = (ArrayList) routeSliceTimings[1];
-                        MarkerAnimation.moveMarkerToTarget(player, route_points, timeSlices, marker.getPosition(), new LatLngInterpolator.Linear(), animation_duration, icon);
+                        MarkerAnimation.moveMarkerToTarget(player, routePoints, timeSlices, marker.getPosition(), new LatLngInterpolator.Linear(), animation_duration, icon);
                     } else {
                         MarkerAnimation.moveMarkerToTarget(player, marker.getPosition(), new LatLngInterpolator.Linear(), animation_duration, icon);
                     }
@@ -241,26 +239,27 @@ public class GameMap extends AppCompatActivity
      * }
      */
     private Object[] getRouteSlicesAndTimings(Route r, int animation_duration, int startPos) {
+        /* TODO: Refractor method */
         Object[] routeSlicesAndTimings = new Object[2];
         float duration;
-        ArrayList<LatLng> route_points = new ArrayList<>();
+        ArrayList<LatLng> routePoints = new ArrayList<>();
         ArrayList<Float> timeSlices = new ArrayList<>();
-        if (startPos == r.getStart_point()) {
+        if (startPos == r.getStartPoint()) {
             for (int i = 0; i <= r.getIntermediates().length; i++) {
                 double x1;
                 double y1;
                 double x2;
                 double y2;
                 if (i == 0) {
-                    x1 = Points.POINTS[r.getStart_point() - 1].getLatitude();
-                    y1 = Points.POINTS[r.getStart_point() - 1].getLongitude();
+                    x1 = Points.POINTS[r.getStartPoint() - 1].getLatitude();
+                    y1 = Points.POINTS[r.getStartPoint() - 1].getLongitude();
                 } else {
                     x1 = r.getIntermediates()[i - 1].getLatitude();
                     y1 = r.getIntermediates()[i - 1].getLongitude();
                 }
                 if (i == r.getIntermediates().length) {
-                    x2 = Points.POINTS[r.getEnd_point() - 1].getLatitude();
-                    y2 = Points.POINTS[r.getEnd_point() - 1].getLongitude();
+                    x2 = Points.POINTS[r.getEndPoint() - 1].getLatitude();
+                    y2 = Points.POINTS[r.getEndPoint() - 1].getLongitude();
                 } else {
                     x2 = r.getIntermediates()[i].getLatitude();
                     y2 = r.getIntermediates()[i].getLongitude();
@@ -268,7 +267,7 @@ public class GameMap extends AppCompatActivity
                 LatLng intermediate = new LatLng(x2, y2);
                 duration = (float) (animation_duration * ((Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) / r.getLength()));
                 timeSlices.add(duration);
-                route_points.add(intermediate);
+                routePoints.add(intermediate);
             }
         } else {
             for (int i = r.getIntermediates().length; i >= 0; i--) {
@@ -277,15 +276,15 @@ public class GameMap extends AppCompatActivity
                 double x2;
                 double y2;
                 if (i == r.getIntermediates().length) {
-                    x1 = Points.POINTS[r.getEnd_point() - 1].getLatitude();
-                    y1 = Points.POINTS[r.getEnd_point() - 1].getLongitude();
+                    x1 = Points.POINTS[r.getEndPoint() - 1].getLatitude();
+                    y1 = Points.POINTS[r.getEndPoint() - 1].getLongitude();
                 } else {
                     x1 = r.getIntermediates()[i].getLatitude();
                     y1 = r.getIntermediates()[i].getLongitude();
                 }
                 if (i == 0) {
-                    x2 = Points.POINTS[r.getStart_point() - 1].getLatitude();
-                    y2 = Points.POINTS[r.getStart_point() - 1].getLongitude();
+                    x2 = Points.POINTS[r.getStartPoint() - 1].getLatitude();
+                    y2 = Points.POINTS[r.getStartPoint() - 1].getLongitude();
                 } else {
                     x2 = r.getIntermediates()[i - 1].getLatitude();
                     y2 = r.getIntermediates()[i - 1].getLongitude();
@@ -293,10 +292,10 @@ public class GameMap extends AppCompatActivity
                 LatLng intermediate = new LatLng(x2, y2);
                 duration = (float) (animation_duration * ((Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) / r.getLength()));
                 timeSlices.add(duration);
-                route_points.add(intermediate);
+                routePoints.add(intermediate);
             }
         }
-        routeSlicesAndTimings[0] = route_points;
+        routeSlicesAndTimings[0] = routePoints;
         routeSlicesAndTimings[1] = timeSlices;
         return routeSlicesAndTimings;
     }
@@ -306,7 +305,7 @@ public class GameMap extends AppCompatActivity
      */
     private void setFields() {
         for (Point p : Points.getPoints()) {
-            LatLng p_LatLng = new LatLng(p.getLatitude(), p.getLongitude());
+            LatLng p_LatLng = p.getLatLng();
             Drawable myDrawable = getResources().getDrawable(p.getIcon());
             Bitmap bmp = ((BitmapDrawable) myDrawable).getBitmap();
             BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(bmp);
@@ -373,14 +372,14 @@ public class GameMap extends AppCompatActivity
      * @param color An int-value which represents the color of the route to be drawn
      */
     private void addRoute(Route r, int color) {
-        Point startPoint = Points.getPoints()[r.getStart_point() - 1];
-        Point endPoint = Points.getPoints()[r.getEnd_point() - 1];
-        LatLng start = new LatLng(startPoint.getLatitude(), startPoint.getLongitude());
-        LatLng end = new LatLng(endPoint.getLatitude(), endPoint.getLongitude());
+        Point startPoint = Points.getPoints()[r.getStartPoint() - 1];
+        Point endPoint = Points.getPoints()[r.getEndPoint() - 1];
+        LatLng start = startPoint.getLatLng();
+        LatLng end = endPoint.getLatLng();
         PolylineOptions route = new PolylineOptions().add(start);
         if (r.getIntermediates() != null) {
             for (Point p : r.getIntermediates()) {
-                route.add(new LatLng(p.getLatitude(), p.getLongitude()));
+                route.add(p.getLatLng());
             }
         }
         route.add(end).color(color).width(Routes.ROUTE_WIDTH);
@@ -395,7 +394,7 @@ public class GameMap extends AppCompatActivity
      */
     private Marker initializeMarker(int icon) {
         int position = (new Random()).nextInt(Points.getPoints().length);
-        LatLng latLng = new LatLng(Points.getLatFromP(position), Points.getLngfromP(position));
+        LatLng latLng = Points.POINTS[position].getLatLng();
         Marker marker = mMap.addMarker(new MarkerOptions().position(latLng));
         marker.setIcon(BitmapDescriptorFactory.fromResource(icon));
         return marker;

@@ -1,6 +1,21 @@
 package com.example.scotlandyard;
 
+import com.google.android.gms.maps.model.LatLng;
+
+/**
+ * @author Selene
+ * @author René
+ * This class contains all Game board Points and some additional methods
+ */
 public class Points {
+
+    public Points() {
+
+    }
+
+    /**
+     * final Point[] which includes all fields of the game board
+     */
     public static final Point[] POINTS =
             {
                     new Point(46.621253, 14.262028, R.drawable.field1),
@@ -80,20 +95,40 @@ public class Points {
                     new Point(46.616090, 14.263997, R.drawable.field75)
             };
 
-    //get coordinat Latitude from spezific Pointnumber
-    public static double getLatFromP(int number) {
-        return POINTS[number].getLatitude();
+    /**
+     * get coordinate Latitude from specific Point number
+     *
+     * @param i ...index of point
+     * @return double Latitude
+     */
+    public static double getLatFromP(int i) {
+        return POINTS[i].getLatitude();
     }
 
-    //get coordinat Longitude from spezific Pointnumber
-    public static double getLngfromP(int number) {
-        return POINTS[number].getLongitude();
+    /**
+     * get coordinate Longitude from specific Point number
+     *
+     * @param i ...index of point
+     * @return double Longitude
+     */
+    public static double getLngFromP(int i) {
+        return POINTS[i].getLongitude();
+    }
+
+    public static LatLng getLatLngFromP(int i) {
+        return new LatLng(getLatFromP(i), getLngFromP(i));
     }
 
     public static Point[] getPoints() {
         return POINTS;
     }
 
+    /**
+     * get index of a Point p
+     *
+     * @param p
+     * @return index within @POINTS
+     */
     public static int getIndex(Point p) {
         for (int i = 0; i < POINTS.length; i++) {
             if (POINTS[i].equals(p))

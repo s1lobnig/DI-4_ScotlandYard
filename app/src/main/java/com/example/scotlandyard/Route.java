@@ -1,23 +1,28 @@
 package com.example.scotlandyard;
 
-
 public class Route {
-    private int start_point;
+    private int startPoint;
     private Point[] intermediates;
-    private int end_point;
+    private int endPoint;
 
-    public Route(int start_point, int end_point, Point[] intermediates) {
-        this.start_point = start_point;
-        this.end_point = end_point;
+    public Route(int startPoint, int endPoint, Point[] intermediates) {
+        this.startPoint = startPoint;
+        this.endPoint = endPoint;
         this.intermediates = intermediates;
     }
 
-    public int getStart_point() {
-        return start_point;
+    public Route(int startPoint, int endPoint) {
+        this.startPoint = startPoint;
+        this.endPoint = endPoint;
+        this.intermediates = null;
     }
 
-    public int getEnd_point() {
-        return end_point;
+    public int getStartPoint() {
+        return startPoint;
+    }
+
+    public int getEndPoint() {
+        return endPoint;
     }
 
     public Point[] getIntermediates() {
@@ -26,9 +31,14 @@ public class Route {
 
     @Override
     public String toString() {
-        return start_point + " <---> " + end_point;
+        return startPoint + " <---> " + endPoint;
     }
 
+    /**
+     * method to retrieve the length of a route
+     *
+     * @return length of the route
+     */
     public double getLength() {
         double distance = 0;
         for (int i = 0; i <= getIntermediates().length; i++) {
@@ -37,15 +47,15 @@ public class Route {
             double x2;
             double y2;
             if (i == 0) {
-                x1 = Points.POINTS[getStart_point() - 1].getLatitude();
-                y1 = Points.POINTS[getStart_point() - 1].getLongitude();
+                x1 = Points.POINTS[getStartPoint() - 1].getLatitude();
+                y1 = Points.POINTS[getStartPoint() - 1].getLongitude();
             } else {
                 x1 = getIntermediates()[i - 1].getLatitude();
                 y1 = getIntermediates()[i - 1].getLongitude();
             }
             if (i == getIntermediates().length) {
-                x2 = Points.POINTS[getEnd_point() - 1].getLatitude();
-                y2 = Points.POINTS[getEnd_point() - 1].getLongitude();
+                x2 = Points.POINTS[getEndPoint() - 1].getLatitude();
+                y2 = Points.POINTS[getEndPoint() - 1].getLongitude();
             } else {
                 x2 = getIntermediates()[i].getLatitude();
                 y2 = getIntermediates()[i].getLongitude();
