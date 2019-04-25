@@ -9,10 +9,11 @@ import android.widget.EditText;
 
 import java.io.Serializable;
 
-public class messanger extends AppCompatActivity implements Serializable {
+public class messanger extends AppCompatActivity {
 
     private static Button btnSend;
     private static EditText textMessage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
