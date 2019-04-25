@@ -59,14 +59,22 @@
             android:name=".GameMap"
 
             android:label="@string/title_activity_game_map"
-            android:theme="@style/AppTheme.NavDrawer" />
+            android:theme="@style/AppTheme.NavDrawer"/>
+
         <activity
             android:name=".GameList"
             android:label="@string/title_activity_game_list"
             android:theme="@style/AppTheme.ActionBar" />
+
         <activity
             android:name=".MainActivity"
-            android:theme="@style/AppTheme.ActionBar"/>
+            android:theme="@style/AppTheme.ActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        
         <activity
             android:name=".RegistrationActivty"
             android:theme="@style/AppTheme.ActionBar">
