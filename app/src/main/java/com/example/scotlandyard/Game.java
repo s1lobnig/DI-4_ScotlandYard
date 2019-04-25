@@ -1,9 +1,10 @@
 package com.example.scotlandyard;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Game {
+public class Game implements Serializable {
 
     private String gameName;
     private int maxMembers;

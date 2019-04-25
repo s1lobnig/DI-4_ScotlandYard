@@ -4,7 +4,7 @@ Repository für das SE2 Projekt der Gruppe DI-4. Mit Hilfe von SCRUM wird versuc
 
 ## Rollen
 
-**ArchitektIn**: Rene
+**ArchitektIn**: René
 
 **ArchitektIn Stv.**: Stefan und Johann
 
@@ -14,7 +14,7 @@ Repository für das SE2 Projekt der Gruppe DI-4. Mit Hilfe von SCRUM wird versuc
 
 **TesterIn**: Stefan
 
-**TesterIn Stv.**: Selene und Rene
+**TesterIn Stv.**: Selene und René
 
 **CI-ManagerIn**: Selene
 
