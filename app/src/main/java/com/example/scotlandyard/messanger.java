@@ -2,11 +2,14 @@ package com.example.scotlandyard;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class messanger extends AppCompatActivity {
+import java.io.Serializable;
+
+public class messanger extends AppCompatActivity implements Serializable {
 
     private static Button btnSend;
     private static EditText textMessage;
@@ -14,6 +17,9 @@ public class messanger extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messanger);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         textMessage = findViewById(R.id.edittext_chatbox);
         btnSend = findViewById(R.id.button_chatbox_send);
@@ -24,6 +30,8 @@ public class messanger extends AppCompatActivity {
                 //sendMessage(message);
             }
         });
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     /* 

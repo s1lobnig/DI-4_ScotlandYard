@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Messenger;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 
@@ -129,7 +130,7 @@ public class GameMap extends AppCompatActivity
         } else if (id == R.id.nav_settings) {
             intent = new Intent(this, PlayersOverview.class);
         } else if (id == R.id.nav_chat) {
-            intent = new Intent(this, Chat.class);
+            intent = new Intent(this, messanger.class);
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
