@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group
+        android:id="@+id/drawer_menu"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_game"
+            android:icon="@android:drawable/ic_menu_mapmode"
+            android:title="Game" />
+        <item
+            android:id="@+id/nav_overview"
+            android:icon="@android:drawable/ic_menu_info_details"
+            android:title="Player Overview" />
+        <item
+            android:id="@+id/nav_chat"
+            android:icon="@android:drawable/stat_notify_chat"
+            android:title="Chat" />
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Settings" />
+    </group>
+
+</menu>
