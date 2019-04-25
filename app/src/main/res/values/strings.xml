@@ -17,6 +17,7 @@
     <string name="title_activity_game_list">GameList</string>
     <string name="beitreten">Beitreten</string>
     <string name="spielername">Spielername</string>
+
     <string name="title_activity_game_navigation">GameNavigation</string>
     <string name="title_activity_players_overview">PlayersOverview</string>
     <string name="title_activity_settings">Settings</string>
