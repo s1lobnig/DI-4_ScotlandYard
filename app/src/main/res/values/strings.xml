@@ -17,5 +17,7 @@
     <string name="title_activity_game_list">GameList</string>
     <string name="beitreten">Beitreten</string>
     <string name="spielername">Spielername</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="title_activity_icon">icon</string>
 
 </resources>
