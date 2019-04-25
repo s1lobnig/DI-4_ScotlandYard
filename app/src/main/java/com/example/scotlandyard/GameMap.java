@@ -34,7 +34,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -129,6 +128,8 @@ public class GameMap extends AppCompatActivity
             intent = new Intent(this, Settings.class);
         } else if (id == R.id.nav_settings) {
             intent = new Intent(this, PlayersOverview.class);
+        } else if (id == R.id.nav_chat) {
+            intent = new Intent(this, Chat.class);
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
