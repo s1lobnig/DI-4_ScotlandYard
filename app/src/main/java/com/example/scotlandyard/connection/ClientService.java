@@ -43,7 +43,7 @@ public class ClientService extends ConnectionService {
      * @param endpointName    name of the device (nickname)
      * @param activity        current activity
      */
-    ClientService(@NonNull ClientInterface clientInterface, String endpointName, Activity activity) {
+    public ClientService(@NonNull ClientInterface clientInterface, String endpointName, Activity activity) {
         super(endpointName, activity);
         discoveredEndpoints = new HashMap<>();
         logTag = "ClientService";

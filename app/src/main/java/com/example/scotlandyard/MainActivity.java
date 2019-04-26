@@ -9,6 +9,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -45,13 +46,19 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+        try {
+            setContentView(R.layout.activity_main);
+        } catch (Exception e) {
+            Log.d("MAIN_ACTIVITY", "EXCEPTION CAUGHT!");
+        }
 
         existingGames = findViewById(R.id.btnExistingGames);
         existingGames.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, GameList.class));
+                Log.d("MAIN_ACTIVITY", "Starting RegistrationActivty activity.");
+                startActivity(new Intent(MainActivity.this, RegistrationActivty.class));
             }
         });
         createGame = findViewById(R.id.btnCreateGame);
@@ -59,7 +66,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // temporary, to get to the map
-                startActivity(new Intent(MainActivity.this, GameMap.class));
+                Log.d("MAIN_ACTIVITY", "Starting GameCreate activity.");
+                startActivity(new Intent(MainActivity.this, GameCreate.class));
             }
         });
     }
