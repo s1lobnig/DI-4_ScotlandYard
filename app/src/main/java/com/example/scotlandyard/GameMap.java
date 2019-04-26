@@ -136,9 +136,9 @@ public class GameMap extends AppCompatActivity
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.map, fragment).commit();
         } else if (id == R.id.nav_overview) {
-            intent = new Intent(this, Settings.class);
-        } else if (id == R.id.nav_settings) {
             intent = new Intent(this, PlayersOverview.class);
+        } else if (id == R.id.nav_settings) {
+            intent = new Intent(this, Settings.class);
         } else if (id == R.id.nav_chat) {
             intent = new Intent(this, messanger.class);
         }
