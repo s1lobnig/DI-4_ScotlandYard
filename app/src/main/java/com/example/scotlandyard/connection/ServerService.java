@@ -23,6 +23,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+// TODO: Add disconnectEndpoint(Endpoint e) method. Reason: com.google.android.gms.common.api.ApiException: 8003: STATUS_ALREADY_CONNECTED_TO_ENDPOINT (endpoint cannot reconnect after connection lost/terminated).
+// TODO: It would be almost necessary to know from which endpoint the message comes: onMessage(Object message, Endpoint e) and onGameData(Object game, Endpoint e).
+// TODO: Make sending to a single client possible. Suggestion: sendMessage(Object object, Endpoint endpoint).
+// TODO: Check why discovery stops after connected to a client.
 
 /**
  * class representing a server in the service
@@ -43,7 +47,7 @@ public class ServerService extends ConnectionService {
      * @param endpointName      name of the device (nickname)
      * @param activity          current activity
      */
-    ServerService(@NonNull ServerInterface server, String endpointName, Activity activity) {
+    public ServerService(@NonNull ServerInterface server, String endpointName, Activity activity) {
         super(endpointName, activity);
         pendingConnections = new HashMap<>();
         establishedConnections = new HashMap<>();
@@ -88,7 +92,8 @@ public class ServerService extends ConnectionService {
      * function stops advertising of server
      */
     public void stopAdvertising() {
-        if (connectionState == ConnectionState.ADVERTISING) {
+        /* TODO: Check if this ConnectionState is really sufficient. Reason: After switching to CONNECTED - stopAdvertising() doesn't do anything, thus, advertising cannot be stopped. */
+        if (true || connectionState == ConnectionState.ADVERTISING) { // Added 'true || ' here as temporary fix.
             Log.d(logTag, "stopped advertising");
             connectionsClient.stopAdvertising();
             if (establishedConnections.isEmpty()) {
@@ -108,7 +113,7 @@ public class ServerService extends ConnectionService {
                 @Override
                 public void onConnectionInitiated(@NonNull String endpointId, ConnectionInfo connectionInfo) {
                     Log.d(logTag, String.format("connection initiated (endpointId=%s, endpointName=%s)",
-                                    endpointId, connectionInfo.getEndpointName()));
+                            endpointId, connectionInfo.getEndpointName()));
                     Endpoint endpoint = new Endpoint(endpointId, connectionInfo.getEndpointName());
                     pendingConnections.put(endpointId, endpoint);
                     server.onConnectionRequested(endpoint);
@@ -146,12 +151,22 @@ public class ServerService extends ConnectionService {
     public void acceptConnection(final Endpoint endpoint) {
         connectionsClient
                 .acceptConnection(endpoint.getId(), payloadCallback)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // TODO: Temporary fix added because the server couldn't sendPayload() because the ConnectionState was still DISCONNECTED. Please check & verify this fix.
+                        connectionState = establishedConnections.isEmpty() ? ConnectionState.DISCONNECTED : ConnectionState.CONNECTED;
+                    }
+                })
                 .addOnFailureListener(
                         new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 Log.d(logTag, "acceptConnection failed", e);
                                 server.onFailedAcceptConnection(endpoint);
+
+                                // TODO: Temporary fix added because the server couldn't sendPayload() because the ConnectionState was still DISCONNECTED. Please check & verify this fix.
+                                connectionState = establishedConnections.isEmpty() ? ConnectionState.DISCONNECTED : ConnectionState.CONNECTED;
                             }
                         });
     }

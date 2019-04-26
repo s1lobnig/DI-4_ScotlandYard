@@ -2,14 +2,13 @@ package com.example.scotlandyard;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Game implements Serializable {
 
     private String gameName;
     private int maxMembers;
     private int currentMembers;
-    private List<Player> players = new ArrayList<>();
+    private ArrayList<Player> players = new ArrayList<>(); // Changed from List to ArrayList because of serialization.
 
 
     public Game(String gameName, int maxMembers) {
@@ -42,11 +41,11 @@ public class Game implements Serializable {
         this.currentMembers = currentMembers;
     }
 
-    public List<Player> getPlayers() {
+    public ArrayList<Player> getPlayers() {
         return players;
     }
 
-    public void setPlayers(List<Player> players) {
+    public void setPlayers(ArrayList<Player> players) {
         this.players = players;
     }
 }
