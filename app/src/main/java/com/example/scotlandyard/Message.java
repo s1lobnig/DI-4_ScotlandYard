@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class Message implements Serializable {
 
     private String message;
+    private boolean belongsToCurrentUser; // is this message sent by us?
 
     private Message() {
     }
@@ -19,6 +20,10 @@ public class Message implements Serializable {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public boolean isBelongsToCurrentUser() {
+        return belongsToCurrentUser;
     }
 }
 
