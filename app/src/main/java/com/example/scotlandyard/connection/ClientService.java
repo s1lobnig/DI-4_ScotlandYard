@@ -276,6 +276,19 @@ public class ClientService extends ConnectionService {
         }
     }
 
+    /**
+     * function for disconnecting from an endpoint
+     * @param endpoint  endpoint to disconnect from
+     */
+    public void disconnect(Endpoint endpoint) {
+        if (connectionState == ConnectionState.CONNECTED) {
+            Log.d(logTag, "disconnecting from "+endpoint.getName());
+            connectionsClient.disconnectFromEndpoint(endpoint.getId());
+            connectionState = ConnectionState.DISCONNECTED;
+            client.onDisconnected(endpoint);
+        }
+    }
+
     public Map<String, Endpoint> getDiscoveredEndpoints() {
         return discoveredEndpoints;
     }
