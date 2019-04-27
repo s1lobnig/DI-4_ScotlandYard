@@ -21,7 +21,7 @@ import java.io.ObjectOutputStream;
  * endpointName             name of local device
  * connectionState          state of the service
  */
-abstract public class ConnectionService {
+public abstract class ConnectionService {
     ConnectionsClient connectionsClient;
     Strategy strategy;
     String serviceID;

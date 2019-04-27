@@ -141,6 +141,9 @@ public class ServerService extends ConnectionService {
                         server.onDisconnected(endpoint);
                     }
                     establishedConnections.remove(endpointId);
+                    if (establishedConnections.isEmpty()) {
+                        connectionState = ConnectionState.DISCONNECTED;
+                    }
                 }
             };
 
@@ -250,6 +253,40 @@ public class ServerService extends ConnectionService {
                                     server.onSendingFailed(object);
                                 }
                             });
+        }
+    }
+
+    /**
+     * function for disconnecting from an endpoint
+     * @param endpoint  endpoint to disconnect from
+     */
+    public void disconnect(@NonNull Endpoint endpoint) {
+        if (connectionState == ConnectionState.CONNECTED) {
+            Endpoint endpoint2 = establishedConnections.get(endpoint.getId());
+            if (endpoint2 != null) {
+                Log.d(logTag, "disconnecting from "+endpoint.getName());
+                connectionsClient.disconnectFromEndpoint(endpoint.getId());
+                establishedConnections.remove(endpoint.getId());
+                if (establishedConnections.isEmpty()) {
+                    connectionState = ConnectionState.DISCONNECTED;
+                }
+                server.onDisconnected(endpoint2);
+            }
+        }
+    }
+
+    /**
+     * function for disconnecting from all endpoints
+     */
+    public void disconnectFromAll() {
+        if (connectionState == ConnectionState.CONNECTED) {
+            Set<String> keys = establishedConnections.keySet();
+            for (String k : keys) {
+                Endpoint endpoint = establishedConnections.get(k);
+                if (endpoint != null) {
+                    disconnect(endpoint);
+                }
+            }
         }
     }
 
