@@ -31,8 +31,6 @@ public class MarkerAnimation {
 
     }
 
-    private static final double EPSILON = 1e-5;
-
     /**
      * animates the given marker between its current position ans @finalPosition for the time span @duration
      *

@@ -6,7 +6,6 @@ import java.io.Serializable;
 
 public class Player implements Serializable {
     private String nickname;
-    private Marker marker;
 
     public Player(String nickname) {
         this.nickname = nickname;

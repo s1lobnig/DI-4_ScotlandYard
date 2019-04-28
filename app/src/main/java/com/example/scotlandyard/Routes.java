@@ -636,7 +636,7 @@ public class Routes {
             return new Object[]{true, bicycle.get((new Random()).nextInt(bicycle.size())), 1};
         } else if (bus != null) {
             return new Object[]{true, bus.get((new Random()).nextInt(bus.size())), 2};
-        } else if (bus != null) {
+        } else if (taxiDragan != null) {
             return new Object[]{true, taxiDragan.get((new Random()).nextInt(taxiDragan.size())), 3};
         } else {
             return new Object[]{false, null, -1};

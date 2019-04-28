@@ -68,7 +68,8 @@ public class GameList extends AppCompatActivity implements ClientInterface {
         gameListView = findViewById(R.id.list_currentGames);
 
         //setAdapter to listView to show all existing games
-        gameListView.setAdapter(listAdapter = new MyListAdapter(this, R.layout.game_item, games));
+        listAdapter = new MyListAdapter(this, R.layout.game_item, games);
+        gameListView.setAdapter(listAdapter);
 
         /* Get intent data. */
         Intent intent = getIntent();
@@ -227,7 +228,7 @@ public class GameList extends AppCompatActivity implements ClientInterface {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Log.e("InterruptedExeption", e.getMessage(), e.getCause());
                 }
                 clientService.send(new Message("GET_GAME_DATA"));
             }

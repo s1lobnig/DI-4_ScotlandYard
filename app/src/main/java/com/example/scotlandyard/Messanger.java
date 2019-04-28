@@ -7,9 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import java.io.Serializable;
-
-public class messanger extends AppCompatActivity {
+public class Messanger extends AppCompatActivity {
 
     private static Button btnSend;
     private static EditText textMessage;
