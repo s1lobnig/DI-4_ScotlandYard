@@ -55,7 +55,7 @@ public class GameMap extends AppCompatActivity
         setContentView(R.layout.activity_game_navigation);
 
         Intent intent = getIntent();
-        String nickname = intent.getStringExtra(RegistrationActivty.passNickname);
+        String nickname = intent.getStringExtra("USERNAME");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(nickname);
@@ -194,6 +194,12 @@ public class GameMap extends AppCompatActivity
                 Point newLocation = new Point(marker.getPosition().latitude, marker.getPosition().longitude);
                 Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
                 boolean isValid = (Boolean) routeToTake[0];
+                // if the route would be valid but there is the randowm event "verfahren", then...
+                // Note, this does not work at the moment!
+                if(isValid && false){
+                    routeToTake = Routes.getRandomRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
+                    Toast.makeText(GameMap.this,R.string.randEventNaviSaysNo,Toast.LENGTH_LONG).show();
+                }
                 if (isValid) {
                     Route r = (Route) routeToTake[1];
                     String txt = "";
@@ -227,9 +233,33 @@ public class GameMap extends AppCompatActivity
                         Object[] routeSliceTimings = getRouteSlicesAndTimings(r, animationDuration, Points.getIndex(currentPoint) + 1);
                         final ArrayList<LatLng> routePoints = (ArrayList) routeSliceTimings[0];
                         final ArrayList<Float> timeSlices = (ArrayList) routeSliceTimings[1];
-                        MarkerAnimation.moveMarkerToTarget(player, routePoints, timeSlices, marker.getPosition(), new LatLngInterpolator.Linear(), animationDuration, icon);
+                        LatLng finalPos = marker.getPosition();
+                        if (false) {
+                            // if random event "Go Back" then...
+                            int size = timeSlices.size();
+                            for (int i = size - 1; i >= 0; i--) {
+                                timeSlices.add(timeSlices.get(i));
+                            }
+                            size = routePoints.size();
+                            routePoints.add(marker.getPosition());
+                            for (int i = size - 1; i >= 0; i--) {
+                                routePoints.add(routePoints.get(i));
+                            }
+                            finalPos = player.getPosition();
+                        }
+                        MarkerAnimation.moveMarkerToTarget(player, routePoints, timeSlices, finalPos, new LatLngInterpolator.Linear(), icon, false, GameMap.this);
                     } else {
-                        MarkerAnimation.moveMarkerToTarget(player, marker.getPosition(), new LatLngInterpolator.Linear(), animationDuration, icon);
+                        if (!false) {
+                            MarkerAnimation.moveMarkerToTarget(player, marker.getPosition(), new LatLngInterpolator.Linear(), animationDuration, icon);
+                        } else {
+                            // if rand event, then...
+                            ArrayList<Float> timeSlices = new ArrayList<>();
+                            timeSlices.add((float) animationDuration);
+                            timeSlices.add((float) animationDuration);
+                            ArrayList<LatLng> routePoints = new ArrayList<>();
+                            routePoints.add(marker.getPosition());
+                            MarkerAnimation.moveMarkerToTarget(player, routePoints, timeSlices, player.getPosition(), new LatLngInterpolator.Linear(), icon, true, GameMap.this);
+                        }
                     }
                     return true;
                 }
@@ -283,7 +313,9 @@ public class GameMap extends AppCompatActivity
             LatLng intermediate = new LatLng(x2, y2);
             duration = (float) (animationDuration * ((Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) / r.getLength()));
             timeSlices.add(duration);
-            routePoints.add(intermediate);
+            if (i != 0) {
+                routePoints.add(intermediate);
+            }
         }
         return new Object[]{routePoints, timeSlices};
     }
@@ -314,7 +346,9 @@ public class GameMap extends AppCompatActivity
             LatLng intermediate = new LatLng(x2, y2);
             duration = (float) (animationDuration * ((Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) / r.getLength()));
             timeSlices.add(duration);
-            routePoints.add(intermediate);
+            if (i != r.getIntermediates().length) {
+                routePoints.add(intermediate);
+            }
         }
         return new Object[]{routePoints, timeSlices};
     }

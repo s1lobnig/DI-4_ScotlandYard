@@ -37,7 +37,7 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
         /* Get intent data. */
         Intent intent = getIntent();
         String serverName = intent.getStringExtra("SERVER_NAME");
-        String userName = intent.getExtras().getString("USER_NAME");
+        final String userName = intent.getExtras().getString("USER_NAME");
         int maxPlayers = intent.getExtras().getInt("MAX_PLAYERS");
         boolean buttonEnabled = intent.getExtras().getBoolean("ENABLE_BUTTON");
 
@@ -56,6 +56,7 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
             public void onClick(View v) {
                 Log.d("GAME_ACTIVITY", "Loading game map.");
                 Intent intent = new Intent(GameActivity.this, GameMap.class);
+                intent.putExtra("USERNAME", userName);
                 startActivity(intent);
             }
         });

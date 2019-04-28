@@ -5,10 +5,13 @@ Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0.html
 
 package com.example.scotlandyard;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -18,7 +21,7 @@ import java.util.ArrayList;
 
 /**
  * @author René
- * this class contains two animation-methods for the player-markers.
+ * this class contains two animation-methods for the marker-markers.
  * The code is based on an exaple by Google Inc.
  * License text is placed at the beginning of the file
  */
@@ -81,61 +84,115 @@ public class MarkerAnimation {
      * @param duration           .............time the animation should last
      * @param icon               .................marker icon during the animation
      */
-    static void moveMarkerToTarget(final Marker marker, final ArrayList<LatLng> route, final ArrayList<Float> timeSlices, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, final float duration, int icon) {
+    static void moveMarkerToTarget(final Marker marker, final ArrayList<LatLng> route, final ArrayList<Float> timeSlices, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, int icon, boolean randEvent, Context context) {
         /* TODO: refractor method */
         //final LatLng[] startPosition = {marker.getPosition()};
         final Handler handler = new Handler();
-        final long start = SystemClock.uptimeMillis();
-        final Interpolator interpolator = new AccelerateDecelerateInterpolator();
-        final float durationInMs = duration;
         marker.setIcon(BitmapDescriptorFactory.fromResource(icon));
-        handler.post(new Runnable() {
-            long elapsed;
-            float t;
-            float v;
-            int i = 0;
-            float elpasedTime = 0;
-            LatLng next = route.get(i);
-            LatLng current = marker.getPosition();
+        ArrayList<MarkerMotion> motions = new ArrayList<>();
+        // TODO
+        for (int i = 0; i < timeSlices.size(); i++) {
+            LatLng next;
+            if (i < route.size())
+                next = route.get(i);
+            else
+                next = finalPosition;
 
-            @Override
-            public void run() {
-                elapsed = SystemClock.uptimeMillis() - start;
-                if (i < timeSlices.size())
-                    t = elapsed / timeSlices.get(i);
-                else
-                    t = elapsed / timeSlices.get(timeSlices.size() - 1);
-                elpasedTime = elapsed / duration;
-                v = interpolator.getInterpolation(t);
-                if (closeEnough(marker, next)) {
-                    marker.setPosition(next);
-                    current = next;
-                    i++;
-                    if (i >= route.size()) {
-                        next = finalPosition;
-                        elpasedTime = timeSlices.get(i - 1);
-                    } else {
-                        next = route.get(i);
-                    }
-                }
-                marker.setPosition(latLngInterpolator.interpolate(v, current, next));
-
-                if (elpasedTime < 1.0) {
-                    handler.postDelayed(this, 16);
-                } else {
-                    if (i >= route.size()) {
-                        if (!marker.getPosition().equals(finalPosition)) {
-                            marker.setPosition(finalPosition);
-                        }
-                        marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.player));
-                    }
-                }
+            MarkerMotion motion;
+            motion = new MarkerMotion(marker, next, latLngInterpolator, timeSlices.get(i));
+            motion.setHandler(handler);
+            // if random event "GoBack", then define where to show the toast
+            if (randEvent && i == route.size() / 2) {
+                motion.setShowToast(true, context);
             }
-        });
+            motions.add(motion);
+            Log.d("ANIMATION_OF_P", marker.getPosition() + " to " + next + " , " + finalPosition);
+        }
+        int i = 0;
+        for (MarkerMotion motion : motions) {
+            if (i < motions.size() - 1) {
+                motion.setNextMotion(motions.get(i + 1));
+            }
+            i++;
+        }
+        handler.post(motions.get(0));
+    }
+}
+
+class MarkerMotion implements Runnable {
+
+    private Marker marker;
+    private LatLng nextPoint;
+    private LatLngInterpolator latLngInterpolator;
+    private float duration;
+    private long elapsed;
+    private long start;
+    private float v;
+    private float t;
+    private Interpolator interpolator;
+    private MarkerMotion nextMotion;
+    private Handler handler;
+    private LatLng current;
+    private boolean showToast;
+    private Context toastContext;
+
+    public MarkerMotion(Marker marker, LatLng nextPoint, LatLngInterpolator latLngInterpolator, float duration) {
+        this.marker = marker;
+        this.nextPoint = nextPoint;
+        this.latLngInterpolator = latLngInterpolator;
+        this.duration = duration;
+        this.elapsed = 0l;
+        this.t = 0f;
+        this.interpolator = new AccelerateDecelerateInterpolator();
+        this.nextMotion = null;
+        this.current = marker.getPosition();
+        this.start = SystemClock.uptimeMillis();
+        this.showToast = false;
+        this.toastContext = null;
     }
 
-    private static boolean closeEnough(Marker marker, LatLng point) {
-        LatLng current = marker.getPosition();
-        return Math.abs(current.latitude - point.latitude) <= EPSILON && Math.abs(current.longitude - point.longitude) <= EPSILON;
+    public void setNextMotion(MarkerMotion nextMotion) {
+        this.nextMotion = nextMotion;
+    }
+
+    public void setHandler(Handler handler) {
+        this.handler = handler;
+    }
+
+    public void setMarker(Marker marker) {
+        this.marker = marker;
+        this.current = marker.getPosition();
+    }
+
+    public void setStart() {
+        this.start = SystemClock.uptimeMillis();
+    }
+
+    public void setShowToast(boolean showToast, Context context) {
+        this.showToast = showToast;
+        this.toastContext = context;
+    }
+
+    @Override
+    public void run() {
+        elapsed = SystemClock.uptimeMillis() - start;
+        t = elapsed / duration;
+        v = interpolator.getInterpolation(t);
+        marker.setPosition(latLngInterpolator.interpolate(v, current, nextPoint));
+        if (t < 1.0) {
+            handler.postDelayed(this, 16);
+        } else {
+            marker.setPosition(nextPoint);
+            if (showToast) {
+                Toast.makeText(toastContext, R.string.randEventGoBack, Toast.LENGTH_LONG).show();
+            }
+            if (nextMotion != null) {
+                nextMotion.setMarker(marker);
+                nextMotion.setStart();
+                handler.post(nextMotion);
+            } else {
+                marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.player));
+            }
+        }
     }
 }

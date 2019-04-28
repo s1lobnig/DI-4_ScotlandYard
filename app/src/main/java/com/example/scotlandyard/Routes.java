@@ -2,14 +2,17 @@ package com.example.scotlandyard;
 
 import android.graphics.Color;
 
+import java.util.ArrayList;
+import java.util.Random;
+
 /**
  * @author René
- *
+ * <p>
  * this class contains the routes between the @POINTS + additional methods
  */
 public class Routes {
 
-    private Routes(){
+    private Routes() {
 
     }
 
@@ -470,14 +473,15 @@ public class Routes {
 
     /**
      * get a route by BICYCLE between current and next point
+     *
      * @param current ...current point (point number)
-     * @param next ......next point (point number)
-     * @return  route - if found
-     *          null - else
+     * @param next    ......next point (point number)
+     * @return route - if found
+     * null - else
      */
     private static Route getByBicycleRoute(int current, int next) {
         for (Route r : BICYCLE) {
-            if ((r.getStartPoint() == current && r.getEndPoint() == next)||(r.getStartPoint() == next && r.getEndPoint() == current)) {
+            if ((r.getStartPoint() == current && r.getEndPoint() == next) || (r.getStartPoint() == next && r.getEndPoint() == current)) {
                 return r;
             }
         }
@@ -486,14 +490,15 @@ public class Routes {
 
     /**
      * get a route by FOOT between current and next point
+     *
      * @param current ...current point (point number)
-     * @param next ......next point (point number)
-     * @return  route - if found
-     *          null - else
+     * @param next    ......next point (point number)
+     * @return route - if found
+     * null - else
      */
     private static Route getByFootRoute(int current, int next) {
         for (Route r : BY_FOOT) {
-            if ((r.getStartPoint() == current && r.getEndPoint() == next)||(r.getStartPoint() == next && r.getEndPoint() == current)) {
+            if ((r.getStartPoint() == current && r.getEndPoint() == next) || (r.getStartPoint() == next && r.getEndPoint() == current)) {
                 return r;
             }
         }
@@ -502,14 +507,15 @@ public class Routes {
 
     /**
      * get a route by BUS between current and next point
+     *
      * @param current ...current point (point number)
-     * @param next ......next point (point number)
-     * @return  route - if found
-     *          null - else
+     * @param next    ......next point (point number)
+     * @return route - if found
+     * null - else
      */
     private static Route getByBusRoute(int current, int next) {
         for (Route r : BUS) {
-            if ((r.getStartPoint() == current && r.getEndPoint() == next)||(r.getStartPoint() == next && r.getEndPoint() == current)) {
+            if ((r.getStartPoint() == current && r.getEndPoint() == next) || (r.getStartPoint() == next && r.getEndPoint() == current)) {
                 return r;
             }
         }
@@ -518,14 +524,15 @@ public class Routes {
 
     /**
      * get a route by TAXI_DRAGAN between current and next point
+     *
      * @param current ...current point (point number)
-     * @param next ......next point (point number)
-     * @return  route - if found
-     *          null - else
+     * @param next    ......next point (point number)
+     * @return route - if found
+     * null - else
      */
     private static Route getByTaxiDraganRoute(int current, int next) {
         for (Route r : TAXI_DRAGAN) {
-            if ((r.getStartPoint() == current && r.getEndPoint() == next)||(r.getStartPoint() == next && r.getEndPoint() == current)) {
+            if ((r.getStartPoint() == current && r.getEndPoint() == next) || (r.getStartPoint() == next && r.getEndPoint() == current)) {
                 return r;
             }
         }
@@ -536,18 +543,18 @@ public class Routes {
      * Returns a 3-Parameter-Object-[] corresponding to the inputs...
      *
      * @param current ...current Player-Location
-     * @param next ......new Player-Location
+     * @param next    ......new Player-Location
      * @return Object[]:
      * [0]: boolean isValid.....true - Valid new Location for current Location
-     *                          false - else
+     * false - else
      * [1]: Route route.........resulting route - if valid
-     *                          null - else
+     * null - else
      * [2]: int vehicleCode.....Vehicle code:
-     *                               0 = foot
-     *                               1 = bicycle
-     *                               2 = bus
-     *                               3 = taxi dragan
-     *                              -1 = invalid
+     * 0 = foot
+     * 1 = bicycle
+     * 2 = bus
+     * 3 = taxi dragan
+     * -1 = invalid
      */
     public static Object[] getRoute(int current, int next) {
         Route foot = getByFootRoute(current + 1, next + 1);
@@ -563,5 +570,76 @@ public class Routes {
         if (taxiDragan != null)
             return new Object[]{true, taxiDragan, 3};
         return new Object[]{false, null, -1};
+    }
+
+    private static ArrayList<Route> getAllByFoot(int point, int notToInclude) {
+        ArrayList<Route> routes = new ArrayList<>();
+        for (Route r : BY_FOOT) {
+            if ((r.getStartPoint() == point && r.getEndPoint() != notToInclude) || (r.getEndPoint() == point && r.getStartPoint() != notToInclude)) {
+                routes.add(r);
+            }
+        }
+        if (routes.size() == 0) {
+            return null;
+        }
+        return routes;
+    }
+
+    private static ArrayList<Route> getAllByBicycle(int point, int notToInclude) {
+        ArrayList<Route> routes = new ArrayList<>();
+        for (Route r : BICYCLE) {
+            if ((r.getStartPoint() == point && r.getEndPoint() != notToInclude) || (r.getEndPoint() == point && r.getStartPoint() != notToInclude)) {
+                routes.add(r);
+            }
+        }
+        if (routes.size() == 0) {
+            return null;
+        }
+        return routes;
+    }
+
+    private static ArrayList<Route> getAllByBus(int point, int notToInclude) {
+        ArrayList<Route> routes = new ArrayList<>();
+        for (Route r : BUS) {
+            if ((r.getStartPoint() == point && r.getEndPoint() != notToInclude) || (r.getEndPoint() == point && r.getStartPoint() != notToInclude)) {
+                routes.add(r);
+            }
+        }
+        if (routes.size() == 0) {
+            return null;
+        }
+        return routes;
+    }
+
+    private static ArrayList<Route> getAllByTaxiDragan(int point, int notToInclude) {
+        ArrayList<Route> routes = new ArrayList<>();
+        for (Route r : TAXI_DRAGAN) {
+            if ((r.getStartPoint() == point && r.getEndPoint() != notToInclude) || (r.getEndPoint() == point && r.getStartPoint() != notToInclude)) {
+                routes.add(r);
+            }
+        }
+        if (routes.size() == 0) {
+            return null;
+        }
+        return routes;
+    }
+
+
+    public static Object[] getRandomRoute(int current, int notNext) {
+        ArrayList<Route> foot = getAllByFoot(current + 1, notNext + 1);
+        ArrayList<Route> bicycle = getAllByBicycle(current + 1, notNext + 1);
+        ArrayList<Route> bus = getAllByBus(current + 1, notNext + 1);
+        ArrayList<Route> taxiDragan = getAllByTaxiDragan(current + 1, notNext + 1);
+        if (foot != null) {
+            return new Object[]{true, foot.get((new Random()).nextInt(foot.size())), 0};
+        } else if (bicycle != null) {
+            return new Object[]{true, bicycle.get((new Random()).nextInt(bicycle.size())), 1};
+        } else if (bus != null) {
+            return new Object[]{true, bus.get((new Random()).nextInt(bus.size())), 2};
+        } else if (bus != null) {
+            return new Object[]{true, taxiDragan.get((new Random()).nextInt(taxiDragan.size())), 3};
+        } else {
+            return new Object[]{false, null, -1};
+        }
     }
 }
