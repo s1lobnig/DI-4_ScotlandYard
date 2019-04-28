@@ -579,9 +579,6 @@ public class Routes {
                 routes.add(r);
             }
         }
-        if (routes.size() == 0) {
-            return null;
-        }
         return routes;
     }
 
@@ -591,9 +588,6 @@ public class Routes {
             if ((r.getStartPoint() == point && r.getEndPoint() != notToInclude) || (r.getEndPoint() == point && r.getStartPoint() != notToInclude)) {
                 routes.add(r);
             }
-        }
-        if (routes.size() == 0) {
-            return null;
         }
         return routes;
     }
@@ -605,9 +599,6 @@ public class Routes {
                 routes.add(r);
             }
         }
-        if (routes.size() == 0) {
-            return null;
-        }
         return routes;
     }
 
@@ -618,9 +609,6 @@ public class Routes {
                 routes.add(r);
             }
         }
-        if (routes.size() == 0) {
-            return null;
-        }
         return routes;
     }
 
@@ -630,13 +618,13 @@ public class Routes {
         ArrayList<Route> bicycle = getAllByBicycle(current + 1, notNext + 1);
         ArrayList<Route> bus = getAllByBus(current + 1, notNext + 1);
         ArrayList<Route> taxiDragan = getAllByTaxiDragan(current + 1, notNext + 1);
-        if (foot != null) {
+        if (!foot.isEmpty()) {
             return new Object[]{true, foot.get((new Random()).nextInt(foot.size())), 0};
-        } else if (bicycle != null) {
+        } else if (!bicycle.isEmpty()) {
             return new Object[]{true, bicycle.get((new Random()).nextInt(bicycle.size())), 1};
-        } else if (bus != null) {
+        } else if (!bus.isEmpty()) {
             return new Object[]{true, bus.get((new Random()).nextInt(bus.size())), 2};
-        } else if (bus != null) {
+        } else if (!taxiDragan.isEmpty()) {
             return new Object[]{true, taxiDragan.get((new Random()).nextInt(taxiDragan.size())), 3};
         } else {
             return new Object[]{false, null, -1};
