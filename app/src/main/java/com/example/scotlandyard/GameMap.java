@@ -45,7 +45,7 @@ public class GameMap extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
     private static final String TAG = GameMap.class.getSimpleName();
     private GoogleMap mMap;
-
+    private int playerPenaltay = 0;
     /**
      * @param savedInstanceState
      */
@@ -189,87 +189,121 @@ public class GameMap extends AppCompatActivity
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker marker) {
-                LatLng current = player.getPosition();
-                Point currentPoint = new Point(current.latitude, current.longitude);
-                Point newLocation = new Point(marker.getPosition().latitude, marker.getPosition().longitude);
-                Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
-                boolean isValid = (Boolean) routeToTake[0];
-                // if the route would be valid but there is the randowm event "verfahren", then...
-                // Note, this does not work at the moment!
-                if(isValid && false){
-                    routeToTake = Routes.getRandomRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
-                    Toast.makeText(GameMap.this,R.string.randEventNaviSaysNo,Toast.LENGTH_LONG).show();
-                }
-                if (isValid) {
-                    Route r = (Route) routeToTake[1];
-                    String txt = "";
-                    int icon;
-                    int vehicle = (int) routeToTake[2];
-                    switch (vehicle) {
-                        case 0:
-                            icon = R.drawable.pedestrian;
-                            txt = "foot route";
-                            break;
-                        case 1:
-                            icon = R.drawable.bicycle;
-                            txt = "bicycle route";
-                            break;
-                        case 2:
-                            icon = R.drawable.bus;
-                            txt = "bus route";
-                            break;
-                        case 3:
-                            icon = R.drawable.taxi;
-                            txt = "taxi route";
-                            break;
-                        default:
-                            icon = -1;
-                    }
-                    // Toast to indicate which type of route is taken
-                    Toast.makeText(GameMap.this, txt, Snackbar.LENGTH_LONG).show();
-                    int animationDuration = 3000;
-                    if (r.getIntermediates() != null) {
-                        player.setIcon(BitmapDescriptorFactory.fromResource(icon));
-                        Object[] routeSliceTimings = getRouteSlicesAndTimings(r, animationDuration, Points.getIndex(currentPoint) + 1);
-                        final ArrayList<LatLng> routePoints = (ArrayList) routeSliceTimings[0];
-                        final ArrayList<Float> timeSlices = (ArrayList) routeSliceTimings[1];
-                        LatLng finalPos = marker.getPosition();
-                        if (false) {
-                            // if random event "Go Back" then...
-                            int size = timeSlices.size();
-                            for (int i = size - 1; i >= 0; i--) {
-                                timeSlices.add(timeSlices.get(i));
-                            }
-                            size = routePoints.size();
-                            routePoints.add(marker.getPosition());
-                            for (int i = size - 1; i >= 0; i--) {
-                                routePoints.add(routePoints.get(i));
-                            }
-                            finalPos = player.getPosition();
-                        }
-                        MarkerAnimation.moveMarkerToTarget(player, routePoints, timeSlices, finalPos, new LatLngInterpolator.Linear(), icon, false, GameMap.this);
-                    } else {
-                        if (!false) {
-                            MarkerAnimation.moveMarkerToTarget(player, marker.getPosition(), new LatLngInterpolator.Linear(), animationDuration, icon);
-                        } else {
-                            // if rand event, then...
-                            ArrayList<Float> timeSlices = new ArrayList<>();
-                            timeSlices.add((float) animationDuration);
-                            timeSlices.add((float) animationDuration);
-                            ArrayList<LatLng> routePoints = new ArrayList<>();
-                            routePoints.add(marker.getPosition());
-                            MarkerAnimation.moveMarkerToTarget(player, routePoints, timeSlices, player.getPosition(), new LatLngInterpolator.Linear(), icon, true, GameMap.this);
-                        }
-                    }
-                    return true;
-                }
-                // Toast to indicate that the clicked location is not reachable from the current location
-                Toast.makeText(GameMap.this, "Unreachable Point :(", Snackbar.LENGTH_LONG).show();
-                return false;
+                if(playerPenaltay == 0)
+                    return movewithrandomEvent(player, marker, true);
+                else
+
+                Toast.makeText(GameMap.this, "Das Fahrrad ist noch nicht verfügbar!", Snackbar.LENGTH_LONG).show();
+                return move(player, marker, false);
+
             }
         });
     }
 
+    private boolean movewithrandomEvent(Marker player, Marker marker, boolean b) {
+        RandomEvent r = new RandomEvent();
+        boolean goback = false;
+        boolean dontgo = false;
+        if(r.getID() == 0){
+            Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
+            dontgo = true;
+        }
+        else if(r.getID() == 1){
+            Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
+            goback = true;
+        }
+        else if(r.getID() == 2){
+            Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
+            playerPenaltay = 3;
+        }
+        if(dontgo == false){
+            return move(player,marker,goback);
+        }
+        dontgo = false;
+        return false;
+    }
+
+    private boolean move(Marker player, Marker marker, boolean goBack){
+        LatLng current = player.getPosition();
+        Point currentPoint = new Point(current.latitude, current.longitude);
+        Point newLocation = new Point(marker.getPosition().latitude, marker.getPosition().longitude);
+        Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
+        boolean isValid = (Boolean) routeToTake[0];
+        // if the route would be valid but there is the randowm event "verfahren", then...
+        // Note, this does not work at the moment!
+        if(isValid && false){
+            routeToTake = Routes.getRandomRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
+            //Toast.makeText(GameMap.this,R.string.randEventNaviSaysNo,Toast.LENGTH_LONG).show();
+        }
+        if (isValid) {
+            Route r = (Route) routeToTake[1];
+            String txt = "";
+            int icon;
+            int vehicle = (int) routeToTake[2];
+            switch (vehicle) {
+                case 0:
+                    icon = R.drawable.pedestrian;
+                    txt = "foot route";
+                    break;
+                case 1:
+                    icon = R.drawable.bicycle;
+                    txt = "bicycle route";
+                    break;
+                case 2:
+                    icon = R.drawable.bus;
+                    txt = "bus route";
+                    break;
+                case 3:
+                    icon = R.drawable.taxi;
+                    txt = "taxi route";
+                    break;
+                default:
+                    icon = -1;
+            }
+            // Toast to indicate which type of route is taken
+            //Toast.makeText(GameMap.this, txt, Snackbar.LENGTH_LONG).show();
+            int animationDuration = 3000;
+            if(!(playerPenaltay > 0 && icon == R.drawable.bicycle)) {
+                if (r.getIntermediates() != null) {
+                    player.setIcon(BitmapDescriptorFactory.fromResource(icon));
+                    Object[] routeSliceTimings = getRouteSlicesAndTimings(r, animationDuration, Points.getIndex(currentPoint) + 1);
+                    final ArrayList<LatLng> routePoints = (ArrayList) routeSliceTimings[0];
+                    final ArrayList<Float> timeSlices = (ArrayList) routeSliceTimings[1];
+                    LatLng finalPos = marker.getPosition();
+                    if (goBack) {
+                        // if random event "Go Back" then...
+                        int size = timeSlices.size();
+                        for (int i = size - 1; i >= 0; i--) {
+                            timeSlices.add(timeSlices.get(i));
+                        }
+                        size = routePoints.size();
+                        routePoints.add(marker.getPosition());
+                        for (int i = size - 1; i >= 0; i--) {
+                            routePoints.add(routePoints.get(i));
+                        }
+                        finalPos = player.getPosition();
+                    }
+                    MarkerAnimation.moveMarkerToTarget(player, routePoints, timeSlices, finalPos, new LatLngInterpolator.Linear(), icon, false, GameMap.this);
+                } else {
+                    if (!goBack) {
+                        MarkerAnimation.moveMarkerToTarget(player, marker.getPosition(), new LatLngInterpolator.Linear(), animationDuration, icon);
+                    } else {
+                        // if rand event, then...
+                        ArrayList<Float> timeSlices = new ArrayList<>();
+                        timeSlices.add((float) animationDuration);
+                        timeSlices.add((float) animationDuration);
+                        ArrayList<LatLng> routePoints = new ArrayList<>();
+                        routePoints.add(marker.getPosition());
+                        MarkerAnimation.moveMarkerToTarget(player, routePoints, timeSlices, player.getPosition(), new LatLngInterpolator.Linear(), icon, true, GameMap.this);
+                    }
+                }
+            }
+            return true;
+        }
+        // Toast to indicate that the clicked location is not reachable from the current location
+        Toast.makeText(GameMap.this, "Unreachable Point :(", Snackbar.LENGTH_LONG).show();
+        return false;
+    }
     /**
      * @param r                 Route-Object
      * @param animationDuration Duration of the whole animation
