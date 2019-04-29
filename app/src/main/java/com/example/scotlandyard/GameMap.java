@@ -11,6 +11,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 
+import com.example.scotlandyard.connection.Endpoint;
+import com.example.scotlandyard.connection.ServerService;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -38,6 +40,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 
@@ -55,6 +58,7 @@ public class GameMap extends AppCompatActivity
         setContentView(R.layout.activity_game_navigation);
 
         Intent intent = getIntent();
+
         String nickname = intent.getStringExtra(RegistrationActivty.passNickname);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -65,7 +69,8 @@ public class GameMap extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(GameMap.this, messanger.class));
+                Intent messangerIntent = new Intent(GameMap.this, messanger.class);
+                startActivity(messangerIntent);
             }
         });
 

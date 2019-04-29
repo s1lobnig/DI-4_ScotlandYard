@@ -18,6 +18,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +36,7 @@ import java.util.Set;
  * establishedConnections:  current established connections
  * server:                  interface to server activity
  */
-public class ServerService extends ConnectionService {
+public class ServerService extends ConnectionService{
     private String logTag = "ServerService";
     private Map<String, Endpoint> pendingConnections;
     private Map<String, Endpoint> establishedConnections;

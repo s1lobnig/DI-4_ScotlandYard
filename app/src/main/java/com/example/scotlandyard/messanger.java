@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class messanger extends AppCompatActivity {
+public class messanger extends AppCompatActivity implements ServerInterface, ClientInterface{
 
     private static Button btnSend;
     private static EditText textMessage;
@@ -54,5 +54,99 @@ public class messanger extends AppCompatActivity {
         });
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    public void onStartedDiscovery() {
+
+    }
+
+    @Override
+    public void onFailedDiscovery() {
+
+    }
+
+    @Override
+    public void onEndpointFound(Map<String, Endpoint> discoveredEndpoints) {
+
+    }
+
+    @Override
+    public void onEndpointLost(Map<String, Endpoint> discoveredEndpoints) {
+
+    }
+
+    @Override
+    public void onStoppedDiscovery() {
+
+    }
+
+    @Override
+    public void onConnected(Endpoint endpoint) {
+
+    }
+
+    @Override
+    public void onStartedAdvertising() {
+
+    }
+
+    @Override
+    public void onFailedAdvertising() {
+
+    }
+
+    @Override
+    public void onStoppedAdvertising() {
+
+    }
+
+    @Override
+    public void onConnectionRequested(Endpoint endpoint) {
+
+    }
+
+    @Override
+    public void onConnected(Map<String, Endpoint> establishedConnections) {
+
+    }
+
+    @Override
+    public void onGameData(Object game) {
+
+    }
+
+    @Override
+    public void onMessage(Object message) {
+        mMessageAdapter.add((Message) message);
+        /*
+        if( mIsHost ) {
+            serverService.send(message);
+        }else{
+            clientService.send(message);
+        }
+         // scroll the ListView to the last added element
+          messagesView.setSelection(messagesView.getCount() - 1);
+        */
+    }
+
+    @Override
+    public void onFailedConnecting(Endpoint endpoint) {
+
+    }
+
+    @Override
+    public void onDisconnected(Endpoint endpoint) {
+
+    }
+
+    @Override
+    public void onFailedAcceptConnection(Endpoint endpoint) {
+
+    }
+
+    @Override
+    public void onSendingFailed(Object object) {
+
     }
 }
