@@ -44,6 +44,20 @@ public class GameMap extends AppCompatActivity
     private static final String TAG = GameMap.class.getSimpleName();
     private GoogleMap mMap;
     private int playerPenaltay = 0;
+    private ArrayList<Player> allPlayer = new ArrayList<>(1);
+    private int[] figures = {
+            R.drawable.player1,
+            R.drawable.player2,
+            R.drawable.player3,
+            R.drawable.player4,
+            R.drawable.player5,
+            R.drawable.player6,
+            R.drawable.player7,
+            R.drawable.player8,
+            R.drawable.player9,
+            R.drawable.player10,
+            R.drawable.player11
+    };
 
     /**
      * @param savedInstanceState
@@ -55,6 +69,7 @@ public class GameMap extends AppCompatActivity
 
         Intent intent = getIntent();
         String nickname = intent.getStringExtra("USERNAME");
+        allPlayer = ((Game)intent.getSerializableExtra("GAME")).getPlayers();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(nickname);
@@ -180,8 +195,12 @@ public class GameMap extends AppCompatActivity
         mMap.setLatLngBoundsForCameraTarget(mapBounds);
         mMap.setMinZoomPreference(mMap.getCameraPosition().zoom);
         setFields();
-        final Marker player = initializeMarker(R.drawable.player);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(player.getPosition(), 16f));
+
+        for(int i = 0; i< allPlayer.size() ; i++){
+            allPlayer.get(i).setIcon(figures[i]);
+            allPlayer.get(i).setMarker(initializeMarker(figures[i]));
+        }
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(allPlayer.get(0).getMarker().getPosition(), 16f));
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker marker) {
@@ -192,6 +211,7 @@ public class GameMap extends AppCompatActivity
                  * Toast.makeText(GameMap.this, "Das Fahrrad ist noch nicht verfügbar!",
                  * Snackbar.LENGTH_LONG).show(); return move(player, marker, false);
                  */
+                Marker player = allPlayer.get(0).getMarker();
                 LatLng current = player.getPosition();
                 Point currentPoint = new Point(current.latitude, current.longitude);
                 Point newLocation = new Point(marker.getPosition().latitude, marker.getPosition().longitude);
@@ -272,6 +292,7 @@ public class GameMap extends AppCompatActivity
                             }
                         }
                     }
+                    //player.setIcon(BitmapDescriptorFactory.fromResource(allPlayer.get(0).getIcon()));
                     return true;
                 }
                 // Toast to indicate that the clicked location is not reachable from the current

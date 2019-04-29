@@ -37,7 +37,7 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
         Intent intent = getIntent();
         String serverName = intent.getStringExtra("SERVER_NAME");
         final String userName = intent.getExtras().getString("USER_NAME");
-        int maxPlayers = intent.getExtras().getInt("MAX_PLAYERS");
+        final int maxPlayers = intent.getExtras().getInt("MAX_PLAYERS");
         boolean buttonEnabled = intent.getExtras().getBoolean("ENABLE_BUTTON");
 
         /* Start ServerService and start advertising own endpoint. */
@@ -56,6 +56,10 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
                 Log.d("GAME_ACTIVITY", "Loading game map.");
                 Intent intent = new Intent(GameActivity.this, GameMap.class);
                 intent.putExtra("USERNAME", userName);
+                //just for testig set per hand
+                game.getPlayers().add(new Player("someone"));
+                game.getPlayers().add(new Player("anyone"));
+                intent.putExtra("GAME", game);
                 startActivity(intent);
             }
         });

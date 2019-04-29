@@ -66,7 +66,7 @@ public class MarkerAnimation {
                     if (!marker.getPosition().equals(finalPosition)) {
                         marker.setPosition(finalPosition);
                     }
-                    marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.player));
+                    marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.player1));
                 }
             }
         });
@@ -189,7 +189,7 @@ class MarkerMotion implements Runnable {
                 nextMotion.setStart();
                 handler.post(nextMotion);
             } else {
-                marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.player));
+                marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.player1));
             }
         }
     }
