@@ -42,7 +42,7 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
         boolean buttonEnabled = intent.getExtras().getBoolean("ENABLE_BUTTON");
 
         /* Start ServerService and start advertising own endpoint. */
-        serverService = new ServerService(GameActivity.this, userName + "'s game server", GameActivity.this);
+        serverService = ServerService.getInstance(GameActivity.this, userName + "'s game server", GameActivity.this);
         serverService.startAdvertising();
 
         /* This is info about the game - it will be sent to clients when they connect. */
