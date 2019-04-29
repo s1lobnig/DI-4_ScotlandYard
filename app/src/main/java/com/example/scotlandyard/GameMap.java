@@ -6,13 +6,10 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Messenger;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 
-import com.example.scotlandyard.connection.Endpoint;
-import com.example.scotlandyard.connection.ServerService;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -40,7 +37,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class GameMap extends AppCompatActivity
@@ -194,7 +190,7 @@ public class GameMap extends AppCompatActivity
                 /*
                  * if(playerPenaltay == 0) return movewithrandomEvent(player, marker, true);
                  * else
-                 * 
+                 *
                  * Toast.makeText(GameMap.this, "Das Fahrrad ist noch nicht verfügbar!",
                  * Snackbar.LENGTH_LONG).show(); return move(player, marker, false);
                  */
@@ -212,25 +208,25 @@ public class GameMap extends AppCompatActivity
                 }
                 if (isValid) {
                     Route r = (Route) routeToTake[1];
-                    String txt = "";
+                    //String txt = "";
                     int icon;
                     int vehicle = (int) routeToTake[2];
                     switch (vehicle) {
                     case 0:
                         icon = R.drawable.pedestrian;
-                        txt = "foot route";
+                        //txt = "foot route";
                         break;
                     case 1:
                         icon = R.drawable.bicycle;
-                        txt = "bicycle route";
+                        //txt = "bicycle route";
                         break;
                     case 2:
                         icon = R.drawable.bus;
-                        txt = "bus route";
+                        //txt = "bus route";
                         break;
                     case 3:
                         icon = R.drawable.taxi;
-                        txt = "taxi route";
+                        //txt = "taxi route";
                         break;
                     default:
                         icon = -1;
@@ -262,10 +258,7 @@ public class GameMap extends AppCompatActivity
                             MarkerAnimation.moveMarkerToTarget(player, routePoints, timeSlices, finalPos,
                                     new LatLngInterpolator.Linear(), icon, false, GameMap.this);
                         } else {
-                            if (!false) {
-                                MarkerAnimation.moveMarkerToTarget(player, marker.getPosition(),
-                                        new LatLngInterpolator.Linear(), animationDuration, icon);
-                            } else {
+                            if (false) {
                                 // if rand event, then...
                                 ArrayList<Float> timeSlices = new ArrayList<>();
                                 timeSlices.add((float) animationDuration);
@@ -275,6 +268,10 @@ public class GameMap extends AppCompatActivity
                                 MarkerAnimation.moveMarkerToTarget(player, routePoints, timeSlices,
                                         player.getPosition(), new LatLngInterpolator.Linear(), icon, true,
                                         GameMap.this);
+                            } else {
+                                MarkerAnimation.moveMarkerToTarget(player, marker.getPosition(),
+                                        new LatLngInterpolator.Linear(), animationDuration, icon);
+
                             }
                         }
                     }
@@ -284,7 +281,6 @@ public class GameMap extends AppCompatActivity
                 // location
                 Toast.makeText(GameMap.this, "Unreachable Point :(", Snackbar.LENGTH_LONG).show();
                 return false;
-
             }
         });
     }

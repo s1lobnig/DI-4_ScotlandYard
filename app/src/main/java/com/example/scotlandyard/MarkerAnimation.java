@@ -31,7 +31,6 @@ public class MarkerAnimation {
 
     }
 
-    private static final double EPSILON = 1e-5;
 
     /**
      * animates the given marker between its current position ans @finalPosition for the time span @duration
@@ -85,12 +84,9 @@ public class MarkerAnimation {
      * @param icon               .................marker icon during the animation
      */
     static void moveMarkerToTarget(final Marker marker, final ArrayList<LatLng> route, final ArrayList<Float> timeSlices, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, int icon, boolean randEvent, Context context) {
-        /* TODO: refractor method */
-        //final LatLng[] startPosition = {marker.getPosition()};
         final Handler handler = new Handler();
         marker.setIcon(BitmapDescriptorFactory.fromResource(icon));
         ArrayList<MarkerMotion> motions = new ArrayList<>();
-        // TODO
         for (int i = 0; i < timeSlices.size(); i++) {
             LatLng next;
             if (i < route.size())
@@ -127,7 +123,6 @@ class MarkerMotion implements Runnable {
     private float duration;
     private long elapsed;
     private long start;
-    private float v;
     private float t;
     private Interpolator interpolator;
     private MarkerMotion nextMotion;
@@ -177,7 +172,7 @@ class MarkerMotion implements Runnable {
     public void run() {
         elapsed = SystemClock.uptimeMillis() - start;
         t = elapsed / duration;
-        v = interpolator.getInterpolation(t);
+        float v = interpolator.getInterpolation(t);
         marker.setPosition(latLngInterpolator.interpolate(v, current, nextPoint));
         if (t < 1.0) {
             handler.postDelayed(this, 16);
