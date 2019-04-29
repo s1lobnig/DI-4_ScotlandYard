@@ -188,13 +188,12 @@ public class GameMap extends AppCompatActivity
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker marker) {
-                if(playerPenaltay == 0)
+                if(playerPenaltay == 0) {
                     return movewithrandomEvent(player, marker, true);
-                else
-
-                Toast.makeText(GameMap.this, "Das Fahrrad ist noch nicht verfügbar!", Snackbar.LENGTH_LONG).show();
-                return move(player, marker, false);
-
+                }else {
+                    Toast.makeText(GameMap.this, "Das Fahrrad ist noch nicht verfügbar!", Snackbar.LENGTH_LONG).show();
+                    return move(player, marker, false);
+                }
             }
         });
     }

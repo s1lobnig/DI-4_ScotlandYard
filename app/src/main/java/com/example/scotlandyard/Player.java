@@ -1,7 +1,5 @@
 package com.example.scotlandyard;
 
-import com.google.android.gms.maps.model.Marker;
-
 import java.io.Serializable;
 
 public class Player implements Serializable {

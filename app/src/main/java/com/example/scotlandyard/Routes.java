@@ -579,7 +579,7 @@ public class Routes {
                 routes.add(r);
             }
         }
-        if (routes.size() == 0) {
+        if (routes.isEmpty()) {
             return null;
         }
         return routes;
@@ -592,7 +592,7 @@ public class Routes {
                 routes.add(r);
             }
         }
-        if (routes.size() == 0) {
+        if (routes.isEmpty()) {
             return null;
         }
         return routes;
@@ -605,7 +605,7 @@ public class Routes {
                 routes.add(r);
             }
         }
-        if (routes.size() == 0) {
+        if (routes.isEmpty()) {
             return null;
         }
         return routes;
@@ -618,7 +618,7 @@ public class Routes {
                 routes.add(r);
             }
         }
-        if (routes.size() == 0) {
+        if (routes.isEmpty()) {
             return null;
         }
         return routes;
