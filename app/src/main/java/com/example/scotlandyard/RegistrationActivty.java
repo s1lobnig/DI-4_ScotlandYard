@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -56,7 +57,8 @@ public class RegistrationActivty extends AppCompatActivity {
                     try {
                         openGame();
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        Log.d("RegistrationActivity", "Interrupted Exception", e);
+                        Thread.currentThread().interrupt();
                     }
                 }
             }
