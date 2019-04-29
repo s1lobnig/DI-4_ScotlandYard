@@ -8,9 +8,9 @@ import android.widget.EditText;
 
 public class GameCreate extends AppCompatActivity {
 
-    private EditText serverName; /* Server name input field. */
-    private EditText userName; /* User name input field. */
-    private EditText maxPlayers; /* Maximum number of players input field. */
+    private static EditText serverName; /* Server name input field. */
+    private static EditText userName; /* User name input field. */
+    private static EditText maxPlayers; /* Maximum number of players input field. */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

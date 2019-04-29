@@ -10,6 +10,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 
+import com.example.scotlandyard.connection.Endpoint;
+import com.example.scotlandyard.connection.ServerService;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -37,6 +39,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class GameMap extends AppCompatActivity
@@ -68,6 +71,7 @@ public class GameMap extends AppCompatActivity
         setContentView(R.layout.activity_game_navigation);
 
         Intent intent = getIntent();
+
         String nickname = intent.getStringExtra("USERNAME");
         allPlayer = ((Game)intent.getSerializableExtra("GAME")).getPlayers();
 
@@ -83,13 +87,13 @@ public class GameMap extends AppCompatActivity
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -155,7 +159,7 @@ public class GameMap extends AppCompatActivity
         } else if (id == R.id.nav_settings) {
             intent = new Intent(this, Settings.class);
         }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         if (intent != null) {
             startActivity(intent);

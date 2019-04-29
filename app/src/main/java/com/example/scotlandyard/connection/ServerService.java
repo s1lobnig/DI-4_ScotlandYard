@@ -18,6 +18,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,12 +35,14 @@ import java.util.Set;
  * pendingConnections:      current pending connections
  * establishedConnections:  current established connections
  * server:                  interface to server activity
+ * singleton:               singleton of ServerService
  */
-public class ServerService extends ConnectionService {
+public class ServerService extends ConnectionService{
     private String logTag = "ServerService";
     private Map<String, Endpoint> pendingConnections;
     private Map<String, Endpoint> establishedConnections;
     private ServerInterface server;
+    private static ServerService singleton = null;
 
     /**
      * Constructor
@@ -47,11 +50,39 @@ public class ServerService extends ConnectionService {
      * @param endpointName      name of the device (nickname)
      * @param activity          current activity
      */
-    public ServerService(@NonNull ServerInterface server, String endpointName, Activity activity) {
+    private ServerService(@NonNull ServerInterface server, String endpointName, Activity activity) {
         super(endpointName, activity);
         pendingConnections = new HashMap<>();
         establishedConnections = new HashMap<>();
         this.server = server;
+    }
+
+    /**
+     * function for retrieving singleton
+     * @return singleton of ServerService
+     * @throws IllegalStateException, if singleton is not set
+     */
+    public static ServerService getInstance() throws IllegalStateException {
+        if (singleton == null) {
+            throw new IllegalStateException("singleton not set");
+        }
+        return singleton;
+    }
+
+    /**
+     * function for retrieving singleton for the first time
+     * @param server            object implementing server interface
+     * @param endpointName      name of the device (nickname)
+     * @param activity          current activity
+     * @return                  singleton of ServerService
+     * @throws IllegalStateException, if singleton is already set
+     */
+    public static ServerService getInstance(ServerInterface server, String endpointName, Activity activity) throws IllegalStateException {
+        if (singleton != null) {
+            throw new IllegalStateException("singleton already set");
+        }
+        singleton = new ServerService(server, endpointName, activity);
+        return singleton;
     }
 
     /**

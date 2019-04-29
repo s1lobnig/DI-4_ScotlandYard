@@ -2,12 +2,14 @@ package com.example.scotlandyard.connection;
 
 import android.support.annotation.NonNull;
 
+import java.io.Serializable;
+
 /**
  * Class representing a device in ConnectionService
  * id:          identification of endpoint
  * name:        name of endpoint
  */
-public class Endpoint {
+public class Endpoint implements Serializable {
     @NonNull private final String id;
     @NonNull private final String name;
 
