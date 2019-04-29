@@ -13,7 +13,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/message_body"
             android:background="@drawable/ic_sent_message"
-            android:textColor="#fff"
+            android:textColor="@color/colorText"
             android:padding="10dp"
             android:elevation="2dp"
             android:textSize="18dp"

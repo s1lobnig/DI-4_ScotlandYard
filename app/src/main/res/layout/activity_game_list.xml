@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".GameList"
     android:background="@color/background"
+
     android:theme="@style/AppTheme.ActionBar">
 
     <android.support.design.widget.AppBarLayout
