@@ -29,12 +29,14 @@ import java.util.Map;
  * discoveredEndpoints      list of current discovered endpoints
  * connection               current active connection
  * client                   interface to client activity
+ * singleton                Singleton of ClientService
  */
 public class ClientService extends ConnectionService {
     private String logTag;
     private Map<String, Endpoint> discoveredEndpoints;
     private Endpoint connection;
     private ClientInterface client;
+    private static ClientService singleton = null;
 
     /**
      * Constructor
@@ -43,11 +45,39 @@ public class ClientService extends ConnectionService {
      * @param endpointName    name of the device (nickname)
      * @param activity        current activity
      */
-    public ClientService(@NonNull ClientInterface clientInterface, String endpointName, Activity activity) {
+    private ClientService(@NonNull ClientInterface clientInterface, String endpointName, Activity activity) {
         super(endpointName, activity);
         discoveredEndpoints = new HashMap<>();
         logTag = "ClientService";
         this.client = clientInterface;
+    }
+
+    /**
+     * function for retrieving singleton
+     * @return singleton of ClientService
+     * @throws IllegalStateException, if singleton is not set
+     */
+    public static ClientService getInstance() throws IllegalStateException {
+        if (singleton == null) {
+            throw new IllegalStateException("singleton not set");
+        }
+        return singleton;
+    }
+
+    /**
+     * function for retrieving singleton for the first time
+     * @param clientInterface object implementing client interface
+     * @param endpointName    name of the device (nickname)
+     * @param activity        current activity
+     * @return                singleton of ClientInterface
+     * @throws IllegalStateException, if singleton is already set
+     */
+    public static ClientService getInstance(ClientInterface clientInterface, String endpointName, Activity activity) throws IllegalStateException {
+        if (singleton != null) {
+            throw new IllegalStateException("singleton already set");
+        }
+        singleton = new ClientService(clientInterface, endpointName, activity);
+        return singleton;
     }
 
     /**
