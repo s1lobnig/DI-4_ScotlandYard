@@ -62,7 +62,7 @@ public class GameList extends AppCompatActivity implements ClientInterface {
         setSupportActionBar(toolbar);
 
         /* Create new client service and start discovery. */
-        clientService = new ClientService(this, android.os.Build.MODEL, this);
+        clientService = ClientService.getInstance(this, android.os.Build.MODEL, this);
         clientService.startDiscovery();
 
         gameListView = findViewById(R.id.list_currentGames);
