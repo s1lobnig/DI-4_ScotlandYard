@@ -31,13 +31,14 @@ public class GameList extends AppCompatActivity implements ClientInterface {
     private ArrayList<Endpoint> endpoints = new ArrayList<>(); /* List of detected endpoints (servers). */
     private ArrayList<Game> games = new ArrayList<>(); /* List of available games (or game servers). */
     private Game myData = new Game("", -1);
+    private String logTag = "CLIENT_SERVICE";
 
     @Override
     protected void onStop() {
         super.onStop();
 
         clientService.stopDiscovery();
-        Log.d("SERVER_SERVICE", "Discovery stopped successfully. Initiator: stopDiscovery()");
+        Log.d(logTag, "Discovery stopped successfully. Initiator: stopDiscovery()");
 
         ((ProgressBar) findViewById(R.id.progressBarDiscovery)).setVisibility(View.GONE);
         ((Button) findViewById(R.id.rediscoverButton)).setVisibility(View.VISIBLE);
@@ -48,7 +49,7 @@ public class GameList extends AppCompatActivity implements ClientInterface {
         super.onDestroy();
 
         clientService.stopDiscovery();
-        Log.d("SERVER_SERVICE", "Discovery stopped successfully. Initiator: onDestroy()");
+        Log.d(logTag, "Discovery stopped successfully. Initiator: onDestroy()");
 
         ((ProgressBar) findViewById(R.id.progressBarDiscovery)).setVisibility(View.GONE);
         ((Button) findViewById(R.id.rediscoverButton)).setVisibility(View.VISIBLE);
@@ -100,6 +101,7 @@ public class GameList extends AppCompatActivity implements ClientInterface {
     //need adapter to design a list item and add it to list
     private class MyListAdapter extends ArrayAdapter<Game> {
         private int layout;
+        private String logTag = "CLIENT_SERVICE";
 
         public MyListAdapter(Context context, int resource, List<Game> objects) {
             super(context, resource, objects);
@@ -112,6 +114,7 @@ public class GameList extends AppCompatActivity implements ClientInterface {
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder mainViewHolder = new ViewHolder();
             final Game game = getItem(position);
+
 
             if (convertView == null) {
                 LayoutInflater inflater = LayoutInflater.from(getContext());
@@ -128,13 +131,15 @@ public class GameList extends AppCompatActivity implements ClientInterface {
                         clientService.stopDiscovery();
 
                         /* Request connection to server. */
-                        Log.d("CLIENT_SERVICE", "Requesting connection.");
+                        Log.d(logTag, "Requesting connection.");
                         clientService.connectToEndpoint(endpoints.get(0)); // Temporary. TODO: Find solution for getting endpoint from the list! Suggestion: Link ViewHolder and Endpoint somehow (e.g. add Endpoint field to ViewHolder).
                         clientService.send(myData);
 
                         /* Start registration activity (enter username). */
-                        Log.d("CLIENT_SERVICE", "Loading game map.");
+                        Log.d(logTag, "Loading game map.");
                         Intent intent = new Intent(GameList.this, GameMap.class);
+                        intent.putExtra("USER_NAME", myData.getPlayers().get(0).getNickname());
+                        intent.putExtra("IS_SERVER", false);
                         startActivity(intent);
                     }
                 });
@@ -162,17 +167,17 @@ public class GameList extends AppCompatActivity implements ClientInterface {
 
     @Override
     public void onStartedDiscovery() {
-        Log.d("CLIENT_SERVICE", "Started discovery.");
+        Log.d(logTag, "Started discovery.");
     }
 
     @Override
     public void onFailedDiscovery() {
-        Log.d("CLIENT_SERVICE", "Failed discovery.");
+        Log.d(logTag, "Failed discovery.");
     }
 
     @Override
     public void onEndpointFound(Map<String, Endpoint> discoveredEndpoints) {
-        Log.d("CLIENT_SERVICE", "A new endpoint has been discovered!");
+        Log.d(logTag, "A new endpoint has been discovered!");
 
         /* Get list of all connected endpoints and ignore those which were already there - detect the newly found endpoint. */
         ArrayList<Endpoint> discoveredEndpointsList = new ArrayList<>(discoveredEndpoints.values());
@@ -181,7 +186,7 @@ public class GameList extends AppCompatActivity implements ClientInterface {
 
         Endpoint newlyDiscoveredEndpoint = discoveredEndpointsList.get(0);
 
-        Log.d("CLIENT_SERVICE", "New endpoint connected: " + newlyDiscoveredEndpoint.toString() + " - sending request for data ...");
+        Log.d(logTag, "New endpoint connected: " + newlyDiscoveredEndpoint.toString() + " - sending request for data ...");
         // games.add(new Game(newlyDiscoveredEndpoint.toString(), 0));
 
         /* Connect to the newly discovered endpoint (this will automatically 'request' game data from it). */
@@ -190,7 +195,7 @@ public class GameList extends AppCompatActivity implements ClientInterface {
 
     @Override
     public void onEndpointLost(Map<String, Endpoint> discoveredEndpoints) {
-        Log.d("CLIENT_SERVICE", "Connection with an already discovered endpoint has been lost.");
+        Log.d(logTag, "Connection with an already discovered endpoint has been lost.");
 
         /* Get list of all connected endpoints and ignore those which were already there - detect the lost endpoint. */
         ArrayList<Endpoint> discoveredEndpointsList = new ArrayList<>(discoveredEndpoints.values());
@@ -200,17 +205,17 @@ public class GameList extends AppCompatActivity implements ClientInterface {
 
         Endpoint newlyLostEndpoint = oldEndpointsList.get(0);
 
-        Log.d("CLIENT_SERVICE", "Endpoint disconnected: " + newlyLostEndpoint.toString() + ".");
+        Log.d(logTag, "Endpoint disconnected: " + newlyLostEndpoint.toString() + ".");
 
         // TODO: After method disconnectEndpoint(Endpoint endpoint) in ClientService has been implemented please disconnect the endpoint so it can reconnect later again.
     }
 
     @Override
     public void onStoppedDiscovery() {
-        Log.d("CLIENT_SERVICE", "Stopped discovery.");
+        Log.d(logTag, "Stopped discovery.");
 
         clientService.stopDiscovery();
-        Log.d("SERVER_SERVICE", "Discovery stopped successfully. Initiator: onStoppedDiscovery()");
+        Log.d(logTag, "Discovery stopped successfully. Initiator: onStoppedDiscovery()");
 
         ((ProgressBar) findViewById(R.id.progressBarDiscovery)).setVisibility(View.GONE);
         ((Button) findViewById(R.id.rediscoverButton)).setVisibility(View.VISIBLE);
@@ -218,9 +223,9 @@ public class GameList extends AppCompatActivity implements ClientInterface {
 
     @Override
     public void onConnected(Endpoint endpoint) {
-        Log.d("CLIENT_SERVICE", "Connected with " + endpoint.toString() + " successfully.");
+        Log.d(logTag, "Connected with " + endpoint.toString() + " successfully.");
 
-        Log.d("CLIENT_SERVICE", "Requesting game data...");
+        Log.d(logTag, "Requesting game data...");
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -237,7 +242,7 @@ public class GameList extends AppCompatActivity implements ClientInterface {
 
     @Override
     public void onGameData(Object game) {
-        Log.d("CLIENT_SERVICE", "Game data received!");
+        Log.d(logTag, "Game data received!");
 
         // TODO: After game object has been made unique we can detect Game data updates. Until then we just add updated data as a new game to the list.
 
@@ -254,12 +259,12 @@ public class GameList extends AppCompatActivity implements ClientInterface {
 
     @Override
     public void onMessage(Object message) {
-        Log.d("CLIENT_SERVICE", "Message data received!");
+        Log.d(logTag, "Message data received!");
 
         String receivedMessage = ((Message) message).getMessage();
 
         if (receivedMessage.equals("CONNECTION_ACCEPTED")) {
-            Log.d("CLIENT_SERVICE", "Connection accepted by server!");
+            Log.d(logTag, "Connection accepted by server!");
 
             Intent gameStartIntent = new Intent(GameList.this, GameMap.class);
             startActivity(gameStartIntent);
@@ -268,21 +273,21 @@ public class GameList extends AppCompatActivity implements ClientInterface {
 
     @Override
     public void onFailedConnecting(Endpoint endpoint) {
-        Log.d("CLIENT_SERVICE", "Connection to " + endpoint.getName() + " failed!");
+        Log.d(logTag, "Connection to " + endpoint.getName() + " failed!");
     }
 
     @Override
     public void onDisconnected(Endpoint endpoint) {
-        Log.d("CLIENT_SERVICE", "Endpoint " + endpoint.getName() + " disconnected successfully!");
+        Log.d(logTag, "Endpoint " + endpoint.getName() + " disconnected successfully!");
     }
 
     @Override
     public void onFailedAcceptConnection(Endpoint endpoint) {
-        Log.d("CLIENT_SERVICE", "Endpoint " + endpoint.getName() + " has failed to accept connection!");
+        Log.d(logTag, "Endpoint " + endpoint.getName() + " has failed to accept connection!");
     }
 
     @Override
     public void onSendingFailed(Object object) {
-        Log.d("CLIENT_SERVICE", "Failed to send the message!");
+        Log.d(logTag, "Failed to send the message!");
     }
 }
