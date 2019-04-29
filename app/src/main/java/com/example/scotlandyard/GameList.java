@@ -272,6 +272,11 @@ public class GameList extends AppCompatActivity implements ClientInterface {
     }
 
     @Override
+    public void onSendMove(Object sendMove) {
+        Log.d(logTag, "Move received");
+    }
+
+    @Override
     public void onFailedConnecting(Endpoint endpoint) {
         Log.d(logTag, "Connection to " + endpoint.getName() + " failed!");
     }

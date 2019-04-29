@@ -154,6 +154,11 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
     }
 
     @Override
+    public void onSendMove(Object sendMove) {
+        Log.d(logTag, "Move received");
+    }
+
+    @Override
     public void onFailedConnecting(Endpoint endpoint) {
         Log.d(logTag, "Connection with " + endpoint.toString() + " failed!");
     }

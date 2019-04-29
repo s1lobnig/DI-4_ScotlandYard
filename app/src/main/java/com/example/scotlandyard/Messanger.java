@@ -121,6 +121,11 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
     }
 
     @Override
+    public void onSendMove(Object sendMove) {
+
+    }
+
+    @Override
     public void onFailedConnecting(Endpoint endpoint) {
 
     }

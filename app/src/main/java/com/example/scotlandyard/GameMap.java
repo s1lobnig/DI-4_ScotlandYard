@@ -228,13 +228,23 @@ public class GameMap extends AppCompatActivity
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(game.getPlayers().get(0).getMarker().getPosition(), 16f));
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
-            public boolean onMarkerClick(final Marker feeld) {
-                return moveMarker(feeld, game.getPlayers().get(0).getMarker(), game.getPlayers().get(0).getIcon());
+            public boolean onMarkerClick(final Marker field) {
+                if(isServer) {
+                    boolean isValid = moveMarker(field, game.getPlayers().get(0).getMarker(), game.getPlayers().get(0).getIcon());
+                    if(isValid){
+                        serverService.send(new SendMove(game.getPlayers().get(0), field));
+                    }
+                    return isValid;
+
+                }else{
+                    clientService.send(new SendMove(game.getPlayers().get(0), field));
+                    return true;
+                }
             }
         });
     }
 
-    private boolean moveMarker(Marker feeld, Marker player, int playerIcon) {
+    private boolean moveMarker(Marker field, Marker player, int playerIcon) {
         /*
          * if(playerPenaltay == 0) return movewithrandomEvent(player, marker, true);
          * else
@@ -244,7 +254,7 @@ public class GameMap extends AppCompatActivity
          */
         LatLng current = player.getPosition();
         Point currentPoint = new Point(current.latitude, current.longitude);
-        Point newLocation = new Point(feeld.getPosition().latitude, feeld.getPosition().longitude);
+        Point newLocation = new Point(field.getPosition().latitude, field.getPosition().longitude);
         Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
         boolean isValid = (Boolean) routeToTake[0];
         // if the route would be valid but there is the randowm event "verfahren",
@@ -289,7 +299,7 @@ public class GameMap extends AppCompatActivity
                             Points.getIndex(currentPoint) + 1);
                     final ArrayList<LatLng> routePoints = (ArrayList) routeSliceTimings[0];
                     final ArrayList<Float> timeSlices = (ArrayList) routeSliceTimings[1];
-                    LatLng finalPos = feeld.getPosition();
+                    LatLng finalPos = field.getPosition();
                     if (false) {
                         // if random event "Go Back" then...
                         int size = timeSlices.size();
@@ -297,7 +307,7 @@ public class GameMap extends AppCompatActivity
                             timeSlices.add(timeSlices.get(i));
                         }
                         size = routePoints.size();
-                        routePoints.add(feeld.getPosition());
+                        routePoints.add(field.getPosition());
                         for (int i = size - 1; i >= 0; i--) {
                             routePoints.add(routePoints.get(i));
                         }
@@ -312,12 +322,12 @@ public class GameMap extends AppCompatActivity
                         timeSlices.add((float) animationDuration);
                         timeSlices.add((float) animationDuration);
                         ArrayList<LatLng> routePoints = new ArrayList<>();
-                        routePoints.add(feeld.getPosition());
+                        routePoints.add(field.getPosition());
                         MarkerAnimation.moveMarkerToTarget(player, routePoints, timeSlices,
                                 player.getPosition(), new LatLngInterpolator.Linear(), icon, true,
                                 GameMap.this, playerIcon);
                     } else {
-                        MarkerAnimation.moveMarkerToTarget(player, feeld.getPosition(),
+                        MarkerAnimation.moveMarkerToTarget(player, field.getPosition(),
                                 new LatLngInterpolator.Linear(), animationDuration, icon, playerIcon);
 
                     }
@@ -530,7 +540,7 @@ public class GameMap extends AppCompatActivity
      * @return the resulting player-marker
      */
     private Marker initializeMarker(int icon) {
-        int position = (new Random()).nextInt(Points.getPoints().length);
+        int position = (new Random()).nextInt(Points.getPoints().length)-1;
         LatLng latLng = Points.POINTS[position].getLatLng();
         Marker marker = mMap.addMarker(new MarkerOptions().position(latLng));
         marker.setIcon(BitmapDescriptorFactory.fromResource(icon));
@@ -613,6 +623,20 @@ public class GameMap extends AppCompatActivity
     @Override
     public void onMessage(Object message) {
         //TODO
+    }
+
+    @Override
+    public void onSendMove(Object sendMove) {
+        if(isServer){
+            boolean isValid = moveMarker(((SendMove)sendMove).getField(), ((SendMove)sendMove).getPlayer().getMarker(), ((SendMove)sendMove).getPlayer().getIcon());
+            if(isValid){
+                serverService.send(sendMove);
+            }else{
+                //TODO: tell client this move is not reachable
+            }
+        }else{
+            moveMarker(((SendMove)sendMove).getField(), ((SendMove)sendMove).getPlayer().getMarker(), ((SendMove)sendMove).getPlayer().getIcon());
+        }
     }
 
     @Override

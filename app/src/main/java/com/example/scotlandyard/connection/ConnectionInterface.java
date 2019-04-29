@@ -17,6 +17,11 @@ public interface ConnectionInterface {
     void onMessage(Object message);
 
     /**
+     * function is called, when a move is received
+     * @param sendMove       move
+     */
+    void onSendMove(Object sendMove);
+    /**
      * function is called, when connecting to an endpoint failed
      * @param endpoint      endpoint, where connection failed
      */
@@ -39,4 +44,6 @@ public interface ConnectionInterface {
      * @param object        game data or chat message, which failed
      */
     void onSendingFailed(Object object);
+
+
 }
