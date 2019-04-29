@@ -256,7 +256,7 @@ public class GameMap extends AppCompatActivity
                                 finalPos = player.getPosition();
                             }
                             MarkerAnimation.moveMarkerToTarget(player, routePoints, timeSlices, finalPos,
-                                    new LatLngInterpolator.Linear(), icon, false, GameMap.this);
+                                    new LatLngInterpolator.Linear(), icon, false, GameMap.this, R.drawable.player);
                         } else {
                             if (false) {
                                 // if rand event, then...
@@ -267,10 +267,10 @@ public class GameMap extends AppCompatActivity
                                 routePoints.add(marker.getPosition());
                                 MarkerAnimation.moveMarkerToTarget(player, routePoints, timeSlices,
                                         player.getPosition(), new LatLngInterpolator.Linear(), icon, true,
-                                        GameMap.this);
+                                        GameMap.this, R.drawable.player);
                             } else {
                                 MarkerAnimation.moveMarkerToTarget(player, marker.getPosition(),
-                                        new LatLngInterpolator.Linear(), animationDuration, icon);
+                                        new LatLngInterpolator.Linear(), animationDuration, icon, R.drawable.player);
 
                             }
                         }
