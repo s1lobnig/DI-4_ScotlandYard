@@ -11,9 +11,9 @@ public class RandomEvent {
     public RandomEvent() {
         randomNumber = new Random();
         this. AllTexts = new String[10][10];
-        //this.id = randomNumber.nextInt(100) %4;
-        this.id = -1;
-        int curID = randomNumber.nextInt(100) %3;
+        this.id = randomNumber.nextInt(100) %3;
+        //this.id = 2;
+        int curID = randomNumber.nextInt(100) %4;
         fillText();
 
         this.Text = AllTexts[id][curID];
@@ -43,9 +43,14 @@ public class RandomEvent {
         this.AllTexts[1][3] = "Halt. Martin Hitz der Swagger schickt dich zum letzten Punkt zurück.";
 
         //BEschränkte fortbewegung
-        this.AllTexts[2][0] = "Du stürzt mit dem Fahrrad verletzt dich. Das Fahhrad ist für die nächsten 2 Runden nicht einsatzfähig.";
-        this.AllTexts[2][1] = "Durch eigene Inkompetenz kollidierst du mit einem Hinderniss. Du kannst für die nächsten 2 Runden nicht Fahrrad fahren.";
-        this.AllTexts[2][2] = "Bei deinem Fahrrad hat sich die Kette gelöst. Es ist für die nächsten 2 Runden nicht einsatzfähig";
-        this.AllTexts[2][3] = "Du bists chlecht auf der Uni deshalb zerstörst du dein Fahrrad. Es ist die nächsten 2 Runden nicht einsatzbereit.";
+        this.AllTexts[2][0] = "Du verletzt dich. Das Fahhrad ist für diesen und die nächsten 2 Runden nicht einsatzfähig.";
+        this.AllTexts[2][1] = "Durch eigene Inkompetenz kollidierst du mit einem Hinderniss. Du kannst für die diesen und die nächsten 2 Runden nicht Fahrrad fahren.";
+        this.AllTexts[2][2] = "Dein Fahrrad ist kaputt. Es ist für diesen und die nächsten 2 Runden nicht einsatzfähig";
+        this.AllTexts[2][3] = "Du bist schlecht auf der Uni deshalb zerstörst du dein Fahrrad. Es ist diesen und die nächsten 2 Runden nicht einsatzbereit.";
+
+        this.AllTexts[3][0] = "DU warst unaufmerksam und hast dich deshalb verirrt";
+        this.AllTexts[3][1] = "Du hast einen/r hübsche/n Stundenten/in hinterhergeschaut und bist deshalb falsch gegangen.";
+        this.AllTexts[3][2] = "Du wurdest von Martin Hitzs KOllegen entführt und kommst an einen anderen Ort heruas.";
+        this.AllTexts[3][3] = "Weine nicht wenn der Regen fällt. DAM DAM. Ähm du kommst wo anders raus als gewollt.";
     }
 }
