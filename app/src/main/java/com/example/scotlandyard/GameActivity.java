@@ -25,6 +25,7 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
     private Game game = new Game("NOT INITIALIZED", 4); /* Game info/data. */
 
     private ListAdapter connectedPlayersListAdapter;
+    private String userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +38,7 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
         /* Get intent data. */
         Intent intent = getIntent();
         String serverName = intent.getStringExtra("SERVER_NAME");
-        final String userName = intent.getExtras().getString("USER_NAME");
+        userName = intent.getExtras().getString("USER_NAME");
         int maxPlayers = intent.getExtras().getInt("MAX_PLAYERS");
         boolean buttonEnabled = intent.getExtras().getBoolean("ENABLE_BUTTON");
 
@@ -47,7 +48,9 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
 
         /* This is info about the game - it will be sent to clients when they connect. */
         game = new Game(serverName, maxPlayers);
-        game.getPlayers().add(new Player(userName));
+        final Player host = new Player(userName);
+        host.setHost(true);
+        game.getPlayers().add(host);
         game.setCurrentMembers(1); /* The server is also a player. */
 
         /* Start game initiated by server. */
@@ -57,6 +60,7 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
                 Log.d("GAME_ACTIVITY", "Loading game map.");
                 Intent intent = new Intent(GameActivity.this, GameMap.class);
                 intent.putExtra("USERNAME", userName);
+                intent.putExtra("HOST", host);
                 startActivity(intent);
             }
         });
@@ -121,17 +125,22 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
     }
 
     @Override
-    public void onGameData(Object game) {
+    public void onGameData(Object o) {
         Log.d("SERVER_SERVICE", "Game data received from client (new client wants to connect to the server)!");
+        if (o instanceof Game) {
+            Game game = (Game) o;
+            if (this.game.getCurrentMembers() < this.game.getMaxMembers()) {
+                // is this new added player always the same???
+                // this.game.getPlayers().add(((Game) game).getPlayers().get(0));
+                Player player = new Player(userName);
+                this.game.getPlayers().add(player);
+                this.game.setCurrentMembers(this.game.getCurrentMembers() + 1);
 
-        if (this.game.getCurrentMembers() < this.game.getMaxMembers()) {
-            this.game.getPlayers().add(((Game) game).getPlayers().get(0));
-            this.game.setCurrentMembers(this.game.getCurrentMembers() + 1);
+                ((ArrayAdapter) connectedPlayersListAdapter).notifyDataSetChanged();
 
-            ((ArrayAdapter) connectedPlayersListAdapter).notifyDataSetChanged();
-
-            Log.d("SERVER_SERVICE", "Sending game data to all clients.");
-            serverService.send((Game) this.game);
+                Log.d("SERVER_SERVICE", "Sending game data to all clients.");
+                serverService.send((Game) this.game);
+            }
         }
     }
 

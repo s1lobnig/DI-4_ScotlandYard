@@ -22,12 +22,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class messanger extends AppCompatActivity implements ClientInterface, ServerInterface{
+public class messanger extends AppCompatActivity implements ClientInterface, ServerInterface {
 
     private static Button btnSend;
     private static EditText textMessage;
 
     private MessageAdapter mMessageAdapter;
+    private Player host;
+    private Player client;
     private ServerService serverService = ServerService.getInstance();
     private ClientService clientService = ClientService.getInstance();
 
@@ -45,16 +47,18 @@ public class messanger extends AppCompatActivity implements ClientInterface, Ser
         textMessage = findViewById(R.id.edittext_chatbox);
         btnSend = findViewById(R.id.button_chatbox_send);
 
+        /*get data from Intent to distinguish between host and client*/
+        Intent intent = getIntent();
+        host = (Player) intent.getSerializableExtra("HOST");
+        client = (Player) intent.getSerializableExtra("CLIENT");
 
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String textM = textMessage.getText().toString();
                 Message message = new Message(textM);
-
-                mMessageAdapter.add(message);
-                serverService.send(message);
-
+                onMessage(message);
+                //es muss überprüft werden, wer sendet
             }
         });
 
@@ -122,8 +126,18 @@ public class messanger extends AppCompatActivity implements ClientInterface, Ser
     }
 
     @Override
-    public void onMessage(Object message) {
+    public void onMessage(Object o) {
 
+        if (o instanceof Message) {
+            Message message = (Message) o;
+            message.setMessage(((Message) o).getMessage());
+            mMessageAdapter.add(message);
+            if (message.getSender().isHost()) {
+                serverService.send(o);
+            } else {
+                clientService.send(o);
+            }
+        }
     }
 
     @Override
