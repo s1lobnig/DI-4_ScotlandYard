@@ -57,7 +57,7 @@ public class GameMap extends AppCompatActivity
     private GoogleMap mMap;
     private int playerPenaltay = 0;
     private Game game;
-    private int[] figures = {
+    private static final int[] PLAYER_ICONS = {
             R.drawable.player1,
             R.drawable.player2,
             R.drawable.player3,
@@ -220,8 +220,8 @@ public class GameMap extends AppCompatActivity
         setFields();
         if(isServer) {
             for (int i = 0; i < game.getPlayers().size(); i++) {
-                game.getPlayers().get(i).setIcon(figures[i]);
-                game.getPlayers().get(i).setMarker(initializeMarker(figures[i]));
+                game.getPlayers().get(i).setIcon(PLAYER_ICONS[i]);
+                game.getPlayers().get(i).setMarker(initializeMarker(PLAYER_ICONS[i]));
             }
             serverService.send(game);
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(game.getPlayers().get(0).getMarker().getPosition(), 16f));
