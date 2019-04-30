@@ -31,7 +31,6 @@ public class MarkerAnimation {
 
     }
 
-
     /**
      * animates the given marker between its current position ans @finalPosition for the time span @duration
      *

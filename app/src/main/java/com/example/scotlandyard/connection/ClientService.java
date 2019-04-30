@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.example.scotlandyard.Game;
 import com.example.scotlandyard.Message;
+import com.example.scotlandyard.SendMove;
 import com.google.android.gms.nearby.connection.ConnectionInfo;
 import com.google.android.gms.nearby.connection.ConnectionLifecycleCallback;
 import com.google.android.gms.nearby.connection.ConnectionResolution;
@@ -244,6 +245,9 @@ public class ClientService extends ConnectionService {
                         if (object instanceof Game) {
                             client.onGameData(object);
                         }
+                        if(object instanceof SendMove){
+                            client.onSendMove(object);
+                        }
                     }
                 }
 
@@ -255,12 +259,12 @@ public class ClientService extends ConnectionService {
             };
 
     /**
-     * function for sending a chat message or game data
+     * function for sending a chat message, game data or move
      *
-     * @param object object to send (game data or chat message)
+     * @param object object to send (game data, chat message or move)
      */
     public void send(Object object) {
-        if (object instanceof Message || object instanceof Game) {
+        if (object instanceof Message || object instanceof Game || object instanceof SendMove) {
             byte[] data = null;
             try {
                 data = serialize(object);

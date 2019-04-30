@@ -1,27 +1,17 @@
 package com.example.scotlandyard;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-
 import com.example.scotlandyard.connection.ClientInterface;
-import com.example.scotlandyard.connection.ConnectionInterface;
 import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.connection.ServerInterface;
-import com.example.scotlandyard.connection.ServerService;
-import com.google.android.gms.nearby.Nearby;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
-public class messanger extends AppCompatActivity implements ServerInterface, ClientInterface{
+public class Messanger extends AppCompatActivity implements ServerInterface, ClientInterface{
 
     private static Button btnSend;
     private static EditText textMessage;
@@ -128,6 +118,11 @@ public class messanger extends AppCompatActivity implements ServerInterface, Cli
          // scroll the ListView to the last added element
           messagesView.setSelection(messagesView.getCount() - 1);
         */
+    }
+
+    @Override
+    public void onSendMove(Object sendMove) {
+
     }
 
     @Override

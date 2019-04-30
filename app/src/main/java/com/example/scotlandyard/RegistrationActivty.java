@@ -40,7 +40,6 @@ public class RegistrationActivty extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
                 String nickname = inputField.getText().toString().trim();
                 startGame.setEnabled(!nickname.isEmpty());
-
             }
         });
 
@@ -48,17 +47,14 @@ public class RegistrationActivty extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String nickname = inputField.getText().toString().trim();
-                String message = "Sie können das Spiel jetzt beitreten!";
 
                 if (nickname.isEmpty()) {
-                    inputField.setError("Sie müssen sich für einen Spielername entscheiden!");
+                    inputField.setError("Sie müssen sich für einen Spielernamen entscheiden!");
                 } else {
-                    // Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
                     try {
                         openGame();
                     } catch (InterruptedException e) {
-                        Log.d("RegistrationActivity", "Interrupted Exception", e);
-                        Thread.currentThread().interrupt();
+                        Log.e("InterruptedExeption", e.getMessage(), e.getCause());
                     }
                 }
             }
