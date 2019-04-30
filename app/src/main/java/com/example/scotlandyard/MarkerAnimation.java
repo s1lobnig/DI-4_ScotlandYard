@@ -31,8 +31,6 @@ public class MarkerAnimation {
 
     }
 
-    private static final double EPSILON = 1e-5;
-
     /**
      * animates the given marker between its current position ans @finalPosition for the time span @duration
      *
@@ -42,7 +40,7 @@ public class MarkerAnimation {
      * @param duration           .............time the animation should last
      * @param icon               .................marker icon during the animation
      */
-    static void moveMarkerToTarget(final Marker marker, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, float duration, int icon) {
+    static void moveMarkerToTarget(final Marker marker, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, float duration, int icon, final int finalIcon) {
         final LatLng startPosition = marker.getPosition();
         final Handler handler = new Handler();
         final long start = SystemClock.uptimeMillis();
@@ -68,7 +66,7 @@ public class MarkerAnimation {
                     if (!marker.getPosition().equals(finalPosition)) {
                         marker.setPosition(finalPosition);
                     }
-                    marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.player));
+                    marker.setIcon(BitmapDescriptorFactory.fromResource(finalIcon));
                 }
             }
         });
@@ -84,13 +82,10 @@ public class MarkerAnimation {
      * @param duration           .............time the animation should last
      * @param icon               .................marker icon during the animation
      */
-    static void moveMarkerToTarget(final Marker marker, final ArrayList<LatLng> route, final ArrayList<Float> timeSlices, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, int icon, boolean randEvent, Context context) {
-        /* TODO: refractor method */
-        //final LatLng[] startPosition = {marker.getPosition()};
+    static void moveMarkerToTarget(final Marker marker, final ArrayList<LatLng> route, final ArrayList<Float> timeSlices, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, int icon, boolean randEvent, Context context, int finalIcon) {
         final Handler handler = new Handler();
         marker.setIcon(BitmapDescriptorFactory.fromResource(icon));
         ArrayList<MarkerMotion> motions = new ArrayList<>();
-        // TODO
         for (int i = 0; i < timeSlices.size(); i++) {
             LatLng next;
             if (i < route.size())
@@ -99,14 +94,16 @@ public class MarkerAnimation {
                 next = finalPosition;
 
             MarkerMotion motion;
-            motion = new MarkerMotion(marker, next, latLngInterpolator, timeSlices.get(i));
+            if (i == timeSlices.size() - 1)
+                motion = new MarkerMotion(marker, next, latLngInterpolator, timeSlices.get(i), finalIcon);
+            else
+                motion = new MarkerMotion(marker, next, latLngInterpolator, timeSlices.get(i), icon);
             motion.setHandler(handler);
             // if random event "GoBack", then define where to show the toast
             if (randEvent && i == route.size() / 2) {
                 motion.setShowToast(true, context);
             }
             motions.add(motion);
-            Log.d("ANIMATION_OF_P", marker.getPosition() + " to " + next + " , " + finalPosition);
         }
         int i = 0;
         for (MarkerMotion motion : motions) {
@@ -127,7 +124,6 @@ class MarkerMotion implements Runnable {
     private float duration;
     private long elapsed;
     private long start;
-    private float v;
     private float t;
     private Interpolator interpolator;
     private MarkerMotion nextMotion;
@@ -135,8 +131,9 @@ class MarkerMotion implements Runnable {
     private LatLng current;
     private boolean showToast;
     private Context toastContext;
+    private int finalIcon;
 
-    public MarkerMotion(Marker marker, LatLng nextPoint, LatLngInterpolator latLngInterpolator, float duration) {
+    public MarkerMotion(Marker marker, LatLng nextPoint, LatLngInterpolator latLngInterpolator, float duration, int finalIcon) {
         this.marker = marker;
         this.nextPoint = nextPoint;
         this.latLngInterpolator = latLngInterpolator;
@@ -149,6 +146,7 @@ class MarkerMotion implements Runnable {
         this.start = SystemClock.uptimeMillis();
         this.showToast = false;
         this.toastContext = null;
+        this.finalIcon = finalIcon;
     }
 
     public void setNextMotion(MarkerMotion nextMotion) {
@@ -177,7 +175,7 @@ class MarkerMotion implements Runnable {
     public void run() {
         elapsed = SystemClock.uptimeMillis() - start;
         t = elapsed / duration;
-        v = interpolator.getInterpolation(t);
+        float v = interpolator.getInterpolation(t);
         marker.setPosition(latLngInterpolator.interpolate(v, current, nextPoint));
         if (t < 1.0) {
             handler.postDelayed(this, 16);
@@ -191,7 +189,7 @@ class MarkerMotion implements Runnable {
                 nextMotion.setStart();
                 handler.post(nextMotion);
             } else {
-                marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.player));
+                marker.setIcon(BitmapDescriptorFactory.fromResource(finalIcon));
             }
         }
     }

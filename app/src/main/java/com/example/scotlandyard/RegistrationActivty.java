@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -39,7 +40,6 @@ public class RegistrationActivty extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
                 String nickname = inputField.getText().toString().trim();
                 startGame.setEnabled(!nickname.isEmpty());
-
             }
         });
 
@@ -47,16 +47,14 @@ public class RegistrationActivty extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String nickname = inputField.getText().toString().trim();
-                String message = "Sie können das Spiel jetzt beitreten!";
 
                 if (nickname.isEmpty()) {
-                    inputField.setError("Sie müssen sich für einen Spielername entscheiden!");
+                    inputField.setError("Sie müssen sich für einen Spielernamen entscheiden!");
                 } else {
-                    // Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
                     try {
                         openGame();
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        Log.e("InterruptedExeption", e.getMessage(), e.getCause());
                     }
                 }
             }
