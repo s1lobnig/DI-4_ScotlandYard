@@ -60,7 +60,6 @@ public class GameMap extends AppCompatActivity
         Intent intent = getIntent();
 
         String nickname = intent.getStringExtra("USERNAME");
-        String nickname = intent.getStringExtra(RegistrationActivty.passNickname);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(nickname);

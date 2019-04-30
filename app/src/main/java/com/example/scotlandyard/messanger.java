@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.scotlandyard.connection.ClientInterface;
+import com.example.scotlandyard.connection.ClientService;
 import com.example.scotlandyard.connection.ConnectionInterface;
 import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.connection.ServerInterface;
@@ -21,12 +22,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class messanger extends AppCompatActivity implements ServerInterface, ClientInterface{
+public class messanger extends AppCompatActivity implements ClientInterface, ServerInterface{
 
     private static Button btnSend;
     private static EditText textMessage;
 
     private MessageAdapter mMessageAdapter;
+    private ServerService serverService = ServerService.getInstance();
+    private ClientService clientService = ClientService.getInstance();
 
 
     @Override
@@ -46,9 +49,11 @@ public class messanger extends AppCompatActivity implements ServerInterface, Cli
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String message = textMessage.getText().toString();
+                String textM = textMessage.getText().toString();
+                Message message = new Message(textM);
 
-
+                mMessageAdapter.add(message);
+                serverService.send(message);
 
             }
         });
@@ -118,16 +123,7 @@ public class messanger extends AppCompatActivity implements ServerInterface, Cli
 
     @Override
     public void onMessage(Object message) {
-        mMessageAdapter.add((Message) message);
-        /*
-        if( mIsHost ) {
-            serverService.send(message);
-        }else{
-            clientService.send(message);
-        }
-         // scroll the ListView to the last added element
-          messagesView.setSelection(messagesView.getCount() - 1);
-        */
+
     }
 
     @Override
