@@ -82,9 +82,9 @@ public class GameMap extends AppCompatActivity
         Intent intent = getIntent();
 
         String nickname = intent.getStringExtra("USERNAME");
-        game = ((Game)intent.getSerializableExtra("GAME"));
         isServer = intent.getBooleanExtra("IS_SERVER", true);
         if(isServer){
+            game = ((Game)intent.getSerializableExtra("GAME"));
             serverService = ServerService.getInstance();
             serverService.setServer(this);
             logTag = "SERVER_SERVICE";
@@ -224,8 +224,8 @@ public class GameMap extends AppCompatActivity
                 game.getPlayers().get(i).setMarker(initializeMarker(figures[i]));
             }
             serverService.send(game);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(game.getPlayers().get(0).getMarker().getPosition(), 16f));
         }
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(game.getPlayers().get(0).getMarker().getPosition(), 16f));
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker field) {
