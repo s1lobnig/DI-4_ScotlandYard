@@ -1,7 +1,5 @@
 package com.example.scotlandyard;
 
-import android.os.Parcelable;
-
 import com.google.android.gms.maps.model.Marker;
 
 import java.io.Serializable;

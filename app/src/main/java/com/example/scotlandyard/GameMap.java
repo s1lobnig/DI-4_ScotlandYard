@@ -57,6 +57,8 @@ public class GameMap extends AppCompatActivity
     private GoogleMap mMap;
     private int playerPenaltay = 0;
     private Game game;
+    private Player myPlayer;
+    private String nickname;
     private int[] figures = {
             R.drawable.player1,
             R.drawable.player2,
@@ -81,7 +83,7 @@ public class GameMap extends AppCompatActivity
 
         Intent intent = getIntent();
 
-        String nickname = intent.getStringExtra("USERNAME");
+        nickname = intent.getStringExtra("USERNAME");
         isServer = intent.getBooleanExtra("IS_SERVER", true);
         if(isServer){
             game = ((Game)intent.getSerializableExtra("GAME"));
@@ -223,23 +225,22 @@ public class GameMap extends AppCompatActivity
                 game.getPlayers().get(i).setIcon(figures[i]);
                 game.getPlayers().get(i).setMarker(initializeMarker(figures[i]));
             }
+            myPlayer = game.getPlayers().get(0);
             serverService.send(game);
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(game.getPlayers().get(0).getMarker().getPosition(), 16f));
         }
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker field) {
-                if(isServer) {
-                    boolean isValid = moveMarker(field, game.getPlayers().get(0).getMarker(), game.getPlayers().get(0).getIcon());
+                    boolean isValid = moveMarker(field, myPlayer.getMarker(), game.getPlayers().get(0).getIcon());
                     if(isValid){
-                        serverService.send(new SendMove(game.getPlayers().get(0), field));
+                        if(isServer) {
+                            serverService.send(new SendMove(myPlayer.getNickname(), field));
+                        }else{
+                            clientService.send(new SendMove(myPlayer.getNickname(), field));
+                        }
                     }
                     return isValid;
-
-                }else{
-                    clientService.send(new SendMove(game.getPlayers().get(0), field));
-                    return true;
-                }
             }
         });
     }
@@ -553,6 +554,9 @@ public class GameMap extends AppCompatActivity
                     .position(p.getMarker().getPosition())
                     .icon(BitmapDescriptorFactory.fromResource(p.getIcon()));
             p.setMarker(mMap.addMarker(markerOptions));
+            if(p.getNickname().equals(nickname)){
+                myPlayer = p;
+            }
         }
     }
 
@@ -627,16 +631,20 @@ public class GameMap extends AppCompatActivity
 
     @Override
     public void onSendMove(Object sendMove) {
+        Player player = findPlayer(((SendMove)sendMove).getNickname());
         if(isServer){
-            boolean isValid = moveMarker(((SendMove)sendMove).getField(), ((SendMove)sendMove).getPlayer().getMarker(), ((SendMove)sendMove).getPlayer().getIcon());
-            if(isValid){
-                serverService.send(sendMove);
-            }else{
-                //TODO: tell client this move is not reachable
-            }
-        }else{
-            moveMarker(((SendMove)sendMove).getField(), ((SendMove)sendMove).getPlayer().getMarker(), ((SendMove)sendMove).getPlayer().getIcon());
+            serverService.send(sendMove);
         }
+        moveMarker(((SendMove)sendMove).getField(), player.getMarker(), player.getIcon());
+    }
+
+    private Player findPlayer(String nickname) {
+        for (Player p : game.getPlayers()) {
+            if(p.getNickname().equals(nickname)){
+                return p;
+            }
+        }
+        return null;
     }
 
     @Override
