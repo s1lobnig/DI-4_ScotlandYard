@@ -227,7 +227,8 @@ public class GameList extends AppCompatActivity implements ClientInterface {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Log.d("CLIENT_SERVICE", "Interrupted Exception", e);
+                    Thread.currentThread().interrupt();
                 }
                 clientService.send(new Message("GET_GAME_DATA"));
             }
