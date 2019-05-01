@@ -48,18 +48,19 @@ import java.util.Random;
 public class GameMap extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, ClientInterface, ServerInterface {
 
-    private ServerService serverService;
-    private ClientService clientService;
+    private static ServerService serverService;
+    private static ClientService clientService;
     private boolean isServer;
-    private String logTag;
+    private static String logTag;
 
     private static final String TAG = GameMap.class.getSimpleName();
     private GoogleMap mMap;
-    private int playerPenaltay = 0;
-    private Game game;
-    private Player myPlayer;
-    private String nickname;
-    private int[] figures = {
+    private static int playerPenaltay = 0;
+    private static int round = 1;
+    private static boolean myTurn;
+    private static Game game;
+    private static Player myPlayer;
+    private static int[] figures = {
             R.drawable.player1,
             R.drawable.player2,
             R.drawable.player3,
@@ -83,17 +84,23 @@ public class GameMap extends AppCompatActivity
 
         Intent intent = getIntent();
 
-        nickname = intent.getStringExtra("USERNAME");
+
+        String nickname = intent.getStringExtra("USERNAME");
         isServer = intent.getBooleanExtra("IS_SERVER", true);
+        myPlayer = new Player(nickname);
+
         if(isServer){
             game = ((Game)intent.getSerializableExtra("GAME"));
             serverService = ServerService.getInstance();
             serverService.setServer(this);
             logTag = "SERVER_SERVICE";
+            myTurn = true;
         }else{
             clientService = ClientService.getInstance();
             clientService.setClient(this);
             logTag = "CLIENT_SERVICE";
+            //true, because not already implemented. Later it must be false
+            myTurn = true;
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -225,13 +232,14 @@ public class GameMap extends AppCompatActivity
                 game.getPlayers().get(i).setIcon(figures[i]);
                 game.getPlayers().get(i).setMarker(initializeMarker(figures[i]));
             }
-            myPlayer = game.getPlayers().get(0);
+            myPlayer = findPlayer(myPlayer.getNickname());
             serverService.send(game);
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(game.getPlayers().get(0).getMarker().getPosition(), 16f));
         }
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker field) {
+                if (myTurn) {
                     boolean isValid = isValidMove(field, myPlayer.getMarker());
                     if(isValid){
                         if(isServer) {
@@ -241,9 +249,16 @@ public class GameMap extends AppCompatActivity
                             clientService.send(new SendMove(myPlayer.getNickname(), field));
                         }
                     }else{
+                        // Toast to indicate that the clicked location is not reachable from the current
+                        // location
                         Toast.makeText(GameMap.this, "Unreachable Point :(", Snackbar.LENGTH_LONG).show();
                     }
                     return isValid;
+                }else{
+                    // Toast to indicate that it is not your turn
+                    Toast.makeText(GameMap.this, "Not your turn!", Snackbar.LENGTH_LONG).show();
+                    return false;
+                }
             }
         });
     }
@@ -256,7 +271,7 @@ public class GameMap extends AppCompatActivity
         return (Boolean) routeToTake[0];
     }
 
-    private boolean moveMarker(Marker field, Marker player, int playerIcon) {
+    private void moveMarker(Marker field, Marker player, int playerIcon) {
         /*
          * if(playerPenaltay == 0) return movewithrandomEvent(player, marker, true);
          * else
@@ -345,12 +360,7 @@ public class GameMap extends AppCompatActivity
                     }
                 }
             }
-            return true;
         }
-        // Toast to indicate that the clicked location is not reachable from the current
-        // location
-        Toast.makeText(GameMap.this, "Unreachable Point :(", Snackbar.LENGTH_LONG).show();
-        return false;
     }
 
     private boolean movewithrandomEvent(Marker player, Marker marker, boolean b) {
@@ -367,7 +377,7 @@ public class GameMap extends AppCompatActivity
             Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
             playerPenaltay = 3;
         }
-        if (dontgo == false) {
+        if (dontgo) {
             return move(player, marker, goback);
         }
         dontgo = false;
@@ -565,7 +575,7 @@ public class GameMap extends AppCompatActivity
                     .position(p.getMarker().getPosition())
                     .icon(BitmapDescriptorFactory.fromResource(p.getIcon()));
             p.setMarker(mMap.addMarker(markerOptions));
-            if(p.getNickname().equals(nickname)){
+            if(p.getNickname().equals(myPlayer.getNickname())){
                 myPlayer = p;
             }
         }
@@ -588,22 +598,7 @@ public class GameMap extends AppCompatActivity
 
     @Override
     public void onEndpointLost(Map<String, Endpoint> discoveredEndpoints) {
-        if(isServer) {
-            String lostPlayer = findLostPlayer(discoveredEndpoints);
-            deactivatePlayer(lostPlayer);
-            serverService.send(new Message("PLAYER " + lostPlayer + " QUITTED"));
-        }else{
-            //TODO: Server lost!
-        }
-    }
-
-    private String findLostPlayer(Map<String, Endpoint> discoveredEndpoints) {
-        for (Player p : game.getPlayers()) {
-            if(discoveredEndpoints.get(p.getNickname()) == null){
-                return p.getNickname();
-            }
-        }
-        return null;
+        Log.d(logTag, "Endpoint lost in GameMap");
     }
 
     @Override
@@ -655,13 +650,13 @@ public class GameMap extends AppCompatActivity
             String [] txt = ((Message) message).getMessage().split(" ");
 
             if(txt.length == 3 && txt[0].equals("PLAYER") && txt[2].equals("QUITTED")){
-                deactivatePlayer(txt[1]);
+                Player player = findPlayer(txt[1]);
+                deactivatePlayer(player);
             }
         }
     }
 
-    private void deactivatePlayer(String nickname) {
-        Player player = findPlayer(nickname);
+    private void deactivatePlayer(Player player) {
         player.setActive(false);
         player.getMarker().remove();
     }
@@ -691,7 +686,13 @@ public class GameMap extends AppCompatActivity
 
     @Override
     public void onDisconnected(Endpoint endpoint) {
-        //TODO
+        if(isServer) {
+            Player lostPlayer = findPlayer(endpoint.getName());
+            deactivatePlayer(lostPlayer);
+            serverService.send(new Message("PLAYER " + lostPlayer.getNickname() + " QUITTED"));
+        }else{
+            //TODO: Server lost!
+        }
     }
 
     @Override
@@ -701,6 +702,11 @@ public class GameMap extends AppCompatActivity
 
     @Override
     public void onSendingFailed(Object object) {
-        //TODO
+        //retry
+        if(isServer){
+            serverService.send(object);
+        }else{
+            clientService.send(object);
+        }
     }
 }

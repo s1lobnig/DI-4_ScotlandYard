@@ -24,7 +24,22 @@ public class GameCreate extends AppCompatActivity {
         findViewById(R.id.createServerBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: Validate serverName and maxPlayers input like in registration class!
+                // TODO: Validate maxPlayers input!
+
+                String nameSever = serverName.getText().toString().trim();
+                String[] splittedS = nameSever.split(" ");
+                String nickname = userName.getText().toString().trim();
+                String[] splittedN = nickname.split(" ");
+
+                //nickname must not be empty and must not have any whitespace
+                if (nickname.isEmpty() || splittedN.length != 1) {
+                    userName.setError("Spielername darf keine Leerzeichen enthalten!");
+                }
+
+                //serverName must not be empty and must not have any whitespace
+                if (nameSever.isEmpty() || splittedS.length != 1) {
+                    serverName.setError("Servername darf keine Leerzeichen enthalten!");
+                }
 
                 /* Start game activity. */
                 Intent gameStartIntent = new Intent(GameCreate.this, GameActivity.class);
