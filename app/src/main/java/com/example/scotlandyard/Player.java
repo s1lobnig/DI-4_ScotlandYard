@@ -6,11 +6,13 @@ import java.io.Serializable;
 
 public class Player implements Serializable {
     private String nickname;
+    private boolean isActive;
     private int icon;
     private Marker marker;
 
     public Player(String nickname) {
         this.nickname = nickname;
+        isActive = true;
     }
 
     public String getNickname() {
@@ -19,6 +21,14 @@ public class Player implements Serializable {
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 
     public int getIcon() {

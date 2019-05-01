@@ -232,17 +232,28 @@ public class GameMap extends AppCompatActivity
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker field) {
-                    boolean isValid = moveMarker(field, myPlayer.getMarker(), game.getPlayers().get(0).getIcon());
+                    boolean isValid = isValidMove(field, myPlayer.getMarker());
                     if(isValid){
                         if(isServer) {
+                            moveMarker(field, myPlayer.getMarker(), myPlayer.getIcon());
                             serverService.send(new SendMove(myPlayer.getNickname(), field));
                         }else{
                             clientService.send(new SendMove(myPlayer.getNickname(), field));
                         }
+                    }else{
+                        Toast.makeText(GameMap.this, "Unreachable Point :(", Snackbar.LENGTH_LONG).show();
                     }
                     return isValid;
             }
         });
+    }
+
+    private boolean isValidMove(Marker destination, Marker player){
+        LatLng current = player.getPosition();
+        Point currentPoint = new Point(current.latitude, current.longitude);
+        Point newLocation = new Point(destination.getPosition().latitude, destination.getPosition().longitude);
+        Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
+        return (Boolean) routeToTake[0];
     }
 
     private boolean moveMarker(Marker field, Marker player, int playerIcon) {
@@ -577,8 +588,22 @@ public class GameMap extends AppCompatActivity
 
     @Override
     public void onEndpointLost(Map<String, Endpoint> discoveredEndpoints) {
-        Log.d(logTag, "Endpoint lost");
-        //TODO
+        if(isServer) {
+            String lostPlayer = findLostPlayer(discoveredEndpoints);
+            deactivatePlayer(lostPlayer);
+            serverService.send(new Message("PLAYER " + lostPlayer + " QUITTED"));
+        }else{
+            //TODO: Server lost!
+        }
+    }
+
+    private String findLostPlayer(Map<String, Endpoint> discoveredEndpoints) {
+        for (Player p : game.getPlayers()) {
+            if(discoveredEndpoints.get(p.getNickname()) == null){
+                return p.getNickname();
+            }
+        }
+        return null;
     }
 
     @Override
@@ -626,16 +651,28 @@ public class GameMap extends AppCompatActivity
 
     @Override
     public void onMessage(Object message) {
-        //TODO
+        if(!isServer){
+            String [] txt = ((Message) message).getMessage().split(" ");
+
+            if(txt.length == 3 && txt[0].equals("PLAYER") && txt[2].equals("QUITTED")){
+                deactivatePlayer(txt[1]);
+            }
+        }
+    }
+
+    private void deactivatePlayer(String nickname) {
+        Player player = findPlayer(nickname);
+        player.setActive(false);
+        player.getMarker().remove();
     }
 
     @Override
     public void onSendMove(Object sendMove) {
         Player player = findPlayer(((SendMove)sendMove).getNickname());
+        moveMarker(((SendMove)sendMove).getField(), player.getMarker(), player.getIcon());
         if(isServer){
             serverService.send(sendMove);
         }
-        moveMarker(((SendMove)sendMove).getField(), player.getMarker(), player.getIcon());
     }
 
     private Player findPlayer(String nickname) {
