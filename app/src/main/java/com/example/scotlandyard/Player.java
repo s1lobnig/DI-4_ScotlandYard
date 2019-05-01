@@ -1,5 +1,6 @@
 package com.example.scotlandyard;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
 import java.io.Serializable;
@@ -8,7 +9,8 @@ public class Player implements Serializable {
     private String nickname;
     private boolean isActive;
     private int icon;
-    private Marker marker;
+    private LatLng position;
+    private transient Marker marker;
 
     public Player(String nickname) {
         this.nickname = nickname;
@@ -37,6 +39,14 @@ public class Player implements Serializable {
 
     public void setIcon(int icon) {
         this.icon = icon;
+    }
+
+    public LatLng getPosition() {
+        return position;
+    }
+
+    public void setPosition(LatLng position) {
+        this.position = position;
     }
 
     public Marker getMarker() {

@@ -231,10 +231,11 @@ public class GameMap extends AppCompatActivity
             for (int i = 0; i < game.getPlayers().size(); i++) {
                 game.getPlayers().get(i).setIcon(figures[i]);
                 game.getPlayers().get(i).setMarker(initializeMarker(figures[i]));
+                game.getPlayers().get(i).setPosition(game.getPlayers().get(i).getMarker().getPosition());
             }
             myPlayer = findPlayer(myPlayer.getNickname());
             serverService.send(game);
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(game.getPlayers().get(0).getMarker().getPosition(), 16f));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(game.getPlayers().get(0).getPosition(), 16f));
         }
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
@@ -243,10 +244,11 @@ public class GameMap extends AppCompatActivity
                     boolean isValid = isValidMove(field, myPlayer.getMarker());
                     if(isValid){
                         if(isServer) {
-                            moveMarker(field, myPlayer.getMarker(), myPlayer.getIcon());
-                            serverService.send(new SendMove(myPlayer.getNickname(), field));
+                            Point feeldnumber = Points.getPoints()[getFeeldnumber(field)];
+                            moveMarker(feeldnumber, myPlayer.getMarker(), myPlayer.getIcon());
+                            serverService.send(new SendMove(myPlayer.getNickname(), getFeeldnumber(field)));
                         }else{
-                            clientService.send(new SendMove(myPlayer.getNickname(), field));
+                            clientService.send(new SendMove(myPlayer.getNickname(), getFeeldnumber(field)));
                         }
                     }else{
                         // Toast to indicate that the clicked location is not reachable from the current
@@ -271,7 +273,7 @@ public class GameMap extends AppCompatActivity
         return (Boolean) routeToTake[0];
     }
 
-    private void moveMarker(Marker field, Marker player, int playerIcon) {
+    private void moveMarker(Point newLocation, Marker player, int playerIcon) {
         /*
          * if(playerPenaltay == 0) return movewithrandomEvent(player, marker, true);
          * else
@@ -281,7 +283,6 @@ public class GameMap extends AppCompatActivity
          */
         LatLng current = player.getPosition();
         Point currentPoint = new Point(current.latitude, current.longitude);
-        Point newLocation = new Point(field.getPosition().latitude, field.getPosition().longitude);
         Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
         boolean isValid = (Boolean) routeToTake[0];
         // if the route would be valid but there is the randowm event "verfahren",
@@ -326,7 +327,7 @@ public class GameMap extends AppCompatActivity
                             Points.getIndex(currentPoint) + 1);
                     final ArrayList<LatLng> routePoints = (ArrayList) routeSliceTimings[0];
                     final ArrayList<Float> timeSlices = (ArrayList) routeSliceTimings[1];
-                    LatLng finalPos = field.getPosition();
+                    LatLng finalPos = newLocation.getLatLng();
                     if (false) {
                         // if random event "Go Back" then...
                         int size = timeSlices.size();
@@ -334,7 +335,7 @@ public class GameMap extends AppCompatActivity
                             timeSlices.add(timeSlices.get(i));
                         }
                         size = routePoints.size();
-                        routePoints.add(field.getPosition());
+                        routePoints.add(newLocation.getLatLng());
                         for (int i = size - 1; i >= 0; i--) {
                             routePoints.add(routePoints.get(i));
                         }
@@ -349,12 +350,12 @@ public class GameMap extends AppCompatActivity
                         timeSlices.add((float) animationDuration);
                         timeSlices.add((float) animationDuration);
                         ArrayList<LatLng> routePoints = new ArrayList<>();
-                        routePoints.add(field.getPosition());
+                        routePoints.add(newLocation.getLatLng());
                         MarkerAnimation.moveMarkerToTarget(player, routePoints, timeSlices,
                                 player.getPosition(), new LatLngInterpolator.Linear(), icon, true,
                                 GameMap.this, playerIcon);
                     } else {
-                        MarkerAnimation.moveMarkerToTarget(player, field.getPosition(),
+                        MarkerAnimation.moveMarkerToTarget(player, newLocation.getLatLng(),
                                 new LatLngInterpolator.Linear(), animationDuration, icon, playerIcon);
 
                     }
@@ -555,6 +556,11 @@ public class GameMap extends AppCompatActivity
         mMap.addPolyline(route);
     }
 
+    private int getFeeldnumber(Marker feeld){
+        Point newLocation = new Point(feeld.getPosition().latitude, feeld.getPosition().longitude);
+        return Points.getIndex(newLocation);
+    }
+
     /**
      * Initializes the player-marker and sets its icon to param icon
      *
@@ -562,7 +568,7 @@ public class GameMap extends AppCompatActivity
      * @return the resulting player-marker
      */
     private Marker initializeMarker(int icon) {
-        int position = (new Random()).nextInt(Points.getPoints().length)-1;
+        int position = (new Random()).nextInt(Points.getPoints().length);
         LatLng latLng = Points.POINTS[position].getLatLng();
         Marker marker = mMap.addMarker(new MarkerOptions().position(latLng));
         marker.setIcon(BitmapDescriptorFactory.fromResource(icon));
@@ -572,7 +578,7 @@ public class GameMap extends AppCompatActivity
     private void setupGame(){
         for (Player p : game.getPlayers()) {
             MarkerOptions markerOptions = new MarkerOptions()
-                    .position(p.getMarker().getPosition())
+                    .position(p.getPosition())
                     .icon(BitmapDescriptorFactory.fromResource(p.getIcon()));
             p.setMarker(mMap.addMarker(markerOptions));
             if(p.getNickname().equals(myPlayer.getNickname())){
@@ -664,7 +670,9 @@ public class GameMap extends AppCompatActivity
     @Override
     public void onSendMove(Object sendMove) {
         Player player = findPlayer(((SendMove)sendMove).getNickname());
-        moveMarker(((SendMove)sendMove).getField(), player.getMarker(), player.getIcon());
+        int feeld = ((SendMove)sendMove).getField();
+        Point point = Points.getPoints()[feeld];
+        moveMarker(point, player.getMarker(), player.getIcon());
         if(isServer){
             serverService.send(sendMove);
         }
@@ -702,11 +710,6 @@ public class GameMap extends AppCompatActivity
 
     @Override
     public void onSendingFailed(Object object) {
-        //retry
-        if(isServer){
-            serverService.send(object);
-        }else{
-            clientService.send(object);
-        }
+        //TODO
     }
 }

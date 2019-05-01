@@ -6,9 +6,9 @@ import java.io.Serializable;
 
 public class SendMove implements Serializable {
     private String nickname;
-    private Marker field;
+    private int field;
 
-    public SendMove(String nickname, Marker field) {
+    public SendMove(String nickname, int field) {
         this.nickname = nickname;
         this.field = field;
     }
@@ -21,11 +21,11 @@ public class SendMove implements Serializable {
         this.nickname = nickname;
     }
 
-    public Marker getField() {
+    public int getField() {
         return field;
     }
 
-    public void setField(Marker field) {
+    public void setField(int field) {
         this.field = field;
     }
 }
