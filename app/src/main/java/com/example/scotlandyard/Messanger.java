@@ -1,12 +1,18 @@
 package com.example.scotlandyard;
 
 import android.content.Intent;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Toast;
+
 import com.example.scotlandyard.connection.ClientInterface;
 import com.example.scotlandyard.connection.ClientService;
 import com.example.scotlandyard.connection.Endpoint;
@@ -19,12 +25,14 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
 
     private static Button btnSend;
     private static EditText textMessage;
+    private static ListView messageList;
 
     private MessageAdapter mMessageAdapter;
-    private Player host;
-    private Player client;
-    private ServerService serverService = ServerService.getInstance();
-    private ClientService clientService = ClientService.getInstance();
+    private Game game;
+    private boolean isServer;
+    private String logTag;
+    private ServerService serverService;
+    private ClientService clientService;
 
 
     @Override
@@ -39,19 +47,45 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
         /* find views */
         textMessage = findViewById(R.id.edittext_chatbox);
         btnSend = findViewById(R.id.button_chatbox_send);
+        messageList = findViewById(R.id.message_list);
 
         /*get data from Intent to distinguish between host and client*/
         Intent intent = getIntent();
-        host = (Player) intent.getSerializableExtra("HOST");
-        client = (Player) intent.getSerializableExtra("CLIENT");
+        //game = ((Game)intent.getSerializableExtra("GAME"));
+        isServer = intent.getBooleanExtra("IS_SERVER", true);
+
+        /*check if user is server or client*/
+        if(isServer){
+            serverService = ServerService.getInstance();
+            serverService.setServer(this);
+            logTag = "SERVER_SERVICE";
+        }else{
+            clientService = ClientService.getInstance();
+            clientService.setClient(this);
+            logTag = "CLIENT_SERVICE";
+        }
+
+        /*set the Adapter to listView*/
+        mMessageAdapter = new MessageAdapter(this);
+        messageList.setAdapter(mMessageAdapter);
 
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String textM = textMessage.getText().toString();
                 Message message = new Message(textM);
-                onMessage(message);
-                //es muss überprüft werden, wer sendet
+
+
+                /*test to check if message cames from server or not*/
+                if(isServer){
+                    textM =" from Server";
+                }else{
+                    textM = " from Client";
+                }
+
+                /*Make Toast to check if receiving message is working*/
+                Toast.makeText(Messanger.this, "" + message.getMessage() + textM, Snackbar.LENGTH_LONG).show();
+
             }
         });
 
@@ -121,16 +155,6 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
     @Override
     public void onMessage(Object o) {
 
-        if (o instanceof Message) {
-            Message message = (Message) o;
-            message.setMessage(((Message) o).getMessage());
-            mMessageAdapter.add(message);
-            if (message.getSender().isHost()) {
-                serverService.send(o);
-            } else {
-                clientService.send(o);
-            }
-        }
     }
 
     @Override
