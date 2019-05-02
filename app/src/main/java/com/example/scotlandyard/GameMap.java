@@ -231,11 +231,12 @@ public class GameMap extends AppCompatActivity
             for (int i = 0; i < game.getPlayers().size(); i++) {
                 game.getPlayers().get(i).setIcon(figures[i]);
                 game.getPlayers().get(i).setMarker(initializeMarker(figures[i]));
-                game.getPlayers().get(i).setPosition(game.getPlayers().get(i).getMarker().getPosition());
+                LatLng position = game.getPlayers().get(i).getMarker().getPosition();
+                game.getPlayers().get(i).setPosition(new Point(position.latitude, position.longitude));
             }
             myPlayer = findPlayer(myPlayer.getNickname());
             serverService.send(game);
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(game.getPlayers().get(0).getPosition(), 16f));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myPlayer.getPosition().getLatLng(), 16f));
         }
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
@@ -578,7 +579,7 @@ public class GameMap extends AppCompatActivity
     private void setupGame(){
         for (Player p : game.getPlayers()) {
             MarkerOptions markerOptions = new MarkerOptions()
-                    .position(p.getPosition())
+                    .position(p.getPosition().getLatLng())
                     .icon(BitmapDescriptorFactory.fromResource(p.getIcon()));
             p.setMarker(mMap.addMarker(markerOptions));
             if(p.getNickname().equals(myPlayer.getNickname())){
@@ -644,6 +645,7 @@ public class GameMap extends AppCompatActivity
 
     @Override
     public void onGameData(Object game) {
+        Log.d(logTag, "Got game data");
         if(!isServer){
             this.game = (Game) game;
             setupGame();
@@ -694,6 +696,7 @@ public class GameMap extends AppCompatActivity
 
     @Override
     public void onDisconnected(Endpoint endpoint) {
+        Log.d(logTag, endpoint.getName() + " has disconnected");
         if(isServer) {
             Player lostPlayer = findPlayer(endpoint.getName());
             deactivatePlayer(lostPlayer);
@@ -710,6 +713,7 @@ public class GameMap extends AppCompatActivity
 
     @Override
     public void onSendingFailed(Object object) {
+        Log.e(logTag, "Sending failed");
         //TODO
     }
 }
