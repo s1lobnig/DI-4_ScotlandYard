@@ -21,7 +21,7 @@ import com.example.scotlandyard.connection.ServerService;
 
 import java.util.Map;
 
-public class Messanger extends AppCompatActivity implements ServerInterface, ClientInterface{
+public class Messanger extends AppCompatActivity implements ServerInterface, ClientInterface {
 
     private static Button btnSend;
     private static EditText textMessage;
@@ -33,6 +33,7 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
     private String logTag;
     private ServerService serverService;
     private ClientService clientService;
+    private boolean isBelongsToCurrentUser = false; //if no send button is clicked, then message is received
 
 
     @Override
@@ -55,11 +56,11 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
         isServer = intent.getBooleanExtra("IS_SERVER", true);
 
         /*check if user is server or client*/
-        if(isServer){
+        if (isServer) {
             serverService = ServerService.getInstance();
             serverService.setServer(this);
             logTag = "SERVER_SERVICE";
-        }else{
+        } else {
             clientService = ClientService.getInstance();
             clientService.setClient(this);
             logTag = "CLIENT_SERVICE";
@@ -74,24 +75,25 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
             public void onClick(View view) {
                 String textM = textMessage.getText().toString();
 
-
-                /*check if it send or received message*/
-                boolean isBelongsToCurrentUser = true;
+                /*set message belong to current user*/
+                isBelongsToCurrentUser = true;
                 Message message = new Message(textM, isBelongsToCurrentUser);
                 mMessageAdapter.add(message);
 
                 /*test to check if message cames from server or not*/
-                if(isServer){
-                    textM =" from Server";
-                }else{
+                if (isServer) {
+                    textM = " from Server";
+                } else {
                     textM = " from Client";
                 }
 
                 /*Make Toast to check if receiving message is working*/
                 Toast.makeText(Messanger.this, "" + message.getMessage() + textM, Snackbar.LENGTH_LONG).show();
 
+                /*send message to all players*/
+                onMessage(message);
 
-                // scroll the ListView to the last added element
+                /*scroll the ListView to the last added element*/
                 messageList.setSelection(messageList.getCount() - 1);
 
             }
@@ -161,7 +163,20 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
     }
 
     @Override
-    public void onMessage(Object o) {
+    public void onMessage(Object message) {
+        Log.d(logTag, "Chat message received!");
+
+        String receivedMessage = ((Message) message).getMessage();
+
+        if (isServer) {
+            Log.d(logTag, "Server is sending chat message to clients");
+            serverService.send(receivedMessage);
+
+        } else {
+            Log.d(logTag, "Client is sending chat message to server");
+            clientService.send(receivedMessage);
+        }
+
 
     }
 
