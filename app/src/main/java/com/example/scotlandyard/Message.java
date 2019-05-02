@@ -5,7 +5,6 @@ import java.io.Serializable;
 public class Message implements Serializable {
 
     private String message;
-    private Player sender;
     private boolean belongsToCurrentUser; // is this message sent by us?
 
     private Message() {
@@ -14,11 +13,11 @@ public class Message implements Serializable {
     /**
      * Constructor for creating messages send in messenger
      * @param message
-     * @param sender
+     * @param belongsToCurrentUser
      */
-    public Message(String message, Player sender) {
+    public Message(String message, boolean belongsToCurrentUser) {
         this.message = message;
-        this.sender = sender;
+        this.belongsToCurrentUser = belongsToCurrentUser;
     }
 
     /**
@@ -41,8 +40,5 @@ public class Message implements Serializable {
         return belongsToCurrentUser;
     }
 
-    public Player getSender() {
-        return sender;
-    }
 }
 

@@ -73,8 +73,12 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
             @Override
             public void onClick(View view) {
                 String textM = textMessage.getText().toString();
-                Message message = new Message(textM);
 
+
+                /*check if it send or received message*/
+                boolean isBelongsToCurrentUser = true;
+                Message message = new Message(textM, isBelongsToCurrentUser);
+                mMessageAdapter.add(message);
 
                 /*test to check if message cames from server or not*/
                 if(isServer){
@@ -85,6 +89,10 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
 
                 /*Make Toast to check if receiving message is working*/
                 Toast.makeText(Messanger.this, "" + message.getMessage() + textM, Snackbar.LENGTH_LONG).show();
+
+
+                // scroll the ListView to the last added element
+                messageList.setSelection(messageList.getCount() - 1);
 
             }
         });
