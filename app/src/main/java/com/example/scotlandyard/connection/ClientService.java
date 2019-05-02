@@ -112,6 +112,8 @@ public class ClientService extends ConnectionService {
                                     client.onFailedDiscovery();
                                 }
                             });
+        } else {
+            Log.d(logTag, "Discovery no started. Not Disconnected.");
         }
     }
 
@@ -151,6 +153,8 @@ public class ClientService extends ConnectionService {
             connectionsClient.stopDiscovery();
             connectionState = ConnectionState.DISCONNECTED;
             client.onStoppedDiscovery();
+        } else {
+            Log.d(logTag, "could not stop discovery. Not Discovering");
         }
     }
 
@@ -160,7 +164,7 @@ public class ClientService extends ConnectionService {
      * @param endpoint endpoint to connect to
      */
     public void connectToEndpoint(@NonNull final Endpoint endpoint) {
-        if (connectionState != ConnectionState.CONNECTING && connectionState == ConnectionState.DISCOVERING) {
+        if (connectionState == ConnectionState.DISCOVERING) {
             stopDiscovery();
             connectionState = ConnectionState.CONNECTING;
             Log.d(logTag, "sending a connection request to endpoint " + endpoint);
@@ -311,15 +315,14 @@ public class ClientService extends ConnectionService {
     }
 
     /**
-     * function for disconnecting from an endpoint
-     * @param endpoint  endpoint to disconnect from
+     * function for disconnecting from endpoint
      */
-    public void disconnect(Endpoint endpoint) {
+    public void disconnect() {
         if (connectionState == ConnectionState.CONNECTED) {
-            Log.d(logTag, "disconnecting from "+endpoint.getName());
-            connectionsClient.disconnectFromEndpoint(endpoint.getId());
+            Log.d(logTag, "disconnecting from "+connection.getName());
+            connectionsClient.disconnectFromEndpoint(connection.getId());
             connectionState = ConnectionState.DISCONNECTED;
-            client.onDisconnected(endpoint);
+            client.onDisconnected(connection);
         }
     }
 
