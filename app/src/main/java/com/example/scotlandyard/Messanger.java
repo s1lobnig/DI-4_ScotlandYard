@@ -4,9 +4,7 @@ import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,9 +21,9 @@ import java.util.Map;
 
 public class Messanger extends AppCompatActivity implements ServerInterface, ClientInterface {
 
-    private static Button btnSend;
-    private static EditText textMessage;
-    private static ListView messageList;
+    private Button btnSend;
+    private EditText textMessage;
+    private ListView messageList;
 
     private MessageAdapter mMessageAdapter;
     private Game game;
@@ -91,7 +89,7 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
                 Toast.makeText(Messanger.this, "" + message.getMessage() + textM, Snackbar.LENGTH_LONG).show();
 
                 /*send message to all players*/
-                onMessage(message);
+               // onMessage(message);
 
                 /*scroll the ListView to the last added element*/
                 messageList.setSelection(messageList.getCount() - 1);
@@ -164,9 +162,9 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
 
     @Override
     public void onMessage(Object message) {
-        Log.d(logTag, "Chat message received!");
+        /*Log.d(logTag, "Chat message received!");
 
-        String receivedMessage = ((Message) message).getMessage();
+        Message receivedMessage = (Message) message;
 
         if (isServer) {
             Log.d(logTag, "Server is sending chat message to clients");
@@ -177,7 +175,7 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
             clientService.send(receivedMessage);
         }
 
-
+*/
     }
 
     @Override

@@ -32,6 +32,7 @@ public class Player implements Serializable {
 
     public boolean isHost() {
         return isHost;
+    }
 
     public int getIcon() {
         return icon;
