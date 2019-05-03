@@ -5,6 +5,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -78,18 +79,20 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
                 Message message = new Message(textM, isBelongsToCurrentUser);
                 mMessageAdapter.add(message);
 
-                /*test to check if message cames from server or not*/
+                /*test to check if message comes from server or not*/
                 if (isServer) {
                     textM = " from Server";
+                    /*send message to all players*/
+                    onMessage(message);
+
                 } else {
                     textM = " from Client";
+                    Log.d(logTag, "Client is sending chat message to server");
+                    clientService.send(message);
                 }
 
                 /*Make Toast to check if receiving message is working*/
                 Toast.makeText(Messanger.this, "" + message.getMessage() + textM, Snackbar.LENGTH_LONG).show();
-
-                /*send message to all players*/
-               // onMessage(message);
 
                 /*scroll the ListView to the last added element*/
                 messageList.setSelection(messageList.getCount() - 1);
@@ -162,20 +165,25 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
 
     @Override
     public void onMessage(Object message) {
-        /*Log.d(logTag, "Chat message received!");
+        Log.d(logTag, "Chat message received!");
 
-        Message receivedMessage = (Message) message;
+        /*show received message for all users*/
+        isBelongsToCurrentUser = false;
+        String textOfMessage = ((Message) message).getMessage();
+        Message receivedMessage = new Message(textOfMessage,isBelongsToCurrentUser);
 
         if (isServer) {
             Log.d(logTag, "Server is sending chat message to clients");
             serverService.send(receivedMessage);
+            if(!isServer) {
+                mMessageAdapter.add(receivedMessage);
+                /*scroll the ListView to the last added element*/
+                messageList.setSelection(messageList.getCount() - 1);
+            }
 
-        } else {
-            Log.d(logTag, "Client is sending chat message to server");
-            clientService.send(receivedMessage);
         }
 
-*/
+
     }
 
     @Override
@@ -200,6 +208,10 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
 
     @Override
     public void onSendingFailed(Object object) {
+
+    }
+
+    public void addMessageAdapter(Message message){
 
     }
 }
