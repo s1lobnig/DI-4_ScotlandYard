@@ -28,11 +28,11 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
 
     private MessageAdapter mMessageAdapter;
     private Game game;
+    private Player player;
     private boolean isServer;
     private String logTag;
     private ServerService serverService;
     private ClientService clientService;
-    private boolean isBelongsToCurrentUser = false; //if no send button is clicked, then message is received
 
 
     @Override
@@ -51,8 +51,9 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
 
         /*get data from Intent to distinguish between host and client*/
         Intent intent = getIntent();
-        //game = ((Game)intent.getSerializableExtra("GAME"));
         isServer = intent.getBooleanExtra("IS_SERVER", true);
+        final String nickname = intent.getStringExtra("USERNAME");
+        player = new Player(nickname);
 
         /*check if user is server or client*/
         if (isServer) {
@@ -75,24 +76,21 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
                 String textM = textMessage.getText().toString();
 
                 /*set message belong to current user*/
-                isBelongsToCurrentUser = true;
-                Message message = new Message(textM, isBelongsToCurrentUser);
+                Message message = new Message(textM, player);
+                message.setBelongsToCurrentUser(true);
+
+                /*add message to the listView*/
                 mMessageAdapter.add(message);
 
                 /*test to check if message comes from server or not*/
                 if (isServer) {
-                    textM = " from Server";
                     /*send message to all players*/
                     onMessage(message);
 
                 } else {
-                    textM = " from Client";
                     Log.d(logTag, "Client is sending chat message to server");
                     clientService.send(message);
                 }
-
-                /*Make Toast to check if receiving message is working*/
-                Toast.makeText(Messanger.this, "" + message.getMessage() + textM, Snackbar.LENGTH_LONG).show();
 
                 /*scroll the ListView to the last added element*/
                 messageList.setSelection(messageList.getCount() - 1);
@@ -167,22 +165,26 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
     public void onMessage(Object message) {
         Log.d(logTag, "Chat message received!");
 
-        /*show received message for all users*/
-        isBelongsToCurrentUser = false;
         String textOfMessage = ((Message) message).getMessage();
-        Message receivedMessage = new Message(textOfMessage,isBelongsToCurrentUser);
+        Player sender = new Player(((Message) message).getNickname());
+        Message receivedMessage = new Message(textOfMessage,sender);
 
         if (isServer) {
             Log.d(logTag, "Server is sending chat message to clients");
-            serverService.send(receivedMessage);
-            if(!isServer) {
-                mMessageAdapter.add(receivedMessage);
-                /*scroll the ListView to the last added element*/
-                messageList.setSelection(messageList.getCount() - 1);
+
+            /*check if message belongs to current user*/
+            if(!(player.getNickname().equals(sender.getNickname()))) {
+                receivedMessage.setBelongsToCurrentUser(false);
             }
+
+            /*show received message for all users*/
+            serverService.send(receivedMessage);
 
         }
 
+        mMessageAdapter.add(receivedMessage);
+        /*scroll the ListView to the last added element*/
+        messageList.setSelection(messageList.getCount() - 1);
 
     }
 

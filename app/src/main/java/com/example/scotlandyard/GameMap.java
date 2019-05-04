@@ -57,18 +57,6 @@ public class GameMap extends AppCompatActivity
         Intent intent = getIntent();
         String nickname = intent.getStringExtra("USERNAME");
 
-        game = ((Game)intent.getSerializableExtra("GAME"));
-        isServer = intent.getBooleanExtra("IS_SERVER", true);
-        if(isServer){
-            serverService = ServerService.getInstance();
-            serverService.setServer(this);
-            logTag = "SERVER_SERVICE";
-        }else{
-            clientService = ClientService.getInstance();
-            clientService.setClient(this);
-            logTag = "CLIENT_SERVICE";
-        }
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(nickname);
         setSupportActionBar(toolbar);
