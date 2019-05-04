@@ -1,4 +1,4 @@
-package com.example.scotlandyard;
+package com.example.scotlandyard.Lobby;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,9 +10,13 @@ import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import com.example.scotlandyard.Map.GameMap;
+import com.example.scotlandyard.Player;
+import com.example.scotlandyard.R;
 import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.connection.ServerInterface;
 import com.example.scotlandyard.connection.ServerService;
+import com.example.scotlandyard.messenger.Message;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -39,6 +43,9 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
         String serverName = intent.getStringExtra("SERVER_NAME");
         final String userName = intent.getExtras().getString("USER_NAME");
         final int maxPlayers = intent.getExtras().getInt("MAX_PLAYERS");
+
+        final boolean randomEvents = intent.getBooleanExtra("RANDOM_EVENTS", false);
+        final boolean randomMrX = intent.getBooleanExtra("RANDOM_MR_X", false);
         boolean buttonEnabled = intent.getExtras().getBoolean("ENABLE_BUTTON");
 
         /* Start ServerService and start advertising own endpoint. */
@@ -62,6 +69,7 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
                 game.getPlayers().add(new Player("anyone"));
                 intent.putExtra("GAME", game);
                 intent.putExtra("IS_SERVER", true);
+                intent.putExtra("RANDOM_EVENTS", randomEvents);
                 startActivity(intent);
             }
         });

@@ -4,9 +4,9 @@ import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.example.scotlandyard.Game;
-import com.example.scotlandyard.Message;
-import com.example.scotlandyard.SendMove;
+import com.example.scotlandyard.Lobby.Game;
+import com.example.scotlandyard.messenger.Message;
+import com.example.scotlandyard.Map.Motions.SendMove;
 import com.google.android.gms.nearby.connection.AdvertisingOptions;
 import com.google.android.gms.nearby.connection.ConnectionInfo;
 import com.google.android.gms.nearby.connection.ConnectionLifecycleCallback;
@@ -19,7 +19,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;

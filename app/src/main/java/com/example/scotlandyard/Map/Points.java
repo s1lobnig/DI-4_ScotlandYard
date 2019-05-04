@@ -1,5 +1,6 @@
-package com.example.scotlandyard;
+package com.example.scotlandyard.Map;
 
+import com.example.scotlandyard.R;
 import com.google.android.gms.maps.model.LatLng;
 
 /**

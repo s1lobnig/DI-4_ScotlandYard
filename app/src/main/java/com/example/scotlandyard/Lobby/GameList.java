@@ -1,4 +1,4 @@
-package com.example.scotlandyard;
+package com.example.scotlandyard.Lobby;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,9 +16,13 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.scotlandyard.Map.GameMap;
+import com.example.scotlandyard.Player;
+import com.example.scotlandyard.R;
 import com.example.scotlandyard.connection.ClientInterface;
 import com.example.scotlandyard.connection.ClientService;
 import com.example.scotlandyard.connection.Endpoint;
+import com.example.scotlandyard.messenger.Message;
 
 import java.util.ArrayList;
 import java.util.List;

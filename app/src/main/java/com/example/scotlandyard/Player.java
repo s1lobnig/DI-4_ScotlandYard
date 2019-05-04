@@ -10,9 +10,11 @@ public class Player implements Serializable {
     private String nickname;
     private int icon;
     private Marker marker;
+    private boolean isMrX;
 
     public Player(String nickname) {
         this.nickname = nickname;
+        isMrX = false;
     }
 
     public String getNickname() {

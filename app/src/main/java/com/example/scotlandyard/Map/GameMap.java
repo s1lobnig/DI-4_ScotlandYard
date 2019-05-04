@@ -1,4 +1,4 @@
-package com.example.scotlandyard;
+package com.example.scotlandyard.Map;
 
 import android.content.Intent;
 import android.content.res.Resources;
@@ -10,6 +10,16 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 
+import com.example.scotlandyard.Lobby.Game;
+import com.example.scotlandyard.Map.Motions.LatLngInterpolator;
+import com.example.scotlandyard.Map.Motions.MarkerAnimation;
+import com.example.scotlandyard.Map.Motions.SendMove;
+import com.example.scotlandyard.messenger.Messanger;
+import com.example.scotlandyard.Player;
+import com.example.scotlandyard.PlayersOverview;
+import com.example.scotlandyard.R;
+import com.example.scotlandyard.Map.Motions.RandomEvent;
+import com.example.scotlandyard.Settings;
 import com.example.scotlandyard.connection.ClientInterface;
 import com.example.scotlandyard.connection.ClientService;
 import com.example.scotlandyard.connection.Endpoint;
@@ -51,12 +61,14 @@ public class GameMap extends AppCompatActivity
     private ServerService serverService;
     private ClientService clientService;
     private boolean isServer;
+    private boolean isMrX;
     private String logTag;
 
     private static final String TAG = GameMap.class.getSimpleName();
     private GoogleMap mMap;
     private int playerPenaltay = 0;
     private Game game;
+    private boolean randomEventsActive;
     private static final int[] PLAYER_ICONS = {
             R.drawable.player1,
             R.drawable.player2,
@@ -83,12 +95,14 @@ public class GameMap extends AppCompatActivity
 
         String nickname = intent.getStringExtra("USERNAME");
         isServer = intent.getBooleanExtra("IS_SERVER", true);
-        if(isServer){
-            game = ((Game)intent.getSerializableExtra("GAME"));
+        isMrX = intent.getBooleanExtra("IS_MR_X", false);
+        randomEventsActive = intent.getBooleanExtra("RANDOM_EVENTS", false);
+        if (isServer) {
+            game = ((Game) intent.getSerializableExtra("GAME"));
             serverService = ServerService.getInstance();
             serverService.setServer(this);
             logTag = "SERVER_SERVICE";
-        }else{
+        } else {
             clientService = ClientService.getInstance();
             clientService.setClient(this);
             logTag = "CLIENT_SERVICE";
@@ -218,7 +232,7 @@ public class GameMap extends AppCompatActivity
         mMap.setLatLngBoundsForCameraTarget(mapBounds);
         mMap.setMinZoomPreference(mMap.getCameraPosition().zoom);
         setFields();
-        if(isServer) {
+        if (isServer) {
             for (int i = 0; i < game.getPlayers().size(); i++) {
                 game.getPlayers().get(i).setIcon(PLAYER_ICONS[i]);
                 game.getPlayers().get(i).setMarker(initializeMarker(PLAYER_ICONS[i]));
@@ -229,72 +243,70 @@ public class GameMap extends AppCompatActivity
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker field) {
-                if(isServer) {
+                if (isServer) {
                     boolean isValid = moveMarker(field, game.getPlayers().get(0).getMarker(), game.getPlayers().get(0).getIcon());
-                    if(isValid){
+                    if (isValid) {
                         serverService.send(new SendMove(game.getPlayers().get(0), field));
                     }
                     return isValid;
 
-                }else{
+                } else {
                     clientService.send(new SendMove(game.getPlayers().get(0), field));
                     return true;
                 }
             }
         });
     }
-    private boolean movewithrandomEvent(Marker player, Marker marker, int playerIcon) {
+
+    private boolean moveWithRandomEvent(Marker player, Marker marker, int playerIcon) {
         RandomEvent r = new RandomEvent();
         boolean goback = false;
         boolean dontgo = false;
         boolean randomRoute = false;
 
-        if(r.getID() == 0){
+        if (r.getID() == 0) {
             Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
             dontgo = true;
-        }
-        else if(r.getID() == 1){
+        } else if (r.getID() == 1) {
             Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
             goback = true;
-        }
-        else if(r.getID() == 2 ){
+        } else if (r.getID() == 2) {
             Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
             playerPenaltay = 3;
-        }
-        else if (r.getID() == 3){
+        } else if (r.getID() == 3) {
             Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
             randomRoute = true;
         }
-        if(dontgo == false){
-            return move(player,marker,goback, randomRoute, playerIcon);
+        if (dontgo == false) {
+            return move(player, marker, goback, randomRoute, playerIcon);
         }
         return false;
     }
 
     private boolean moveMarker(Marker field, Marker player, int playerIcon) {
-        Random randomNumber = new Random();
-        int r = randomNumber.nextInt(100)%10;
-        //System.out.println("###################"+r+"-"+playerPenaltay);
-        if(r < 3) {
-            if (playerPenaltay == 0){
-                System.out.println("*********************RANDOM EVENT HAPPENING");
-                return movewithrandomEvent(player, field,playerIcon);
+        if (randomEventsActive) {
+            Random randomNumber = new Random();
+            int r = randomNumber.nextInt(100) % 10;
+            if (r < 3) {
+                if (playerPenaltay == 0) {
+                    Log.d("RANDOM_EVENT", "*********************RANDOM EVENT HAPPENING");
+                    return moveWithRandomEvent(player, field, playerIcon);
+                }
             }
-
         }
         return move(player, field, false, false, playerIcon);
     }
 
 
-    private boolean move(Marker player, Marker marker, boolean goBack, boolean randomRoute, int playerIcon){
+    private boolean move(Marker player, Marker marker, boolean goBack, boolean randomRoute, int playerIcon) {
         LatLng current = player.getPosition();
         Point currentPoint = new Point(current.latitude, current.longitude);
         Point newLocation = new Point(marker.getPosition().latitude, marker.getPosition().longitude);
-        Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
+        Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation), isMrX);
         boolean isValid = (Boolean) routeToTake[0];
         // if the route would be valid but there is the randowm event "verfahren", then...
         // Note, this does not work at the moment!
-        if(isValid && randomRoute){
+        if (isValid && randomRoute) {
             routeToTake = Routes.getRandomRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
 
         }
@@ -326,11 +338,11 @@ public class GameMap extends AppCompatActivity
             // Toast to indicate which type of route is taken
             //Toast.makeText(GameMap.this, txt, Snackbar.LENGTH_LONG).show();
             int animationDuration = 3000;
-            if(!(playerPenaltay > 0 && icon == R.drawable.bicycle)) {
+            if (!(playerPenaltay > 0 && icon == R.drawable.bicycle)) {
                 //System.out.println("*******************************");
                 //System.out.println(playerPenaltay);
 
-                if(playerPenaltay > 0)
+                if (playerPenaltay > 0)
                     playerPenaltay--;
                 //System.out.println(playerPenaltay);
                 //System.out.println("*******************************");
@@ -353,10 +365,10 @@ public class GameMap extends AppCompatActivity
                         }
                         finalPos = player.getPosition();
                     }
-                    MarkerAnimation.moveMarkerToTarget(player, routePoints, timeSlices, finalPos, new LatLngInterpolator.Linear(), icon, false, GameMap.this,playerIcon);
+                    MarkerAnimation.moveMarkerToTarget(player, routePoints, timeSlices, finalPos, new LatLngInterpolator.Linear(), icon, false, GameMap.this, playerIcon);
                 } else {
                     if (!goBack) {
-                        MarkerAnimation.moveMarkerToTarget(player, marker.getPosition(), new LatLngInterpolator.Linear(), animationDuration, icon,playerIcon);
+                        MarkerAnimation.moveMarkerToTarget(player, marker.getPosition(), new LatLngInterpolator.Linear(), animationDuration, icon, playerIcon);
                     } else {
                         // if rand event, then...
                         ArrayList<Float> timeSlices = new ArrayList<>();
@@ -364,11 +376,10 @@ public class GameMap extends AppCompatActivity
                         timeSlices.add((float) animationDuration);
                         ArrayList<LatLng> routePoints = new ArrayList<>();
                         routePoints.add(marker.getPosition());
-                        MarkerAnimation.moveMarkerToTarget(player, routePoints, timeSlices, player.getPosition(), new LatLngInterpolator.Linear(), icon, true, GameMap.this,playerIcon);
+                        MarkerAnimation.moveMarkerToTarget(player, routePoints, timeSlices, player.getPosition(), new LatLngInterpolator.Linear(), icon, true, GameMap.this, playerIcon);
                     }
                 }
-            }
-            else{
+            } else {
                 Toast.makeText(GameMap.this, "Das Fahrrad ist noch nicht verfügbar!", Snackbar.LENGTH_LONG).show();
             }
             return true;
@@ -383,9 +394,9 @@ public class GameMap extends AppCompatActivity
      * @param animationDuration Duration of the whole animation
      * @param startPos          Current location-index
      * @return { ArrayList<LatLang> in the correct order (either original (if
-     *         current position = route.StartPos) or revered) ArrayList<Float> which
-     *         contains the animation-duration-slices according to the
-     *         route-part-length }
+     * current position = route.StartPos) or revered) ArrayList<Float> which
+     * contains the animation-duration-slices according to the
+     * route-part-length }
      */
     private Object[] getRouteSlicesAndTimings(Route r, int animationDuration, int startPos) {
         if (startPos == r.getStartPoint()) {
@@ -426,7 +437,7 @@ public class GameMap extends AppCompatActivity
                 routePoints.add(intermediate);
             }
         }
-        return new Object[] { routePoints, timeSlices };
+        return new Object[]{routePoints, timeSlices};
     }
 
     private Object[] regularOrder(Route r, int animationDuration) {
@@ -460,7 +471,7 @@ public class GameMap extends AppCompatActivity
                 routePoints.add(intermediate);
             }
         }
-        return new Object[] { routePoints, timeSlices };
+        return new Object[]{routePoints, timeSlices};
     }
 
     /**
@@ -484,7 +495,8 @@ public class GameMap extends AppCompatActivity
         drawByFoot();
         drawByBicycle();
         drawByBus();
-        drawByTaxiDragan();
+        if (isMrX)
+            drawByTaxiDragan();
     }
 
     /**
@@ -559,7 +571,7 @@ public class GameMap extends AppCompatActivity
         return marker;
     }
 
-    private void setupGame(){
+    private void setupGame() {
         for (Player p : game.getPlayers()) {
             MarkerOptions markerOptions = new MarkerOptions()
                     .position(p.getMarker().getPosition())
@@ -626,7 +638,7 @@ public class GameMap extends AppCompatActivity
 
     @Override
     public void onGameData(Object game) {
-        if(!isServer){
+        if (!isServer) {
             this.game = (Game) game;
             setupGame();
         }
@@ -639,15 +651,15 @@ public class GameMap extends AppCompatActivity
 
     @Override
     public void onSendMove(Object sendMove) {
-        if(isServer){
-            boolean isValid = moveMarker(((SendMove)sendMove).getField(), ((SendMove)sendMove).getPlayer().getMarker(), ((SendMove)sendMove).getPlayer().getIcon());
-            if(isValid){
+        if (isServer) {
+            boolean isValid = moveMarker(((SendMove) sendMove).getField(), ((SendMove) sendMove).getPlayer().getMarker(), ((SendMove) sendMove).getPlayer().getIcon());
+            if (isValid) {
                 serverService.send(sendMove);
-            }else{
+            } else {
                 //TODO: tell client this move is not reachable
             }
-        }else{
-            moveMarker(((SendMove)sendMove).getField(), ((SendMove)sendMove).getPlayer().getMarker(), ((SendMove)sendMove).getPlayer().getIcon());
+        } else {
+            moveMarker(((SendMove) sendMove).getField(), ((SendMove) sendMove).getPlayer().getMarker(), ((SendMove) sendMove).getPlayer().getIcon());
         }
     }
 

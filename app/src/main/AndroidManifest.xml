@@ -21,26 +21,26 @@
         android:screenOrientation="landscape"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".GameCreate"></activity>
+        <activity android:name=".Lobby.GameCreate"></activity>
         <activity
             android:name=".Settings"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".GameMap"
+            android:parentActivityName=".Map.GameMap"
             android:theme="@style/AppTheme.NoActionBar.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.scotlandyard.GameMap" />
+                android:value="com.example.scotlandyard.Map.GameMap" />
         </activity>
         <activity
             android:name=".PlayersOverview"
             android:label="@string/title_activity_players_overview"
-            android:parentActivityName=".GameMap"
+            android:parentActivityName=".Map.GameMap"
             android:theme="@style/AppTheme.NoActionBar.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.scotlandyard.GameMap" />
+                android:value="com.example.scotlandyard.Map.GameMap" />
         </activity>
-        <activity android:name=".Messanger" />
+        <activity android:name=".messenger.Messanger" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -54,11 +54,11 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".GameMap"
+            android:name=".Map.GameMap"
             android:label="@string/title_activity_game_map"
             android:theme="@style/AppTheme.NavDrawer" />
         <activity
-            android:name=".GameList"
+            android:name=".Lobby.GameList"
             android:label="@string/title_activity_game_list"
             android:theme="@style/AppTheme.ActionBar" />
         <activity
@@ -71,12 +71,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".RegistrationActivty"
+            android:name=".Lobby.RegistrationActivty"
             android:theme="@style/AppTheme.ActionBar">
         </activity>
         <activity
-            android:name=".GameActivity"
-            android:parentActivityName=".RegistrationActivty">
+            android:name=".Lobby.GameActivity"
+            android:parentActivityName=".Lobby.RegistrationActivty">
         </activity>
     </application>
 
