@@ -30,8 +30,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
 
-    private static Button createGame;
-    private static Button existingGames;
+    private Button createGame;
+    private Button existingGames;
 
     @Override
     protected void onStart() {

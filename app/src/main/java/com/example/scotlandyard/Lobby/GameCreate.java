@@ -27,15 +27,41 @@ public class GameCreate extends AppCompatActivity {
         findViewById(R.id.createServerBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: Validate serverName and maxPlayers input like in registration class!
+                // TODO: Validate maxPlayers input!
 
-                /* Start game activity. */
-                Intent gameStartIntent = new Intent(GameCreate.this, GamePresettings.class);
-                gameStartIntent.putExtra("ENABLE_BUTTON", true);
-                gameStartIntent.putExtra("SERVER_NAME", serverName.getText().toString());
-                gameStartIntent.putExtra("USER_NAME", userName.getText().toString());
-                gameStartIntent.putExtra("MAX_PLAYERS", Integer.parseInt(maxPlayers.getText().toString()));
-                startActivity(gameStartIntent);
+                String numPlayer = maxPlayers.getText().toString();
+                String nameSever = serverName.getText().toString().trim();
+                String[] splittedS = nameSever.split(" ");
+                String nickname = userName.getText().toString().trim();
+                String[] splittedN = nickname.split(" ");
+                boolean enable = true;
+
+                //nickname must not be empty and must not have any whitespace
+                if (nickname.isEmpty() || splittedN.length != 1) {
+                    userName.setError("Spielername darf keine Leerzeichen enthalten!");
+                    enable = false;
+                }
+
+                //serverName must not be empty and must not have any whitespace
+                if (nameSever.isEmpty() || splittedS.length != 1) {
+                    serverName.setError("Servername darf keine Leerzeichen enthalten!");
+                    enable = false;
+                }
+
+                if(numPlayer == null || numPlayer.equals("")){
+                    maxPlayers.setError("Sie müssen eine Maximalanzahl an Spielern eingeben!");
+                    enable = false;
+                }
+
+                if(enable) {
+                    /* Start game activity. */
+                    Intent gameStartIntent = new Intent(GameCreate.this, GamePresettings.class);
+                    gameStartIntent.putExtra("ENABLE_BUTTON", true);
+                    gameStartIntent.putExtra("SERVER_NAME", serverName.getText().toString());
+                    gameStartIntent.putExtra("USER_NAME", userName.getText().toString());
+                    gameStartIntent.putExtra("MAX_PLAYERS", Integer.parseInt(maxPlayers.getText().toString()));
+                    startActivity(gameStartIntent);
+                }
             }
         });
     }

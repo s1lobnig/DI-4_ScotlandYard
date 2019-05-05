@@ -76,7 +76,7 @@ public class MarkerAnimation {
      * @param route              ................intermediate points between current position and final position
      * @param finalPosition      ........position to be reached at the end of the animation
      * @param latLngInterpolator ...an Interpolator to calculate the values during the animation
-     * @param duration           .............time the animation should last
+     * @param timeSlices           .............time the animation should last
      * @param icon               .................marker icon during the animation
      */
     public static void moveMarkerToTarget(final Marker marker, final ArrayList<LatLng> route, final ArrayList<Float> timeSlices, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, int icon, boolean randEvent, Context context, int finalIcon) {

@@ -34,6 +34,8 @@ public class GameList extends AppCompatActivity implements ClientInterface {
     private ClientService clientService; /* ClientService - used for communication with server(s). */
     private ArrayList<Endpoint> endpoints = new ArrayList<>(); /* List of detected endpoints (servers). */
     private ArrayList<Game> games = new ArrayList<>(); /* List of available games (or game servers). */
+    private String userName;
+    private Player client;
     private Game myData = new Game("", -1);
     private String logTag = "CLIENT_SERVICE";
 
@@ -79,7 +81,9 @@ public class GameList extends AppCompatActivity implements ClientInterface {
         /* Get intent data. */
         Intent intent = getIntent();
         String username = intent.getStringExtra("USERNAME");
-        myData.getPlayers().add(new Player(username));
+        client = new Player(userName);
+        client.setHost(false);
+        myData.getPlayers().add(client);
 
         findViewById(R.id.rediscoverButton).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,6 +146,8 @@ public class GameList extends AppCompatActivity implements ClientInterface {
                         /* Start registration activity (enter username). */
                         Log.d(logTag, "Loading game map.");
                         Intent intent = new Intent(GameList.this, GameMap.class);
+
+                        intent.putExtra("CLIENT", client);
                         intent.putExtra("USER_NAME", myData.getPlayers().get(0).getNickname());
                         intent.putExtra("IS_SERVER", false);
                         startActivity(intent);

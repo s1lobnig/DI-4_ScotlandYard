@@ -24,7 +24,7 @@
     <string name="title_activity_chat">Chat</string>
     <string name="server_name">Servername</string>
     <string name="username_server">Spielername (Server)</string>
-    <string name="max_players">4</string>
+    <string name="max_players">max Anzahl an Spielern</string>
     <string name="create_server">Server erstellen</string>
     <string name="start_game">Spiel starten</string>
     <string name="waiting_on_server">Warten auf den Server, um das Spiel zu starten</string>

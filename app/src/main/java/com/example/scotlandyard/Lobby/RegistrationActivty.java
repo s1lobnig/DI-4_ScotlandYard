@@ -34,14 +34,12 @@ public class RegistrationActivty extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String nickname = inputField.getText().toString().trim();
-                startGame.setEnabled(!nickname.isEmpty());
+
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                String nickname = inputField.getText().toString().trim();
-                startGame.setEnabled(!nickname.isEmpty());
+
             }
         });
 
@@ -49,9 +47,11 @@ public class RegistrationActivty extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String nickname = inputField.getText().toString().trim();
+                String[] splitted = nickname.split(" ");
 
-                if (nickname.isEmpty()) {
-                    inputField.setError("Sie müssen sich für einen Spielernamen entscheiden!");
+                //nickname must not be empty and must not have any whitespace
+                if (nickname.isEmpty() || splitted.length != 1) {
+                    inputField.setError("Spielername darf keine Leerzeichen enthalten!");
                 } else {
                     try {
                         openGame();
