@@ -1,18 +1,19 @@
 package com.example.scotlandyard;
 
-import android.os.Parcelable;
-
 import com.google.android.gms.maps.model.Marker;
 
 import java.io.Serializable;
 
 public class Player implements Serializable {
     private String nickname;
+    private boolean isActive;
     private int icon;
-    private Marker marker;
+    private Point position;
+    private transient Marker marker;
 
     public Player(String nickname) {
         this.nickname = nickname;
+        isActive = true;
     }
 
     public String getNickname() {
@@ -23,12 +24,28 @@ public class Player implements Serializable {
         this.nickname = nickname;
     }
 
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
     public int getIcon() {
         return icon;
     }
 
     public void setIcon(int icon) {
         this.icon = icon;
+    }
+
+    public Point getPosition() {
+        return position;
+    }
+
+    public void setPosition(Point position) {
+        this.position = position;
     }
 
     public Marker getMarker() {

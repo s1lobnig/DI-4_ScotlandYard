@@ -48,16 +48,19 @@ import java.util.Random;
 public class GameMap extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, ClientInterface, ServerInterface {
 
-    private ServerService serverService;
-    private ClientService clientService;
+    private static ServerService serverService;
+    private static ClientService clientService;
     private boolean isServer;
-    private String logTag;
+    private static String logTag;
 
     private static final String TAG = GameMap.class.getSimpleName();
     private GoogleMap mMap;
-    private int playerPenaltay = 0;
-    private Game game;
-    private static final int[] PLAYER_ICONS = {
+    private static int playerPenaltay = 0;
+    private static int round = 1;
+    private static boolean myTurn;
+    private static Game game;
+    private static Player myPlayer;
+    private static int[] PLAYER_ICONS = {
             R.drawable.player1,
             R.drawable.player2,
             R.drawable.player3,
@@ -81,17 +84,23 @@ public class GameMap extends AppCompatActivity
 
         Intent intent = getIntent();
 
+
         String nickname = intent.getStringExtra("USERNAME");
         isServer = intent.getBooleanExtra("IS_SERVER", true);
+        myPlayer = new Player(nickname);
+
         if(isServer){
             game = ((Game)intent.getSerializableExtra("GAME"));
             serverService = ServerService.getInstance();
             serverService.setServer(this);
             logTag = "SERVER_SERVICE";
+            myTurn = true;
         }else{
             clientService = ClientService.getInstance();
             clientService.setClient(this);
             logTag = "CLIENT_SERVICE";
+            //true, because not already implemented. Later it must be false
+            myTurn = true;
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -222,23 +231,36 @@ public class GameMap extends AppCompatActivity
             for (int i = 0; i < game.getPlayers().size(); i++) {
                 game.getPlayers().get(i).setIcon(PLAYER_ICONS[i]);
                 game.getPlayers().get(i).setMarker(initializeMarker(PLAYER_ICONS[i]));
+                LatLng position = game.getPlayers().get(i).getMarker().getPosition();
+                game.getPlayers().get(i).setPosition(new Point(position.latitude, position.longitude));
             }
+            myPlayer = findPlayer(myPlayer.getNickname());
             serverService.send(game);
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(game.getPlayers().get(0).getMarker().getPosition(), 16f));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myPlayer.getPosition().getLatLng(), 16f));
         }
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker field) {
-                if(isServer) {
-                    boolean isValid = moveMarker(field, game.getPlayers().get(0).getMarker(), game.getPlayers().get(0).getIcon());
+                if (myTurn) {
+                    boolean isValid = isValidMove(field, myPlayer.getMarker());
                     if(isValid){
-                        serverService.send(new SendMove(game.getPlayers().get(0), field));
+                        if(isServer) {
+                            Point feeldnumber = Points.getPoints()[getFeeldnumber(field)];
+                            moveMarker(feeldnumber, myPlayer.getMarker(), myPlayer.getIcon());
+                            serverService.send(new SendMove(myPlayer.getNickname(), getFeeldnumber(field)));
+                        }else{
+                            clientService.send(new SendMove(myPlayer.getNickname(), getFeeldnumber(field)));
+                        }
+                    }else{
+                        // Toast to indicate that the clicked location is not reachable from the current
+                        // location
+                        Toast.makeText(GameMap.this, "Unreachable Point :(", Snackbar.LENGTH_LONG).show();
                     }
                     return isValid;
-
                 }else{
-                    clientService.send(new SendMove(game.getPlayers().get(0), field));
-                    return true;
+                    // Toast to indicate that it is not your turn
+                    Toast.makeText(GameMap.this, "Not your turn!", Snackbar.LENGTH_LONG).show();
+                    return false;
                 }
             }
         });
@@ -285,6 +307,13 @@ public class GameMap extends AppCompatActivity
         return move(player, field, false, false, playerIcon);
     }
 
+    private boolean isValidMove(Marker destination, Marker player){
+        LatLng current = player.getPosition();
+        Point currentPoint = new Point(current.latitude, current.longitude);
+        Point newLocation = new Point(destination.getPosition().latitude, destination.getPosition().longitude);
+        Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
+        return (Boolean) routeToTake[0];
+    }
 
     private boolean move(Marker player, Marker marker, boolean goBack, boolean randomRoute, int playerIcon){
         LatLng current = player.getPosition();
@@ -296,7 +325,6 @@ public class GameMap extends AppCompatActivity
         // Note, this does not work at the moment!
         if(isValid && randomRoute){
             routeToTake = Routes.getRandomRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
-
         }
         if (isValid) {
             Route r = (Route) routeToTake[1];
@@ -323,17 +351,10 @@ public class GameMap extends AppCompatActivity
                 default:
                     icon = -1;
             }
-            // Toast to indicate which type of route is taken
-            //Toast.makeText(GameMap.this, txt, Snackbar.LENGTH_LONG).show();
             int animationDuration = 3000;
             if(!(playerPenaltay > 0 && icon == R.drawable.bicycle)) {
-                //System.out.println("*******************************");
-                //System.out.println(playerPenaltay);
-
                 if(playerPenaltay > 0)
                     playerPenaltay--;
-                //System.out.println(playerPenaltay);
-                //System.out.println("*******************************");
                 if (r.getIntermediates() != null) {
                     player.setIcon(BitmapDescriptorFactory.fromResource(icon));
                     Object[] routeSliceTimings = getRouteSlicesAndTimings(r, animationDuration, Points.getIndex(currentPoint) + 1);
@@ -545,6 +566,11 @@ public class GameMap extends AppCompatActivity
         mMap.addPolyline(route);
     }
 
+    private int getFeeldnumber(Marker feeld){
+        Point newLocation = new Point(feeld.getPosition().latitude, feeld.getPosition().longitude);
+        return Points.getIndex(newLocation);
+    }
+
     /**
      * Initializes the player-marker and sets its icon to param icon
      *
@@ -562,9 +588,12 @@ public class GameMap extends AppCompatActivity
     private void setupGame(){
         for (Player p : game.getPlayers()) {
             MarkerOptions markerOptions = new MarkerOptions()
-                    .position(p.getMarker().getPosition())
+                    .position(p.getPosition().getLatLng())
                     .icon(BitmapDescriptorFactory.fromResource(p.getIcon()));
             p.setMarker(mMap.addMarker(markerOptions));
+            if(p.getNickname().equals(myPlayer.getNickname())){
+                myPlayer = p;
+            }
         }
     }
 
@@ -585,8 +614,7 @@ public class GameMap extends AppCompatActivity
 
     @Override
     public void onEndpointLost(Map<String, Endpoint> discoveredEndpoints) {
-        Log.d(logTag, "Endpoint lost");
-        //TODO
+        Log.d(logTag, "Endpoint lost in GameMap");
     }
 
     @Override
@@ -626,6 +654,7 @@ public class GameMap extends AppCompatActivity
 
     @Override
     public void onGameData(Object game) {
+        Log.d(logTag, "Got game data");
         if(!isServer){
             this.game = (Game) game;
             setupGame();
@@ -634,21 +663,39 @@ public class GameMap extends AppCompatActivity
 
     @Override
     public void onMessage(Object message) {
-        //TODO
+        if(!isServer){
+            String [] txt = ((Message) message).getMessage().split(" ");
+
+            if(txt.length == 3 && txt[0].equals("PLAYER") && txt[2].equals("QUITTED")){
+                Player player = findPlayer(txt[1]);
+                deactivatePlayer(player);
+            }
+        }
+    }
+
+    private void deactivatePlayer(Player player) {
+        player.setActive(false);
+        player.getMarker().remove();
     }
 
     @Override
     public void onSendMove(Object sendMove) {
+        Player player = findPlayer(((SendMove)sendMove).getNickname());
+        int feeld = ((SendMove)sendMove).getField();
+        Point point = Points.getPoints()[feeld];
+        moveMarker(point, player.getMarker(), player.getIcon());
         if(isServer){
-            boolean isValid = moveMarker(((SendMove)sendMove).getField(), ((SendMove)sendMove).getPlayer().getMarker(), ((SendMove)sendMove).getPlayer().getIcon());
-            if(isValid){
-                serverService.send(sendMove);
-            }else{
-                //TODO: tell client this move is not reachable
-            }
-        }else{
-            moveMarker(((SendMove)sendMove).getField(), ((SendMove)sendMove).getPlayer().getMarker(), ((SendMove)sendMove).getPlayer().getIcon());
+            serverService.send(sendMove);
         }
+    }
+
+    private Player findPlayer(String nickname) {
+        for (Player p : game.getPlayers()) {
+            if(p.getNickname().equals(nickname)){
+                return p;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -658,7 +705,14 @@ public class GameMap extends AppCompatActivity
 
     @Override
     public void onDisconnected(Endpoint endpoint) {
-        //TODO
+        Log.d(logTag, endpoint.getName() + " has disconnected");
+        if(isServer) {
+            Player lostPlayer = findPlayer(endpoint.getName());
+            deactivatePlayer(lostPlayer);
+            serverService.send(new Message("PLAYER " + lostPlayer.getNickname() + " QUITTED"));
+        }else{
+            //TODO: Server lost!
+        }
     }
 
     @Override
@@ -668,6 +722,7 @@ public class GameMap extends AppCompatActivity
 
     @Override
     public void onSendingFailed(Object object) {
+        Log.e(logTag, "Sending failed");
         //TODO
     }
 }

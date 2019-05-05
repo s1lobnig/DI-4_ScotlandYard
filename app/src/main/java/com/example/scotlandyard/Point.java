@@ -2,7 +2,9 @@ package com.example.scotlandyard;
 
 import com.google.android.gms.maps.model.LatLng;
 
-public class Point {
+import java.io.Serializable;
+
+public class Point implements Serializable {
     private double latitude;
     private double longitude;
     private int icon;

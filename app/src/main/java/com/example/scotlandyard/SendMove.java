@@ -5,27 +5,27 @@ import com.google.android.gms.maps.model.Marker;
 import java.io.Serializable;
 
 public class SendMove implements Serializable {
-    private Player player;
-    private Marker field;
+    private String nickname;
+    private int field;
 
-    public SendMove(Player player, Marker field) {
-        this.player = player;
+    public SendMove(String nickname, int field) {
+        this.nickname = nickname;
         this.field = field;
     }
 
-    public Player getPlayer() {
-        return player;
+    public String getNickname() {
+        return nickname;
     }
 
-    public void setPlayer(Player player) {
-        this.player = player;
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
-    public Marker getField() {
+    public int getField() {
         return field;
     }
 
-    public void setField(Marker field) {
+    public void setField(int field) {
         this.field = field;
     }
 }
