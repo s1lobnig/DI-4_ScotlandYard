@@ -1,5 +1,6 @@
 package com.example.scotlandyard;
 
+import com.example.scotlandyard.Map.Point;
 import com.google.android.gms.maps.model.Marker;
 
 import java.io.Serializable;

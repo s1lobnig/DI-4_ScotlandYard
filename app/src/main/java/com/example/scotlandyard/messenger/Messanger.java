@@ -12,6 +12,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import android.widget.Toast;
+
+import com.example.scotlandyard.R;
 import com.example.scotlandyard.connection.ClientInterface;
 import com.example.scotlandyard.connection.ClientService;
 import com.example.scotlandyard.connection.Endpoint;
