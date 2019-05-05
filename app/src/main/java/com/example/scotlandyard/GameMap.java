@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Messenger;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -55,7 +54,8 @@ public class GameMap extends AppCompatActivity
         setContentView(R.layout.activity_game_navigation);
 
         Intent intent = getIntent();
-        String nickname = intent.getStringExtra("USERNAME");
+        final String nickname = intent.getStringExtra("USERNAME");
+        final boolean isServer = intent.getBooleanExtra("IS_SERVER", false);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(nickname);
@@ -65,7 +65,11 @@ public class GameMap extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(GameMap.this, Messanger.class));
+                Intent mIntent = new Intent(GameMap.this, Messanger.class);
+                mIntent.putExtra("USERNAME", nickname);
+                mIntent.putExtra("IS_SERVER", isServer);
+                startActivity(mIntent);
+
             }
         });
 

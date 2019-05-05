@@ -10,8 +10,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
+import android.widget.Toast;
 import com.example.scotlandyard.connection.ClientInterface;
 import com.example.scotlandyard.connection.ClientService;
 import com.example.scotlandyard.connection.Endpoint;
@@ -27,12 +27,11 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
     private ListView messageList;
 
     private MessageAdapter mMessageAdapter;
-    private Game game;
-    private Player player;
     private boolean isServer;
     private String logTag;
     private ServerService serverService;
     private ClientService clientService;
+    private String nickname;
 
 
     @Override
@@ -51,9 +50,9 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
 
         /*get data from Intent to distinguish between host and client*/
         Intent intent = getIntent();
-        isServer = intent.getBooleanExtra("IS_SERVER", true);
-        final String nickname = intent.getStringExtra("USERNAME");
-        player = new Player(nickname);
+        isServer = intent.getBooleanExtra("IS_SERVER", false);
+        nickname = intent.getStringExtra("USERNAME");
+
 
         /*check if user is server or client*/
         if (isServer) {
@@ -76,7 +75,7 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
                 String textM = textMessage.getText().toString();
 
                 /*set message belong to current user*/
-                Message message = new Message(textM, player);
+                Message message = new Message(textM, nickname);
                 message.setBelongsToCurrentUser(true);
 
                 /*add message to the listView*/
@@ -166,26 +165,24 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
         Log.d(logTag, "Chat message received!");
 
         String textOfMessage = ((Message) message).getMessage();
-        Player sender = new Player(((Message) message).getNickname());
-        Message receivedMessage = new Message(textOfMessage,sender);
+        Message receivedMessage = new Message(textOfMessage,((Message) message).getNickname());
 
         if (isServer) {
             Log.d(logTag, "Server is sending chat message to clients");
-
-            /*check if message belongs to current user*/
-            if(!(player.getNickname().equals(sender.getNickname()))) {
-                receivedMessage.setBelongsToCurrentUser(false);
-            }
 
             /*show received message for all users*/
             serverService.send(receivedMessage);
 
         }
 
-        mMessageAdapter.add(receivedMessage);
-        /*scroll the ListView to the last added element*/
-        messageList.setSelection(messageList.getCount() - 1);
+        /*check if message belongs to current user*/
+        if(!(receivedMessage.getNickname().equals(this.nickname))) {
+            receivedMessage.setBelongsToCurrentUser(false);
 
+            mMessageAdapter.add(receivedMessage);
+            /*scroll the ListView to the last added element*/
+            messageList.setSelection(messageList.getCount() - 1);
+        }
     }
 
     @Override

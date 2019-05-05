@@ -62,7 +62,7 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
                 intent.putExtra("USERNAME", userName);
                 intent.putExtra("HOST", host);
 
-                //just for testig set per hand
+                //just for testing set per hand
                 game.getPlayers().add(new Player("someone"));
                 game.getPlayers().add(new Player("anyone"));
                 intent.putExtra("GAME", game);
