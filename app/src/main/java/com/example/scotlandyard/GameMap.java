@@ -245,8 +245,8 @@ public class GameMap extends AppCompatActivity
                     boolean isValid = isValidMove(field, myPlayer.getMarker());
                     if(isValid){
                         if(isServer) {
-                            Point feeldnumber = Points.getPoints()[getFeeldnumber(field)];
-                            moveMarker(feeldnumber, myPlayer.getMarker(), myPlayer.getIcon());
+                            Point point = Points.getPoints()[getFeeldnumber(field)];
+                            moveMarker(point, myPlayer.getMarker(), myPlayer.getIcon());
                             serverService.send(new SendMove(myPlayer.getNickname(), getFeeldnumber(field)));
                         }else{
                             clientService.send(new SendMove(myPlayer.getNickname(), getFeeldnumber(field)));
@@ -265,7 +265,7 @@ public class GameMap extends AppCompatActivity
             }
         });
     }
-    private boolean movewithrandomEvent(Marker player, Marker marker, int playerIcon) {
+    private boolean movewithrandomEvent(Marker player, Point p, int playerIcon) {
         RandomEvent r = new RandomEvent();
         boolean goback = false;
         boolean dontgo = false;
@@ -287,24 +287,24 @@ public class GameMap extends AppCompatActivity
             Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
             randomRoute = true;
         }
-        if(dontgo == false){
-            return move(player,marker,goback, randomRoute, playerIcon);
+        if(!dontgo){
+            return move(player,p,goback, randomRoute, playerIcon);
         }
         return false;
     }
 
-    private boolean moveMarker(Marker field, Marker player, int playerIcon) {
+    private boolean moveMarker(Point p, Marker player, int playerIcon) {
         Random randomNumber = new Random();
         int r = randomNumber.nextInt(100)%10;
         //System.out.println("###################"+r+"-"+playerPenaltay);
         if(r < 3) {
             if (playerPenaltay == 0){
                 System.out.println("*********************RANDOM EVENT HAPPENING");
-                return movewithrandomEvent(player, field,playerIcon);
+                return movewithrandomEvent(player, p,playerIcon);
             }
 
         }
-        return move(player, field, false, false, playerIcon);
+        return move(player, p, false, false, playerIcon);
     }
 
     private boolean isValidMove(Marker destination, Marker player){
@@ -315,10 +315,10 @@ public class GameMap extends AppCompatActivity
         return (Boolean) routeToTake[0];
     }
 
-    private boolean move(Marker player, Marker marker, boolean goBack, boolean randomRoute, int playerIcon){
+    private boolean move(Marker player, Point p, boolean goBack, boolean randomRoute, int playerIcon){
         LatLng current = player.getPosition();
         Point currentPoint = new Point(current.latitude, current.longitude);
-        Point newLocation = new Point(marker.getPosition().latitude, marker.getPosition().longitude);
+        Point newLocation = p;
         Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
         boolean isValid = (Boolean) routeToTake[0];
         // if the route would be valid but there is the randowm event "verfahren", then...
@@ -360,7 +360,7 @@ public class GameMap extends AppCompatActivity
                     Object[] routeSliceTimings = getRouteSlicesAndTimings(r, animationDuration, Points.getIndex(currentPoint) + 1);
                     final ArrayList<LatLng> routePoints = (ArrayList) routeSliceTimings[0];
                     final ArrayList<Float> timeSlices = (ArrayList) routeSliceTimings[1];
-                    LatLng finalPos = marker.getPosition();
+                    LatLng finalPos = p.getLatLng();
                     if (goBack) {
                         // if random event "Go Back" then...
                         int size = timeSlices.size();
@@ -368,7 +368,7 @@ public class GameMap extends AppCompatActivity
                             timeSlices.add(timeSlices.get(i));
                         }
                         size = routePoints.size();
-                        routePoints.add(marker.getPosition());
+                        routePoints.add(p.getLatLng());
                         for (int i = size - 1; i >= 0; i--) {
                             routePoints.add(routePoints.get(i));
                         }
@@ -377,14 +377,14 @@ public class GameMap extends AppCompatActivity
                     MarkerAnimation.moveMarkerToTarget(player, routePoints, timeSlices, finalPos, new LatLngInterpolator.Linear(), icon, false, GameMap.this,playerIcon);
                 } else {
                     if (!goBack) {
-                        MarkerAnimation.moveMarkerToTarget(player, marker.getPosition(), new LatLngInterpolator.Linear(), animationDuration, icon,playerIcon);
+                        MarkerAnimation.moveMarkerToTarget(player, p.getLatLng(), new LatLngInterpolator.Linear(), animationDuration, icon,playerIcon);
                     } else {
                         // if rand event, then...
                         ArrayList<Float> timeSlices = new ArrayList<>();
                         timeSlices.add((float) animationDuration);
                         timeSlices.add((float) animationDuration);
                         ArrayList<LatLng> routePoints = new ArrayList<>();
-                        routePoints.add(marker.getPosition());
+                        routePoints.add(p.getLatLng());
                         MarkerAnimation.moveMarkerToTarget(player, routePoints, timeSlices, player.getPosition(), new LatLngInterpolator.Linear(), icon, true, GameMap.this,playerIcon);
                     }
                 }
@@ -681,8 +681,9 @@ public class GameMap extends AppCompatActivity
     @Override
     public void onSendMove(Object sendMove) {
         Player player = findPlayer(((SendMove)sendMove).getNickname());
-        int feeld = ((SendMove)sendMove).getField();
-        Point point = Points.getPoints()[feeld];
+        int field = ((SendMove)sendMove).getField();
+        Point point = Points.getPoints()[field];
+        Log.d("SEND_MOVE","sending move from " + player.getMarker().getPosition() + " to point " + point.getLatLng() + " (" + field + ")");
         moveMarker(point, player.getMarker(), player.getIcon());
         if(isServer){
             serverService.send(sendMove);
