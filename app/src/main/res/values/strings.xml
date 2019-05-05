@@ -34,4 +34,5 @@
     <string name="randEventGoBack">Oh nein! Du hast was vergessen! Du musst wieder zurück gehen</string>
     <!-- Text für "NaviSaysNo" Random event - Toast -->
     <string name="randEventNaviSaysNo">Dein Navi sagt "Nein"...Du hast dich verfahren</string>
+    <string name="title_activity_game_presettings">GamePresettings</string>
 </resources>

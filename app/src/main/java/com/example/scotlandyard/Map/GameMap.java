@@ -14,6 +14,11 @@ import com.example.scotlandyard.Lobby.Game;
 import com.example.scotlandyard.Map.Motions.LatLngInterpolator;
 import com.example.scotlandyard.Map.Motions.MarkerAnimation;
 import com.example.scotlandyard.Map.Motions.SendMove;
+import com.example.scotlandyard.Map.Roadmap.Entry;
+import com.example.scotlandyard.Map.Roadmap.EntryPosition;
+import com.example.scotlandyard.Map.Roadmap.EntryVehicle;
+import com.example.scotlandyard.Map.Roadmap.Roadmap;
+import com.example.scotlandyard.Map.Roadmap.Vehicle;
 import com.example.scotlandyard.messenger.Messanger;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.PlayersOverview;
@@ -64,6 +69,8 @@ public class GameMap extends AppCompatActivity
     private boolean isMrX;
     private String logTag;
 
+    private Roadmap roadmap;
+
     private static final String TAG = GameMap.class.getSimpleName();
     private GoogleMap mMap;
     private int playerPenaltay = 0;
@@ -97,6 +104,7 @@ public class GameMap extends AppCompatActivity
         isServer = intent.getBooleanExtra("IS_SERVER", true);
         isMrX = intent.getBooleanExtra("IS_MR_X", false);
         randomEventsActive = intent.getBooleanExtra("RANDOM_EVENTS", false);
+        this.roadmap = new Roadmap();
         if (isServer) {
             game = ((Game) intent.getSerializableExtra("GAME"));
             serverService = ServerService.getInstance();
@@ -191,6 +199,8 @@ public class GameMap extends AppCompatActivity
             intent = new Intent(this, PlayersOverview.class);
         } else if (id == R.id.nav_settings) {
             intent = new Intent(this, Settings.class);
+        } else if (id == R.id.nav_roadmap) {
+            /* TODO: Open dialogue window to display roadmap of mr x */
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -249,7 +259,6 @@ public class GameMap extends AppCompatActivity
                         serverService.send(new SendMove(game.getPlayers().get(0), field));
                     }
                     return isValid;
-
                 } else {
                     clientService.send(new SendMove(game.getPlayers().get(0), field));
                     return true;
@@ -308,44 +317,31 @@ public class GameMap extends AppCompatActivity
         // Note, this does not work at the moment!
         if (isValid && randomRoute) {
             routeToTake = Routes.getRandomRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
-
         }
         if (isValid) {
             Route r = (Route) routeToTake[1];
-            String txt = "";
             int icon;
             int vehicle = (int) routeToTake[2];
             switch (vehicle) {
                 case 0:
                     icon = R.drawable.pedestrian;
-                    txt = "foot route";
                     break;
                 case 1:
                     icon = R.drawable.bicycle;
-                    txt = "bicycle route";
                     break;
                 case 2:
                     icon = R.drawable.bus;
-                    txt = "bus route";
                     break;
                 case 3:
                     icon = R.drawable.taxi;
-                    txt = "taxi route";
                     break;
                 default:
                     icon = -1;
             }
-            // Toast to indicate which type of route is taken
-            //Toast.makeText(GameMap.this, txt, Snackbar.LENGTH_LONG).show();
             int animationDuration = 3000;
             if (!(playerPenaltay > 0 && icon == R.drawable.bicycle)) {
-                //System.out.println("*******************************");
-                //System.out.println(playerPenaltay);
-
                 if (playerPenaltay > 0)
                     playerPenaltay--;
-                //System.out.println(playerPenaltay);
-                //System.out.println("*******************************");
                 if (r.getIntermediates() != null) {
                     player.setIcon(BitmapDescriptorFactory.fromResource(icon));
                     Object[] routeSliceTimings = getRouteSlicesAndTimings(r, animationDuration, Points.getIndex(currentPoint) + 1);
@@ -650,16 +646,19 @@ public class GameMap extends AppCompatActivity
     }
 
     @Override
-    public void onSendMove(Object sendMove) {
-        if (isServer) {
-            boolean isValid = moveMarker(((SendMove) sendMove).getField(), ((SendMove) sendMove).getPlayer().getMarker(), ((SendMove) sendMove).getPlayer().getIcon());
-            if (isValid) {
-                serverService.send(sendMove);
+    public void onSendMove(Object object) {
+        if (object instanceof SendMove) {
+            SendMove sendMove = (SendMove) object;
+            if (isServer) {
+                boolean isValid = moveMarker(sendMove.getField(), sendMove.getPlayer().getMarker(), sendMove.getPlayer().getIcon());
+                if (isValid) {
+                    serverService.send(sendMove);
+                } else {
+                    //TODO: tell client this move is not valid
+                }
             } else {
-                //TODO: tell client this move is not reachable
+                moveMarker(sendMove.getField(), sendMove.getPlayer().getMarker(), sendMove.getPlayer().getIcon());
             }
-        } else {
-            moveMarker(((SendMove) sendMove).getField(), ((SendMove) sendMove).getPlayer().getMarker(), ((SendMove) sendMove).getPlayer().getIcon());
         }
     }
 

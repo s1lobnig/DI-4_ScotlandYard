@@ -63,37 +63,6 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_begin="372dp" />
 
-    <CheckBox
-        android:id="@+id/randomEvents"
-        android:layout_width="212dp"
-        android:layout_height="37dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="32dp"
-        android:text="Random Events"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/randomMrX"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <CheckBox
-        android:id="@+id/randomMrX"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="32dp"
-        android:text="Zufällige Wahl von Mr.X"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/createServerBtn"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <Button
         android:id="@+id/createServerBtn"
         android:layout_width="wrap_content"
