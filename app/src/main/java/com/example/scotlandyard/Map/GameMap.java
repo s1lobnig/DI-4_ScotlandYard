@@ -17,8 +17,8 @@ import com.example.scotlandyard.Map.Motions.SendMove;
 import com.example.scotlandyard.Map.Roadmap.Entry;
 import com.example.scotlandyard.Map.Roadmap.EntryPosition;
 import com.example.scotlandyard.Map.Roadmap.EntryVehicle;
-import com.example.scotlandyard.Map.Roadmap.Roadmap;
-import com.example.scotlandyard.Map.Roadmap.Vehicle;
+import com.example.scotlandyard.Map.Roadmap.RoadMap;
+import com.example.scotlandyard.Map.Roadmap.RoadMapDisplay;
 import com.example.scotlandyard.messenger.Message;
 import com.example.scotlandyard.messenger.Messanger;
 import com.example.scotlandyard.Player;
@@ -77,7 +77,7 @@ public class GameMap extends AppCompatActivity
     private static Game game;
     private static Player myPlayer;
     private boolean isMrX;
-    private Roadmap roadmap;
+    private RoadMap roadmap;
 
     private boolean randomEventsActive;
     private static final int[] PLAYER_ICONS = {
@@ -106,9 +106,9 @@ public class GameMap extends AppCompatActivity
 
         nickname = intent.getStringExtra("USERNAME");
         isServer = intent.getBooleanExtra("IS_SERVER", true);
-        isMrX = intent.getBooleanExtra("IS_MR_X", false);
+        isMrX = intent.getBooleanExtra("IS_MR_X", true);
         randomEventsActive = intent.getBooleanExtra("RANDOM_EVENTS", false);
-        this.roadmap = new Roadmap();
+        this.roadmap = new RoadMap();
         if (isServer) {
             game = ((Game) intent.getSerializableExtra("GAME"));
             serverService = ServerService.getInstance();
@@ -212,6 +212,8 @@ public class GameMap extends AppCompatActivity
             intent = new Intent(this, Settings.class);
         } else if (id == R.id.nav_roadmap) {
             /* TODO: Open dialogue window to display roadmap of mr x */
+            intent = new Intent(this, RoadMapDisplay.class);
+            intent.putExtra("ROAD_MAP",roadmap);
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -370,6 +372,15 @@ public class GameMap extends AppCompatActivity
                     break;
                 default:
                     icon = -1;
+            }
+            if(isMrX){
+                Entry e;
+                if(roadmap.getNumberOfEntries() == 2 || roadmap.getNumberOfEntries() == 6 || roadmap.getNumberOfEntries() == 11) {
+                    e = new EntryPosition(roadmap.getNumberOfEntries()+1,Points.getIndex(p));
+                } else {
+                    e = new EntryVehicle(roadmap.getNumberOfEntries()+1,icon);
+                }
+                roadmap.addEntry(e);
             }
             int animationDuration = 3000;
             if (!(playerPenaltay > 0 && icon == R.drawable.bicycle)) {

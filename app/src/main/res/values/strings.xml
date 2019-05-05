@@ -35,4 +35,5 @@
     <!-- Text für "NaviSaysNo" Random event - Toast -->
     <string name="randEventNaviSaysNo">Dein Navi sagt "Nein"...Du hast dich verfahren</string>
     <string name="title_activity_game_presettings">GamePresettings</string>
+    <string name="title_activity_road_map_display">RoadMapDisplay</string>
 </resources>

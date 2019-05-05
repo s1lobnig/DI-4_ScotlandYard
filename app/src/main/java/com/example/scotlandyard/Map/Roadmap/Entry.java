@@ -1,7 +1,13 @@
 package com.example.scotlandyard.Map.Roadmap;
 
-public abstract class Entry {
-    private int turn;
+import android.content.Context;
+import android.view.View;
+import android.view.ViewGroup;
+
+import java.io.Serializable;
+
+public abstract class Entry implements Serializable {
+    protected int turn;
 
     public Entry(int turn) {
         this.turn = turn;
@@ -14,4 +20,6 @@ public abstract class Entry {
     public int getTurn() {
         return turn;
     }
+
+    public abstract View getView(Context context);
 }

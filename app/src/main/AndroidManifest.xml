@@ -22,6 +22,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
         <activity
+            android:name=".Map.Roadmap.RoadMapDisplay"
+            android:label="@string/title_activity_road_map_display"
+            android:parentActivityName=".Map.GameMap"
+            android:theme="@style/AppTheme.NoActionBar.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.scotlandyard.Map.GameMap" />
+        </activity>
+        <activity
             android:name=".Lobby.GamePresettings"
             android:label="@string/title_activity_game_presettings"
             android:parentActivityName=".Lobby.GameCreate"
@@ -81,10 +90,10 @@
         </activity>
         <activity
             android:name=".Lobby.RegistrationActivty"
-            android:theme="@style/AppTheme.ActionBar"></activity>
+            android:theme="@style/AppTheme.ActionBar" />
         <activity
             android:name=".Lobby.GameActivity"
-            android:parentActivityName=".Lobby.RegistrationActivty"></activity>
+            android:parentActivityName=".Lobby.RegistrationActivty" />
     </application>
 
 </manifest>
