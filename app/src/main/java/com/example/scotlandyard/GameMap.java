@@ -52,7 +52,7 @@ public class GameMap extends AppCompatActivity
     private static ClientService clientService;
     private boolean isServer;
     private static String logTag;
-
+    private String nickname;
     private static final String TAG = GameMap.class.getSimpleName();
     private GoogleMap mMap;
     private static int playerPenaltay = 0;
@@ -85,7 +85,7 @@ public class GameMap extends AppCompatActivity
         Intent intent = getIntent();
 
 
-        String nickname = intent.getStringExtra("USERNAME");
+        nickname = intent.getStringExtra("USERNAME");
         isServer = intent.getBooleanExtra("IS_SERVER", true);
         myPlayer = new Player(nickname);
 
