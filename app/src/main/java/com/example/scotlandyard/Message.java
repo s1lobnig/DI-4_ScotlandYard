@@ -5,11 +5,26 @@ import java.io.Serializable;
 public class Message implements Serializable {
 
     private String message;
+    private String nicknameSender;
     private boolean belongsToCurrentUser; // is this message sent by us?
 
     private Message() {
     }
 
+    /**
+     * Constructor for creating messages send in messenger
+     * @param message
+     * @param nicknameSender
+     */
+    public Message(String message,String nicknameSender) {
+        this.message = message;
+        this.nicknameSender = nicknameSender;
+    }
+
+    /**
+     * Constructor for creating messages send in GameList
+     * @param message
+     */
     public Message(String message) {
         this.message = message;
     }
@@ -22,8 +37,17 @@ public class Message implements Serializable {
         this.message = message;
     }
 
-    public boolean isBelongsToCurrentUser() {
+    public void setBelongsToCurrentUser(boolean belongsToCurrentUser) {
+        this.belongsToCurrentUser = belongsToCurrentUser;
+    }
+
+    public boolean getBelongsToCurrentUser() {
         return belongsToCurrentUser;
     }
+
+    public String getNickname(){
+        return this.nicknameSender;
+    }
+
 }
 

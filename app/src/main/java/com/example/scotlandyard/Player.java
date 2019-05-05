@@ -10,10 +10,13 @@ public class Player implements Serializable {
     private int icon;
     private Point position;
     private transient Marker marker;
-
+    private boolean isHost;      //variable for checking if sender is Host
+    
     public Player(String nickname) {
         this.nickname = nickname;
         isActive = true;
+        this.nickname = nickname;
+        this.isHost = false;
     }
 
     public String getNickname() {
@@ -30,6 +33,13 @@ public class Player implements Serializable {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+    public void setHost(boolean isHost) {
+        this.isHost = isHost;
+    }
+
+    public boolean isHost() {
+        return isHost;
     }
 
     public int getIcon() {

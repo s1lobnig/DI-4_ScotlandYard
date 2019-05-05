@@ -111,7 +111,10 @@ public class GameMap extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(GameMap.this, Messanger.class));
+                Intent mIntent = new Intent(GameMap.this, Messanger.class);
+                mIntent.putExtra("USERNAME", nickname);
+                mIntent.putExtra("IS_SERVER", isServer);
+                startActivity(mIntent);
             }
         });
 
@@ -328,25 +331,20 @@ public class GameMap extends AppCompatActivity
         }
         if (isValid) {
             Route r = (Route) routeToTake[1];
-            String txt = "";
             int icon;
             int vehicle = (int) routeToTake[2];
             switch (vehicle) {
                 case 0:
                     icon = R.drawable.pedestrian;
-                    txt = "foot route";
                     break;
                 case 1:
                     icon = R.drawable.bicycle;
-                    txt = "bicycle route";
                     break;
                 case 2:
                     icon = R.drawable.bus;
-                    txt = "bus route";
                     break;
                 case 3:
                     icon = R.drawable.taxi;
-                    txt = "taxi route";
                     break;
                 default:
                     icon = -1;
