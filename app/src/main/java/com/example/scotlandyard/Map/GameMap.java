@@ -19,6 +19,7 @@ import com.example.scotlandyard.Map.Roadmap.EntryPosition;
 import com.example.scotlandyard.Map.Roadmap.EntryVehicle;
 import com.example.scotlandyard.Map.Roadmap.RoadMap;
 import com.example.scotlandyard.Map.Roadmap.RoadMapDisplay;
+import com.example.scotlandyard.Map.Roadmap.Ticket;
 import com.example.scotlandyard.messenger.Message;
 import com.example.scotlandyard.messenger.Messanger;
 import com.example.scotlandyard.Player;
@@ -213,7 +214,7 @@ public class GameMap extends AppCompatActivity
         } else if (id == R.id.nav_roadmap) {
             /* TODO: Open dialogue window to display roadmap of mr x */
             intent = new Intent(this, RoadMapDisplay.class);
-            intent.putExtra("ROAD_MAP",roadmap);
+            intent.putExtra("ROAD_MAP", roadmap);
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -356,29 +357,38 @@ public class GameMap extends AppCompatActivity
         if (isValid) {
             Route r = (Route) routeToTake[1];
             int icon;
+            int ticket;
             int vehicle = (int) routeToTake[2];
             switch (vehicle) {
                 case 0:
                     icon = R.drawable.pedestrian;
+                    ticket = R.drawable.ticket_yellow;
                     break;
                 case 1:
                     icon = R.drawable.bicycle;
+                    ticket = R.drawable.ticket_orange;
                     break;
                 case 2:
                     icon = R.drawable.bus;
+                    ticket = R.drawable.ticket_red;
                     break;
                 case 3:
                     icon = R.drawable.taxi;
+                    ticket = R.drawable.ticket_black;
                     break;
                 default:
                     icon = -1;
+                    ticket = -1;
             }
-            if(isMrX){
+            if (isMrX) {
                 Entry e;
-                if(roadmap.getNumberOfEntries() == 2 || roadmap.getNumberOfEntries() == 6 || roadmap.getNumberOfEntries() == 11) {
-                    e = new EntryPosition(roadmap.getNumberOfEntries()+1,Points.getIndex(p));
+                if (roadmap.getNumberOfEntries() == 2 || roadmap.getNumberOfEntries() == 6 || roadmap.getNumberOfEntries() == 11) {
+                    e = new EntryPosition(roadmap.getNumberOfEntries() + 1, Points.getIndex(p));
                 } else {
-                    e = new EntryVehicle(roadmap.getNumberOfEntries()+1,icon);
+                    if(ticket == -1){
+                        ticket = R.drawable.ticket_black;
+                    }
+                    e = new EntryVehicle(roadmap.getNumberOfEntries() + 1, Ticket.get(ticket));
                 }
                 roadmap.addEntry(e);
             }

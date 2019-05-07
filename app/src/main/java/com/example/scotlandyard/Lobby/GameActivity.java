@@ -145,9 +145,9 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
             Game game = (Game) o;
             if (this.game.getCurrentMembers() < this.game.getMaxMembers()) {
                 // is this new added player always the same???
-                // this.game.getPlayers().add(((Game) game).getPlayers().get(0));
-                Player player = new Player(userName);
-                this.game.getPlayers().add(player);
+                this.game.getPlayers().add(((Game) game).getPlayers().get(0));
+                //Player player = new Player(userName);
+                //this.game.getPlayers().add(player);
                 this.game.setCurrentMembers(this.game.getCurrentMembers() + 1);
 
                 ((ArrayAdapter) connectedPlayersListAdapter).notifyDataSetChanged();

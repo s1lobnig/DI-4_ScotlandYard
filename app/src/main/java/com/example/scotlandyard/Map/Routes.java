@@ -549,7 +549,7 @@ public class Routes {
      * false - else
      * [1]: Route route.........resulting route - if valid
      * null - else
-     * [2]: int vehicleCode.....Vehicle code:
+     * [2]: int vehicleCode.....Ticket code:
      * 0 = foot
      * 1 = bicycle
      * 2 = bus
