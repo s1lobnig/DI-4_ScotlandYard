@@ -42,12 +42,12 @@ public class ClientService extends ConnectionService {
     /**
      * Constructor
      *
-     * @param clientInterface object implementing client interface
-     * @param endpointName    name of the device (nickname)
-     * @param activity        current activity
+     * @param clientInterface       object implementing client interface
+     * @param endpointName          name of the device (nickname)
+     * @param connectionsClient     connectionsClient of google api of the activity
      */
-    private ClientService(@NonNull ClientInterface clientInterface, String endpointName, Activity activity) {
-        super(endpointName, activity);
+    private ClientService(@NonNull ClientInterface clientInterface, String endpointName, ConnectionsClient connectionsClient) {
+        super(endpointName, connectionsClient);
         discoveredEndpoints = new HashMap<>();
         logTag = "ClientService";
         this.client = clientInterface;
@@ -67,17 +67,17 @@ public class ClientService extends ConnectionService {
 
     /**
      * function for retrieving singleton for the first time
-     * @param clientInterface object implementing client interface
-     * @param endpointName    name of the device (nickname)
-     * @param activity        current activity
-     * @return                singleton of ClientInterface
+     * @param clientInterface       object implementing client interface
+     * @param endpointName          name of the device (nickname)
+     * @param connectionsClient     connectionsClient of google api of the activity
+     * @return                      singleton of ClientInterface
      * @throws IllegalStateException, if singleton is already set
      */
-    public static ClientService getInstance(ClientInterface clientInterface, String endpointName, Activity activity) throws IllegalStateException {
+    public static ClientService getInstance(ClientInterface clientInterface, String endpointName, ConnectionsClient connectionsClient) throws IllegalStateException {
         if (singleton != null) {
             throw new IllegalStateException("singleton already set");
         }
-        singleton = new ClientService(clientInterface, endpointName, activity);
+        singleton = new ClientService(clientInterface, endpointName, connectionsClient);
         return singleton;
     }
 
@@ -244,13 +244,13 @@ public class ClientService extends ConnectionService {
                     }
                     if (object != null) {
                         if (object instanceof Message) {
-                            client.onMessage(object);
+                            client.onMessage((Message)object);
                         }
                         if (object instanceof Game) {
-                            client.onGameData(object);
+                            client.onGameData((Game)object);
                         }
                         if(object instanceof SendMove){
-                            client.onSendMove(object);
+                            client.onSendMove((SendMove)object);
                         }
                     }
                 }

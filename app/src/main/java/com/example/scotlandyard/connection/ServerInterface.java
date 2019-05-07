@@ -27,9 +27,4 @@ public interface ServerInterface extends ConnectionInterface {
      */
     void onConnectionRequested(Endpoint endpoint);
 
-    /**
-     * function is called, when an endpoint is connected
-     * @param establishedConnections   list of current established connections
-     */
-    void onConnected(Map<String, Endpoint> establishedConnections);
 }
