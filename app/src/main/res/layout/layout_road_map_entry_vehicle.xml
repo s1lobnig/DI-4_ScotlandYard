@@ -9,14 +9,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        app:srcCompat="@drawable/bus" />
+        app:srcCompat="@mipmap/ic_launcher" />
 
     <EditText
         android:id="@+id/turn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:editable="false"
         android:ems="10"
+        android:enabled="false"
         android:inputType="number" />
 
 </LinearLayout>
