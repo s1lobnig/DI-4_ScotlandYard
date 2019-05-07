@@ -1,5 +1,9 @@
 package com.example.scotlandyard.connection;
 
+import com.example.scotlandyard.Game;
+import com.example.scotlandyard.Message;
+import com.example.scotlandyard.SendMove;
+
 /**
  * basic interface of client or server
  */
@@ -8,19 +12,19 @@ public interface ConnectionInterface {
      * function is called, when game data is received
      * @param game          game data
      */
-    void onGameData(Object game);
+    void onGameData(Game game);
 
     /**
      * function is called, when a chat message is received
      * @param message       chat message
      */
-    void onMessage(Object message);
+    void onMessage(Message message);
 
     /**
      * function is called, when a move is received
      * @param sendMove       move
      */
-    void onSendMove(Object sendMove);
+    void onSendMove(SendMove sendMove);
     /**
      * function is called, when connecting to an endpoint failed
      * @param endpoint      endpoint, where connection failed
@@ -45,5 +49,9 @@ public interface ConnectionInterface {
      */
     void onSendingFailed(Object object);
 
-
+    /**
+     * function is called, when connected to an endpoint
+     * @param endpoint                  endpoint with connection to
+     */
+    void onConnected(Endpoint endpoint);
 }

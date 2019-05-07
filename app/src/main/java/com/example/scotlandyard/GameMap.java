@@ -667,12 +667,7 @@ public class GameMap extends AppCompatActivity
     }
 
     @Override
-    public void onConnected(Map<String, Endpoint> establishedConnections) {
-        Log.d(logTag, "on Connected in GameMap");
-    }
-
-    @Override
-    public void onGameData(Object game) {
+    public void onGameData(Game game) {
         Log.d(logTag, "Got game data");
         if(!isServer){
             this.game = (Game) game;
@@ -681,7 +676,7 @@ public class GameMap extends AppCompatActivity
     }
 
     @Override
-    public void onMessage(Object message) {
+    public void onMessage(Message message) {
         if(!isServer){
             String [] txt = ((Message) message).getMessage().split(" ");
 
@@ -707,7 +702,7 @@ public class GameMap extends AppCompatActivity
     }
 
     @Override
-    public void onSendMove(Object sendMove) {
+    public void onSendMove(SendMove sendMove) {
         Player player = findPlayer(((SendMove)sendMove).getNickname());
         //if it is my Player to move
         if(player.getNickname().equals(myPlayer.getNickname())){

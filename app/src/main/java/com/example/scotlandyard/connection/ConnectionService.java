@@ -30,11 +30,11 @@ public abstract class ConnectionService {
 
     /**
      * Constructor
-     * @param endpointName      name of the device (nickname)
-     * @param activity          current activity
+     * @param endpointName          name of the device (nickname)
+     * @param connectionsClient     connectionsClient of google api of the activity
      */
-    ConnectionService(@NonNull String endpointName, @NonNull Activity activity) {
-        connectionsClient = Nearby.getConnectionsClient(activity);
+    ConnectionService(@NonNull String endpointName, @NonNull ConnectionsClient connectionsClient) {
+        this.connectionsClient = connectionsClient;
         strategy = Strategy.P2P_STAR;
         serviceID = "com.google.aau.scotland_yard";
         this.endpointName = endpointName;
