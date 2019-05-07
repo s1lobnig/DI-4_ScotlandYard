@@ -7,6 +7,7 @@ import java.io.Serializable;
 public class Player implements Serializable {
     private String nickname;
     private boolean isActive;
+    private boolean moved;
     private int icon;
     private Point position;
     private transient Marker marker;
@@ -34,6 +35,15 @@ public class Player implements Serializable {
     public void setActive(boolean active) {
         isActive = active;
     }
+
+    public boolean isMoved() {
+        return moved;
+    }
+
+    public void setMoved(boolean moved) {
+        this.moved = moved;
+    }
+
     public void setHost(boolean isHost) {
         this.isHost = isHost;
     }
