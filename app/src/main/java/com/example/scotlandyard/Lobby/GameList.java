@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 public class GameList extends AppCompatActivity implements ClientInterface {
-    private static ListView gameListView; /* ListView GUI Element */
+    private ListView gameListView; /* ListView GUI Element */
     private MyListAdapter listAdapter; /* Adapter between ListView and  ArrayList<Game> */
     private ClientService clientService; /* ClientService - used for communication with server(s). */
     private ArrayList<Endpoint> endpoints = new ArrayList<>(); /* List of detected endpoints (servers). */
