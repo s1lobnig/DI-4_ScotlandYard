@@ -59,9 +59,9 @@ public class GameMap extends AppCompatActivity
     private GoogleMap mMap;
     private static int playerPenaltay = 0;
     private static int round = 1;
-    private static Game game;
+    public static Game game;
     private static Player myPlayer;
-    private static int[] PLAYER_ICONS = {
+    public static int[] PLAYER_ICONS = {
             R.drawable.player1,
             R.drawable.player2,
             R.drawable.player3,
@@ -230,13 +230,14 @@ public class GameMap extends AppCompatActivity
         mMap.setMinZoomPreference(mMap.getCameraPosition().zoom);
         setFields();
 
-        //if player is the server and the game has not started yet
+        //if player is the server and the game has not started (player do not have markers) yet
         if(isServer && game.getPlayers().get(0).getMarker() == null) {
             Player player;
             for (int i = 0; i < game.getPlayers().size(); i++) {
                 player = game.getPlayers().get(i);
                 player.setIcon(PLAYER_ICONS[i]);
                 player.setMarker(initializeMarker(PLAYER_ICONS[i]));
+                player.getMarker().setTitle(player.getNickname());
                 LatLng position = player.getMarker().getPosition();
                 player.setPosition(new Point(position.latitude, position.longitude));
                 player.setMoved(false);
@@ -251,32 +252,44 @@ public class GameMap extends AppCompatActivity
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker field) {
-                if (!myPlayer.isMoved()) {
-                    boolean isValid = isValidMove(field, myPlayer.getMarker());
-                    if(isValid){
-                        if(isServer) {
-                            Point point = Points.getPoints()[getFeeldnumber(field)];
-                            moveMarker(point, myPlayer.getMarker(), myPlayer.getIcon());
-                            serverService.send(new SendMove(myPlayer.getNickname(), getFeeldnumber(field)));
-                            myPlayer.setMoved(true);
-                            tryNextRound();
-                        }else{
-                            clientService.send(new SendMove(myPlayer.getNickname(), getFeeldnumber(field)));
+                if(!isPlayer(field)) {
+                    if (!myPlayer.isMoved()) {
+                        boolean isValid = isValidMove(field, myPlayer.getMarker());
+                        if (isValid) {
+                            if (isServer) {
+                                Point point = Points.getPoints()[getFeeldnumber(field)];
+                                moveMarker(point, myPlayer.getMarker(), myPlayer.getIcon());
+                                serverService.send(new SendMove(myPlayer.getNickname(), getFeeldnumber(field)));
+                                myPlayer.setMoved(true);
+                                tryNextRound();
+                            } else {
+                                clientService.send(new SendMove(myPlayer.getNickname(), getFeeldnumber(field)));
+                            }
+                        } else {
+                            // Toast to indicate that the clicked location is not reachable from the current
+                            // location
+                            Toast.makeText(GameMap.this, "Feld nicht erreichbar", Snackbar.LENGTH_LONG).show();
                         }
-                    }else{
-                        // Toast to indicate that the clicked location is not reachable from the current
-                        // location
-                        Toast.makeText(GameMap.this, "Feld nicht erreichbar", Snackbar.LENGTH_LONG).show();
+                        return isValid;
+                    } else {
+                        // Toast to indicate that it is not your turn
+                        Toast.makeText(GameMap.this, "Ein anderer Spieler ist noch nicht gezogen. Du musst noch warten.", Snackbar.LENGTH_LONG).show();
                     }
-                    return isValid;
-                }else{
-                    // Toast to indicate that it is not your turn
-                    Toast.makeText(GameMap.this, "Ein anderer Spieler ist noch nicht gezogen. Du musst noch warten.", Snackbar.LENGTH_LONG).show();
-                    return false;
                 }
+                return false;
             }
         });
     }
+
+    private boolean isPlayer(Marker field) {
+        for (Player player : game.getPlayers()) {
+            if(player.getMarker().equals(field)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     private boolean movewithrandomEvent(Marker player, Point p, int playerIcon) {
         RandomEvent r = new RandomEvent();
         boolean goback = false;
