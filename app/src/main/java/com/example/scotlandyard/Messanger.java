@@ -149,17 +149,12 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
     }
 
     @Override
-    public void onConnected(Map<String, Endpoint> establishedConnections) {
+    public void onGameData(Game game) {
 
     }
 
     @Override
-    public void onGameData(Object game) {
-
-    }
-
-    @Override
-    public void onMessage(Object message) {
+    public void onMessage(Message message) {
         Log.d(logTag, "Chat message received!");
 
         String textOfMessage = ((Message) message).getMessage();
@@ -184,7 +179,7 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
     }
 
     @Override
-    public void onSendMove(Object sendMove) {
+    public void onSendMove(SendMove sendMove) {
 
     }
 
