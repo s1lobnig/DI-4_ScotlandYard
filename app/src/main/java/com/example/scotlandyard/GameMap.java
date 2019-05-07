@@ -50,6 +50,7 @@ public class GameMap extends AppCompatActivity
 
     private static ServerService serverService;
     private static ClientService clientService;
+    private static Random randomNumber = new Random();
 
     private static boolean isServer;
     private static String logTag;
@@ -305,7 +306,6 @@ public class GameMap extends AppCompatActivity
     }
 
     private boolean moveMarker(Point p, Marker player, int playerIcon) {
-        Random randomNumber = new Random();
         int r = randomNumber.nextInt(100)%10;
         //System.out.println("###################"+r+"-"+playerPenaltay);
         if(r < 3) {
@@ -584,7 +584,7 @@ public class GameMap extends AppCompatActivity
      * @return the resulting player-marker
      */
     private Marker initializeMarker(int icon) {
-        int position = (new Random()).nextInt(Points.getPoints().length);
+        int position = (randomNumber).nextInt(Points.getPoints().length);
         LatLng latLng = Points.POINTS[position].getLatLng();
         Marker marker = mMap.addMarker(new MarkerOptions().position(latLng));
         marker.setIcon(BitmapDescriptorFactory.fromResource(icon));
@@ -673,9 +673,9 @@ public class GameMap extends AppCompatActivity
             String [] txt = ((Message) message).getMessage().split(" ");
 
             if(txt[0].equals("NEXT_ROUND")){
-                this.round++;
+                round++;
                 myPlayer.setMoved(false);
-                Toast.makeText(GameMap.this, "Runde " + this.round, Snackbar.LENGTH_LONG).show();
+                Toast.makeText(GameMap.this, "Runde " + round, Snackbar.LENGTH_LONG).show();
             }
             if(txt.length == 3 && txt[0].equals("PLAYER") && txt[2].equals("QUITTED")){
                 Player player = findPlayer(txt[1]);
@@ -706,7 +706,7 @@ public class GameMap extends AppCompatActivity
         Log.d("SEND_MOVE","receiving move from " + player.getNickname());
 
         if(isServer){
-            if(player.isMoved() == true) {
+            if(player.isMoved()) {
                 return;
             }
             player.setMoved(true);
@@ -719,12 +719,12 @@ public class GameMap extends AppCompatActivity
     private void tryNextRound() {
         if(isRoundFinished()){
             if(round < 12) {
-                this.round++;
+                round++;
                 for (Player p : game.getPlayers()) {
                     p.setMoved(false);
                 }
                 serverService.send(new Message("NEXT_ROUND"));
-                Toast.makeText(GameMap.this, "Runde " + this.round, Snackbar.LENGTH_LONG).show();
+                Toast.makeText(GameMap.this, "Runde " + round, Snackbar.LENGTH_LONG).show();
             }else{
                 serverService.send(new Message("END MisterX")); //MisterX hat gewonnen
                 Toast.makeText(GameMap.this, "MisterX hat gewonnen", Snackbar.LENGTH_LONG).show();
@@ -734,7 +734,7 @@ public class GameMap extends AppCompatActivity
 
     private boolean isRoundFinished() {
         for (Player p : game.getPlayers()) {
-            if(p.isActive() && p.isMoved() == false){
+            if(p.isActive() && !p.isMoved()){
                 return false;
             }
         }

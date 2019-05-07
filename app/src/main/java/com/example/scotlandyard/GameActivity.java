@@ -62,9 +62,6 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
                 intent.putExtra("USERNAME", userName);
                 intent.putExtra("HOST", host);
 
-                //just for testing set per hand
-                //game.getPlayers().add(new Player("someone"));
-                //game.getPlayers().add(new Player("anyone"));
                 intent.putExtra("GAME", game);
                 intent.putExtra("IS_SERVER", true);
 
@@ -137,10 +134,7 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
         if (o instanceof Game) {
             Game game = (Game) o;
             if (this.game.getCurrentMembers() < this.game.getMaxMembers()) {
-                // is this new added player always the same???
-                 this.game.getPlayers().add(((Game) game).getPlayers().get(0));
-               // Player player = new Player(userName);
-                //this.game.getPlayers().add(player);
+                this.game.getPlayers().add(game.getPlayers().get(0));
                 this.game.setCurrentMembers(this.game.getCurrentMembers() + 1);
 
                 ((ArrayAdapter) connectedPlayersListAdapter).notifyDataSetChanged();
