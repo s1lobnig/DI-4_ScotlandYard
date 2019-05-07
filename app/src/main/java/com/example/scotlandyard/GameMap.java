@@ -236,6 +236,9 @@ public class GameMap extends AppCompatActivity
                 game.getPlayers().get(i).setMarker(initializeMarker(PLAYER_ICONS[i]));
                 LatLng position = game.getPlayers().get(i).getMarker().getPosition();
                 game.getPlayers().get(i).setPosition(new Point(position.latitude, position.longitude));
+
+                //setTickets for every player
+                setTickets(game.getPlayers().get(i));
             }
             myPlayer = findPlayer(myPlayer.getNickname());
             serverService.send(game);
@@ -268,6 +271,27 @@ public class GameMap extends AppCompatActivity
             }
         });
     }
+
+    private void setTickets(Player player) {
+        /*if (player is Mr. X){
+             host.initializeNumberOfTickets(new Object[][]{
+                {R.string.PEDESTRIAN_TICKET_KEY,5},
+                {R.string.BICYCLE_TICKET_KEY,4},
+                {R.string.BUS_TICKET_KEY,2},
+                {R.string.BLACK_TICKET_KEY, game.getPlayers.size() -1},
+        });
+         }else{
+        */
+        player.initializeNumberOfTickets(new Object[][]{
+                {R.string.PEDESTRIAN_TICKET_KEY,5},
+                {R.string.BICYCLE_TICKET_KEY,4},
+                {R.string.BUS_TICKET_KEY,2},
+                {R.string.BLACK_TICKET_KEY,0},
+        });
+
+
+    }
+
     private boolean movewithrandomEvent(Marker player, Point p, int playerIcon) {
         RandomEvent r = new RandomEvent();
         boolean goback = false;

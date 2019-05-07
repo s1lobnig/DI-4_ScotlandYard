@@ -12,7 +12,7 @@ public class Player implements Serializable {
     private Point position;
     private transient Marker marker;
     private boolean isHost;      //variable for checking if sender is Host
-    private HashMap<String, Integer> tickets; //Hashmap for storing tickets
+    private HashMap<Integer, Integer> tickets; //Hashmap for storing tickets
     
     public Player(String nickname) {
         this.nickname = nickname;
@@ -21,10 +21,10 @@ public class Player implements Serializable {
         this.isHost = false;
         //initialise ticket hashmap for a player with empty tickets
         this.tickets = new HashMap<>();
-        this.tickets.put("pedestrian_tickets", 0);
-        this.tickets.put("bicycle_tickets", 0);
-        this.tickets.put("bus_tickets", 0);
-        this.tickets.put("black_tickets", 0);
+        this.tickets.put(R.string.PEDESTRIAN_TICKET_KEY, 0);
+        this.tickets.put(R.string.BICYCLE_TICKET_KEY, 0);
+        this.tickets.put(R.string.BUS_TICKET_KEY, 0);
+        this.tickets.put(R.string.BLACK_TICKET_KEY, 0);
     }
 
     public String getNickname() {
@@ -72,6 +72,16 @@ public class Player implements Serializable {
 
     public void setMarker(Marker marker) {
         this.marker = marker;
+    }
+
+    public void decreaseNumberOfTickets(Integer key){
+        tickets.put(key, tickets.get(key)-1);
+    }
+
+    public void initializeNumberOfTickets(Object[][] initialTickets){
+        for (int i = 0; i < initialTickets.length; i++) {
+            tickets.put((Integer) initialTickets[i][0],(Integer)initialTickets[i][1]);
+        }
     }
 
     @Override

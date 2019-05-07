@@ -34,4 +34,9 @@
     <string name="randEventGoBack">Oh nein! Du hast was vergessen! Du musst wieder zurück gehen</string>
     <!-- Text für "NaviSaysNo" Random event - Toast -->
     <string name="randEventNaviSaysNo">Dein Navi sagt "Nein"...Du hast dich verfahren</string>
+
+    <string name="PEDESTRIAN_TICKET_KEY">pedestrian_tickets</string>
+    <string name="BICYCLE_TICKET_KEY">bicycle_tickets</string>
+    <string name="BUS_TICKET_KEY">bus_tickets</string>
+    <string name="BLACK_TICKET_KEY">black_tickets</string>
 </resources>
