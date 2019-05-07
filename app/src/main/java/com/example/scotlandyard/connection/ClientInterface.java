@@ -33,9 +33,4 @@ public interface ClientInterface extends ConnectionInterface {
      */
     void onStoppedDiscovery();
 
-    /**
-     * function is called, when connected to an endpoint
-     * @param endpoint                  endpoint with connection to
-     */
-    void onConnected(Endpoint endpoint);
 }

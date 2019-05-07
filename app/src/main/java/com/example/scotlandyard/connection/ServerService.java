@@ -44,12 +44,12 @@ public class ServerService extends ConnectionService{
 
     /**
      * Constructor
-     * @param server            object implementing server interface
-     * @param endpointName      name of the device (nickname)
-     * @param activity          current activity
+     * @param server                object implementing server interface
+     * @param endpointName          name of the device (nickname)
+     * @param connectionsClient     connectionsClient of google api of the activity
      */
-    private ServerService(@NonNull ServerInterface server, String endpointName, Activity activity) {
-        super(endpointName, activity);
+    private ServerService(@NonNull ServerInterface server, String endpointName, ConnectionsClient connectionsClient) {
+        super(endpointName, connectionsClient);
         pendingConnections = new HashMap<>();
         establishedConnections = new HashMap<>();
         this.server = server;
@@ -69,17 +69,17 @@ public class ServerService extends ConnectionService{
 
     /**
      * function for retrieving singleton for the first time
-     * @param server            object implementing server interface
-     * @param endpointName      name of the device (nickname)
-     * @param activity          current activity
-     * @return                  singleton of ServerService
+     * @param server                object implementing server interface
+     * @param endpointName          name of the device (nickname)
+     * @param connectionsClient     connectionsClient of google api of the activity
+     * @return                      singleton of ServerService
      * @throws IllegalStateException, if singleton is already set
      */
-    public static ServerService getInstance(ServerInterface server, String endpointName, Activity activity) throws IllegalStateException {
+    public static ServerService getInstance(ServerInterface server, String endpointName, ConnectionsClient connectionsClient) throws IllegalStateException {
         if (singleton != null) {
             throw new IllegalStateException("singleton already set");
         }
-        singleton = new ServerService(server, endpointName, activity);
+        singleton = new ServerService(server, endpointName, connectionsClient);
         return singleton;
     }
 
@@ -158,10 +158,10 @@ public class ServerService extends ConnectionService{
                     if (endpoint != null) {
                         if (result.getStatus().isSuccess()) {
                             establishedConnections.put(endpointId, endpoint);
-                            server.onConnected(establishedConnections);
                             if (connectionState == ConnectionState.ADVERTISING) {
                                 connectionState = ConnectionState.ADVERTISING_CONNECTED;
                             }
+                            server.onConnected(endpoint);
                         } else {
                             server.onFailedConnecting(endpoint);
                         }
@@ -198,15 +198,7 @@ public class ServerService extends ConnectionService{
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        if (connectionState == ConnectionState.ADVERTISING_CONNECTED) {
-                            if (establishedConnections.isEmpty()) {
-                                connectionState = ConnectionState.ADVERTISING;
-                            }
-                        } else {
-                            if (establishedConnections.isEmpty()) {
-                                connectionState = ConnectionState.DISCONNECTED;
-                            }
-                        }
+                        Log.d(logTag, "acceptConnection success");
                     }
                 })
                 .addOnFailureListener(
@@ -215,15 +207,28 @@ public class ServerService extends ConnectionService{
                             public void onFailure(@NonNull Exception e) {
                                 Log.d(logTag, "acceptConnection failed", e);
                                 server.onFailedAcceptConnection(endpoint);
-                                if (connectionState == ConnectionState.ADVERTISING_CONNECTED) {
-                                    if (establishedConnections.isEmpty()) {
-                                        connectionState = ConnectionState.ADVERTISING;
-                                    }
-                                } else {
-                                    if (establishedConnections.isEmpty()) {
-                                        connectionState = ConnectionState.DISCONNECTED;
-                                    }
-                                }
+                            }
+                        });
+    }
+
+    /**
+     * function for declining a connection
+     * @param endpoint       endpoint, which connection is rejected
+     */
+    public void rejectConnection(Endpoint endpoint) {
+        connectionsClient
+                .rejectConnection(endpoint.getId())
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(logTag, "rejected connection");
+                    }
+                })
+                .addOnFailureListener(
+                        new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d(logTag, "rejectConnection failed", e);
                             }
                         });
     }
@@ -244,13 +249,13 @@ public class ServerService extends ConnectionService{
                     }
                     if (object != null) {
                         if (object instanceof Message) {
-                            server.onMessage(object);
+                            server.onMessage((Message)object);
                         }
                         if (object instanceof  Game) {
-                            server.onGameData(object);
+                            server.onGameData((Game)object);
                         }
                         if(object instanceof SendMove){
-                            server.onSendMove(object);
+                            server.onSendMove((SendMove)object);
                         }
                     }
                 }
@@ -292,7 +297,7 @@ public class ServerService extends ConnectionService{
      * @param endpoints         list of endpoints to send to
      */
     private void sendPayload(final Payload payload, Set<String> endpoints) {
-        if (connectionState == ConnectionState.CONNECTED) {
+        if (connectionState == ConnectionState.CONNECTED || connectionState == ConnectionState.ADVERTISING_CONNECTED) {
             Log.d(logTag, "sending payload");
             connectionsClient
                     .sendPayload(new ArrayList<>(endpoints), payload)
