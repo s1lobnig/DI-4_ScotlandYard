@@ -4,6 +4,7 @@ import com.example.scotlandyard.Map.Point;
 import com.google.android.gms.maps.model.Marker;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 public class Player implements Serializable {
     private String nickname;
@@ -12,12 +13,19 @@ public class Player implements Serializable {
     private Point position;
     private transient Marker marker;
     private boolean isHost;      //variable for checking if sender is Host
+    private HashMap<String, Integer> tickets; //Hashmap for storing tickets
     
     public Player(String nickname) {
         this.nickname = nickname;
         isActive = true;
         this.nickname = nickname;
         this.isHost = false;
+        //initialise ticket hashmap for a player with empty tickets
+        this.tickets = new HashMap<>();
+        this.tickets.put("pedestrian_tickets", 0);
+        this.tickets.put("bicycle_tickets", 0);
+        this.tickets.put("bus_tickets", 0);
+        this.tickets.put("black_tickets", 0);
     }
 
     public String getNickname() {
