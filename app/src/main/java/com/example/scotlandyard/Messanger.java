@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -30,6 +31,11 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
     private ClientService clientService;
     private String nickname;
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +44,9 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
 
         /* add Toolbar */
         Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("Spieler Chat");
         setSupportActionBar(toolbar);
+
 
         /* find views */
 
@@ -92,6 +100,9 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
                 /*scroll the ListView to the last added element*/
                 messageList.setSelection(messageList.getCount() - 1);
 
+                /*flush EditText and close keyboard after sending*/
+                textMessage.setText("");
+                textMessage.onEditorAction(EditorInfo.IME_ACTION_DONE);
             }
         });
 
