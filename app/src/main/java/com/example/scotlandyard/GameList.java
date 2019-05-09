@@ -211,10 +211,9 @@ public class GameList extends AppCompatActivity implements ClientInterface {
         Intent intent = new Intent(GameList.this, GameMap.class);
 
         intent.putExtra("CLIENT", client);
-        intent.putExtra("USER_NAME", userName);
+        intent.putExtra("USERNAME", userName);
         intent.putExtra("IS_SERVER", false);
         startActivity(intent);
-
     }
 
     @Override

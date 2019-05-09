@@ -59,9 +59,9 @@ public class GameMap extends AppCompatActivity
     private GoogleMap mMap;
     private static int playerPenaltay = 0;
     private static int round = 1;
-    public static Game game;
+    private static Game game;
     private static Player myPlayer;
-    public static int[] PLAYER_ICONS = {
+    private static final int[] PLAYER_ICONS = {
             R.drawable.player1,
             R.drawable.player2,
             R.drawable.player3,
@@ -88,7 +88,6 @@ public class GameMap extends AppCompatActivity
             Intent intent = getIntent();
             nickname = intent.getStringExtra("USERNAME");
             isServer = intent.getBooleanExtra("IS_SERVER", true);
-            myPlayer = new Player(nickname);
 
             if (isServer) {
                 game = ((Game) intent.getSerializableExtra("GAME"));
@@ -230,25 +229,26 @@ public class GameMap extends AppCompatActivity
         mMap.setMinZoomPreference(mMap.getCameraPosition().zoom);
         setFields();
 
-        //if player is the server and the game has not started (player do not have markers) yet
-        if(isServer && game.getPlayers().get(0).getMarker() == null) {
-            Player player;
-            for (int i = 0; i < game.getPlayers().size(); i++) {
-                player = game.getPlayers().get(i);
-                player.setIcon(PLAYER_ICONS[i]);
-                player.setMarker(initializeMarker(PLAYER_ICONS[i]));
-                player.getMarker().setTitle(player.getNickname());
-                LatLng position = player.getMarker().getPosition();
-                player.setPosition(new Point(position.latitude, position.longitude));
-                player.setMoved(false);
+        //if game has not startet yet
+        if(myPlayer == null) {
+            if(isServer) {
+                Player player;
+                for (int i = 0; i < game.getPlayers().size(); i++) {
+                    player = game.getPlayers().get(i);
+                    player.setIcon(PLAYER_ICONS[i]);
+                    player.setMarker(initializeMarker(PLAYER_ICONS[i]));
+                    player.getMarker().setTitle(player.getNickname());
+                    LatLng position = player.getMarker().getPosition();
+                    player.setPosition(new Point(position.latitude, position.longitude));
+                    player.setMoved(false);
+                }
+                myPlayer = findPlayer(nickname);
+                serverService.send(game);
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myPlayer.getPosition().getLatLng(), 16f));
             }
-            myPlayer = findPlayer(myPlayer.getNickname());
-            serverService.send(game);
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myPlayer.getPosition().getLatLng(), 16f));
         }else{
             setupGame();
         }
-
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker field) {
@@ -321,7 +321,7 @@ public class GameMap extends AppCompatActivity
     private boolean moveMarker(Point p, Marker player, int playerIcon) {
         int r = randomNumber.nextInt(100)%10;
         //System.out.println("###################"+r+"-"+playerPenaltay);
-        if(r < 3) {
+        if(false && r < 3) {
             if (playerPenaltay == 0){
                 System.out.println("*********************RANDOM EVENT HAPPENING");
                 return movewithrandomEvent(player, p,playerIcon);
@@ -610,10 +610,11 @@ public class GameMap extends AppCompatActivity
                     .position(p.getPosition().getLatLng())
                     .icon(BitmapDescriptorFactory.fromResource(p.getIcon()));
             p.setMarker(mMap.addMarker(markerOptions));
-            if(p.getNickname().equals(myPlayer.getNickname())){
+            if(p.getNickname().equals(nickname)){
                 myPlayer = p;
             }
         }
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myPlayer.getPosition().getLatLng(), 16f));
     }
 
     @Override
