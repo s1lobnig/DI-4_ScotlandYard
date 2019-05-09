@@ -242,7 +242,7 @@ public class GameMap extends AppCompatActivity
                     player.setPosition(new Point(position.latitude, position.longitude));
                     player.setMoved(false);
                 }
-                myPlayer = findPlayer(nickname);
+                myPlayer = game.getPlayers().get(0);
                 serverService.send(game);
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myPlayer.getPosition().getLatLng(), 16f));
             }
