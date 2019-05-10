@@ -1,4 +1,4 @@
-package com.example.scotlandyard.Lobby;
+package com.example.scotlandyard.lobby;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,12 +16,14 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.scotlandyard.Map.GameMap;
+import com.example.scotlandyard.map.GameMap;
+import com.example.scotlandyard.map.motions.SendMove;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
 import com.example.scotlandyard.connection.ClientInterface;
 import com.example.scotlandyard.connection.ClientService;
 import com.example.scotlandyard.connection.Endpoint;
+import com.example.scotlandyard.messenger.Message;
 import com.google.android.gms.nearby.Nearby;
 
 import java.util.ArrayList;

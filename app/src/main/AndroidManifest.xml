@@ -22,41 +22,41 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
         <activity
-            android:name=".Map.Roadmap.RoadMapDisplay"
+            android:name=".map.roadmap.RoadMapDisplay"
             android:label="@string/title_activity_road_map_display"
-            android:parentActivityName=".Map.GameMap"
+            android:parentActivityName=".map.GameMap"
             android:theme="@style/AppTheme.NoActionBar.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.scotlandyard.Map.GameMap" />
+                android:value="com.example.scotlandyard.map.GameMap" />
         </activity>
         <activity
-            android:name=".Lobby.GamePresettings"
+            android:name=".lobby.GamePresettings"
             android:label="@string/title_activity_game_presettings"
-            android:parentActivityName=".Lobby.GameCreate"
+            android:parentActivityName=".lobby.GameCreate"
             android:theme="@style/AppTheme.NoActionBar.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.scotlandyard.Lobby.GameCreate" />
+                android:value="com.example.scotlandyard.lobby.GameCreate" />
         </activity>
-        <activity android:name=".Lobby.GameCreate" />
+        <activity android:name=".lobby.GameCreate" />
         <activity
             android:name=".Settings"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".Map.GameMap"
+            android:parentActivityName=".map.GameMap"
             android:theme="@style/AppTheme.NoActionBar.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.scotlandyard.Map.GameMap" />
+                android:value="com.example.scotlandyard.map.GameMap" />
         </activity>
         <activity
             android:name=".PlayersOverview"
             android:label="@string/title_activity_players_overview"
-            android:parentActivityName=".Map.GameMap"
+            android:parentActivityName=".map.GameMap"
             android:theme="@style/AppTheme.NoActionBar.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.scotlandyard.Map.GameMap" />
+                android:value="com.example.scotlandyard.map.GameMap" />
         </activity>
         <activity android:name=".messenger.Messanger" />
         <!--
@@ -72,11 +72,11 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".Map.GameMap"
+            android:name=".map.GameMap"
             android:label="@string/title_activity_game_map"
             android:theme="@style/AppTheme.NavDrawer" />
         <activity
-            android:name=".Lobby.GameList"
+            android:name=".lobby.GameList"
             android:label="@string/title_activity_game_list"
             android:theme="@style/AppTheme.ActionBar" />
         <activity
@@ -89,11 +89,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Lobby.RegistrationActivty"
+            android:name=".lobby.RegistrationActivty"
             android:theme="@style/AppTheme.ActionBar" />
         <activity
-            android:name=".Lobby.GameActivity"
-            android:parentActivityName=".Lobby.RegistrationActivty" />
+            android:name=".lobby.GameActivity"
+            android:parentActivityName=".lobby.RegistrationActivty" />
     </application>
 
 </manifest>

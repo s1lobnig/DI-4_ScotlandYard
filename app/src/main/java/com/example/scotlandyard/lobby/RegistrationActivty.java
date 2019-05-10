@@ -1,4 +1,4 @@
-package com.example.scotlandyard.Lobby;
+package com.example.scotlandyard.lobby;
 
 import android.content.Intent;
 import android.os.Bundle;

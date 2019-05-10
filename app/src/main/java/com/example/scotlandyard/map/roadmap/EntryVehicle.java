@@ -1,4 +1,4 @@
-package com.example.scotlandyard.Map.Roadmap;
+package com.example.scotlandyard.map.roadmap;
 
 import android.app.Activity;
 import android.content.Context;

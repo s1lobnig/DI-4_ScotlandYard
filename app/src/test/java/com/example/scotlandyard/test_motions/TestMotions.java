@@ -1,4 +1,4 @@
-package com.example.scotlandyard.TestMotions;
+package com.example.scotlandyard.test_motions;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

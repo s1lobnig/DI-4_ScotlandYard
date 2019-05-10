@@ -1,8 +1,7 @@
-package com.example.scotlandyard.Map.Roadmap;
+package com.example.scotlandyard.map.roadmap;
 
 import android.content.Context;
 import android.view.View;
-import android.view.ViewGroup;
 
 import java.io.Serializable;
 

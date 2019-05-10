@@ -1,4 +1,4 @@
-package com.example.scotlandyard.Map.Roadmap;
+package com.example.scotlandyard.map.roadmap;
 
 import java.io.Serializable;
 import java.util.ArrayList;

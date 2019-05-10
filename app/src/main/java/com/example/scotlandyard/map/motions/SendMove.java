@@ -1,7 +1,4 @@
-package com.example.scotlandyard.Map.Motions;
-
-import com.example.scotlandyard.Player;
-import com.google.android.gms.maps.model.Marker;
+package com.example.scotlandyard.map.motions;
 
 import java.io.Serializable;
 

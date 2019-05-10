@@ -1,4 +1,4 @@
-package com.example.scotlandyard.Lobby;
+package com.example.scotlandyard.lobby;
 
 import com.example.scotlandyard.Player;
 

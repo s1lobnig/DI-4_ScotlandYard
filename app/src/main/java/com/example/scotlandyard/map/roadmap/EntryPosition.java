@@ -1,11 +1,10 @@
-package com.example.scotlandyard.Map.Roadmap;
+package com.example.scotlandyard.map.roadmap;
 
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
 
 import com.example.scotlandyard.R;
 
