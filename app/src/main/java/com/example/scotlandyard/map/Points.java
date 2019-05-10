@@ -2,6 +2,7 @@ package com.example.scotlandyard.map;
 
 import com.example.scotlandyard.R;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 
 /**
  * @author Selene
@@ -136,5 +137,11 @@ public class Points {
                 return i;
         }
         return -1;
+    }
+
+    public static int getIndex(Marker m) {
+        LatLng pos = m.getPosition();
+        Point p = new Point(pos.latitude, pos.longitude);
+        return getIndex(p);
     }
 }

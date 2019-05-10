@@ -16,6 +16,7 @@ public class Player implements Serializable {
     private boolean isHost;      //variable for checking if sender is Host
     private HashMap<String, Integer> tickets; //Hashmap for storing tickets
     private boolean isMrX;
+    private boolean wantsToBeMrX;
 
     public Player(String nickname) {
         this.nickname = nickname;
@@ -29,6 +30,7 @@ public class Player implements Serializable {
         this.tickets.put("bus_tickets", 0);
         this.tickets.put("black_tickets", 0);
         this.isMrX = false;
+        this.wantsToBeMrX = false;
     }
 
     public String getNickname() {
@@ -93,6 +95,14 @@ public class Player implements Serializable {
 
     public void setMrX(boolean mrX) {
         isMrX = mrX;
+    }
+
+    public boolean wantsToBeMrX() {
+        return wantsToBeMrX;
+    }
+
+    public void setWantsToBeMrX(boolean wantsToBeMrX) {
+        this.wantsToBeMrX = wantsToBeMrX;
     }
 
     @Override

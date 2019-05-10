@@ -23,6 +23,7 @@ import com.example.scotlandyard.R;
 import com.example.scotlandyard.connection.ClientInterface;
 import com.example.scotlandyard.connection.ClientService;
 import com.example.scotlandyard.connection.Endpoint;
+import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.messenger.Message;
 import com.google.android.gms.nearby.Nearby;
 
@@ -197,6 +198,11 @@ public class GameList extends AppCompatActivity implements ClientInterface {
 
         ((ProgressBar) findViewById(R.id.progressBarDiscovery)).setVisibility(View.GONE);
         ((Button) findViewById(R.id.rediscoverButton)).setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onRoadMapEntry(Entry object) {
+
     }
 
     @Override

@@ -17,10 +17,12 @@ import com.example.scotlandyard.R;
 import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.connection.ServerInterface;
 import com.example.scotlandyard.connection.ServerService;
+import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.messenger.Message;
 import com.google.android.gms.nearby.Nearby;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class GameActivity extends AppCompatActivity implements ServerInterface {
 
@@ -32,6 +34,7 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
     private ListAdapter connectedPlayersListAdapter;
     private String userName;
     private boolean randomEvents;
+    private boolean randomMrX;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +50,7 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
         int maxPlayers = intent.getExtras().getInt("MAX_PLAYERS");
         boolean buttonEnabled = intent.getExtras().getBoolean("ENABLE_BUTTON");
         randomEvents = intent.getExtras().getBoolean("RANDOM_EVENTS");
+        randomMrX =intent.getExtras().getBoolean("RANDOM_MR_X");
 
         /* Start ServerService and start advertising own endpoint. */
         serverService = ServerService.getInstance(GameActivity.this, userName + "'s game server", Nearby.getConnectionsClient(this));
@@ -64,6 +68,11 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
             @Override
             public void onClick(View v) {
                 Log.d("GAME_ACTIVITY", "Loading game map.");
+                if(randomMrX){
+                    game.getPlayers().get((new Random()).nextInt(game.getPlayers().size())).setMrX(true);
+                } else {
+
+                }
                 Intent intent = new Intent(GameActivity.this, GameMap.class);
                 intent.putExtra("USERNAME", userName);
                 intent.putExtra("HOST", host);
@@ -128,6 +137,11 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
             serverService.rejectConnection(endpoint);
             serverService.stopAdvertising();
         }
+    }
+
+    @Override
+    public void onRoadMapEntry(Entry o) {
+
     }
 
     @Override

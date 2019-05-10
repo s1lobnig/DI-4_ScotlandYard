@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.example.scotlandyard.lobby.Game;
+import com.example.scotlandyard.map.roadmap.Entry;
+import com.example.scotlandyard.map.roadmap.RoadMap;
 import com.example.scotlandyard.messenger.Message;
 import com.example.scotlandyard.map.motions.SendMove;
 import com.google.android.gms.nearby.connection.AdvertisingOptions;
@@ -34,7 +36,7 @@ import java.util.Set;
  * server:                  interface to server activity
  * singleton:               singleton of ServerService
  */
-public class ServerService extends ConnectionService{
+public class ServerService extends ConnectionService {
     private String logTag = "ServerService";
     private Map<String, Endpoint> pendingConnections;
     private Map<String, Endpoint> establishedConnections;
@@ -43,9 +45,10 @@ public class ServerService extends ConnectionService{
 
     /**
      * Constructor
-     * @param server                object implementing server interface
-     * @param endpointName          name of the device (nickname)
-     * @param connectionsClient     connectionsClient of google api of the activity
+     *
+     * @param server            object implementing server interface
+     * @param endpointName      name of the device (nickname)
+     * @param connectionsClient connectionsClient of google api of the activity
      */
     private ServerService(@NonNull ServerInterface server, String endpointName, ConnectionsClient connectionsClient) {
         super(endpointName, connectionsClient);
@@ -56,6 +59,7 @@ public class ServerService extends ConnectionService{
 
     /**
      * function for retrieving singleton
+     *
      * @return singleton of ServerService
      * @throws IllegalStateException, if singleton is not set
      */
@@ -68,10 +72,11 @@ public class ServerService extends ConnectionService{
 
     /**
      * function for retrieving singleton for the first time
-     * @param server                object implementing server interface
-     * @param endpointName          name of the device (nickname)
-     * @param connectionsClient     connectionsClient of google api of the activity
-     * @return                      singleton of ServerService
+     *
+     * @param server            object implementing server interface
+     * @param endpointName      name of the device (nickname)
+     * @param connectionsClient connectionsClient of google api of the activity
+     * @return singleton of ServerService
      * @throws IllegalStateException, if singleton is already set
      */
     public static ServerService getInstance(ServerInterface server, String endpointName, ConnectionsClient connectionsClient) throws IllegalStateException {
@@ -189,7 +194,8 @@ public class ServerService extends ConnectionService{
 
     /**
      * function for accepting a connection
-     * @param endpoint          endpoint, where connection is accepted
+     *
+     * @param endpoint endpoint, where connection is accepted
      */
     public void acceptConnection(final Endpoint endpoint) {
         connectionsClient
@@ -212,7 +218,8 @@ public class ServerService extends ConnectionService{
 
     /**
      * function for declining a connection
-     * @param endpoint       endpoint, which connection is rejected
+     *
+     * @param endpoint endpoint, which connection is rejected
      */
     public void rejectConnection(Endpoint endpoint) {
         connectionsClient
@@ -240,21 +247,21 @@ public class ServerService extends ConnectionService{
                 @Override
                 public void onPayloadReceived(@NonNull String endpointId, @NonNull Payload payload) {
                     Log.d(logTag, String.format("payload received (endpointId=%s, payload=%s)", endpointId, payload));
-                    Object object = null;
+                    Object o = null;
                     try {
-                        object = deserialize(payload.asBytes());
+                        o = deserialize(payload.asBytes());
                     } catch (Exception ex) {
                         Log.d(logTag, "error in deserialization", ex);
                     }
-                    if (object != null) {
-                        if (object instanceof Message) {
-                            server.onMessage((Message)object);
-                        }
-                        if (object instanceof  Game) {
-                            server.onGameData((Game)object);
-                        }
-                        if(object instanceof SendMove){
-                            server.onSendMove((SendMove)object);
+                    if (o != null) {
+                        if (o instanceof Message) {
+                            server.onMessage((Message) o);
+                        } else if (o instanceof Game) {
+                            server.onGameData((Game) o);
+                        } else if (o instanceof SendMove) {
+                            server.onSendMove((SendMove) o);
+                        } else if (o instanceof Entry) {
+                            server.onRoadMapEntry((Entry)o);
                         }
                     }
                 }
@@ -268,7 +275,8 @@ public class ServerService extends ConnectionService{
 
     /**
      * function for sending a chat message or game data
-     * @param object       object to send (game data, chat message or SendMove)
+     *
+     * @param object object to send (game data, chat message or SendMove)
      */
     public void send(Object object) {
         if (object instanceof Message || object instanceof Game || object instanceof SendMove) {
@@ -292,8 +300,9 @@ public class ServerService extends ConnectionService{
 
     /**
      * function for sending payload
-     * @param payload           payload to send
-     * @param endpoints         list of endpoints to send to
+     *
+     * @param payload   payload to send
+     * @param endpoints list of endpoints to send to
      */
     private void sendPayload(final Payload payload, Set<String> endpoints) {
         if (connectionState == ConnectionState.CONNECTED || connectionState == ConnectionState.ADVERTISING_CONNECTED) {
@@ -319,13 +328,14 @@ public class ServerService extends ConnectionService{
 
     /**
      * function for disconnecting from an endpoint
-     * @param endpoint  endpoint to disconnect from
+     *
+     * @param endpoint endpoint to disconnect from
      */
     public void disconnect(@NonNull Endpoint endpoint) {
         if (connectionState == ConnectionState.CONNECTED) {
             Endpoint endpoint2 = establishedConnections.get(endpoint.getId());
             if (endpoint2 != null) {
-                Log.d(logTag, "disconnecting from "+endpoint.getName());
+                Log.d(logTag, "disconnecting from " + endpoint.getName());
                 connectionsClient.disconnectFromEndpoint(endpoint.getId());
                 establishedConnections.remove(endpoint.getId());
                 if (establishedConnections.isEmpty()) {
