@@ -78,6 +78,9 @@ public class GameMap extends AppCompatActivity
     private static int round = 1;
     private static Game game;
     private static Player myPlayer;
+    private RoadMap roadmap;
+    private boolean isMrX;
+
     private static final int[] PLAYER_ICONS = {
             R.drawable.player1,
             R.drawable.player2,
@@ -99,14 +102,15 @@ public class GameMap extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_navigation);
-
+        this.roadmap = new RoadMap();
         //if game has not started yet
         if(game == null) {
             Intent intent = getIntent();
             nickname = intent.getStringExtra("USERNAME");
             isServer = intent.getBooleanExtra("IS_SERVER", true);
-
+            isMrX = intent.getBooleanExtra("IS_MR_X",false);
             if (isServer) {
+                isMrX = true;
                 game = ((Game) intent.getSerializableExtra("GAME"));
                 serverService = ServerService.getInstance();
                 serverService.setServer(this);
