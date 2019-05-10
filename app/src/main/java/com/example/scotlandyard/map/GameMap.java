@@ -67,20 +67,17 @@ public class GameMap extends AppCompatActivity
 
     private static ServerService serverService;
     private static ClientService clientService;
-    private boolean isServer;
+    private static Random randomNumber = new Random();
+
+    private static boolean isServer;
     private static String logTag;
-    private String nickname;
+    private static String nickname;
     private static final String TAG = GameMap.class.getSimpleName();
     private GoogleMap mMap;
     private static int playerPenaltay = 0;
     private static int round = 1;
-    private static boolean myTurn;
     private static Game game;
     private static Player myPlayer;
-    private boolean isMrX;
-    private RoadMap roadmap;
-
-    private boolean randomEventsActive;
     private static final int[] PLAYER_ICONS = {
             R.drawable.player1,
             R.drawable.player2,
@@ -103,25 +100,22 @@ public class GameMap extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_navigation);
 
-        Intent intent = getIntent();
+        //if game has not started yet
+        if(game == null) {
+            Intent intent = getIntent();
+            nickname = intent.getStringExtra("USERNAME");
+            isServer = intent.getBooleanExtra("IS_SERVER", true);
 
-        nickname = intent.getStringExtra("USERNAME");
-        isServer = intent.getBooleanExtra("IS_SERVER", true);
-        isMrX = intent.getBooleanExtra("IS_MR_X", true);
-        randomEventsActive = intent.getBooleanExtra("RANDOM_EVENTS", false);
-        this.roadmap = new RoadMap();
-        if (isServer) {
-            game = ((Game) intent.getSerializableExtra("GAME"));
-            serverService = ServerService.getInstance();
-            serverService.setServer(this);
-            logTag = "SERVER_SERVICE";
-            myTurn = true;
-        } else {
-            clientService = ClientService.getInstance();
-            clientService.setClient(this);
-            logTag = "CLIENT_SERVICE";
-            //true, because not already implemented. Later it must be false
-            myTurn = true;
+            if (isServer) {
+                game = ((Game) intent.getSerializableExtra("GAME"));
+                serverService = ServerService.getInstance();
+                serverService.setServer(this);
+                logTag = "SERVER_SERVICE";
+            } else {
+                clientService = ClientService.getInstance();
+                clientService.setClient(this);
+                logTag = "CLIENT_SERVICE";
+            }
         }
         myPlayer = new Player(nickname);
 
@@ -256,43 +250,68 @@ public class GameMap extends AppCompatActivity
         mMap.setLatLngBoundsForCameraTarget(mapBounds);
         mMap.setMinZoomPreference(mMap.getCameraPosition().zoom);
         setFields();
-        if (isServer) {
-            for (int i = 0; i < game.getPlayers().size(); i++) {
-                game.getPlayers().get(i).setIcon(PLAYER_ICONS[i]);
-                game.getPlayers().get(i).setMarker(initializeMarker(PLAYER_ICONS[i]));
-                LatLng position = game.getPlayers().get(i).getMarker().getPosition();
-                game.getPlayers().get(i).setPosition(new Point(position.latitude, position.longitude));
+
+        //if game has not startet yet
+        if(myPlayer == null) {
+            if(isServer) {
+                Player player;
+                for (int i = 0; i < game.getPlayers().size(); i++) {
+                    player = game.getPlayers().get(i);
+                    player.setIcon(PLAYER_ICONS[i]);
+                    player.setMarker(initializeMarker(PLAYER_ICONS[i]));
+                    player.getMarker().setTitle(player.getNickname());
+                    LatLng position = player.getMarker().getPosition();
+                    player.setPosition(new Point(position.latitude, position.longitude));
+                    player.setMoved(false);
+                }
+                myPlayer = game.getPlayers().get(0);
+                serverService.send(game);
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myPlayer.getPosition().getLatLng(), 16f));
             }
-            serverService.send(game);
+        }else{
+            setupGame();
         }
         myPlayer = findPlayer(myPlayer.getNickname());
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myPlayer.getPosition().getLatLng(), 16f));
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker field) {
-                if (myTurn) {
-                    boolean isValid = isValidMove(field, myPlayer.getMarker());
-                    if (isValid) {
-                        if (isServer) {
-                            Point point = Points.getPoints()[getFeeldnumber(field)];
-                            moveMarker(point, myPlayer.getMarker(), myPlayer.getIcon());
-                            serverService.send(new SendMove(myPlayer.getNickname(), getFeeldnumber(field)));
+                if(!isPlayer(field)) {
+                    if (!myPlayer.isMoved()) {
+                        boolean isValid = isValidMove(field, myPlayer.getMarker());
+                        if (isValid) {
+                            if (isServer) {
+                                Point point = Points.getPoints()[getFeeldnumber(field)];
+                                moveMarker(point, myPlayer.getMarker(), myPlayer.getIcon());
+                                serverService.send(new SendMove(myPlayer.getNickname(), getFeeldnumber(field)));
+                                myPlayer.setMoved(true);
+                                tryNextRound();
+                            } else {
+                                clientService.send(new SendMove(myPlayer.getNickname(), getFeeldnumber(field)));
+                            }
                         } else {
-                            clientService.send(new SendMove(myPlayer.getNickname(), getFeeldnumber(field)));
+                            // Toast to indicate that the clicked location is not reachable from the current
+                            // location
+                            Toast.makeText(GameMap.this, "Feld nicht erreichbar", Snackbar.LENGTH_LONG).show();
                         }
+                        return isValid;
                     } else {
-                        // Toast to indicate that the clicked location is not reachable from the current
-                        // location
-                        Toast.makeText(GameMap.this, "Unreachable Point :(", Snackbar.LENGTH_LONG).show();
+                        // Toast to indicate that it is not your turn
+                        Toast.makeText(GameMap.this, "Ein anderer Spieler ist noch nicht gezogen. Du musst noch warten.", Snackbar.LENGTH_LONG).show();
                     }
-                    return isValid;
-                } else {
-                    // Toast to indicate that it is not your turn
-                    Toast.makeText(GameMap.this, "Not your turn!", Snackbar.LENGTH_LONG).show();
-                    return false;
                 }
+                return false;
             }
         });
+    }
+
+    private boolean isPlayer(Marker field) {
+        for (Player player : game.getPlayers()) {
+            if(player.getMarker().equals(field)){
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean movewithrandomEvent(Marker player, Point p, int playerIcon) {
@@ -321,15 +340,12 @@ public class GameMap extends AppCompatActivity
     }
 
     private boolean moveMarker(Point p, Marker player, int playerIcon) {
-        if (randomEventsActive) {
-            Random randomNumber = new Random();
-            int r = randomNumber.nextInt(100) % 10;
-            //System.out.println("###################"+r+"-"+playerPenaltay);
-            if (r < 3) {
-                if (playerPenaltay == 0) {
-                    System.out.println("*********************RANDOM EVENT HAPPENING");
-                    return movewithrandomEvent(player, p, playerIcon);
-                }
+        int r = randomNumber.nextInt(100)%10;
+        //System.out.println("###################"+r+"-"+playerPenaltay);
+        if(false && r < 3) {
+            if (playerPenaltay == 0){
+                System.out.println("*********************RANDOM EVENT HAPPENING");
+                return movewithrandomEvent(player, p,playerIcon);
             }
         }
         return move(player, p, false, false, playerIcon);
@@ -619,7 +635,7 @@ public class GameMap extends AppCompatActivity
      * @return the resulting player-marker
      */
     private Marker initializeMarker(int icon) {
-        int position = (new Random()).nextInt(Points.getPoints().length);
+        int position = (randomNumber).nextInt(Points.getPoints().length);
         LatLng latLng = Points.POINTS[position].getLatLng();
         Marker marker = mMap.addMarker(new MarkerOptions().position(latLng));
         marker.setIcon(BitmapDescriptorFactory.fromResource(icon));
@@ -632,10 +648,11 @@ public class GameMap extends AppCompatActivity
                     .position(p.getPosition().getLatLng())
                     .icon(BitmapDescriptorFactory.fromResource(p.getIcon()));
             p.setMarker(mMap.addMarker(markerOptions));
-            if (p.getNickname().equals(myPlayer.getNickname())) {
+            if(p.getNickname().equals(nickname)){
                 myPlayer = p;
             }
         }
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myPlayer.getPosition().getLatLng(), 16f));
     }
 
     @Override
@@ -702,14 +719,23 @@ public class GameMap extends AppCompatActivity
         if(!isServer){
             String [] txt = ((Message) message).getMessage().split(" ");
 
-            if (txt.length == 3 && txt[0].equals("PLAYER") && txt[2].equals("QUITTED")) {
+            if(txt[0].equals("NEXT_ROUND")){
+                round++;
+                myPlayer.setMoved(false);
+                Toast.makeText(GameMap.this, "Runde " + round, Snackbar.LENGTH_LONG).show();
+            }
+            if(txt.length == 3 && txt[0].equals("PLAYER") && txt[2].equals("QUITTED")){
                 Player player = findPlayer(txt[1]);
                 deactivatePlayer(player);
+            }
+            if(txt.length == 2 && txt[0].equals("END")){
+                Toast.makeText(GameMap.this, txt[1] + " hat gewonnen", Snackbar.LENGTH_LONG).show();
             }
         }
     }
 
     private void deactivatePlayer(Player player) {
+        player.setMoved(true); //so he does not have to move in this round
         player.setActive(false);
         player.getMarker().remove();
     }
@@ -717,13 +743,49 @@ public class GameMap extends AppCompatActivity
     @Override
     public void onSendMove(SendMove sendMove) {
         Player player = findPlayer(((SendMove)sendMove).getNickname());
+        //if it is my Player to move
+        if(player.getNickname().equals(myPlayer.getNickname())){
+            myPlayer.setMoved(true);
+        }
         int field = ((SendMove)sendMove).getField();
         Point point = Points.getPoints()[field];
-        Log.d("SEND_MOVE", "sending move from " + player.getMarker().getPosition() + " to point " + point.getLatLng() + " (" + field + ")");
-        moveMarker(point, player.getMarker(), player.getIcon());
-        if (isServer) {
+
+        Log.d("SEND_MOVE","receiving move from " + player.getNickname());
+
+        if(isServer){
+            if(player.isMoved()) {
+                return;
+            }
+            player.setMoved(true);
             serverService.send(sendMove);
+            tryNextRound();
         }
+        moveMarker(point, player.getMarker(), player.getIcon());
+    }
+
+    private void tryNextRound() {
+        if(isRoundFinished()){
+            if(round < 12) {
+                round++;
+                for (Player p : game.getPlayers()) {
+                    p.setMoved(false);
+                }
+                serverService.send(new Message("NEXT_ROUND"));
+                Toast.makeText(GameMap.this, "Runde " + round, Snackbar.LENGTH_LONG).show();
+            }else{
+                serverService.send(new Message("END MisterX")); //MisterX hat gewonnen
+                Toast.makeText(GameMap.this, "MisterX hat gewonnen", Snackbar.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private boolean isRoundFinished() {
+        for (Player p : game.getPlayers()) {
+            if(p.isActive() && !p.isMoved()){
+                return false;
+            }
+        }
+        return true;
     }
 
     private Player findPlayer(String nickname) {

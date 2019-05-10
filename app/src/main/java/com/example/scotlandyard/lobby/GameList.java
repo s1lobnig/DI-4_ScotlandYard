@@ -187,6 +187,7 @@ public class GameList extends AppCompatActivity implements ClientInterface {
         Log.d(logTag, "Connection with an already discovered endpoint has been lost.");
 
         this.endpoints = new ArrayList<>(discoveredEndpoints.values());
+        //TODO update listAdapter
     }
 
     @Override
@@ -215,10 +216,9 @@ public class GameList extends AppCompatActivity implements ClientInterface {
         Intent intent = new Intent(GameList.this, GameMap.class);
 
         intent.putExtra("CLIENT", client);
-        intent.putExtra("USER_NAME", userName);
+        intent.putExtra("USERNAME", userName);
         intent.putExtra("IS_SERVER", false);
         startActivity(intent);
-
     }
 
     @Override
