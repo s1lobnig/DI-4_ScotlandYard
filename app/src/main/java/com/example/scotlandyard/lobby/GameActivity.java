@@ -50,7 +50,7 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
         int maxPlayers = intent.getExtras().getInt("MAX_PLAYERS");
         boolean buttonEnabled = intent.getExtras().getBoolean("ENABLE_BUTTON");
         randomEvents = intent.getExtras().getBoolean("RANDOM_EVENTS");
-        randomMrX =intent.getExtras().getBoolean("RANDOM_MR_X");
+        randomMrX = intent.getExtras().getBoolean("RANDOM_MR_X");
 
         /* Start ServerService and start advertising own endpoint. */
         serverService = ServerService.getInstance(GameActivity.this, userName + "'s game server", Nearby.getConnectionsClient(this));
@@ -68,10 +68,20 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
             @Override
             public void onClick(View v) {
                 Log.d("GAME_ACTIVITY", "Loading game map.");
-                if(randomMrX){
+                if (randomMrX) {
                     game.getPlayers().get((new Random()).nextInt(game.getPlayers().size())).setMrX(true);
                 } else {
-
+                    ArrayList<Integer> playersWhoWannaBeMrX = new ArrayList<>();
+                    for (int i = 0; i < game.getPlayers().size(); i++) {
+                        if (game.getPlayers().get(i).wantsToBeMrX()) {
+                            playersWhoWannaBeMrX.add(i);
+                        }
+                    }
+                    if (playersWhoWannaBeMrX.size() != 0) {
+                        game.getPlayers().get((new Random()).nextInt(playersWhoWannaBeMrX.size())).setMrX(true);
+                    } else {
+                        game.getPlayers().get(0).setMrX(true);
+                    }
                 }
                 Intent intent = new Intent(GameActivity.this, GameMap.class);
                 intent.putExtra("USERNAME", userName);
