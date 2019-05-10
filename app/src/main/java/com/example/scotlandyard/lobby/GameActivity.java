@@ -46,6 +46,7 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
         userName = intent.getExtras().getString("USER_NAME");
         int maxPlayers = intent.getExtras().getInt("MAX_PLAYERS");
         boolean buttonEnabled = intent.getExtras().getBoolean("ENABLE_BUTTON");
+        randomEvents = intent.getExtras().getBoolean("RANDOM_EVENTS");
 
         /* Start ServerService and start advertising own endpoint. */
         serverService = ServerService.getInstance(GameActivity.this, userName + "'s game server", Nearby.getConnectionsClient(this));
