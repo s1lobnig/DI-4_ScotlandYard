@@ -13,7 +13,7 @@ public class Endpoint implements Serializable {
     @NonNull private final String id;
     @NonNull private final String name;
 
-    Endpoint(@NonNull String id, @NonNull String name) {
+    public Endpoint(@NonNull String id, @NonNull String name) {
         this.id = id;
         this.name = name;
     }

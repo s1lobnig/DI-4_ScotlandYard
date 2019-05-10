@@ -86,7 +86,7 @@ public class GameMap extends AppCompatActivity
 
 
         nickname = intent.getStringExtra("USERNAME");
-        isServer = intent.getBooleanExtra("IS_SERVER", true);
+        isServer = intent.getBooleanExtra("IS_SERVER", false); // Default value set to FALSE !
         myPlayer = new Player(nickname);
 
         if(isServer){
@@ -95,6 +95,8 @@ public class GameMap extends AppCompatActivity
             serverService.setServer(this);
             logTag = "SERVER_SERVICE";
             myTurn = true;
+
+            serverService.send(new Message("START_GAME"));
         }else{
             clientService = ClientService.getInstance();
             clientService.setClient(this);
@@ -588,7 +590,7 @@ public class GameMap extends AppCompatActivity
             MarkerOptions markerOptions = new MarkerOptions()
                     .position(p.getPosition().getLatLng())
                     .icon(BitmapDescriptorFactory.fromResource(p.getIcon()));
-            p.setMarker(mMap.addMarker(markerOptions));
+            // p.setMarker(mMap.addMarker(markerOptions)); // TODO: FIX NULLPOINTER EXCEPTION !
             if(p.getNickname().equals(myPlayer.getNickname())){
                 myPlayer = p;
             }

@@ -43,7 +43,12 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
         boolean buttonEnabled = intent.getExtras().getBoolean("ENABLE_BUTTON");
 
         /* Start ServerService and start advertising own endpoint. */
-        serverService = ServerService.getInstance(GameActivity.this, userName + "'s game server", Nearby.getConnectionsClient(this));
+        try {
+            serverService = ServerService.getInstance(GameActivity.this, userName + "'s game server", Nearby.getConnectionsClient(this));
+        } catch (Exception e) {
+            serverService = ServerService.getInstance();
+            serverService.setServer(this);
+        }
         serverService.startAdvertising();
 
         /* This is info about the game - it will be sent to clients when they connect. */
@@ -62,9 +67,6 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
                 intent.putExtra("USERNAME", userName);
                 intent.putExtra("HOST", host);
 
-                //just for testing set per hand
-                game.getPlayers().add(new Player("someone"));
-                game.getPlayers().add(new Player("anyone"));
                 intent.putExtra("GAME", game);
                 intent.putExtra("IS_SERVER", true);
 
@@ -100,6 +102,7 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
     @Override
     public void onFailedAdvertising() {
         //TODO give user feedback, that advertising failed
+        // Make a Toast.
         Log.d(logTag, "Failed advertising.");
     }
 
@@ -149,8 +152,12 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
 
     @Override
     public void onMessage(Message message) {
-        //TODO this should be handled by the messenger in the lobby, if there is one
         Log.d(logTag, "message received.");
+
+        if (message.toString().startsWith("GET_GAME_DATA")) {
+            Log.d(logTag, "Sending game data to users.");
+            serverService.send((Game) this.game);
+        }
     }
 
     @Override
@@ -161,24 +168,44 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
     @Override
     public void onFailedConnecting(Endpoint endpoint) {
         //TODO inform player, that connecting has failed
+        // Make a Toast: Couldn't connect with endpoint.
         Log.d(logTag, "Connection with " + endpoint.toString() + " failed!");
     }
 
     @Override
     public void onDisconnected(Endpoint endpoint) {
         // TODO display that player has left the lobby (update the list and game data)
+        // Detect which player has left and remove it from the game.getPlayers() list.
+
         Log.d(logTag, endpoint.toString() + " disconnected successfully!");
+
+        Player playerToRemove = null;
+        for (Player player :
+                game.getPlayers()) {
+            if (player.getNickname().equals(endpoint.getName()))
+                playerToRemove = player;
+        }
+        game.getPlayers().remove(playerToRemove);
+
+        this.game.setCurrentMembers(this.game.getCurrentMembers() -1);
+
+        ((ArrayAdapter) connectedPlayersListAdapter).notifyDataSetChanged();
+
+        Log.d("SERVER_SERVICE", "Sending game data to all clients.");
+        serverService.send(this.game);
     }
 
     @Override
     public void onFailedAcceptConnection(Endpoint endpoint) {
         //TODO inform player, that accepting connection has failed
+        // Make a Toast
         Log.d(logTag, endpoint.toString() + " failed to accept connection!");
     }
 
     @Override
     public void onSendingFailed(Object object) {
         //TODO inform player, that sending has failed
+        // Make a Toast
         Log.d(logTag, "Sending data failed!");
     }
 }
