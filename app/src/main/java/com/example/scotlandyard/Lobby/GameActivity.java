@@ -16,7 +16,7 @@ import com.example.scotlandyard.R;
 import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.connection.ServerInterface;
 import com.example.scotlandyard.connection.ServerService;
-import com.example.scotlandyard.messenger.Message;
+import com.google.android.gms.nearby.Nearby;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -41,20 +41,16 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
 
         /* Get intent data. */
         Intent intent = getIntent();
-        String serverName = intent.getStringExtra("SERVER_NAME");
-        final String userName = intent.getExtras().getString("USER_NAME");
-        final int maxPlayers = intent.getExtras().getInt("MAX_PLAYERS");
-
-        final boolean randomEvents = intent.getBooleanExtra("RANDOM_EVENTS", false);
-        final boolean randomMrX = intent.getBooleanExtra("RANDOM_MR_X", false);
+        userName = intent.getExtras().getString("USER_NAME");
+        int maxPlayers = intent.getExtras().getInt("MAX_PLAYERS");
         boolean buttonEnabled = intent.getExtras().getBoolean("ENABLE_BUTTON");
 
         /* Start ServerService and start advertising own endpoint. */
-        serverService = ServerService.getInstance(GameActivity.this, userName + "'s game server", GameActivity.this);
+        serverService = ServerService.getInstance(GameActivity.this, userName + "'s game server", Nearby.getConnectionsClient(this));
         serverService.startAdvertising();
 
         /* This is info about the game - it will be sent to clients when they connect. */
-        game = new Game(serverName, maxPlayers);
+        game = new Game(userName + "'s game server", maxPlayers);
         final Player host = new Player(userName);
         host.setHost(true);
         game.getPlayers().add(host);
@@ -106,8 +102,8 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
 
     @Override
     public void onFailedAdvertising() {
+        //TODO give user feedback, that advertising failed
         Log.d(logTag, "Failed advertising.");
-
     }
 
     @Override
@@ -119,82 +115,73 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
     public void onConnectionRequested(Endpoint endpoint) {
         Log.d(logTag, endpoint.toString() + " has requested connection.");
 
-        /* If number of maximum players not exceeded then accept connection with the endpoint. */
-        // if (this.game.getCurrentMembers() < this.game.getMaxMembers())
-        serverService.acceptConnection(endpoint);
+        if (this.game.getCurrentMembers() < this.game.getMaxMembers()) {
+            if (!this.game.nickAlreadyUsed(endpoint.getName())) {
+                //TODO: maybe let server player decide, if that endpoint (player) is allowed to join
+                serverService.acceptConnection(endpoint);
+            } else {
+                Log.d(logTag, "nick already in use");
+                serverService.rejectConnection(endpoint);
+            }
+        } else {
+            Log.d(logTag, "lobby full");
+            serverService.rejectConnection(endpoint);
+            serverService.stopAdvertising();
+        }
     }
 
     @Override
-    public void onConnected(Map<String, Endpoint> establishedConnections) {
+    public void onConnected(Endpoint establishedConnection) {
         Log.d(logTag, "Connection with a new endpoint established.");
 
-        /* Get list of all connected endpoints and ignore those which were already there - detect the newly connected endpoint. */
-        ArrayList<Endpoint> establishedConnectionsList = new ArrayList<>(establishedConnections.values());
-        establishedConnectionsList.removeAll(this.endpoints);
-        this.endpoints = new ArrayList<>(establishedConnections.values());
+        Player newPlayer = new Player(establishedConnection.getName());
+        this.game.getPlayers().add(newPlayer);
 
-        Endpoint newlyConnectedEndpoint = establishedConnectionsList.get(0);
+        this.game.setCurrentMembers(this.game.getCurrentMembers() + 1);
 
-        Log.d(logTag, newlyConnectedEndpoint.toString() + " connected successfully.");
+        ((ArrayAdapter) connectedPlayersListAdapter).notifyDataSetChanged();
+
+        Log.d("SERVER_SERVICE", "Sending game data to all clients.");
+        serverService.send(this.game);
     }
 
     @Override
-    public void onGameData(Object o) {
-        Log.d("SERVER_SERVICE", "Game data received from client (new client wants to connect to the server)!");
-        if (o instanceof Game) {
-            Game game = (Game) o;
-            if (this.game.getCurrentMembers() < this.game.getMaxMembers()) {
-                // is this new added player always the same???
-                this.game.getPlayers().add(((Game) game).getPlayers().get(0));
-                //Player player = new Player(userName);
-                //this.game.getPlayers().add(player);
-                this.game.setCurrentMembers(this.game.getCurrentMembers() + 1);
-
-                ((ArrayAdapter) connectedPlayersListAdapter).notifyDataSetChanged();
-
-                Log.d("SERVER_SERVICE", "Sending game data to all clients.");
-                serverService.send((Game) this.game);
-            }
-        }
+    public void onGameData(Game game) {
+        Log.d(logTag, "should not get any game data");
     }
 
     @Override
-    public void onMessage(Object message) {
-        Log.d(logTag, "Message data received!");
-
-        String receivedMessage = ((Message) message).getMessage();
-        Log.d(logTag, "Received message: " + receivedMessage);
-
-        if (receivedMessage.startsWith("GET_GAME_DATA")) {
-            Log.d(logTag, "Sending game data to users.");
-            serverService.send((Game) this.game);
-        }
+    public void onMessage(Message message) {
+        //TODO this should be handled by the messenger in the lobby, if there is one
+        Log.d(logTag, "message received.");
     }
 
     @Override
-    public void onSendMove(Object sendMove) {
-        Log.d(logTag, "Move received");
+    public void onSendMove(SendMove sendMove) {
+        Log.d(logTag, "should not get any move");
     }
 
     @Override
     public void onFailedConnecting(Endpoint endpoint) {
+        //TODO inform player, that connecting has failed
         Log.d(logTag, "Connection with " + endpoint.toString() + " failed!");
     }
 
     @Override
     public void onDisconnected(Endpoint endpoint) {
+        // TODO display that player has left the lobby (update the list and game data)
         Log.d(logTag, endpoint.toString() + " disconnected successfully!");
-
-        // TODO: After method disconnectEndpoint(Endpoint endpoint) in ServerService has been implemented please disconnect the endpoint so it can reconnect later again.
     }
 
     @Override
     public void onFailedAcceptConnection(Endpoint endpoint) {
+        //TODO inform player, that accepting connection has failed
         Log.d(logTag, endpoint.toString() + " failed to accept connection!");
     }
 
     @Override
     public void onSendingFailed(Object object) {
+        //TODO inform player, that sending has failed
         Log.d(logTag, "Sending data failed!");
     }
 }

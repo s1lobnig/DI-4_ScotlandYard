@@ -47,6 +47,15 @@ public class Game implements Serializable {
         return players;
     }
 
+    public boolean nickAlreadyUsed(String nick) {
+        for (Player p : players) {
+            if (nick.equals(p.getNickname())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void setPlayers(ArrayList<Player> players) {
         this.players = players;
     }
