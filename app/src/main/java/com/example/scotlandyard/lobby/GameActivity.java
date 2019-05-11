@@ -78,7 +78,7 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
                         }
                     }
                     if (playersWhoWannaBeMrX.size() != 0) {
-                        game.getPlayers().get((new Random()).nextInt(playersWhoWannaBeMrX.size())).setMrX(true);
+                        game.getPlayers().get(playersWhoWannaBeMrX.get((new Random()).nextInt(playersWhoWannaBeMrX.size()))).setMrX(true);
                     } else {
                         game.getPlayers().get(0).setMrX(true);
                     }
