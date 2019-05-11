@@ -1,4 +1,4 @@
-package com.example.scotlandyard;
+package com.example.scotlandyard.lobby;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,13 +10,19 @@ import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import com.example.scotlandyard.map.GameMap;
+import com.example.scotlandyard.map.motions.SendMove;
+import com.example.scotlandyard.Player;
+import com.example.scotlandyard.R;
 import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.connection.ServerInterface;
 import com.example.scotlandyard.connection.ServerService;
+import com.example.scotlandyard.map.roadmap.Entry;
+import com.example.scotlandyard.messenger.Message;
 import com.google.android.gms.nearby.Nearby;
 
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.Random;
 
 public class GameActivity extends AppCompatActivity implements ServerInterface {
 
@@ -27,6 +33,8 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
 
     private ListAdapter connectedPlayersListAdapter;
     private String userName;
+    private boolean randomEvents;
+    private boolean randomMrX;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +49,8 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
         userName = intent.getExtras().getString("USER_NAME");
         int maxPlayers = intent.getExtras().getInt("MAX_PLAYERS");
         boolean buttonEnabled = intent.getExtras().getBoolean("ENABLE_BUTTON");
+        randomEvents = intent.getExtras().getBoolean("RANDOM_EVENTS");
+        randomMrX = intent.getExtras().getBoolean("RANDOM_MR_X");
 
         /* Start ServerService and start advertising own endpoint. */
         serverService = ServerService.getInstance(GameActivity.this, userName + "'s game server", Nearby.getConnectionsClient(this));
@@ -58,16 +68,28 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
             @Override
             public void onClick(View v) {
                 Log.d("GAME_ACTIVITY", "Loading game map.");
+                if (randomMrX) {
+                    game.getPlayers().get((new Random()).nextInt(game.getPlayers().size())).setMrX(true);
+                } else {
+                    ArrayList<Integer> playersWhoWannaBeMrX = new ArrayList<>();
+                    for (int i = 0; i < game.getPlayers().size(); i++) {
+                        if (game.getPlayers().get(i).wantsToBeMrX()) {
+                            playersWhoWannaBeMrX.add(i);
+                        }
+                    }
+                    if (playersWhoWannaBeMrX.size() != 0) {
+                        game.getPlayers().get((new Random()).nextInt(playersWhoWannaBeMrX.size())).setMrX(true);
+                    } else {
+                        game.getPlayers().get(0).setMrX(true);
+                    }
+                }
                 Intent intent = new Intent(GameActivity.this, GameMap.class);
                 intent.putExtra("USERNAME", userName);
                 intent.putExtra("HOST", host);
 
-                //just for testing set per hand
-                game.getPlayers().add(new Player("someone"));
-                game.getPlayers().add(new Player("anyone"));
                 intent.putExtra("GAME", game);
                 intent.putExtra("IS_SERVER", true);
-
+                intent.putExtra("RANDOM_EVENTS", randomEvents);
                 startActivity(intent);
             }
         });
@@ -125,6 +147,11 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
             serverService.rejectConnection(endpoint);
             serverService.stopAdvertising();
         }
+    }
+
+    @Override
+    public void onRoadMapEntry(Entry o) {
+
     }
 
     @Override

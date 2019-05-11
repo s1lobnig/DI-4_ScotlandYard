@@ -1,4 +1,4 @@
-package com.example.scotlandyard;
+package com.example.scotlandyard.map;
 
 import android.graphics.Color;
 
@@ -549,14 +549,14 @@ public class Routes {
      * false - else
      * [1]: Route route.........resulting route - if valid
      * null - else
-     * [2]: int vehicleCode.....Vehicle code:
+     * [2]: int vehicleCode.....Ticket code:
      * 0 = foot
      * 1 = bicycle
      * 2 = bus
      * 3 = taxi dragan
      * -1 = invalid
      */
-    public static Object[] getRoute(int current, int next) {
+    public static Object[] getRoute(int current, int next, boolean isMrX) {
         Route foot = getByFootRoute(current + 1, next + 1);
         if (foot != null)
             return new Object[]{true, foot, 0};
@@ -567,7 +567,7 @@ public class Routes {
         if (bus != null)
             return new Object[]{true, bus, 2};
         Route taxiDragan = getByTaxiDraganRoute(current + 1, next + 1);
-        if (taxiDragan != null)
+        if (taxiDragan != null && isMrX)
             return new Object[]{true, taxiDragan, 3};
         return new Object[]{false, null, -1};
     }

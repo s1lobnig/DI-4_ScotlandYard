@@ -1,12 +1,13 @@
 package com.example.scotlandyard.connection;
 
-import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.example.scotlandyard.Game;
-import com.example.scotlandyard.Message;
-import com.example.scotlandyard.SendMove;
+import com.example.scotlandyard.lobby.Game;
+import com.example.scotlandyard.map.roadmap.Entry;
+import com.example.scotlandyard.map.roadmap.RoadMap;
+import com.example.scotlandyard.messenger.Message;
+import com.example.scotlandyard.map.motions.SendMove;
 import com.google.android.gms.nearby.connection.ConnectionInfo;
 import com.google.android.gms.nearby.connection.ConnectionLifecycleCallback;
 import com.google.android.gms.nearby.connection.ConnectionResolution;
@@ -42,9 +43,9 @@ public class ClientService extends ConnectionService {
     /**
      * Constructor
      *
-     * @param clientInterface       object implementing client interface
-     * @param endpointName          name of the device (nickname)
-     * @param connectionsClient     connectionsClient of google api of the activity
+     * @param clientInterface   object implementing client interface
+     * @param endpointName      name of the device (nickname)
+     * @param connectionsClient connectionsClient of google api of the activity
      */
     private ClientService(@NonNull ClientInterface clientInterface, String endpointName, ConnectionsClient connectionsClient) {
         super(endpointName, connectionsClient);
@@ -55,6 +56,7 @@ public class ClientService extends ConnectionService {
 
     /**
      * function for retrieving singleton
+     *
      * @return singleton of ClientService
      * @throws IllegalStateException, if singleton is not set
      */
@@ -67,10 +69,11 @@ public class ClientService extends ConnectionService {
 
     /**
      * function for retrieving singleton for the first time
-     * @param clientInterface       object implementing client interface
-     * @param endpointName          name of the device (nickname)
-     * @param connectionsClient     connectionsClient of google api of the activity
-     * @return                      singleton of ClientInterface
+     *
+     * @param clientInterface   object implementing client interface
+     * @param endpointName      name of the device (nickname)
+     * @param connectionsClient connectionsClient of google api of the activity
+     * @return singleton of ClientInterface
      * @throws IllegalStateException, if singleton is already set
      */
     public static ClientService getInstance(ClientInterface clientInterface, String endpointName, ConnectionsClient connectionsClient) throws IllegalStateException {
@@ -244,13 +247,13 @@ public class ClientService extends ConnectionService {
                     }
                     if (object != null) {
                         if (object instanceof Message) {
-                            client.onMessage((Message)object);
-                        }
-                        if (object instanceof Game) {
-                            client.onGameData((Game)object);
-                        }
-                        if(object instanceof SendMove){
-                            client.onSendMove((SendMove)object);
+                            client.onMessage((Message) object);
+                        } else if (object instanceof Game) {
+                            client.onGameData((Game) object);
+                        } else if (object instanceof SendMove) {
+                            client.onSendMove((SendMove) object);
+                        } else if (object instanceof RoadMap) {
+                            client.onRoadMapEntry((Entry) object);
                         }
                     }
                 }
@@ -319,7 +322,7 @@ public class ClientService extends ConnectionService {
      */
     public void disconnect() {
         if (connectionState == ConnectionState.CONNECTED) {
-            Log.d(logTag, "disconnecting from "+connection.getName());
+            Log.d(logTag, "disconnecting from " + connection.getName());
             connectionsClient.disconnectFromEndpoint(connection.getId());
             connectionState = ConnectionState.DISCONNECTED;
             client.onDisconnected(connection);

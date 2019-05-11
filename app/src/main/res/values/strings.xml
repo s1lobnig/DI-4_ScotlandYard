@@ -39,4 +39,8 @@
     <string name="BICYCLE_TICKET_KEY">bicycle_tickets</string>
     <string name="BUS_TICKET_KEY">bus_tickets</string>
     <string name="BLACK_TICKET_KEY">black_tickets</string>
+
+    <string name="title_activity_game_presettings">GamePresettings</string>
+    <string name="title_activity_road_map_display">RoadMapDisplay</string>
+
 </resources>

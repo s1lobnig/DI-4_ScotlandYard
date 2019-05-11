@@ -1,5 +1,7 @@
 package com.example.scotlandyard.connection;
 
+import com.example.scotlandyard.map.roadmap.Entry;
+
 import java.util.Map;
 
 /**
@@ -33,4 +35,5 @@ public interface ClientInterface extends ConnectionInterface {
      */
     void onStoppedDiscovery();
 
+    void onRoadMapEntry(Entry object);
 }

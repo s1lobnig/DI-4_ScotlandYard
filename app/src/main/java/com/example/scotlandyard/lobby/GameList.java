@@ -1,4 +1,4 @@
-package com.example.scotlandyard;
+package com.example.scotlandyard.lobby;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,9 +16,15 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.scotlandyard.map.GameMap;
+import com.example.scotlandyard.map.motions.SendMove;
+import com.example.scotlandyard.Player;
+import com.example.scotlandyard.R;
 import com.example.scotlandyard.connection.ClientInterface;
 import com.example.scotlandyard.connection.ClientService;
 import com.example.scotlandyard.connection.Endpoint;
+import com.example.scotlandyard.map.roadmap.Entry;
+import com.example.scotlandyard.messenger.Message;
 import com.google.android.gms.nearby.Nearby;
 
 import java.util.ArrayList;
@@ -182,6 +188,7 @@ public class GameList extends AppCompatActivity implements ClientInterface {
         Log.d(logTag, "Connection with an already discovered endpoint has been lost.");
 
         this.endpoints = new ArrayList<>(discoveredEndpoints.values());
+        //TODO update listAdapter
     }
 
     @Override
@@ -191,6 +198,11 @@ public class GameList extends AppCompatActivity implements ClientInterface {
 
         ((ProgressBar) findViewById(R.id.progressBarDiscovery)).setVisibility(View.GONE);
         ((Button) findViewById(R.id.rediscoverButton)).setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onRoadMapEntry(Entry object) {
+
     }
 
     @Override
@@ -210,10 +222,9 @@ public class GameList extends AppCompatActivity implements ClientInterface {
         Intent intent = new Intent(GameList.this, GameMap.class);
 
         intent.putExtra("CLIENT", client);
-        intent.putExtra("USER_NAME", userName);
+        intent.putExtra("USERNAME", userName);
         intent.putExtra("IS_SERVER", false);
         startActivity(intent);
-
     }
 
     @Override

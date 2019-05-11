@@ -1,10 +1,12 @@
-package com.example.scotlandyard;
+package com.example.scotlandyard.lobby;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
+
+import com.example.scotlandyard.R;
 
 public class GameCreate extends AppCompatActivity {
 
@@ -43,7 +45,7 @@ public class GameCreate extends AppCompatActivity {
 
                 if(enable) {
                     /* Start game activity. */
-                    Intent gameStartIntent = new Intent(GameCreate.this, GameActivity.class);
+                    Intent gameStartIntent = new Intent(GameCreate.this, GamePresettings.class);
                     gameStartIntent.putExtra("ENABLE_BUTTON", true);
                     gameStartIntent.putExtra("USER_NAME", userName.getText().toString());
                     gameStartIntent.putExtra("MAX_PLAYERS", Integer.parseInt(maxPlayers.getText().toString()));

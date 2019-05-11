@@ -1,4 +1,4 @@
-package com.example.scotlandyard;
+package com.example.scotlandyard.lobby;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+
+import com.example.scotlandyard.R;
 
 public class RegistrationActivty extends AppCompatActivity {
 
