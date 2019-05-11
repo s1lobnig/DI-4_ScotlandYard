@@ -1,4 +1,4 @@
-package com.example.scotlandyard.messenger;
+package com.example.scotlandyard;
 
 import java.io.Serializable;
 

@@ -1,6 +1,4 @@
-package com.example.scotlandyard.lobby;
-
-import com.example.scotlandyard.Player;
+package com.example.scotlandyard;
 
 import java.io.Serializable;
 import java.util.ArrayList;

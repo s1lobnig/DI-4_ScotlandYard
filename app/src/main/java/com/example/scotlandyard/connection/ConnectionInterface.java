@@ -1,8 +1,8 @@
 package com.example.scotlandyard.connection;
 
-import com.example.scotlandyard.lobby.Game;
-import com.example.scotlandyard.messenger.Message;
-import com.example.scotlandyard.map.motions.SendMove;
+import com.example.scotlandyard.Game;
+import com.example.scotlandyard.Message;
+import com.example.scotlandyard.SendMove;
 
 /**
  * basic interface of client or server

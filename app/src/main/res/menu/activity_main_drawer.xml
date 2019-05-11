@@ -17,10 +17,6 @@
             android:icon="@android:drawable/ic_menu_info_details"
             android:title="Player Overview" />
         <item
-            android:id="@+id/nav_roadmap"
-            android:icon="@android:drawable/ic_dialog_map"
-            android:title="Roadmap" />
-        <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_menu_manage"
             android:title="Settings" />

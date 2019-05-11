@@ -1,4 +1,4 @@
-package com.example.scotlandyard.map;
+package com.example.scotlandyard;
 
 public class Route {
     private int startPoint;

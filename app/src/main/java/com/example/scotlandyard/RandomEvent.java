@@ -1,4 +1,4 @@
-package com.example.scotlandyard.map.motions;
+package com.example.scotlandyard;
 
 import java.util.Random;
 

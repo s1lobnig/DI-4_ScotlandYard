@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".lobby.GameList"
+    tools:context=".GameList"
     android:background="@color/background"
 
     android:theme="@style/AppTheme.ActionBar">
@@ -29,7 +29,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context=".lobby.GameList"
+        tools:context=".GameList"
         tools:layout_editor_absoluteY="56dp"
         tools:showIn="@layout/activity_game_list">
 
