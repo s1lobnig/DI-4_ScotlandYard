@@ -84,6 +84,10 @@ public class Player implements Serializable {
         }
     }
 
+    public HashMap<Integer, Integer> getTickets() {
+        return tickets;
+    }
+
     @Override
     public String toString() {
         return nickname;

@@ -42,6 +42,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
@@ -273,7 +274,7 @@ public class GameMap extends AppCompatActivity
     }
 
     private void setTickets(Player player) {
-        /*if (player is Mr. X){
+        /*if (player.isMrX()){
              host.initializeNumberOfTickets(new Object[][]{
                 {R.string.PEDESTRIAN_TICKET_KEY,5},
                 {R.string.BICYCLE_TICKET_KEY,4},
@@ -286,10 +287,42 @@ public class GameMap extends AppCompatActivity
                 {R.string.PEDESTRIAN_TICKET_KEY,5},
                 {R.string.BICYCLE_TICKET_KEY,4},
                 {R.string.BUS_TICKET_KEY,2},
-                {R.string.BLACK_TICKET_KEY,0},
+                {R.string.BLACK_TICKET_KEY, 0},
         });
+    }
 
-
+    private boolean checkForValidTicket(Player player, int vehicle){
+        boolean validTicket = false;
+        HashMap<Integer, Integer> tickets = player.getTickets();
+        switch (vehicle) {
+            case 0:
+                if(tickets.get(R.string.PEDESTRIAN_TICKET_KEY )> 0){
+                    validTicket = true;
+                    player.decreaseNumberOfTickets(R.string.PEDESTRIAN_TICKET_KEY);
+                }
+                break;
+            case 1:
+                if(tickets.get(R.string.BICYCLE_TICKET_KEY )> 0){
+                    validTicket = true;
+                    player.decreaseNumberOfTickets(R.string.BICYCLE_TICKET_KEY);
+                }
+                break;
+            case 2:
+                if(tickets.get(R.string.BUS_TICKET_KEY )> 0){
+                    validTicket = true;
+                    player.decreaseNumberOfTickets(R.string.BUS_TICKET_KEY);
+                }
+                break;
+            case 3:
+                if(tickets.get(R.string.BLACK_TICKET_KEY )> 0){
+                    validTicket = true;
+                    player.decreaseNumberOfTickets(R.string.BLACK_TICKET_KEY);
+                }
+                break;
+            default:
+                    validTicket = false;
+        }
+        return validTicket;
     }
 
     private boolean movewithrandomEvent(Marker player, Point p, int playerIcon) {
