@@ -205,6 +205,8 @@ public class GameMap extends AppCompatActivity
      * will only be triggered once the user has installed Google Play services and
      * returned to the app.
      */
+
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -220,6 +222,8 @@ public class GameMap extends AppCompatActivity
         } catch (Resources.NotFoundException e) {
             Log.e(TAG, "Can't find style. Error: ", e);
         }
+
+
         int width = getResources().getDisplayMetrics().widthPixels;
         int height = getResources().getDisplayMetrics().heightPixels;
         int padding = (int) (width * 0.02);
@@ -228,6 +232,9 @@ public class GameMap extends AppCompatActivity
         mMap.setLatLngBoundsForCameraTarget(mapBounds);
         mMap.setMinZoomPreference(mMap.getCameraPosition().zoom);
         setFields();
+
+
+
 
         //if game has not startet yet
         if(myPlayer == null) {
@@ -298,6 +305,7 @@ public class GameMap extends AppCompatActivity
 
 
     
+
     private boolean movewithrandomEvent(Marker player, Point p, int playerIcon) {
         RandomEvent r = new RandomEvent();
         boolean goback = false;
@@ -329,6 +337,8 @@ public class GameMap extends AppCompatActivity
     private boolean moveMarker(Point p, Marker player, int playerIcon) {
         int r = randomNumber.nextInt(100)%10;
         //System.out.println("###################"+r+"-"+playerPenaltay);
+
+
         if(false && r < 3) {
             if (playerPenaltay == 0){
                 System.out.println("*********************RANDOM EVENT HAPPENING");
@@ -339,6 +349,8 @@ public class GameMap extends AppCompatActivity
         return move(player, p, false, false, playerIcon);
     }
 
+
+
     private boolean isValidMove(Marker destination, Marker player){
         LatLng current = player.getPosition();
         Point currentPoint = new Point(current.latitude, current.longitude);
@@ -346,6 +358,8 @@ public class GameMap extends AppCompatActivity
         Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
         return (Boolean) routeToTake[0];
     }
+
+
 
     private boolean move(Marker player, Point p, boolean goBack, boolean randomRoute, int playerIcon){
         LatLng current = player.getPosition();
@@ -355,24 +369,32 @@ public class GameMap extends AppCompatActivity
         boolean isValid = (Boolean) routeToTake[0];
         // if the route would be valid but there is the randowm event "verfahren", then...
         // Note, this does not work at the moment!
+
+
         if(isValid && randomRoute){
             routeToTake = Routes.getRandomRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
         }
+
+
         if (isValid) {
             Route r = (Route) routeToTake[1];
             int icon;
             int vehicle = (int) routeToTake[2];
             switch (vehicle) {
                 case 0:
+
                     icon = R.drawable.pedestrian;
                     break;
                 case 1:
+
                     icon = R.drawable.bicycle;
                     break;
                 case 2:
+
                     icon = R.drawable.bus;
                     break;
                 case 3:
+
                     icon = R.drawable.taxi;
                     break;
                 default:
@@ -435,6 +457,9 @@ public class GameMap extends AppCompatActivity
      *         contains the animation-duration-slices according to the
      *         route-part-length }
      */
+
+
+
     private Object[] getRouteSlicesAndTimings(Route r, int animationDuration, int startPos) {
         if (startPos == r.getStartPoint()) {
             return regularOrder(r, animationDuration);
@@ -442,6 +467,11 @@ public class GameMap extends AppCompatActivity
             return reverseOrder(r, animationDuration);
         }
     }
+
+
+
+
+
 
     private Object[] reverseOrder(Route r, int animationDuration) {
         float duration;
@@ -514,6 +544,8 @@ public class GameMap extends AppCompatActivity
     /**
      * Adds all Points to the map and calls drawRoutes() at the end
      */
+
+
     private void setFields() {
         for (Point p : Points.getPoints()) {
             LatLng p_LatLng = p.getLatLng();
@@ -528,6 +560,8 @@ public class GameMap extends AppCompatActivity
     /**
      * Draws all Routes
      */
+
+
     private void drawRoutes() {
         drawByFoot();
         drawByBicycle();
@@ -538,6 +572,8 @@ public class GameMap extends AppCompatActivity
     /**
      * Draws all "BUS"-Routes
      */
+
+
     private void drawByBus() {
         for (Route r : Routes.getBusRoutes()) {
             addRoute(r, Routes.getBusColor());
@@ -547,6 +583,8 @@ public class GameMap extends AppCompatActivity
     /**
      * Draws all "TAXI DRAGAN"-Routes
      */
+
+
     private void drawByTaxiDragan() {
         for (Route r : Routes.getTaxiDraganRoutes()) {
             addRoute(r, Routes.getTaxiDraganColor());
@@ -556,6 +594,8 @@ public class GameMap extends AppCompatActivity
     /**
      * Draws all "FOOT"-Routes
      */
+
+
     private void drawByFoot() {
         for (Route r : Routes.getByFootRoutes()) {
             addRoute(r, Routes.getByFootColor());
@@ -565,6 +605,8 @@ public class GameMap extends AppCompatActivity
     /**
      * Draws all "BICYCLE"-Routes
      */
+
+
     private void drawByBicycle() {
         for (Route r : Routes.getBicycleRoutes()) {
             addRoute(r, Routes.getBicycleColor());
@@ -578,6 +620,8 @@ public class GameMap extends AppCompatActivity
      *              necessary also intermediate points for drawing the route
      * @param color An int-value which represents the color of the route to be drawn
      */
+
+
     private void addRoute(Route r, int color) {
         Point startPoint = Points.getPoints()[r.getStartPoint() - 1];
         Point endPoint = Points.getPoints()[r.getEndPoint() - 1];
@@ -593,10 +637,15 @@ public class GameMap extends AppCompatActivity
         mMap.addPolyline(route);
     }
 
+
+
+
     private int getFeeldnumber(Marker feeld){
         Point newLocation = new Point(feeld.getPosition().latitude, feeld.getPosition().longitude);
         return Points.getIndex(newLocation);
     }
+
+
 
     /**
      * Initializes the player-marker and sets its icon to param icon
@@ -604,6 +653,9 @@ public class GameMap extends AppCompatActivity
      * @param icon player-icon
      * @return the resulting player-marker
      */
+
+
+
     private Marker initializeMarker(int icon) {
         int position = (randomNumber).nextInt(Points.getPoints().length);
         LatLng latLng = Points.POINTS[position].getLatLng();
@@ -612,8 +664,14 @@ public class GameMap extends AppCompatActivity
         return marker;
     }
 
+
+
+
     private void setupGame(){
+
+
         for (Player p : game.getPlayers()) {
+
             MarkerOptions markerOptions = new MarkerOptions()
                     .position(p.getPosition().getLatLng())
                     .icon(BitmapDescriptorFactory.fromResource(p.getIcon()));
@@ -625,55 +683,77 @@ public class GameMap extends AppCompatActivity
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myPlayer.getPosition().getLatLng(), 16f));
     }
 
+
+
     @Override
     public void onStartedDiscovery() {
         Log.e(logTag, "Started discovery in GameMap.");
     }
+
+
 
     @Override
     public void onFailedDiscovery() {
         Log.d(logTag, "Failed discovery in GameMap.");
     }
 
+
+
     @Override
     public void onEndpointFound(Map<String, Endpoint> discoveredEndpoints) {
         Log.d(logTag, "Endpoint found in GameMap");
     }
+
+
 
     @Override
     public void onEndpointLost(Map<String, Endpoint> discoveredEndpoints) {
         Log.d(logTag, "Endpoint lost in GameMap");
     }
 
+
+
     @Override
     public void onStoppedDiscovery() {
         Log.d(logTag, "stopped discovery in GameMap");
     }
+
+
 
     @Override
     public void onConnected(Endpoint endpoint) {
         Log.d(logTag, "on connected to endpoint in GameMap");
     }
 
+
+
     @Override
     public void onStartedAdvertising() {
         Log.d(logTag, "Started advertising in GameMap");
     }
+
+
 
     @Override
     public void onFailedAdvertising() {
         Log.d(logTag, "Failed advertising in GameMap");
     }
 
+
+
     @Override
     public void onStoppedAdvertising() {
         Log.d(logTag, "Stopped advertising in GameMap");
     }
 
+
+
     @Override
     public void onConnectionRequested(Endpoint endpoint) {
         Log.d(logTag, "On connection request in GameMap");
     }
+
+
 
     @Override
     public void onGameData(Game game) {
@@ -684,8 +764,12 @@ public class GameMap extends AppCompatActivity
         }
     }
 
+
+
     @Override
     public void onMessage(Message message) {
+
+
         if(!isServer){
             String [] txt = ((Message) message).getMessage().split(" ");
 
@@ -704,14 +788,22 @@ public class GameMap extends AppCompatActivity
         }
     }
 
+
+
     private void deactivatePlayer(Player player) {
+
+
         player.setMoved(true); //so he does not have to move in this round
         player.setActive(false);
         player.getMarker().remove();
     }
 
+
+
     @Override
     public void onSendMove(SendMove sendMove) {
+
+
         Player player = findPlayer(((SendMove)sendMove).getNickname());
         //if it is my Player to move
         if(player.getNickname().equals(myPlayer.getNickname())){
@@ -734,6 +826,8 @@ public class GameMap extends AppCompatActivity
     }
 
     private void tryNextRound() {
+
+
         if(isRoundFinished()){
             if(round < 12) {
                 round++;
@@ -749,7 +843,11 @@ public class GameMap extends AppCompatActivity
         }
     }
 
+
+
     private boolean isRoundFinished() {
+
+
         for (Player p : game.getPlayers()) {
             if(p.isActive() && !p.isMoved()){
                 return false;
@@ -758,7 +856,11 @@ public class GameMap extends AppCompatActivity
         return true;
     }
 
+
+
     private Player findPlayer(String nickname) {
+
+
         for (Player p : game.getPlayers()) {
             if(p.getNickname().equals(nickname)){
                 return p;
@@ -767,10 +869,14 @@ public class GameMap extends AppCompatActivity
         return null;
     }
 
+
+
     @Override
     public void onFailedConnecting(Endpoint endpoint) {
         Log.d(logTag, "Connecting failed in GameMap");
     }
+
+
 
     @Override
     public void onDisconnected(Endpoint endpoint) {
@@ -784,10 +890,14 @@ public class GameMap extends AppCompatActivity
         }
     }
 
+
+
     @Override
     public void onFailedAcceptConnection(Endpoint endpoint) {
         Log.d(logTag, "Failed accepting connection in GameMap");
     }
+
+
 
     @Override
     public void onSendingFailed(Object object) {
