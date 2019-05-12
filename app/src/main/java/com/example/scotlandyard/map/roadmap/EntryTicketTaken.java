@@ -11,10 +11,10 @@ import android.widget.ImageView;
 
 import com.example.scotlandyard.R;
 
-public class EntryVehicle extends Entry {
+public class EntryTicketTaken extends Entry {
     private Ticket ticket;
 
-    public EntryVehicle(int turn, Ticket ticket) {
+    public EntryTicketTaken(int turn, Ticket ticket) {
         super(turn);
         this.ticket = ticket;
     }

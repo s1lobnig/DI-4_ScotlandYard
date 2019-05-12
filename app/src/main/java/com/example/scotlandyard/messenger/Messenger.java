@@ -6,23 +6,24 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import com.example.scotlandyard.lobby.Game;
-import com.example.scotlandyard.map.motions.SendMove;
 import com.example.scotlandyard.R;
 import com.example.scotlandyard.connection.ClientInterface;
 import com.example.scotlandyard.connection.ClientService;
 import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.connection.ServerInterface;
 import com.example.scotlandyard.connection.ServerService;
+import com.example.scotlandyard.lobby.Game;
+import com.example.scotlandyard.map.motions.SendMove;
 import com.example.scotlandyard.map.roadmap.Entry;
 
 import java.util.Map;
 
-public class Messanger extends AppCompatActivity implements ServerInterface, ClientInterface {
+public class Messenger extends AppCompatActivity implements ServerInterface, ClientInterface {
 
 
     private EditText textMessage;
@@ -35,6 +36,11 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
     private ClientService clientService;
     private String nickname;
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +49,9 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
 
         /* add Toolbar */
         Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("Spieler Chat");
         setSupportActionBar(toolbar);
+
 
         /* find views */
 
@@ -97,6 +105,9 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
                 /*scroll the ListView to the last added element*/
                 messageList.setSelection(messageList.getCount() - 1);
 
+                /*flush EditText and close keyboard after sending*/
+                textMessage.setText("");
+                textMessage.onEditorAction(EditorInfo.IME_ACTION_DONE);
             }
         });
 
@@ -154,11 +165,6 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
     }
 
     @Override
-    public void onRoadMapEntry(Entry o) {
-
-    }
-
-    @Override
     public void onGameData(Game game) {
 
     }
@@ -190,6 +196,11 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
 
     @Override
     public void onSendMove(SendMove sendMove) {
+
+    }
+
+    @Override
+    public void onRoadMapEntry(Entry entry) {
 
     }
 

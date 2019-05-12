@@ -14,7 +14,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.scotlandyard.lobby.GameCreate;
-import com.example.scotlandyard.lobby.RegistrationActivty;
+import com.example.scotlandyard.lobby.RegistrationActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d("MAIN_ACTIVITY", "Starting RegistrationActivty activity.");
-                startActivity(new Intent(MainActivity.this, RegistrationActivty.class));
+                startActivity(new Intent(MainActivity.this, RegistrationActivity.class));
             }
         });
         createGame = findViewById(R.id.btnCreateGame);

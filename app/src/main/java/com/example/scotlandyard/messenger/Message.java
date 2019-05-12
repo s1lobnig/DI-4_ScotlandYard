@@ -49,5 +49,10 @@ public class Message implements Serializable {
         return this.nicknameSender;
     }
 
+    @Override
+    public String toString() {
+        return message;
+    }
+
 }
 

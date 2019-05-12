@@ -28,6 +28,4 @@ public interface ServerInterface extends ConnectionInterface {
      * @param endpoint              endpoint, who requests the connection
      */
     void onConnectionRequested(Endpoint endpoint);
-
-    void onRoadMapEntry(Entry o);
 }

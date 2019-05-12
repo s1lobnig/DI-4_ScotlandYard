@@ -12,7 +12,8 @@ import android.widget.EditText;
 
 import com.example.scotlandyard.R;
 
-public class RegistrationActivty extends AppCompatActivity {
+
+public class RegistrationActivity extends AppCompatActivity {
 
     public static final String passNickname = "com.example.scotlandyard.java.passNickname";
 
@@ -68,7 +69,7 @@ public class RegistrationActivty extends AppCompatActivity {
         String nickname = inputField.getText().toString().trim();
 
         if (!nickname.isEmpty()) {
-            Intent intent = new Intent(RegistrationActivty.this, GameList.class);
+            Intent intent = new Intent(RegistrationActivity.this, GameList.class);
             intent.putExtra("USERNAME", nickname);
             startActivity(intent);
             // Simulate waiting time to join game

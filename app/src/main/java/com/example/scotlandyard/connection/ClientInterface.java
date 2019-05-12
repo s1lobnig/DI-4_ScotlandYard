@@ -35,5 +35,4 @@ public interface ClientInterface extends ConnectionInterface {
      */
     void onStoppedDiscovery();
 
-    void onRoadMapEntry(Entry object);
 }

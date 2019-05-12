@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    tools:context=".lobby.RegistrationActivty"
+    tools:context=".RegistrationActivty"
     android:background="@color/background"
     android:theme="@style/AppTheme.ActionBar">
     <android.support.design.widget.AppBarLayout

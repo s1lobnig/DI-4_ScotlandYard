@@ -4,10 +4,9 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.example.scotlandyard.lobby.Game;
-import com.example.scotlandyard.map.roadmap.Entry;
-import com.example.scotlandyard.map.roadmap.RoadMap;
-import com.example.scotlandyard.messenger.Message;
 import com.example.scotlandyard.map.motions.SendMove;
+import com.example.scotlandyard.map.roadmap.Entry;
+import com.example.scotlandyard.messenger.Message;
 import com.google.android.gms.nearby.connection.ConnectionInfo;
 import com.google.android.gms.nearby.connection.ConnectionLifecycleCallback;
 import com.google.android.gms.nearby.connection.ConnectionResolution;
@@ -167,7 +166,9 @@ public class ClientService extends ConnectionService {
      * @param endpoint endpoint to connect to
      */
     public void connectToEndpoint(@NonNull final Endpoint endpoint) {
-        if (connectionState == ConnectionState.DISCOVERING) {
+
+        /*Added true, to be able to connect. Possible problem: Invalid connection state.*/
+        if (connectionState == ConnectionState.DISCOVERING || true) {
             stopDiscovery();
             connectionState = ConnectionState.CONNECTING;
             Log.d(logTag, "sending a connection request to endpoint " + endpoint);
@@ -252,7 +253,7 @@ public class ClientService extends ConnectionService {
                             client.onGameData((Game) object);
                         } else if (object instanceof SendMove) {
                             client.onSendMove((SendMove) object);
-                        } else if (object instanceof RoadMap) {
+                        } else if (object instanceof Entry) {
                             client.onRoadMapEntry((Entry) object);
                         }
                     }
@@ -271,7 +272,7 @@ public class ClientService extends ConnectionService {
      * @param object object to send (game data, chat message or move)
      */
     public void send(Object object) {
-        if (object instanceof Message || object instanceof Game || object instanceof SendMove) {
+        if (object instanceof Message || object instanceof Game || object instanceof SendMove || object instanceof Entry) {
             byte[] data = null;
             try {
                 data = serialize(object);

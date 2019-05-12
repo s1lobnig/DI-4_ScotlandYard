@@ -16,12 +16,12 @@ import com.example.scotlandyard.map.motions.MarkerAnimation;
 import com.example.scotlandyard.map.motions.SendMove;
 import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.map.roadmap.EntryPosition;
-import com.example.scotlandyard.map.roadmap.EntryVehicle;
+import com.example.scotlandyard.map.roadmap.EntryTicketTaken;
 import com.example.scotlandyard.map.roadmap.RoadMap;
 import com.example.scotlandyard.map.roadmap.RoadMapDisplay;
 import com.example.scotlandyard.map.roadmap.Ticket;
 import com.example.scotlandyard.messenger.Message;
-import com.example.scotlandyard.messenger.Messanger;
+import com.example.scotlandyard.messenger.Messenger;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.PlayersOverview;
 import com.example.scotlandyard.R;
@@ -80,6 +80,7 @@ public class GameMap extends AppCompatActivity
     private static Game game;
     private static Player myPlayer;
     private RoadMap roadmap;
+    private boolean randomEvents;
 
     private static final int[] PLAYER_ICONS = {
             R.drawable.player1,
@@ -109,6 +110,7 @@ public class GameMap extends AppCompatActivity
             Intent intent = getIntent();
             nickname = intent.getStringExtra("USERNAME");
             isServer = intent.getBooleanExtra("IS_SERVER", true);
+            randomEvents = intent.getBooleanExtra("RANDOM_EVENTS",false);
             if (isServer) {
                 game = ((Game) intent.getSerializableExtra("GAME"));
                 serverService = ServerService.getInstance();
@@ -129,7 +131,7 @@ public class GameMap extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent mIntent = new Intent(GameMap.this, Messanger.class);
+                Intent mIntent = new Intent(GameMap.this, Messenger.class);
                 mIntent.putExtra("USERNAME", nickname);
                 mIntent.putExtra("IS_SERVER", isServer);
                 startActivity(mIntent);
@@ -277,6 +279,7 @@ public class GameMap extends AppCompatActivity
         }
         myPlayer = findPlayer(myPlayer.getNickname());
         isMrX = myPlayer.isMrX();
+        drawRoutes();
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myPlayer.getPosition().getLatLng(), 16f));
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
@@ -294,12 +297,11 @@ public class GameMap extends AppCompatActivity
                             } else {
                                 clientService.send(new SendMove(myPlayer.getNickname(), Points.getIndex(field)));
                             }
-                        } else {
-                            // Toast to indicate that the clicked location is not reachable from the current
-                            // location
-                            Toast.makeText(GameMap.this, "Feld nicht erreichbar", Snackbar.LENGTH_LONG).show();
                         }
                         return isValid;
+                    } else {
+                        // Toast to indicate that it is not your turn
+                        Toast.makeText(GameMap.this, "Ein anderer Spieler ist noch nicht gezogen. Du musst noch warten.", Snackbar.LENGTH_LONG).show();
                     }
                 }
                 return false;
@@ -368,18 +370,18 @@ public class GameMap extends AppCompatActivity
         return validTicket;
     }
 
-    private boolean movewithrandomEvent(Player player, Point p, int playerIcon) {
+    private boolean moveWithRandomEvent(Player player, Point p, int playerIcon) {
         RandomEvent r = new RandomEvent();
-        boolean goback = false;
-        boolean dontgo = false;
+        boolean goBack = false;
+        boolean doNotGo = false;
         boolean randomRoute = false;
 
         if (r.getID() == 0) {
             Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
-            dontgo = true;
+            doNotGo = true;
         } else if (r.getID() == 1) {
             Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
-            goback = true;
+            goBack = true;
         } else if (r.getID() == 2) {
             Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
             playerPenaltay = 3;
@@ -387,19 +389,19 @@ public class GameMap extends AppCompatActivity
             Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
             randomRoute = true;
         }
-        if (!dontgo) {
-            return move(player, p, goback, randomRoute, playerIcon);
+        if (!doNotGo) {
+            return move(player, p, goBack, randomRoute, playerIcon);
         }
         return false;
     }
 
     private boolean moveMarker(Point p, Player player, int playerIcon) {
-        int r = randomNumber.nextInt(100) % 10;
-        //System.out.println("###################"+r+"-"+playerPenaltay);
-        if (false && r < 3) {
-            if (playerPenaltay == 0) {
-                System.out.println("*********************RANDOM EVENT HAPPENING");
-                return movewithrandomEvent(player, p, playerIcon);
+        if (randomEvents) {
+            int r = randomNumber.nextInt(100) % 10;
+            if (false && r < 3) {
+                if (playerPenaltay == 0) {
+                    return moveWithRandomEvent(player, p, playerIcon);
+                }
             }
         }
         return move(player, p, false, false, playerIcon);
@@ -433,8 +435,8 @@ public class GameMap extends AppCompatActivity
         Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation), isMrX);
         boolean isValid = (Boolean) routeToTake[0];
         // if the route would be valid but there is the randowm event "verfahren", then...
-        // Note, this does not work at the moment!
-        if (isValid && randomRoute) {
+        // Note, this does not work at the moment! - therefore the false is hardcoded currently!
+        if (false && randomRoute) {
             routeToTake = Routes.getRandomRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
         }
         if (isValid) {
@@ -471,7 +473,7 @@ public class GameMap extends AppCompatActivity
                     if (ticket == -1) {
                         ticket = R.drawable.ticket_black;
                     }
-                    e = new EntryVehicle(roadmap.getNumberOfEntries() + 1, Ticket.get(ticket));
+                    e = new EntryTicketTaken(roadmap.getNumberOfEntries() + 1, Ticket.get(ticket));
                 }
                 // TODO send entry to all
                 if (isServer) {
@@ -631,7 +633,6 @@ public class GameMap extends AppCompatActivity
             BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(bmp);
             mMap.addMarker(new MarkerOptions().position(p_LatLng).icon(icon).anchor(0.5f, 0.5f));
         }
-        drawRoutes();
     }
 
     /**

@@ -20,9 +20,6 @@ public class GamePresettings extends AppCompatActivity {
     private int maxPlayers;
     private boolean buttonEnabled;
 
-    private boolean randomEventsEnabled;
-    private boolean mrXIsRandom;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,13 +36,13 @@ public class GamePresettings extends AppCompatActivity {
         userName = intent.getExtras().getString("USER_NAME");
         maxPlayers = intent.getExtras().getInt("MAX_PLAYERS");
         buttonEnabled = intent.getExtras().getBoolean("ENABLE_BUTTON");
-        ((Button)findViewById(R.id.proceed)).setOnClickListener(new View.OnClickListener() {
+        ((Button) findViewById(R.id.proceed)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent gameStartIntent = new Intent(GamePresettings.this,GameActivity.class);
+                Intent gameStartIntent = new Intent(GamePresettings.this, GameActivity.class);
                 gameStartIntent.putExtra("RANDOM_EVENTS", randomEvents.isChecked());
                 gameStartIntent.putExtra("RANDOM_MR_X", chooseMrXRandomly.isChecked());
-                gameStartIntent.putExtra("ENABLE_BUTTON", true);
+                gameStartIntent.putExtra("ENABLE_BUTTON", buttonEnabled);
                 gameStartIntent.putExtra("SERVER_NAME", serverName);
                 gameStartIntent.putExtra("USER_NAME", userName);
                 gameStartIntent.putExtra("MAX_PLAYERS", maxPlayers);

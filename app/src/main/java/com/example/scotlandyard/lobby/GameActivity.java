@@ -10,13 +10,13 @@ import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import com.example.scotlandyard.map.GameMap;
-import com.example.scotlandyard.map.motions.SendMove;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
 import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.connection.ServerInterface;
 import com.example.scotlandyard.connection.ServerService;
+import com.example.scotlandyard.map.GameMap;
+import com.example.scotlandyard.map.motions.SendMove;
 import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.messenger.Message;
 import com.google.android.gms.nearby.Nearby;
@@ -53,7 +53,12 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
         randomMrX = intent.getExtras().getBoolean("RANDOM_MR_X");
 
         /* Start ServerService and start advertising own endpoint. */
-        serverService = ServerService.getInstance(GameActivity.this, userName + "'s game server", Nearby.getConnectionsClient(this));
+        try {
+            serverService = ServerService.getInstance(GameActivity.this, userName + "'s game server", Nearby.getConnectionsClient(this));
+        } catch (Exception e) {
+            serverService = ServerService.getInstance();
+            serverService.setServer(this);
+        }
         serverService.startAdvertising();
 
         /* This is info about the game - it will be sent to clients when they connect. */
@@ -122,6 +127,7 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
     @Override
     public void onFailedAdvertising() {
         //TODO give user feedback, that advertising failed
+        // Make a Toast.
         Log.d(logTag, "Failed advertising.");
     }
 
@@ -150,11 +156,6 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
     }
 
     @Override
-    public void onRoadMapEntry(Entry o) {
-
-    }
-
-    @Override
     public void onConnected(Endpoint establishedConnection) {
         Log.d(logTag, "Connection with a new endpoint established.");
 
@@ -176,8 +177,12 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
 
     @Override
     public void onMessage(Message message) {
-        //TODO this should be handled by the messenger in the lobby, if there is one
         Log.d(logTag, "message received.");
+
+        if (message.toString().startsWith("GET_GAME_DATA")) {
+            Log.d(logTag, "Sending game data to users.");
+            serverService.send((Game) this.game);
+        }
     }
 
     @Override
@@ -186,26 +191,51 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
     }
 
     @Override
+    public void onRoadMapEntry(Entry entry) {
+
+    }
+
+    @Override
     public void onFailedConnecting(Endpoint endpoint) {
         //TODO inform player, that connecting has failed
+        // Make a Toast: Couldn't connect with endpoint.
         Log.d(logTag, "Connection with " + endpoint.toString() + " failed!");
     }
 
     @Override
     public void onDisconnected(Endpoint endpoint) {
         // TODO display that player has left the lobby (update the list and game data)
+        // Detect which player has left and remove it from the game.getPlayers() list.
+
         Log.d(logTag, endpoint.toString() + " disconnected successfully!");
+
+        Player playerToRemove = null;
+        for (Player player :
+                game.getPlayers()) {
+            if (player.getNickname().equals(endpoint.getName()))
+                playerToRemove = player;
+        }
+        game.getPlayers().remove(playerToRemove);
+
+        this.game.setCurrentMembers(this.game.getCurrentMembers() - 1);
+
+        ((ArrayAdapter) connectedPlayersListAdapter).notifyDataSetChanged();
+
+        Log.d("SERVER_SERVICE", "Sending game data to all clients.");
+        serverService.send(this.game);
     }
 
     @Override
     public void onFailedAcceptConnection(Endpoint endpoint) {
         //TODO inform player, that accepting connection has failed
+        // Make a Toast
         Log.d(logTag, endpoint.toString() + " failed to accept connection!");
     }
 
     @Override
     public void onSendingFailed(Object object) {
         //TODO inform player, that sending has failed
+        // Make a Toast
         Log.d(logTag, "Sending data failed!");
     }
 }

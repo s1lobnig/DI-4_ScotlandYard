@@ -1,5 +1,7 @@
 package com.example.scotlandyard.map.motions;
 
+import com.google.android.gms.maps.model.Marker;
+
 import java.io.Serializable;
 
 public class SendMove implements Serializable {
@@ -25,5 +27,10 @@ public class SendMove implements Serializable {
 
     public void setField(int field) {
         this.field = field;
+    }
+
+    @Override
+    public String toString() {
+        return "Nickname = " + this.nickname + "; Field = " + this.field;
     }
 }

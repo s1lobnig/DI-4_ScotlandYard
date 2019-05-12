@@ -279,7 +279,7 @@ public class ServerService extends ConnectionService {
      * @param object object to send (game data, chat message or SendMove)
      */
     public void send(Object object) {
-        if (object instanceof Message || object instanceof Game || object instanceof SendMove) {
+        if (object instanceof Message || object instanceof Game || object instanceof SendMove || object instanceof Entry) {
             byte[] data = null;
             try {
                 data = serialize(object);

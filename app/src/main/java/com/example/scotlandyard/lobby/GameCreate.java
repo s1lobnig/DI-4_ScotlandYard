@@ -8,6 +8,7 @@ import android.widget.EditText;
 
 import com.example.scotlandyard.R;
 
+
 public class GameCreate extends AppCompatActivity {
 
     private static EditText userName; /* User name input field. */

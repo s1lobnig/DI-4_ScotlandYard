@@ -1,6 +1,7 @@
 package com.example.scotlandyard.connection;
 
 import com.example.scotlandyard.lobby.Game;
+import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.messenger.Message;
 import com.example.scotlandyard.map.motions.SendMove;
 
@@ -25,6 +26,13 @@ public interface ConnectionInterface {
      * @param sendMove       move
      */
     void onSendMove(SendMove sendMove);
+
+    /**
+     * function is called, when mr x moved
+     * @param entry entry for road map
+     */
+    void onRoadMapEntry(Entry entry);
+
     /**
      * function is called, when connecting to an endpoint failed
      * @param endpoint      endpoint, where connection failed

@@ -58,7 +58,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.scotlandyard.map.GameMap" />
         </activity>
-        <activity android:name=".messenger.Messanger" />
+        <activity android:name=".messenger.Messenger" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -89,11 +89,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".lobby.RegistrationActivty"
+            android:name=".lobby.RegistrationActivity"
             android:theme="@style/AppTheme.ActionBar" />
         <activity
             android:name=".lobby.GameActivity"
-            android:parentActivityName=".lobby.RegistrationActivty" />
+            android:parentActivityName=".lobby.RegistrationActivity" />
+        <activity android:name=".lobby.ClientLobby"
+            />
     </application>
 
 </manifest>
