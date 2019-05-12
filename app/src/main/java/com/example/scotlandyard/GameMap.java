@@ -273,10 +273,6 @@ public class GameMap extends AppCompatActivity
                             } else {
                                 clientService.send(new SendMove(myPlayer.getNickname(), getFeeldnumber(field)));
                             }
-                        } else {
-                            // Toast to indicate that the clicked location is not reachable from the current
-                            // location
-                            Toast.makeText(GameMap.this, "Feld nicht erreichbar", Snackbar.LENGTH_LONG).show();
                         }
                         return isValid;
                     } else {
@@ -392,8 +388,17 @@ public class GameMap extends AppCompatActivity
         Point newLocation = new Point(destination.getPosition().latitude, destination.getPosition().longitude);
         Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
         if ((Boolean) routeToTake[0]) {
-            return checkForValidTicket(player, (int) routeToTake[2]);
+            boolean enoughTickets = checkForValidTicket(player, (int) routeToTake[2]);
+            if (!enoughTickets) {
+                //Toast to indicate that player has not enough tickets for reachable field
+                Toast.makeText(GameMap.this, "Nicht genügend Tickets", Snackbar.LENGTH_LONG).show();
+                return false;
+            }
+            return true;
         }
+        // Toast to indicate that the clicked location is not reachable from the current
+        // location
+        Toast.makeText(GameMap.this, "Feld nicht erreichbar", Snackbar.LENGTH_LONG).show();
         return false;
     }
 
