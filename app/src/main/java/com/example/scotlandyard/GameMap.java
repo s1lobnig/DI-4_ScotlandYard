@@ -234,7 +234,8 @@ public class GameMap extends AppCompatActivity
         setFields();
         //if game has not startet yet
         if (myPlayer == null) {
-            if (isServer) {
+            myPlayer = game.getPlayers().get(0);
+            if (myPlayer.isHost()) {
                 Player player;
                 for (int i = 0; i < game.getPlayers().size(); i++) {
                     player = game.getPlayers().get(i);
@@ -249,25 +250,34 @@ public class GameMap extends AppCompatActivity
                 }
                 myPlayer = game.getPlayers().get(0);
                 serverService.send(game);
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myPlayer.getPosition().getLatLng(), 16f));
-            } else {
-                setupGame();
-                myPlayer = findPlayer(myPlayer.getNickname());
-                serverService.send(game);
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myPlayer.getPosition().getLatLng(), 16f));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myPlayer.getPosition().getLatLng(), 16f), 3000, null);
             }
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myPlayer.getPosition().getLatLng(), 16f));
+        } else {
+            setupGame();
         }
+        myPlayer = findPlayer(myPlayer.getNickname());
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myPlayer.getPosition().getLatLng(), 16f));
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker field) {
                 if (!isPlayer(field)) {
                     if (!myPlayer.isMoved()) {
-                        boolean isValid = isValidMove(field, myPlayer.getMarker());
+                        boolean isValid = isValidMove(field, myPlayer);
                         if (isValid) {
+                            if (isServer) {
+                                Point point = Points.getPoints()[getFeeldnumber(field)];
+                                moveMarker(point, myPlayer, myPlayer.getIcon());
+                                serverService.send(new SendMove(myPlayer.getNickname(), getFeeldnumber(field)));
+                                myPlayer.setMoved(true);
+                                tryNextRound();
+                            } else {
+                                clientService.send(new SendMove(myPlayer.getNickname(), getFeeldnumber(field)));
+                            }
+                        } else {
+                            // Toast to indicate that the clicked location is not reachable from the current
                             // location
                             Toast.makeText(GameMap.this, "Feld nicht erreichbar", Snackbar.LENGTH_LONG).show();
-                        } 
+                        }
                         return isValid;
                     } else {
                         // Toast to indicate that it is not your turn
@@ -376,12 +386,15 @@ public class GameMap extends AppCompatActivity
         return move(player, p, false, false, playerIcon);
     }
 
-    private boolean isValidMove(Marker destination, Marker player) {
-        LatLng current = player.getPosition();
+    private boolean isValidMove(Marker destination, Player player) {
+        LatLng current = player.getMarker().getPosition();
         Point currentPoint = new Point(current.latitude, current.longitude);
         Point newLocation = new Point(destination.getPosition().latitude, destination.getPosition().longitude);
         Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
-        return (Boolean) routeToTake[0];
+        if ((Boolean) routeToTake[0]) {
+            return checkForValidTicket(player, (int) routeToTake[2]);
+        }
+        return false;
     }
 
     private boolean move(Player player, Point p, boolean goBack, boolean randomRoute, int playerIcon) {
@@ -415,7 +428,6 @@ public class GameMap extends AppCompatActivity
                 default:
                     icon = -1;
             }
-            checkForValidTicket(player, vehicle);
             int animationDuration = 3000;
             if (!(playerPenaltay > 0 && icon == R.drawable.bicycle)) {
                 if (playerPenaltay > 0)

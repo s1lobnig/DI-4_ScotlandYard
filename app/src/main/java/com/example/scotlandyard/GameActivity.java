@@ -61,10 +61,6 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
                 Intent intent = new Intent(GameActivity.this, GameMap.class);
                 intent.putExtra("USERNAME", userName);
                 intent.putExtra("HOST", host);
-
-                //just for testing set per hand
-                game.getPlayers().add(new Player("someone"));
-                game.getPlayers().add(new Player("anyone"));
                 intent.putExtra("GAME", game);
                 intent.putExtra("IS_SERVER", true);
 
