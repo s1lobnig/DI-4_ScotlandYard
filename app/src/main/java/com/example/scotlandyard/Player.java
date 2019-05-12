@@ -12,7 +12,8 @@ public class Player implements Serializable {
     private Point position;
     private transient Marker marker;
     private boolean isHost;      //variable for checking if sender is Host
-    
+
+
     public Player(String nickname) {
         this.nickname = nickname;
         isActive = true;

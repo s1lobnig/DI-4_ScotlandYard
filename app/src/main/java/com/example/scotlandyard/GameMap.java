@@ -252,7 +252,9 @@ public class GameMap extends AppCompatActivity
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker field) {
+
                 if(!isPlayer(field)) {
+
                     if (!myPlayer.isMoved()) {
                         boolean isValid = isValidMove(field, myPlayer.getMarker());
                         if (isValid) {
@@ -279,7 +281,10 @@ public class GameMap extends AppCompatActivity
                 return false;
             }
         });
+        
     }
+
+
 
     private boolean isPlayer(Marker field) {
         for (Player player : game.getPlayers()) {
@@ -290,6 +295,9 @@ public class GameMap extends AppCompatActivity
         return false;
     }
 
+
+
+    
     private boolean movewithrandomEvent(Marker player, Point p, int playerIcon) {
         RandomEvent r = new RandomEvent();
         boolean goback = false;
