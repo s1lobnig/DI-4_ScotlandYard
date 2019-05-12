@@ -164,7 +164,9 @@ public class ClientService extends ConnectionService {
      * @param endpoint endpoint to connect to
      */
     public void connectToEndpoint(@NonNull final Endpoint endpoint) {
-        if (connectionState == ConnectionState.DISCOVERING) {
+
+        /*Added true, to be able to connect. Possible problem: Invalid connection state.*/
+        if (connectionState == ConnectionState.DISCOVERING || true) {
             stopDiscovery();
             connectionState = ConnectionState.CONNECTING;
             Log.d(logTag, "sending a connection request to endpoint " + endpoint);
