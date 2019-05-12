@@ -236,6 +236,7 @@ public class GameMap extends AppCompatActivity
 
 
 
+        
         //if game has not startet yet
         if(myPlayer == null) {
             if(isServer) {
