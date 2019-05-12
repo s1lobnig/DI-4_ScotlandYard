@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 
 import com.example.scotlandyard.R;
@@ -21,7 +22,7 @@ public class RoadMapDisplay extends AppCompatActivity {
         setContentView(R.layout.activity_road_map_display);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         Intent intent = getIntent();
         roadMap = (RoadMap) intent.getSerializableExtra("ROAD_MAP");
 

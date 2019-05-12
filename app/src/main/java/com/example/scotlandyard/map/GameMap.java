@@ -14,6 +14,7 @@ import com.example.scotlandyard.lobby.Game;
 import com.example.scotlandyard.map.motions.LatLngInterpolator;
 import com.example.scotlandyard.map.motions.MarkerAnimation;
 import com.example.scotlandyard.map.motions.SendMove;
+import com.example.scotlandyard.map.motions.moving_logic.Move;
 import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.map.roadmap.EntryPosition;
 import com.example.scotlandyard.map.roadmap.EntryTicketTaken;
@@ -110,7 +111,7 @@ public class GameMap extends AppCompatActivity
             Intent intent = getIntent();
             nickname = intent.getStringExtra("USERNAME");
             isServer = intent.getBooleanExtra("IS_SERVER", true);
-            randomEvents = intent.getBooleanExtra("RANDOM_EVENTS",false);
+            randomEvents = intent.getBooleanExtra("RANDOM_EVENTS", false);
             if (isServer) {
                 game = ((Game) intent.getSerializableExtra("GAME"));
                 serverService = ServerService.getInstance();
@@ -234,25 +235,7 @@ public class GameMap extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        // Restrict the map to a certain area
-        final LatLngBounds mapBounds = new LatLngBounds(new LatLng(46.612225, 14.261226),
-                new LatLng(46.623354, 14.271578));
-        // Styling the map with a JSON-File
-        try {
-            boolean success = googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.style_json));
-            if (!success) {
-                Log.e(TAG, "Style parsing failed.");
-            }
-        } catch (Resources.NotFoundException e) {
-            Log.e(TAG, "Can't find style. Error: ", e);
-        }
-        int width = getResources().getDisplayMetrics().widthPixels;
-        int height = getResources().getDisplayMetrics().heightPixels;
-        int padding = (int) (width * 0.02);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, width, height, padding));
-        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-        mMap.setLatLngBoundsForCameraTarget(mapBounds);
-        mMap.setMinZoomPreference(mMap.getCameraPosition().zoom);
+        initMap();
         setFields();
         //if game has not startet yet
         if (myPlayer == null) {
@@ -307,6 +290,26 @@ public class GameMap extends AppCompatActivity
                 return false;
             }
         });
+    }
+
+    private void initMap() {
+        final LatLngBounds mapBounds = new LatLngBounds(new LatLng(46.612225, 14.261226),
+                new LatLng(46.623354, 14.271578));
+        try {
+            boolean success = mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.style_json));
+            if (!success) {
+                Log.e(TAG, "Style parsing failed.");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e(TAG, "Can't find style. Error: ", e);
+        }
+        int width = getResources().getDisplayMetrics().widthPixels;
+        int height = getResources().getDisplayMetrics().heightPixels;
+        int padding = (int) (width * 0.02);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, width, height, padding));
+        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+        mMap.setLatLngBoundsForCameraTarget(mapBounds);
+        mMap.setMinZoomPreference(mMap.getCameraPosition().zoom);
     }
 
     private boolean isPlayer(Marker field) {
@@ -398,7 +401,7 @@ public class GameMap extends AppCompatActivity
     private boolean moveMarker(Point p, Player player, int playerIcon) {
         if (randomEvents) {
             int r = randomNumber.nextInt(100) % 10;
-            if (false && r < 3) {
+            if (r < 3) {
                 if (playerPenaltay == 0) {
                     return moveWithRandomEvent(player, p, playerIcon);
                 }
@@ -432,50 +435,18 @@ public class GameMap extends AppCompatActivity
         LatLng current = player.getMarker().getPosition();
         Point currentPoint = new Point(current.latitude, current.longitude);
         Point newLocation = p;
-        Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation), isMrX);
-        boolean isValid = (Boolean) routeToTake[0];
+        Move move = new Move(player);
+        move.validateMove(currentPoint, newLocation, roadmap);
         // if the route would be valid but there is the randowm event "verfahren", then...
         // Note, this does not work at the moment! - therefore the false is hardcoded currently!
+        // TODO - talk to @Johann Jäger - random events have to be displayed equally on every device
         if (false && randomRoute) {
-            routeToTake = Routes.getRandomRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
+            //routeToTake = Routes.getRandomRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
         }
-        if (isValid) {
-            Route r = (Route) routeToTake[1];
-            int icon;
-            int ticket;
-            int vehicle = (int) routeToTake[2];
-            switch (vehicle) {
-                case 0:
-                    icon = R.drawable.pedestrian;
-                    ticket = R.drawable.ticket_yellow;
-                    break;
-                case 1:
-                    icon = R.drawable.bicycle;
-                    ticket = R.drawable.ticket_orange;
-                    break;
-                case 2:
-                    icon = R.drawable.bus;
-                    ticket = R.drawable.ticket_red;
-                    break;
-                case 3:
-                    icon = R.drawable.taxi;
-                    ticket = R.drawable.ticket_black;
-                    break;
-                default:
-                    icon = -1;
-                    ticket = -1;
-            }
-            if (isMrX) {
-                Entry e;
-                if (roadmap.getNumberOfEntries() == 2 || roadmap.getNumberOfEntries() == 6 || roadmap.getNumberOfEntries() == 11) {
-                    e = new EntryPosition(roadmap.getNumberOfEntries() + 1, Points.getIndex(p));
-                } else {
-                    if (ticket == -1) {
-                        ticket = R.drawable.ticket_black;
-                    }
-                    e = new EntryTicketTaken(roadmap.getNumberOfEntries() + 1, Ticket.get(ticket));
-                }
-                // TODO send entry to all
+        if (move.isValid()) {
+            Route r = move.getRoute();
+            Entry e = move.getEntry();
+            if (e != null) {
                 if (isServer) {
                     serverService.send(e);
                     roadmap.addEntry(e);
@@ -484,16 +455,19 @@ public class GameMap extends AppCompatActivity
                 }
             }
             int animationDuration = 3000;
-            if (!(playerPenaltay > 0 && icon == R.drawable.bicycle)) {
+            // TODO - talk to @Johann Jäger - random events must be displayed equally on every device
+            if (!(playerPenaltay > 0 && move.getIcon() == R.drawable.bicycle)) {
                 if (playerPenaltay > 0)
                     playerPenaltay--;
+
+                // TODO - move to logic class
                 if (r.getIntermediates() != null) {
-                    player.getMarker().setIcon(BitmapDescriptorFactory.fromResource(icon));
-                    // TODO put into logic class from here...
-                    Object[] routeSliceTimings = getRouteSlicesAndTimings(r, animationDuration, Points.getIndex(currentPoint) + 1);
+                    player.getMarker().setIcon(BitmapDescriptorFactory.fromResource(move.getIcon()));
+                    Object[] routeSliceTimings = move.getRouteSlicesAndTimings(animationDuration, Points.getIndex(currentPoint) + 1);
                     final ArrayList<LatLng> routePoints = (ArrayList) routeSliceTimings[0];
                     final ArrayList<Float> timeSlices = (ArrayList) routeSliceTimings[1];
                     LatLng finalPos = p.getLatLng();
+
                     if (goBack) {
                         // if random event "Go Back" then...
                         int size = timeSlices.size();
@@ -507,13 +481,12 @@ public class GameMap extends AppCompatActivity
                         }
                         finalPos = player.getMarker().getPosition();
                     }
-                    // to here...
-                    MarkerAnimation.moveMarkerToTarget(player.getMarker(), routePoints, timeSlices, finalPos, new LatLngInterpolator.Linear(), icon, false, GameMap.this, playerIcon);
+                    MarkerAnimation.moveMarkerToTarget(player.getMarker(), routePoints, timeSlices, finalPos, new LatLngInterpolator.Linear(), move.getIcon(), false, GameMap.this, playerIcon);
                 } else {
                     if (!goBack) {
-                        MarkerAnimation.moveMarkerToTarget(player.getMarker(), p.getLatLng(), new LatLngInterpolator.Linear(), animationDuration, icon, playerIcon);
+                        MarkerAnimation.moveMarkerToTarget(player.getMarker(), p.getLatLng(), new LatLngInterpolator.Linear(), animationDuration, move.getIcon(), playerIcon);
                     } else {
-                        // TODO put into logic class from here...
+                        // TODO - talk to @Johann Jäger - random events must be displayed equally on every device
                         // if rand event, then...
                         ArrayList<Float> timeSlices = new ArrayList<>();
                         timeSlices.add((float) animationDuration);
@@ -521,7 +494,7 @@ public class GameMap extends AppCompatActivity
                         ArrayList<LatLng> routePoints = new ArrayList<>();
                         routePoints.add(p.getLatLng());
                         // to here...
-                        MarkerAnimation.moveMarkerToTarget(player.getMarker(), routePoints, timeSlices, player.getMarker().getPosition(), new LatLngInterpolator.Linear(), icon, true, GameMap.this, playerIcon);
+                        MarkerAnimation.moveMarkerToTarget(player.getMarker(), routePoints, timeSlices, player.getMarker().getPosition(), new LatLngInterpolator.Linear(), move.getIcon(), true, GameMap.this, playerIcon);
                     }
                 }
             } else {
@@ -534,93 +507,6 @@ public class GameMap extends AppCompatActivity
         return false;
     }
 
-    /**
-     * @param r                 Route-Object
-     * @param animationDuration Duration of the whole animation
-     * @param startPos          Current location-index
-     * @return { ArrayList<LatLang> in the correct order (either original (if
-     * current position = route.StartPos) or revered) ArrayList<Float> which
-     * contains the animation-duration-slices according to the
-     * route-part-length }
-     */
-    private Object[] getRouteSlicesAndTimings(Route r, int animationDuration, int startPos) {
-        // TODO put into logic class
-        if (startPos == r.getStartPoint()) {
-            return regularOrder(r, animationDuration);
-        } else {
-            return reverseOrder(r, animationDuration);
-        }
-    }
-
-    private Object[] reverseOrder(Route r, int animationDuration) {
-        // TODO put into logic class
-        float duration;
-        ArrayList<Float> timeSlices = new ArrayList<>();
-        ArrayList<LatLng> routePoints = new ArrayList<>();
-        for (int i = r.getIntermediates().length; i >= 0; i--) {
-            double x1;
-            double y1;
-            double x2;
-            double y2;
-            if (i == r.getIntermediates().length) {
-                x1 = Points.POINTS[r.getEndPoint() - 1].getLatitude();
-                y1 = Points.POINTS[r.getEndPoint() - 1].getLongitude();
-            } else {
-                x1 = r.getIntermediates()[i].getLatitude();
-                y1 = r.getIntermediates()[i].getLongitude();
-            }
-            if (i == 0) {
-                x2 = Points.POINTS[r.getStartPoint() - 1].getLatitude();
-                y2 = Points.POINTS[r.getStartPoint() - 1].getLongitude();
-            } else {
-                x2 = r.getIntermediates()[i - 1].getLatitude();
-                y2 = r.getIntermediates()[i - 1].getLongitude();
-            }
-            LatLng intermediate = new LatLng(x2, y2);
-            duration = (float) (animationDuration
-                    * ((Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) / r.getLength()));
-            timeSlices.add(duration);
-            if (i != 0) {
-                routePoints.add(intermediate);
-            }
-        }
-        return new Object[]{routePoints, timeSlices};
-    }
-
-    private Object[] regularOrder(Route r, int animationDuration) {
-        // TODO put into logic class
-        float duration;
-        ArrayList<Float> timeSlices = new ArrayList<>();
-        ArrayList<LatLng> routePoints = new ArrayList<>();
-        for (int i = 0; i <= r.getIntermediates().length; i++) {
-            double x1;
-            double y1;
-            double x2;
-            double y2;
-            if (i == 0) {
-                x1 = Points.POINTS[r.getStartPoint() - 1].getLatitude();
-                y1 = Points.POINTS[r.getStartPoint() - 1].getLongitude();
-            } else {
-                x1 = r.getIntermediates()[i - 1].getLatitude();
-                y1 = r.getIntermediates()[i - 1].getLongitude();
-            }
-            if (i == r.getIntermediates().length) {
-                x2 = Points.POINTS[r.getEndPoint() - 1].getLatitude();
-                y2 = Points.POINTS[r.getEndPoint() - 1].getLongitude();
-            } else {
-                x2 = r.getIntermediates()[i].getLatitude();
-                y2 = r.getIntermediates()[i].getLongitude();
-            }
-            LatLng intermediate = new LatLng(x2, y2);
-            duration = (float) (animationDuration
-                    * ((Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) / r.getLength()));
-            timeSlices.add(duration);
-            if (i != r.getIntermediates().length) {
-                routePoints.add(intermediate);
-            }
-        }
-        return new Object[]{routePoints, timeSlices};
-    }
 
     /**
      * Adds all Points to the map and calls drawRoutes() at the end
