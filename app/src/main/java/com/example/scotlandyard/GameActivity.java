@@ -16,6 +16,7 @@ import com.example.scotlandyard.connection.ServerService;
 import com.google.android.gms.nearby.Nearby;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class GameActivity extends AppCompatActivity implements ServerInterface {
 
@@ -61,6 +62,9 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
                 intent.putExtra("USERNAME", userName);
                 intent.putExtra("HOST", host);
 
+                //just for testing set per hand
+                game.getPlayers().add(new Player("someone"));
+                game.getPlayers().add(new Player("anyone"));
                 intent.putExtra("GAME", game);
                 intent.putExtra("IS_SERVER", true);
 

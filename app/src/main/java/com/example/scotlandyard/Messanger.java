@@ -1,17 +1,15 @@
 package com.example.scotlandyard;
 
 import android.content.Intent;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-
-import android.widget.Toast;
 import com.example.scotlandyard.connection.ClientInterface;
 import com.example.scotlandyard.connection.ClientService;
 import com.example.scotlandyard.connection.Endpoint;
@@ -22,7 +20,7 @@ import java.util.Map;
 
 public class Messanger extends AppCompatActivity implements ServerInterface, ClientInterface {
 
-    private Button btnSend;
+
     private EditText textMessage;
     private ListView messageList;
 
@@ -33,6 +31,11 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
     private ClientService clientService;
     private String nickname;
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,11 +44,14 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
 
         /* add Toolbar */
         Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("Spieler Chat");
         setSupportActionBar(toolbar);
 
+
         /* find views */
+
         textMessage = findViewById(R.id.edittext_chatbox);
-        btnSend = findViewById(R.id.button_chatbox_send);
+        Button btnSend = findViewById(R.id.button_chatbox_send);
         messageList = findViewById(R.id.message_list);
 
         /*get data from Intent to distinguish between host and client*/
@@ -94,6 +100,9 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
                 /*scroll the ListView to the last added element*/
                 messageList.setSelection(messageList.getCount() - 1);
 
+                /*flush EditText and close keyboard after sending*/
+                textMessage.setText("");
+                textMessage.onEditorAction(EditorInfo.IME_ACTION_DONE);
             }
         });
 
