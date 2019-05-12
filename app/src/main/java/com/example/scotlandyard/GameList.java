@@ -27,8 +27,10 @@ import java.util.List;
 import java.util.Map;
 
 public class GameList extends AppCompatActivity implements ClientInterface {
+
     private static ListView gameListView; /* ListView GUI Element */
     private ArrayAdapter listAdapter; /* Adapter between ListView and  ArrayList<Game> */
+
     private ClientService clientService; /* ClientService - used for communication with server(s). */
     private ArrayList<Endpoint> endpoints = new ArrayList<>(); /* List of detected endpoints (servers). */
     private Game gameData;
@@ -245,7 +247,7 @@ public class GameList extends AppCompatActivity implements ClientInterface {
         Intent intent = new Intent(GameList.this, GameMap.class);
 
         intent.putExtra("CLIENT", client);
-        intent.putExtra("USER_NAME", userName);
+        intent.putExtra("USERNAME", userName);
         intent.putExtra("IS_SERVER", false);
         startActivity(intent);
         */

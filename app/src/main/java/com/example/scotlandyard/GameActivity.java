@@ -16,7 +16,6 @@ import com.example.scotlandyard.connection.ServerService;
 import com.google.android.gms.nearby.Nearby;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 public class GameActivity extends AppCompatActivity implements ServerInterface {
 
