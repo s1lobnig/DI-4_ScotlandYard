@@ -20,6 +20,7 @@ public class ClientLobby extends AppCompatActivity implements ClientInterface {
     private ListAdapter connectedPlayersListAdapter; /* Global variable because of updates. */
     private Game game = new Game("NOT_INITIALZED", 0);
     private String logTag = "CLIENT_LOBBY";
+    String username;
 
 
     @Override
@@ -34,7 +35,7 @@ public class ClientLobby extends AppCompatActivity implements ClientInterface {
 
         Intent intent = getIntent();
 
-        String username = intent.getStringExtra("USER_NAME");
+        username = intent.getStringExtra("USERNAME");
         String endpointName = intent.getStringExtra("ENDPOINT_NAME");
         String endpointID = intent.getStringExtra("ENDPOINT_ID");
 
@@ -123,6 +124,8 @@ public class ClientLobby extends AppCompatActivity implements ClientInterface {
             Log.d(logTag, "Game start initiated by server!");
 
             Intent gameStartIntent = new Intent(ClientLobby.this, GameMap.class);
+            gameStartIntent.putExtra("USERNAME", username);
+            gameStartIntent.putExtra("IS_SERVER", false);
             startActivity(gameStartIntent);
         }
     }

@@ -95,6 +95,8 @@ public class GameMap extends AppCompatActivity
                 serverService = ServerService.getInstance();
                 serverService.setServer(this);
                 logTag = "SERVER_SERVICE";
+
+                serverService.send(new Message("START_GAME"));
             } else {
                 clientService = ClientService.getInstance();
                 clientService.setClient(this);
