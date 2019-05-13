@@ -1,4 +1,4 @@
-package com.example.scotlandyard;
+package com.example.scotlandyard.lobby;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +8,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import com.example.scotlandyard.map.GameMap;
+import com.example.scotlandyard.messenger.Message;
+import com.example.scotlandyard.Player;
+import com.example.scotlandyard.R;
+import com.example.scotlandyard.map.motions.SendMove;
 import com.example.scotlandyard.connection.ClientInterface;
 import com.example.scotlandyard.connection.ClientService;
 import com.example.scotlandyard.connection.Endpoint;

@@ -1,4 +1,4 @@
-package com.example.scotlandyard;
+package com.example.scotlandyard.map;
 
 import android.content.Intent;
 import android.content.res.Resources;
@@ -10,11 +10,22 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 
+import com.example.scotlandyard.map.motions.LatLngInterpolator;
+import com.example.scotlandyard.map.motions.MarkerAnimation;
+import com.example.scotlandyard.map.motions.RandomEvent;
+import com.example.scotlandyard.map.motions.SendMove;
+import com.example.scotlandyard.messenger.Message;
+import com.example.scotlandyard.messenger.Messanger;
+import com.example.scotlandyard.Player;
+import com.example.scotlandyard.PlayersOverview;
+import com.example.scotlandyard.R;
+import com.example.scotlandyard.Settings;
 import com.example.scotlandyard.connection.ClientInterface;
 import com.example.scotlandyard.connection.ClientService;
 import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.connection.ServerInterface;
 import com.example.scotlandyard.connection.ServerService;
+import com.example.scotlandyard.lobby.Game;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;

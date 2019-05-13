@@ -3,16 +3,16 @@ Copyright 2013 Google Inc.
 Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0.html
 */
 
-package com.example.scotlandyard;
+package com.example.scotlandyard.map.motions;
 
 import android.content.Context;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.Toast;
 
+import com.example.scotlandyard.R;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -40,7 +40,7 @@ public class MarkerAnimation {
      * @param duration           .............time the animation should last
      * @param icon               .................marker icon during the animation
      */
-    static void moveMarkerToTarget(final Marker marker, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, float duration, int icon, final int finalIcon) {
+   public static void moveMarkerToTarget(final Marker marker, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, float duration, int icon, final int finalIcon) {
         final LatLng startPosition = marker.getPosition();
         final Handler handler = new Handler();
         final long start = SystemClock.uptimeMillis();
@@ -82,7 +82,7 @@ public class MarkerAnimation {
      * @param timeSlices           .............time the animation should last
      * @param icon               .................marker icon during the animation
      */
-    static void moveMarkerToTarget(final Marker marker, final ArrayList<LatLng> route, final ArrayList<Float> timeSlices, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, int icon, boolean randEvent, Context context, int finalIcon) {
+    public static void moveMarkerToTarget(final Marker marker, final ArrayList<LatLng> route, final ArrayList<Float> timeSlices, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, int icon, boolean randEvent, Context context, int finalIcon) {
         final Handler handler = new Handler();
         marker.setIcon(BitmapDescriptorFactory.fromResource(icon));
         ArrayList<MarkerMotion> motions = new ArrayList<>();

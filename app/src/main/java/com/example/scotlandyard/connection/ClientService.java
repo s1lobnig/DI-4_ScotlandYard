@@ -1,12 +1,11 @@
 package com.example.scotlandyard.connection;
 
-import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.example.scotlandyard.Game;
-import com.example.scotlandyard.Message;
-import com.example.scotlandyard.SendMove;
+import com.example.scotlandyard.lobby.Game;
+import com.example.scotlandyard.messenger.Message;
+import com.example.scotlandyard.map.motions.SendMove;
 import com.google.android.gms.nearby.connection.ConnectionInfo;
 import com.google.android.gms.nearby.connection.ConnectionLifecycleCallback;
 import com.google.android.gms.nearby.connection.ConnectionResolution;
