@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.scotlandyard.connection.ClientInterface;
 import com.example.scotlandyard.connection.ClientService;
@@ -189,8 +190,9 @@ public class GameList extends AppCompatActivity implements ClientInterface {
 
     @Override
     public void onFailedDiscovery() {
-        //TODO display user, that discovery has failed
-        // Make a Toast: Not able to find any server (device doesn't support NearbyAPI or the resources have already been used).
+        String notification = "Es konnte kein Server gefunden werden (das Gerät unterstützt die Nearby API nicht oder die Ressourcen wurden bereits verwendet).";
+        Toast.makeText(getApplicationContext(), notification, Toast.LENGTH_LONG).show();
+
         Log.d(logTag, "Failed discovery.");
     }
 
@@ -198,7 +200,6 @@ public class GameList extends AppCompatActivity implements ClientInterface {
     public void onEndpointFound(Map<String, Endpoint> discoveredEndpoints) {
         Log.d(logTag, "A new endpoint has been discovered!");
 
-        /* Get list of all connected endpoints and ignore those which were already there - detect the newly found endpoint. */
         endpoints = new ArrayList<>(discoveredEndpoints.values());
         Log.d(logTag, discoveredEndpoints.values().toString());
         listAdapter.clear();
@@ -210,7 +211,6 @@ public class GameList extends AppCompatActivity implements ClientInterface {
     public void onEndpointLost(Map<String, Endpoint> discoveredEndpoints) {
         Log.d(logTag, "Connection with an already discovered endpoint has been lost.");
 
-        /* Get list of all connected endpoints and ignore those which were already there - detect the newly found endpoint. */
         endpoints = new ArrayList<>(discoveredEndpoints.values());
         Log.d(logTag, discoveredEndpoints.values().toString());
         listAdapter.clear();
@@ -231,7 +231,8 @@ public class GameList extends AppCompatActivity implements ClientInterface {
     public void onConnected(Endpoint endpoint) {
         Log.d(logTag, "Connected with " + endpoint.toString() + " successfully.");
 
-        // TODO show player, that we are connected and waiting for joining the lobby (actually we are waiting for the game object)
+        String notification = "Sie sind verbunden und warten darauf, der Lobby beizutreten.";
+        Toast.makeText(getApplicationContext(), notification, Toast.LENGTH_LONG).show();
     }
 
     /* Not needed anymore. It will be handled inside ClientLobby. */
@@ -242,7 +243,6 @@ public class GameList extends AppCompatActivity implements ClientInterface {
         /*
         gameData = game;
 
-        //TODO this should be done on a new Activity, where the lobby (like GameActivity for Server) is shown
         Log.d(logTag, "Loading game map.");
         Intent intent = new Intent(GameList.this, GameMap.class);
 
