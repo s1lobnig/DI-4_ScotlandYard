@@ -72,6 +72,7 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
         startGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // TODO: Tell clients, that game starts now
                 Log.d("GAME_ACTIVITY", "Loading game map.");
                 if (randomMrX) {
                     game.getPlayers().get((new Random()).nextInt(game.getPlayers().size())).setMrX(true);

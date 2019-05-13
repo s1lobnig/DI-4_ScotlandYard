@@ -22,15 +22,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
         <activity
-            android:name=".map.roadmap.RoadMapDisplay"
-            android:label="@string/title_activity_road_map_display"
-            android:parentActivityName=".map.GameMap"
-            android:theme="@style/AppTheme.NoActionBar.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.scotlandyard.map.GameMap" />
-        </activity>
-        <activity
             android:name=".lobby.GamePresettings"
             android:label="@string/title_activity_game_presettings"
             android:parentActivityName=".lobby.GameCreate"

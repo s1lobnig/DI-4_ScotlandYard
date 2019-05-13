@@ -41,4 +41,8 @@
     <string name="BICYCLE_TICKET_KEY">bicycle_tickets</string>
     <string name="BUS_TICKET_KEY">bus_tickets</string>
     <string name="BLACK_TICKET_KEY">black_tickets</string>
+
+    <string name="RODA_MAP_DIALOG_TITLE">Mr.X\'s momentaner Fahrplan</string>
+    <string name="OK">OK</string>
+    <string name="ROAD_MAP_KEY">ROAD_MAP</string>
 </resources>

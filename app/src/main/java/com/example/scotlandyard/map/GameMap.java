@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
 import com.example.scotlandyard.lobby.Game;
@@ -16,11 +17,8 @@ import com.example.scotlandyard.map.motions.MarkerAnimation;
 import com.example.scotlandyard.map.motions.SendMove;
 import com.example.scotlandyard.map.motions.moving_logic.Move;
 import com.example.scotlandyard.map.roadmap.Entry;
-import com.example.scotlandyard.map.roadmap.EntryPosition;
-import com.example.scotlandyard.map.roadmap.EntryTicketTaken;
 import com.example.scotlandyard.map.roadmap.RoadMap;
-import com.example.scotlandyard.map.roadmap.RoadMapDisplay;
-import com.example.scotlandyard.map.roadmap.Ticket;
+import com.example.scotlandyard.map.roadmap.RoadMapDialog;
 import com.example.scotlandyard.messenger.Message;
 import com.example.scotlandyard.messenger.Messenger;
 import com.example.scotlandyard.Player;
@@ -212,8 +210,11 @@ public class GameMap extends AppCompatActivity
             intent = new Intent(this, Settings.class);
         } else if (id == R.id.nav_roadmap) {
             /* TODO: Open dialogue window to display roadmap of mr x */
-            intent = new Intent(this, RoadMapDisplay.class);
-            intent.putExtra("ROAD_MAP", roadmap);
+            DialogFragment roadMapDialog = new RoadMapDialog();
+            Bundle args = new Bundle();
+            args.putSerializable(getString(R.string.ROAD_MAP_KEY),roadmap);
+            roadMapDialog.setArguments(args);
+            roadMapDialog.show(getSupportFragmentManager(), "RoadMapDisplay");
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
