@@ -66,19 +66,35 @@ public class ClientService extends ConnectionService {
     }
 
     /**
-     * function for retrieving singleton for the first time
+     * function for setting singleton
      * @param clientInterface       object implementing client interface
      * @param endpointName          name of the device (nickname)
      * @param connectionsClient     connectionsClient of google api of the activity
      * @return                      singleton of ClientInterface
      * @throws IllegalStateException, if singleton is already set
      */
-    public static ClientService getInstance(ClientInterface clientInterface, String endpointName, ConnectionsClient connectionsClient) throws IllegalStateException {
+    public static ClientService setInstance(ClientInterface clientInterface, String endpointName, ConnectionsClient connectionsClient) throws IllegalStateException {
         if (singleton != null) {
             throw new IllegalStateException("singleton already set");
         }
         singleton = new ClientService(clientInterface, endpointName, connectionsClient);
         return singleton;
+    }
+
+    /**
+     * function for resetting the singleton
+     */
+    public static void resetInstance() {
+        singleton.disconnect();
+        singleton = null;
+    }
+
+    /**
+     * function for retrieving singleton status
+     * @return      true, if singlet is set
+     */
+    public static boolean isSingletonSet() {
+        return (singleton != null);
     }
 
     /**

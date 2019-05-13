@@ -68,19 +68,35 @@ public class ServerService extends ConnectionService{
     }
 
     /**
-     * function for retrieving singleton for the first time
+     * function for retrieving singleton status
+     * @return      true, if singlet is set
+     */
+    public static boolean isSingletonSet() {
+        return (singleton != null);
+    }
+
+    /**
+     * function for setting singleton
      * @param server                object implementing server interface
      * @param endpointName          name of the device (nickname)
      * @param connectionsClient     connectionsClient of google api of the activity
      * @return                      singleton of ServerService
      * @throws IllegalStateException, if singleton is already set
      */
-    public static ServerService getInstance(ServerInterface server, String endpointName, ConnectionsClient connectionsClient) throws IllegalStateException {
+    public static ServerService setInstance(ServerInterface server, String endpointName, ConnectionsClient connectionsClient) throws IllegalStateException {
         if (singleton != null) {
             throw new IllegalStateException("singleton already set");
         }
         singleton = new ServerService(server, endpointName, connectionsClient);
         return singleton;
+    }
+
+    /**
+     * function for resetting singleton
+     */
+    public static void resetInstance() {
+        singleton.disconnectFromAll();
+        singleton = null;
     }
 
     /**

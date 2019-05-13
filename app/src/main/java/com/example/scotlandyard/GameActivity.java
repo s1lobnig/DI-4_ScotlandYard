@@ -41,12 +41,13 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
         int maxPlayers = intent.getExtras().getInt("MAX_PLAYERS");
         boolean buttonEnabled = intent.getExtras().getBoolean("ENABLE_BUTTON");
 
-        /* Start ServerService and start advertising own endpoint. */
+        if (ServerService.isSingletonSet()) {
+            ServerService.resetInstance();
+        }
         try {
-            serverService = ServerService.getInstance(GameActivity.this, userName + "'s game server", Nearby.getConnectionsClient(this));
-        } catch (Exception e) {
-            serverService = ServerService.getInstance();
-            serverService.setServer(this);
+            serverService = ServerService.setInstance(GameActivity.this, userName + "'s game server", Nearby.getConnectionsClient(this));
+        } catch (IllegalStateException ex) {
+            Log.d(logTag, "failed setting instance", ex);
         }
         serverService.startAdvertising();
 
