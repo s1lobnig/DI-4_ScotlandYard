@@ -94,12 +94,13 @@ public class GameList extends AppCompatActivity implements ClientInterface {
             }
         });
 
-        /* Create new client service and start discovery. */
+        if (ClientService.isSingletonSet()) {
+            ClientService.resetInstance();
+        }
         try {
-            clientService = ClientService.getInstance(this, userName, Nearby.getConnectionsClient(this));
-        } catch (Exception e) {
-            clientService = ClientService.getInstance();
-            clientService.setClient(this);
+            clientService = ClientService.setInstance(this, userName, Nearby.getConnectionsClient(this));
+        } catch (IllegalStateException ex) {
+            Log.d(logTag, "failed setting instance", ex);
         }
         clientService.startDiscovery();
 
