@@ -68,6 +68,9 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
             @Override
             public void onClick(View v) {
                 Log.d("GAME_ACTIVITY", "Loading game map.");
+
+                serverService.send(new Message("START_GAME"));
+
                 Intent intent = new Intent(GameActivity.this, GameMap.class);
                 intent.putExtra("USERNAME", userName);
                 intent.putExtra("HOST", host);
