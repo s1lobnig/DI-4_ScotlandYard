@@ -1,7 +1,5 @@
 package com.example.scotlandyard.map.motions;
 
-import com.google.android.gms.maps.model.Marker;
-
 import java.io.Serializable;
 
 public class SendMove implements Serializable {

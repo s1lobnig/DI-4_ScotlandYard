@@ -64,28 +64,13 @@ public class GameMap extends AppCompatActivity
     private static ClientService clientService;
     private static ManageGameData manageGame;
 
-    private static Random randomNumber = new Random();
     private boolean isServer;
     private static String logTag;
     private static String nickname;
     private static final String TAG = GameMap.class.getSimpleName();
     private GoogleMap mMap;
     private static int playerPenaltay = 0;
-    private static int round = 1;
-    private static Player myPlayer;
-    private static final int[] PLAYER_ICONS = {
-            R.drawable.player1,
-            R.drawable.player2,
-            R.drawable.player3,
-            R.drawable.player4,
-            R.drawable.player5,
-            R.drawable.player6,
-            R.drawable.player7,
-            R.drawable.player8,
-            R.drawable.player9,
-            R.drawable.player10,
-            R.drawable.player11
-    };
+    private Player myPlayer;
 
     /**
      * @param savedInstanceState
@@ -246,7 +231,6 @@ public class GameMap extends AppCompatActivity
 
         //if gmae has not started
         if (isServer && myPlayer == null) {
-            Player player;
             manageGame.givePlayerPositionAndIcon();
             serverService.send(manageGame.game);
         }
@@ -342,7 +326,7 @@ public class GameMap extends AppCompatActivity
     }
 
     private boolean moveMarker(Point p, Player player, int playerIcon) {
-        int r = randomNumber.nextInt(100) % 10;
+        int r = (new Random()).nextInt(100) % 10;
         if (false && r < 3) {
             if (playerPenaltay == 0) {
                 return moveWithRandomEvent(player, p, playerIcon);
@@ -699,9 +683,9 @@ public class GameMap extends AppCompatActivity
             String [] txt = message.getMessage().split(" ");
 
             if(txt[0].equals("NEXT_ROUND")){
-                round++;
+                manageGame.game.nextRound();
                 myPlayer.setMoved(false);
-                Toast.makeText(GameMap.this, "Runde " + round, Snackbar.LENGTH_LONG).show();
+                Toast.makeText(GameMap.this, "Runde " + manageGame.game.getRound(), Snackbar.LENGTH_LONG).show();
             }
             if(txt.length == 3 && txt[0].equals("PLAYER") && txt[2].equals("QUITTED")){
                 Player player = manageGame.findPlayer(txt[1]);
@@ -742,7 +726,7 @@ public class GameMap extends AppCompatActivity
     private void tryNextRound(){
         if(manageGame.tryNextRound() == 1){
             serverService.send(new Message("NEXT_ROUND"));
-            Toast.makeText(GameMap.this, "Runde " + round, Snackbar.LENGTH_LONG).show();
+            Toast.makeText(GameMap.this, "Runde " + manageGame.game.getRound(), Snackbar.LENGTH_LONG).show();
         }else if(manageGame.tryNextRound() == 0){
             serverService.send(new Message("END MisterX")); //MisterX hat gewonnen
             Toast.makeText(GameMap.this, "MisterX hat gewonnen", Snackbar.LENGTH_LONG).show();
