@@ -9,6 +9,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.example.scotlandyard.map.GameMap;
+import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.messenger.Message;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
@@ -138,6 +139,11 @@ public class ClientLobby extends AppCompatActivity implements ClientInterface {
     @Override
     public void onSendMove(SendMove sendMove) {
         Log.d(logTag, "onSendMove() : Message = " + sendMove.toString());
+
+    }
+
+    @Override
+    public void onRoadMapEntry(Entry entry) {
 
     }
 

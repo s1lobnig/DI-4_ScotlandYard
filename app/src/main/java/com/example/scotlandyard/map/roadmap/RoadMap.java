@@ -1,8 +1,9 @@
 package com.example.scotlandyard.map.roadmap;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class RoadMap {
+public class RoadMap implements Serializable {
     ArrayList<Entry> entries;
 
     public RoadMap() {

@@ -2,7 +2,9 @@ package com.example.scotlandyard.map.roadmap;
 
 import android.view.View;
 
-public abstract class Entry {
+import java.io.Serializable;
+
+public abstract class Entry implements Serializable {
     protected int turnNumber;
 
     public Entry(int turnNumber) {

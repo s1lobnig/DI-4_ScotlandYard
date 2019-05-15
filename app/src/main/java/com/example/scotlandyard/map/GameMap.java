@@ -14,9 +14,12 @@ import com.example.scotlandyard.map.motions.LatLngInterpolator;
 import com.example.scotlandyard.map.motions.MarkerAnimation;
 import com.example.scotlandyard.map.motions.RandomEvent;
 import com.example.scotlandyard.map.motions.SendMove;
+import com.example.scotlandyard.map.roadmap.Entry;
+import com.example.scotlandyard.map.roadmap.PositionEntry;
 import com.example.scotlandyard.map.roadmap.RoadMap;
+import com.example.scotlandyard.map.roadmap.TicketEntry;
 import com.example.scotlandyard.messenger.Message;
-import com.example.scotlandyard.messenger.Messanger;
+import com.example.scotlandyard.messenger.Messenger;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.PlayersOverview;
 import com.example.scotlandyard.R;
@@ -89,6 +92,7 @@ public class GameMap extends AppCompatActivity
     };
 
     private RoadMap roadMap;
+    private boolean randomEventsEnabled;
 
     /**
      * @param savedInstanceState
@@ -103,6 +107,7 @@ public class GameMap extends AppCompatActivity
             Intent intent = getIntent();
             nickname = intent.getStringExtra("USERNAME");
             isServer = intent.getBooleanExtra("IS_SERVER", true);
+            randomEventsEnabled = intent.getBooleanExtra("RANDOM_EVENTS", false);
 
             if (isServer) {
                 game = ((Game) intent.getSerializableExtra("GAME"));
@@ -127,7 +132,7 @@ public class GameMap extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent mIntent = new Intent(GameMap.this, Messanger.class);
+                Intent mIntent = new Intent(GameMap.this, Messenger.class);
                 mIntent.putExtra("USERNAME", nickname);
                 mIntent.putExtra("IS_SERVER", isServer);
                 startActivity(mIntent);
@@ -387,10 +392,12 @@ public class GameMap extends AppCompatActivity
     }
 
     private boolean moveMarker(Point p, Player player, int playerIcon) {
-        int r = randomNumber.nextInt(100) % 10;
-        if (false && r < 3) {
-            if (playerPenaltay == 0) {
-                return moveWithRandomEvent(player, p, playerIcon);
+        if (randomEventsEnabled) {
+            int r = randomNumber.nextInt(100) % 10;
+            if (false && r < 3) {
+                if (playerPenaltay == 0) {
+                    return moveWithRandomEvent(player, p, playerIcon);
+                }
             }
         }
         return move(player, p, false, false, playerIcon);
@@ -430,22 +437,43 @@ public class GameMap extends AppCompatActivity
         if (isValid) {
             Route r = (Route) routeToTake[1];
             int icon;
+            int ticket;
             int vehicle = (int) routeToTake[2];
             switch (vehicle) {
                 case 0:
                     icon = R.drawable.pedestrian;
+                    ticket = R.drawable.ticket_yellow;
                     break;
                 case 1:
                     icon = R.drawable.bicycle;
+                    ticket = R.drawable.ticket_orange;
                     break;
                 case 2:
                     icon = R.drawable.bus;
+                    ticket = R.drawable.ticket_red;
                     break;
                 case 3:
                     icon = R.drawable.taxi;
+                    ticket = R.drawable.ticket_black;
                     break;
                 default:
                     icon = -1;
+                    ticket = -1;
+            }
+            if (myPlayer.isMrX()) {
+                Entry entry;
+                int lastTurn = roadMap.getNumberOfEntries();
+                if (lastTurn == 2 || lastTurn == 6 || lastTurn == 11) {
+                    entry = new PositionEntry(lastTurn + 1, Points.getIndex(newLocation) + 1);
+                } else {
+                    entry = new TicketEntry(lastTurn + 1, ticket);
+                }
+                if (isServer) {
+                    roadMap.addEntry(entry);
+                    serverService.send(entry);
+                } else {
+                    clientService.send(entry);
+                }
             }
             int animationDuration = 3000;
             if (!(playerPenaltay > 0 && icon == R.drawable.bicycle)) {
@@ -798,6 +826,18 @@ public class GameMap extends AppCompatActivity
             tryNextRound();
         }
         moveMarker(point, player, player.getIcon());
+    }
+
+    @Override
+    public void onRoadMapEntry(Entry entry) {
+        if (isServer) {
+            if (!myPlayer.isMrX()) {
+                roadMap.addEntry(entry);
+                serverService.send(entry);
+            }
+        } else {
+            roadMap.addEntry(entry);
+        }
     }
 
     private void tryNextRound() {
