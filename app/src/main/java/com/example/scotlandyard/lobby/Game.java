@@ -4,9 +4,11 @@ import com.example.scotlandyard.Player;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Game implements Serializable {
 
+    private static final Random random = new Random();
     private String gameName;
     private int maxMembers;
     private int currentMembers;
@@ -61,11 +63,18 @@ public class Game implements Serializable {
     }
 
     public void chooseMrX(boolean chooseMrXRandomly) {
-        //TODO choose Mr X according to @chooseMrXRandomly
         if (chooseMrXRandomly) {
-            return;
+            players.get(random.nextInt(players.size())).setMrX(true);
         } else {
-            return;
+            ArrayList<Integer> candidatesForMrX = new ArrayList<>();
+            for (int i = 0; i < players.size(); i++) {
+                if (players.get(i).wantsToBeMrX())
+                    candidatesForMrX.add(i);
+            }
+            if (candidatesForMrX.isEmpty())
+                players.get(0).setMrX(true);
+            else
+                players.get(candidatesForMrX.get(random.nextInt(candidatesForMrX.size()))).setMrX(true);
         }
     }
 }
