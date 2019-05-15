@@ -3,10 +3,6 @@ package com.example.scotlandyard.connection;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.example.scotlandyard.lobby.Game;
-import com.example.scotlandyard.map.roadmap.Entry;
-import com.example.scotlandyard.messenger.Message;
-import com.example.scotlandyard.map.motions.SendMove;
 import com.google.android.gms.nearby.connection.ConnectionInfo;
 import com.google.android.gms.nearby.connection.ConnectionLifecycleCallback;
 import com.google.android.gms.nearby.connection.ConnectionResolution;
@@ -183,9 +179,7 @@ public class ClientService extends ConnectionService {
      * @param endpoint endpoint to connect to
      */
     public void connectToEndpoint(@NonNull final Endpoint endpoint) {
-
-        /*Added true, to be able to connect. Possible problem: Invalid connection state.*/
-        if (connectionState == ConnectionState.DISCOVERING || true) {
+        if (connectionState == ConnectionState.DISCOVERING) {
             stopDiscovery();
             connectionState = ConnectionState.CONNECTING;
             Log.d(logTag, "sending a connection request to endpoint " + endpoint);
@@ -264,15 +258,7 @@ public class ClientService extends ConnectionService {
                         Log.d(logTag, "error in deserialization", ex);
                     }
                     if (object != null) {
-                        if (object instanceof Message) {
-                            client.onMessage((Message) object);
-                        } else if (object instanceof Game) {
-                            client.onGameData((Game) object);
-                        } else if (object instanceof SendMove) {
-                            client.onSendMove((SendMove) object);
-                        } else if (object instanceof Entry) {
-                            client.onRoadMapEntry((Entry) object);
-                        }
+                        client.onDataReceived(object);
                     }
                 }
 
@@ -284,27 +270,25 @@ public class ClientService extends ConnectionService {
             };
 
     /**
-     * function for sending a chat message, game data or move
+     * function for sending an object over the connection
      *
-     * @param object object to send (game data, chat message or move)
+     * @param object object to send
      */
     public void send(Object object) {
-        if (object instanceof Message || object instanceof Game || object instanceof SendMove || object instanceof Entry) {
-            byte[] data = null;
-            try {
-                data = serialize(object);
-            } catch (IOException ex) {
-                Log.d(logTag, "error in serialization", ex);
-                client.onSendingFailed(object);
+        byte[] data = null;
+        try {
+            data = serialize(object);
+        } catch (IOException ex) {
+            Log.d(logTag, "error in serialization", ex);
+            client.onSendingFailed(object);
+        }
+        if (data != null) {
+            if (data.length > ConnectionsClient.MAX_BYTES_DATA_SIZE) {
+                Log.d(logTag, "byte array size > MAX_BYTES_DATA_SIZE");
+                // will this be a problem ?
             }
-            if (data != null) {
-                if (data.length > ConnectionsClient.MAX_BYTES_DATA_SIZE) {
-                    Log.d(logTag, "byte array size > MAX_BYTES_DATA_SIZE");
-                    // will this be a problem ?
-                }
-                Payload payload = Payload.fromBytes(data);
-                sendPayload(payload);
-            }
+            Payload payload = Payload.fromBytes(data);
+            sendPayload(payload);
         }
     }
 

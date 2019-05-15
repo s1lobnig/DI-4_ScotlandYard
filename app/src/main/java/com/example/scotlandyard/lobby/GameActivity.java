@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import com.example.scotlandyard.Server;
 import com.example.scotlandyard.map.GameMap;
 import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.messenger.Message;
@@ -23,12 +24,9 @@ import com.google.android.gms.nearby.Nearby;
 
 import java.util.ArrayList;
 
-public class GameActivity extends AppCompatActivity implements ServerInterface {
+public class GameActivity extends AppCompatActivity {
 
-    private String logTag = "ServerService";
-    private ServerService serverService; /* ServerService - used for communication with client(s). */
-    private ArrayList<Endpoint> endpoints = new ArrayList<>(); /* List of detected endpoints (clients). */
-    private Game game = new Game("NOT INITIALIZED", 4); /* Game info/data. */
+    private String logTag = "GameActivity";
 
     private ListAdapter connectedPlayersListAdapter;
     private String userName;
@@ -45,15 +43,10 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
 
         /* Get intent data. */
         Intent intent = getIntent();
-        userName = intent.getExtras().getString("USER_NAME");
-        int maxPlayers = intent.getExtras().getInt("MAX_PLAYERS");
-        boolean buttonEnabled = intent.getExtras().getBoolean("ENABLE_BUTTON");
+        Lobby lobby = (Lobby)intent.getSerializableExtra("LOBBY");
 
-        chooseMrXRandomly = intent.getExtras().getBoolean("RANDOM_MR_X", true);
-        randomEventsEnabled = intent.getExtras().getBoolean("RANDOM_EVENTS", false);
-
-        if (ServerService.isSingletonSet()) {
-            ServerService.resetInstance();
+        if (Server.isSingletonSet()) {
+            Server.resetInstance();
         }
         try {
             serverService = ServerService.setInstance(GameActivity.this, userName + "'s game server", Nearby.getConnectionsClient(this));
@@ -100,16 +93,12 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
     protected void onStop() {
         super.onStop();
 
-        serverService.stopAdvertising();
-        Log.d(logTag, "Advertising stopped successfully. Initiator: stopDiscovery()");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        serverService.stopAdvertising();
-        Log.d(logTag, "Advertising stopped successfully. Initiator: onDestroy()");
     }
 
     @Override

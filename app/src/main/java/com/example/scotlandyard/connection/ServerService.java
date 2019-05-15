@@ -3,10 +3,6 @@ package com.example.scotlandyard.connection;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.example.scotlandyard.lobby.Game;
-import com.example.scotlandyard.map.roadmap.Entry;
-import com.example.scotlandyard.messenger.Message;
-import com.example.scotlandyard.map.motions.SendMove;
 import com.google.android.gms.nearby.connection.AdvertisingOptions;
 import com.google.android.gms.nearby.connection.ConnectionInfo;
 import com.google.android.gms.nearby.connection.ConnectionLifecycleCallback;
@@ -24,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+// do we need it?
 // TODO: It would be almost necessary to know from which endpoint the message comes: onMessage(Object message, Endpoint e) and onGameData(Object game, Endpoint e).
 // TODO: Make sending to a single client possible. Suggestion: sendMessage(Object object, Endpoint endpoint).
 
@@ -35,7 +32,7 @@ import java.util.Set;
  * server:                  interface to server activity
  * singleton:               singleton of ServerService
  */
-public class ServerService extends ConnectionService {
+public class ServerService extends ConnectionService{
     private String logTag = "ServerService";
     private Map<String, Endpoint> pendingConnections;
     private Map<String, Endpoint> establishedConnections;
@@ -44,10 +41,9 @@ public class ServerService extends ConnectionService {
 
     /**
      * Constructor
-     *
-     * @param server            object implementing server interface
-     * @param endpointName      name of the device (nickname)
-     * @param connectionsClient connectionsClient of google api of the activity
+     * @param server                object implementing server interface
+     * @param endpointName          name of the device (nickname)
+     * @param connectionsClient     connectionsClient of google api of the activity
      */
     private ServerService(@NonNull ServerInterface server, String endpointName, ConnectionsClient connectionsClient) {
         super(endpointName, connectionsClient);
@@ -58,7 +54,6 @@ public class ServerService extends ConnectionService {
 
     /**
      * function for retrieving singleton
-     *
      * @return singleton of ServerService
      * @throws IllegalStateException, if singleton is not set
      */
@@ -71,8 +66,7 @@ public class ServerService extends ConnectionService {
 
     /**
      * function for retrieving singleton status
-     *
-     * @return true, if singlet is set
+     * @return      true, if singlet is set
      */
     public static boolean isSingletonSet() {
         return (singleton != null);
@@ -80,11 +74,10 @@ public class ServerService extends ConnectionService {
 
     /**
      * function for setting singleton
-     *
-     * @param server            object implementing server interface
-     * @param endpointName      name of the device (nickname)
-     * @param connectionsClient connectionsClient of google api of the activity
-     * @return singleton of ServerService
+     * @param server                object implementing server interface
+     * @param endpointName          name of the device (nickname)
+     * @param connectionsClient     connectionsClient of google api of the activity
+     * @return                      singleton of ServerService
      * @throws IllegalStateException, if singleton is already set
      */
     public static ServerService setInstance(ServerInterface server, String endpointName, ConnectionsClient connectionsClient) throws IllegalStateException {
@@ -210,8 +203,7 @@ public class ServerService extends ConnectionService {
 
     /**
      * function for accepting a connection
-     *
-     * @param endpoint endpoint, where connection is accepted
+     * @param endpoint          endpoint, where connection is accepted
      */
     public void acceptConnection(final Endpoint endpoint) {
         connectionsClient
@@ -234,8 +226,7 @@ public class ServerService extends ConnectionService {
 
     /**
      * function for declining a connection
-     *
-     * @param endpoint endpoint, which connection is rejected
+     * @param endpoint       endpoint, which connection is rejected
      */
     public void rejectConnection(Endpoint endpoint) {
         connectionsClient
@@ -270,15 +261,7 @@ public class ServerService extends ConnectionService {
                         Log.d(logTag, "error in deserialization", ex);
                     }
                     if (object != null) {
-                        if (object instanceof Message) {
-                            server.onMessage((Message) object);
-                        } else if (object instanceof Game) {
-                            server.onGameData((Game) object);
-                        } else if (object instanceof SendMove) {
-                            server.onSendMove((SendMove) object);
-                        } else if (object instanceof Entry) {
-                            server.onRoadMapEntry((Entry) object);
-                        }
+                        server.onDataReceived(object);
                     }
                 }
 
@@ -290,35 +273,31 @@ public class ServerService extends ConnectionService {
             };
 
     /**
-     * function for sending a chat message or game data
-     *
-     * @param object object to send (game data, chat message or SendMove)
+     * function for sending data over the connection
+     * @param object       object to send
      */
     public void send(Object object) {
-        if (object instanceof Message || object instanceof Game || object instanceof SendMove || object instanceof Entry) {
-            byte[] data = null;
-            try {
-                data = serialize(object);
-            } catch (IOException ex) {
-                Log.d(logTag, "error in serialization", ex);
-                server.onSendingFailed(object);
+        byte[] data = null;
+        try {
+            data = serialize(object);
+        } catch (IOException ex) {
+            Log.d(logTag, "error in serialization", ex);
+            server.onSendingFailed(object);
+        }
+        if (data != null) {
+            if (data.length > ConnectionsClient.MAX_BYTES_DATA_SIZE) {
+                Log.d(logTag, "byte array size > MAX_BYTES_DATA_SIZE");
+                // will this be a problem ?
             }
-            if (data != null) {
-                if (data.length > ConnectionsClient.MAX_BYTES_DATA_SIZE) {
-                    Log.d(logTag, "byte array size > MAX_BYTES_DATA_SIZE");
-                    // will this be a problem ?
-                }
-                Payload payload = Payload.fromBytes(data);
-                sendPayload(payload, establishedConnections.keySet());
-            }
+            Payload payload = Payload.fromBytes(data);
+            sendPayload(payload, establishedConnections.keySet());
         }
     }
 
     /**
      * function for sending payload
-     *
-     * @param payload   payload to send
-     * @param endpoints list of endpoints to send to
+     * @param payload           payload to send
+     * @param endpoints         list of endpoints to send to
      */
     private void sendPayload(final Payload payload, Set<String> endpoints) {
         if (connectionState == ConnectionState.CONNECTED || connectionState == ConnectionState.ADVERTISING_CONNECTED) {
@@ -344,14 +323,13 @@ public class ServerService extends ConnectionService {
 
     /**
      * function for disconnecting from an endpoint
-     *
-     * @param endpoint endpoint to disconnect from
+     * @param endpoint  endpoint to disconnect from
      */
     public void disconnect(@NonNull Endpoint endpoint) {
         if (connectionState == ConnectionState.CONNECTED) {
             Endpoint endpoint2 = establishedConnections.get(endpoint.getId());
             if (endpoint2 != null) {
-                Log.d(logTag, "disconnecting from " + endpoint.getName());
+                Log.d(logTag, "disconnecting from "+endpoint.getName());
                 connectionsClient.disconnectFromEndpoint(endpoint.getId());
                 establishedConnections.remove(endpoint.getId());
                 if (establishedConnections.isEmpty()) {

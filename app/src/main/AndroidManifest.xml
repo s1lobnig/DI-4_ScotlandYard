@@ -77,8 +77,6 @@
         <activity
             android:name=".lobby.GameActivity"
             android:parentActivityName=".lobby.RegistrationActivty"></activity>
-        <activity android:name=".lobby.GamePresettings"
-            android:parentActivityName=".lobby.GameCreate"/>
     </application>
 
 </manifest>

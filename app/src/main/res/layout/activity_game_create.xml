@@ -7,6 +7,22 @@
     tools:context=".lobby.GameCreate">
 
     <EditText
+        android:id="@+id/lobbyName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="92dp"
+        android:ems="10"
+        android:hint="@string/lobbyname"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toTopOf="@+id/maxPlayers"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
         android:id="@+id/userName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -14,9 +30,9 @@
         android:layout_marginLeft="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginBottom="36dp"
+        android:layout_marginBottom="28dp"
         android:ems="10"
-        android:hint="@string/username_server"
+        android:hint="@string/spielername"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/maxPlayers"
         app:layout_constraintEnd_toEndOf="parent"
@@ -30,7 +46,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="204dp"
         android:ems="10"
         android:hint="@string/max_players"
         android:inputType="number"
@@ -43,7 +59,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="372dp" />
+        app:layout_constraintGuide_begin="431dp" />
+
+    <include
+        android:id="@+id/include"
+        layout="@layout/content_game_presettings"
+        android:layout_width="301dp"
+        android:layout_height="127dp"
+        tools:layout_editor_absoluteX="55dp"
+        tools:layout_editor_absoluteY="259dp" />
 
     <Button
         android:id="@+id/createServerBtn"
