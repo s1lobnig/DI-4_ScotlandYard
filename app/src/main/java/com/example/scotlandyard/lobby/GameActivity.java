@@ -76,6 +76,9 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
             public void onClick(View v) {
                 game.chooseMrX(chooseMrXRandomly);
                 Log.d("GAME_ACTIVITY", "Loading game map.");
+
+                serverService.send(new Message("START_GAME"));
+
                 Intent intent = new Intent(GameActivity.this, GameMap.class);
                 intent.putExtra("USERNAME", userName);
                 intent.putExtra("HOST", host);

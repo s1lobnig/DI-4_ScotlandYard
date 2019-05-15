@@ -12,6 +12,7 @@ public class Game implements Serializable {
     private String gameName;
     private int maxMembers;
     private int currentMembers;
+    private int round;
     private ArrayList<Player> players = new ArrayList<>(); // Changed from List to ArrayList because of serialization.
 
 
@@ -43,6 +44,18 @@ public class Game implements Serializable {
 
     public void setCurrentMembers(int currentMembers) {
         this.currentMembers = currentMembers;
+    }
+
+    public int getRound() {
+        return round;
+    }
+
+    public void setRound(int round) {
+        this.round = round;
+    }
+
+    public void nextRound(){
+        this.round++;
     }
 
     public ArrayList<Player> getPlayers() {

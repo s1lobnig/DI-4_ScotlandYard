@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.scotlandyard.map.GameMap;
 import com.example.scotlandyard.map.roadmap.Entry;
@@ -57,31 +58,26 @@ public class ClientLobby extends AppCompatActivity implements ClientInterface {
         connectedPlayersList.setAdapter(connectedPlayersListAdapter);
     }
 
-    /* Not used. */
     @Override
     public void onStartedDiscovery() {
         Log.d(logTag, "onStartedDiscovery()");
     }
 
-    /* Not used. */
     @Override
     public void onFailedDiscovery() {
         Log.d(logTag, "onFailedDiscovery()");
     }
 
-    /* Not used. */
     @Override
     public void onEndpointFound(Map<String, Endpoint> discoveredEndpoints) {
         Log.d(logTag, "onEndpointFound()");
     }
 
-    /* Not used. */
     @Override
     public void onEndpointLost(Map<String, Endpoint> discoveredEndpoints) {
         Log.d(logTag, "onEndpointLost()");
     }
 
-    /* Not used. */
     @Override
     public void onStoppedDiscovery() {
         Log.d(logTag, "onStoppedDiscovery()");
@@ -90,7 +86,6 @@ public class ClientLobby extends AppCompatActivity implements ClientInterface {
     @Override
     public void onConnected(Endpoint endpoint) {
         Log.d(logTag, "onConnected() : " + endpoint.toString());
-
 
         Log.d("CLIENT_LOBBY", "Requesting game data...");
         new Thread(new Runnable() {
@@ -152,8 +147,8 @@ public class ClientLobby extends AppCompatActivity implements ClientInterface {
     public void onFailedConnecting(Endpoint endpoint) {
         Log.d(logTag, "onFailedConnecting() : " + endpoint.toString());
 
-        //TODO show user, that connecting has failed
-        // Make a Toast: Couldn't connect to the server.
+        String notification = "Verbindung zum Server konnte nicht hergestellt werden.";
+        Toast.makeText(getApplicationContext(), notification, Toast.LENGTH_LONG).show();
 
         finish();
     }
@@ -162,18 +157,18 @@ public class ClientLobby extends AppCompatActivity implements ClientInterface {
     public void onDisconnected(Endpoint endpoint) {
         Log.d(logTag, "onDisconnected() : " + endpoint.toString());
 
-        // Make a Toast: Connection with server lost.
+        String notification = "Verbindung zum Server verloren.";
+        Toast.makeText(getApplicationContext(), notification, Toast.LENGTH_LONG).show();
 
         finish();
     }
 
-    /* Not used. */
     @Override
     public void onFailedAcceptConnection(Endpoint endpoint) {
         Log.d(logTag, "onFailedAcceptConnection() : " + endpoint.toString());
 
-        //TODO show user, that accepting the connection has failed
-        // Make a Toast: Couldn't connect to the server.
+        String notification = "Verbindung zum Server konnte nicht hergestellt werden.";
+        Toast.makeText(getApplicationContext(), notification, Toast.LENGTH_LONG).show();
 
         finish();
     }

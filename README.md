@@ -33,3 +33,7 @@ Im folgenden Repository befinden sich die Proof of Concepts für die Netzwerkkom
 https://github.com/r1rasser/ScotlandYard_POCs_Networking
 
 [![Build Status](https://travis-ci.com/s1lobnig/DI-4_ScotlandYard.svg?branch=master)](https://travis-ci.com/s1lobnig/DI-4_ScotlandYard)
+[![Quality gate](https://sonarcloud.io/api/project_badges/measure?project=DI-4_ScotlandYard&metric=alert_status)](https://sonarcloud.io/dashboard?id=DI-4_ScotlandYard)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=DI-4_ScotlandYard&metric=coverage)](https://sonarcloud.io/dashboard?id=DI-4_ScotlandYard)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=DI-4_ScotlandYard&metric=bugs)](https://sonarcloud.io/dashboard?id=DI-4_ScotlandYard)
+[![Code smells](https://sonarcloud.io/api/project_badges/measure?project=DI-4_ScotlandYard&metric=code_smells)](https://sonarcloud.io/dashboard?id=DI-4_ScotlandYard)
