@@ -31,6 +31,7 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
 
     private ListAdapter connectedPlayersListAdapter;
     private String userName;
+    private boolean chooseMrXRandomly;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +46,7 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
         userName = intent.getExtras().getString("USER_NAME");
         int maxPlayers = intent.getExtras().getInt("MAX_PLAYERS");
         boolean buttonEnabled = intent.getExtras().getBoolean("ENABLE_BUTTON");
+        chooseMrXRandomly = intent.getExtras().getBoolean("RANDOM_MR_X", true);
 
         if (ServerService.isSingletonSet()) {
             ServerService.resetInstance();
@@ -63,10 +65,12 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
         game.getPlayers().add(host);
         game.setCurrentMembers(1); /* The server is also a player. */
 
+
         /* Start game initiated by server. */
         startGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                game.chooseMrX(chooseMrXRandomly);
                 Log.d("GAME_ACTIVITY", "Loading game map.");
                 Intent intent = new Intent(GameActivity.this, GameMap.class);
                 intent.putExtra("USERNAME", userName);
@@ -192,7 +196,7 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
         }
         game.getPlayers().remove(playerToRemove);
 
-        this.game.setCurrentMembers(this.game.getCurrentMembers() -1);
+        this.game.setCurrentMembers(this.game.getCurrentMembers() - 1);
 
         ((ArrayAdapter) connectedPlayersListAdapter).notifyDataSetChanged();
 

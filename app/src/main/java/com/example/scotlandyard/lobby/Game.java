@@ -59,4 +59,13 @@ public class Game implements Serializable {
     public void setPlayers(ArrayList<Player> players) {
         this.players = players;
     }
+
+    public void chooseMrX(boolean chooseMrXRandomly) {
+        //TODO choose Mr X according to @chooseMrXRandomly
+        if (chooseMrXRandomly) {
+            return;
+        } else {
+            return;
+        }
+    }
 }
