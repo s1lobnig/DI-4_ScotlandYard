@@ -1,6 +1,12 @@
 package com.example.scotlandyard.map.roadmap;
 
+import android.app.Activity;
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
+
+import com.example.scotlandyard.R;
 
 public class PositionEntry extends Entry {
 
@@ -20,7 +26,11 @@ public class PositionEntry extends Entry {
     }
 
     @Override
-    public View getView() {
-        return null;
+    public View getView(Context context) {
+        LayoutInflater viewInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+        View convertView = viewInflater.inflate(R.layout.layout_road_map_entry_position, null);
+        ((EditText) convertView.findViewById(R.id.position)).setText((position + 1) + "");
+        ((EditText) convertView.findViewById(R.id.turn)).setText(turnNumber + "");
+        return convertView;
     }
 }

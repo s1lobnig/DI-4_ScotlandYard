@@ -1,5 +1,6 @@
 package com.example.scotlandyard.map.roadmap;
 
+import android.content.Context;
 import android.view.View;
 
 import java.io.Serializable;
@@ -19,6 +20,6 @@ public abstract class Entry implements Serializable {
         this.turnNumber = turnNumber;
     }
 
-    public abstract View getView();
+    public abstract View getView(Context context);
 
 }

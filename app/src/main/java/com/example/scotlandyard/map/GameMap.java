@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
 import com.example.scotlandyard.map.motions.LatLngInterpolator;
@@ -17,6 +18,7 @@ import com.example.scotlandyard.map.motions.SendMove;
 import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.map.roadmap.PositionEntry;
 import com.example.scotlandyard.map.roadmap.RoadMap;
+import com.example.scotlandyard.map.roadmap.RoadMapDialog;
 import com.example.scotlandyard.map.roadmap.TicketEntry;
 import com.example.scotlandyard.messenger.Message;
 import com.example.scotlandyard.messenger.Messenger;
@@ -211,7 +213,11 @@ public class GameMap extends AppCompatActivity
         } else if (id == R.id.nav_settings) {
             intent = new Intent(this, Settings.class);
         } else if (id == R.id.nav_road_map) {
-            // TODO show current road-map
+            DialogFragment roadMapDialog = new RoadMapDialog();
+            Bundle args = new Bundle();
+            args.putSerializable("ROAD_MAP", roadMap);
+            roadMapDialog.setArguments(args);
+            roadMapDialog.show(getSupportFragmentManager(), "RoadMapDisplay");
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
