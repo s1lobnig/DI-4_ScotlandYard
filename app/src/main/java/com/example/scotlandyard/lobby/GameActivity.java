@@ -75,6 +75,7 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
             @Override
             public void onClick(View v) {
                 game.chooseMrX(chooseMrXRandomly);
+                game.setRandomEventsEnabled(randomEventsEnabled);
                 Log.d("GAME_ACTIVITY", "Loading game map.");
 
                 serverService.send(new Message("START_GAME"));
@@ -85,8 +86,6 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
 
                 intent.putExtra("GAME", game);
                 intent.putExtra("IS_SERVER", true);
-
-                intent.putExtra("RANDOM_EVENTS", randomEventsEnabled);
 
                 startActivity(intent);
             }

@@ -13,6 +13,7 @@ public class Game implements Serializable {
     private int maxMembers;
     private int currentMembers;
     private int round;
+    private boolean randomEventsEnabled;
     private ArrayList<Player> players = new ArrayList<>(); // Changed from List to ArrayList because of serialization.
 
 
@@ -56,6 +57,14 @@ public class Game implements Serializable {
 
     public void nextRound(){
         this.round++;
+    }
+
+    public boolean isRandomEventsEnabled() {
+        return randomEventsEnabled;
+    }
+
+    public void setRandomEventsEnabled(boolean randomEventsEnabled) {
+        this.randomEventsEnabled = randomEventsEnabled;
     }
 
     public ArrayList<Player> getPlayers() {
