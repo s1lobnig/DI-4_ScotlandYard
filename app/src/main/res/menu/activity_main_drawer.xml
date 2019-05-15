@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/background"
     tools:showIn="navigation_view">
@@ -16,6 +15,10 @@
             android:id="@+id/nav_overview"
             android:icon="@android:drawable/ic_menu_info_details"
             android:title="Player Overview" />
+        <item
+            android:id="@+id/nav_road_map"
+            android:icon="@android:drawable/ic_dialog_map"
+            android:title="Mr.X's Fahrplan" />
         <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_menu_manage"
