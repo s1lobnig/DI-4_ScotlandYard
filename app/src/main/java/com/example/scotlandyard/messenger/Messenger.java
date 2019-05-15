@@ -19,10 +19,11 @@ import com.example.scotlandyard.connection.ServerInterface;
 import com.example.scotlandyard.connection.ServerService;
 import com.example.scotlandyard.lobby.Game;
 import com.example.scotlandyard.map.motions.SendMove;
+import com.example.scotlandyard.map.roadmap.Entry;
 
 import java.util.Map;
 
-public class Messanger extends AppCompatActivity implements ServerInterface, ClientInterface {
+public class Messenger extends AppCompatActivity implements ServerInterface, ClientInterface {
 
 
     private EditText textMessage;
@@ -195,6 +196,11 @@ public class Messanger extends AppCompatActivity implements ServerInterface, Cli
 
     @Override
     public void onSendMove(SendMove sendMove) {
+
+    }
+
+    @Override
+    public void onRoadMapEntry(Entry entry) {
 
     }
 

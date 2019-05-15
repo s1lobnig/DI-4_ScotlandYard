@@ -8,14 +8,20 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
 import com.example.scotlandyard.map.motions.LatLngInterpolator;
 import com.example.scotlandyard.map.motions.MarkerAnimation;
 import com.example.scotlandyard.map.motions.RandomEvent;
 import com.example.scotlandyard.map.motions.SendMove;
+import com.example.scotlandyard.map.roadmap.Entry;
+import com.example.scotlandyard.map.roadmap.PositionEntry;
+import com.example.scotlandyard.map.roadmap.RoadMap;
+import com.example.scotlandyard.map.roadmap.RoadMapDialog;
+import com.example.scotlandyard.map.roadmap.TicketEntry;
 import com.example.scotlandyard.messenger.Message;
-import com.example.scotlandyard.messenger.Messanger;
+import com.example.scotlandyard.messenger.Messenger;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.PlayersOverview;
 import com.example.scotlandyard.R;
@@ -72,6 +78,9 @@ public class GameMap extends AppCompatActivity
     private static int playerPenaltay = 0;
     private Player myPlayer;
 
+    private RoadMap roadMap;
+    private boolean randomEventsEnabled;
+
     /**
      * @param savedInstanceState
      */
@@ -97,6 +106,7 @@ public class GameMap extends AppCompatActivity
                 clientService.setClient(this);
                 logTag = "CLIENT_SERVICE";
             }
+            this.roadMap = new RoadMap();
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -107,7 +117,7 @@ public class GameMap extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent mIntent = new Intent(GameMap.this, Messanger.class);
+                Intent mIntent = new Intent(GameMap.this, Messenger.class);
                 mIntent.putExtra("USERNAME", nickname);
                 mIntent.putExtra("IS_SERVER", isServer);
                 startActivity(mIntent);
@@ -185,6 +195,12 @@ public class GameMap extends AppCompatActivity
             intent = new Intent(this, PlayersOverview.class);
         } else if (id == R.id.nav_settings) {
             intent = new Intent(this, Settings.class);
+        } else if (id == R.id.nav_road_map) {
+            DialogFragment roadMapDialog = new RoadMapDialog();
+            Bundle args = new Bundle();
+            args.putSerializable("ROAD_MAP", roadMap);
+            roadMapDialog.setArguments(args);
+            roadMapDialog.show(getSupportFragmentManager(), "RoadMapDisplay");
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -326,10 +342,12 @@ public class GameMap extends AppCompatActivity
     }
 
     private boolean moveMarker(Point p, Player player, int playerIcon) {
-        int r = (new Random()).nextInt(100) % 10;
-        if (false && r < 3) {
-            if (playerPenaltay == 0) {
-                return moveWithRandomEvent(player, p, playerIcon);
+        if (randomEventsEnabled) {
+            int r = randomNumber.nextInt(100) % 10;
+            if (false && r < 3) {
+                if (playerPenaltay == 0) {
+                    return moveWithRandomEvent(player, p, playerIcon);
+                }
             }
         }
         return move(player, p, false, false, playerIcon);
@@ -369,22 +387,43 @@ public class GameMap extends AppCompatActivity
         if (isValid) {
             Route r = (Route) routeToTake[1];
             int icon;
+            int ticket;
             int vehicle = (int) routeToTake[2];
             switch (vehicle) {
                 case 0:
                     icon = R.drawable.pedestrian;
+                    ticket = R.drawable.ticket_yellow;
                     break;
                 case 1:
                     icon = R.drawable.bicycle;
+                    ticket = R.drawable.ticket_orange;
                     break;
                 case 2:
                     icon = R.drawable.bus;
+                    ticket = R.drawable.ticket_red;
                     break;
                 case 3:
                     icon = R.drawable.taxi;
+                    ticket = R.drawable.ticket_black;
                     break;
                 default:
                     icon = -1;
+                    ticket = -1;
+            }
+            if (myPlayer.isMrX()) {
+                Entry entry;
+                int lastTurn = roadMap.getNumberOfEntries();
+                if (lastTurn == 2 || lastTurn == 6 || lastTurn == 11) {
+                    entry = new PositionEntry(lastTurn + 1, Points.getIndex(newLocation) + 1);
+                } else {
+                    entry = new TicketEntry(lastTurn + 1, ticket);
+                }
+                if (isServer) {
+                    roadMap.addEntry(entry);
+                    serverService.send(entry);
+                } else {
+                    clientService.send(entry);
+                }
             }
             int animationDuration = 3000;
             if (!(playerPenaltay > 0 && icon == R.drawable.bicycle)) {
@@ -687,11 +726,11 @@ public class GameMap extends AppCompatActivity
                 myPlayer.setMoved(false);
                 Toast.makeText(GameMap.this, "Runde " + manageGame.game.getRound(), Snackbar.LENGTH_LONG).show();
             }
-            if(txt.length == 3 && txt[0].equals("PLAYER") && txt[2].equals("QUITTED")){
+            if (txt.length == 3 && txt[0].equals("PLAYER") && txt[2].equals("QUITTED")){
                 Player player = manageGame.findPlayer(txt[1]);
                 deactivatePlayer(player);
             }
-            if(txt.length == 2 && txt[0].equals("END")){
+            if (txt.length == 2 && txt[0].equals("END")) {
                 Toast.makeText(GameMap.this, txt[1] + " hat gewonnen", Snackbar.LENGTH_LONG).show();
             }
         }
@@ -708,10 +747,10 @@ public class GameMap extends AppCompatActivity
         Player player = manageGame.findPlayer(sendMove.getNickname());
         int field = sendMove.getField();
         Point point = Points.getPoints()[field];
-        Log.d("SEND_MOVE","receiving move from " + player.getNickname());
+        Log.d("SEND_MOVE", "receiving move from " + player.getNickname());
 
-        if(isServer){
-            if(player.isMoved()) {
+        if (isServer) {
+            if (player.isMoved()) {
                 return;
             }
             serverService.send(sendMove);
@@ -721,6 +760,18 @@ public class GameMap extends AppCompatActivity
             player.setMoved(true);
         }
         moveMarker(point, player, player.getIcon());
+    }
+
+    @Override
+    public void onRoadMapEntry(Entry entry) {
+        if (isServer) {
+            if (!myPlayer.isMrX()) {
+                roadMap.addEntry(entry);
+                serverService.send(entry);
+            }
+        } else {
+            roadMap.addEntry(entry);
+        }
     }
 
     private void tryNextRound(){

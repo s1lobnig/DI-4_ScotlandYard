@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.example.scotlandyard.lobby.Game;
+import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.messenger.Message;
 import com.example.scotlandyard.map.motions.SendMove;
 import com.google.android.gms.nearby.connection.ConnectionInfo;
@@ -41,9 +42,9 @@ public class ClientService extends ConnectionService {
     /**
      * Constructor
      *
-     * @param clientInterface       object implementing client interface
-     * @param endpointName          name of the device (nickname)
-     * @param connectionsClient     connectionsClient of google api of the activity
+     * @param clientInterface   object implementing client interface
+     * @param endpointName      name of the device (nickname)
+     * @param connectionsClient connectionsClient of google api of the activity
      */
     private ClientService(@NonNull ClientInterface clientInterface, String endpointName, ConnectionsClient connectionsClient) {
         super(endpointName, connectionsClient);
@@ -54,6 +55,7 @@ public class ClientService extends ConnectionService {
 
     /**
      * function for retrieving singleton
+     *
      * @return singleton of ClientService
      * @throws IllegalStateException, if singleton is not set
      */
@@ -66,10 +68,11 @@ public class ClientService extends ConnectionService {
 
     /**
      * function for setting singleton
-     * @param clientInterface       object implementing client interface
-     * @param endpointName          name of the device (nickname)
-     * @param connectionsClient     connectionsClient of google api of the activity
-     * @return                      singleton of ClientInterface
+     *
+     * @param clientInterface   object implementing client interface
+     * @param endpointName      name of the device (nickname)
+     * @param connectionsClient connectionsClient of google api of the activity
+     * @return singleton of ClientInterface
      * @throws IllegalStateException, if singleton is already set
      */
     public static ClientService setInstance(ClientInterface clientInterface, String endpointName, ConnectionsClient connectionsClient) throws IllegalStateException {
@@ -90,7 +93,8 @@ public class ClientService extends ConnectionService {
 
     /**
      * function for retrieving singleton status
-     * @return      true, if singlet is set
+     *
+     * @return true, if singlet is set
      */
     public static boolean isSingletonSet() {
         return (singleton != null);
@@ -261,13 +265,13 @@ public class ClientService extends ConnectionService {
                     }
                     if (object != null) {
                         if (object instanceof Message) {
-                            client.onMessage((Message)object);
-                        }
-                        if (object instanceof Game) {
-                            client.onGameData((Game)object);
-                        }
-                        if(object instanceof SendMove){
-                            client.onSendMove((SendMove)object);
+                            client.onMessage((Message) object);
+                        } else if (object instanceof Game) {
+                            client.onGameData((Game) object);
+                        } else if (object instanceof SendMove) {
+                            client.onSendMove((SendMove) object);
+                        } else if (object instanceof Entry) {
+                            client.onRoadMapEntry((Entry) object);
                         }
                     }
                 }
@@ -285,7 +289,7 @@ public class ClientService extends ConnectionService {
      * @param object object to send (game data, chat message or move)
      */
     public void send(Object object) {
-        if (object instanceof Message || object instanceof Game || object instanceof SendMove) {
+        if (object instanceof Message || object instanceof Game || object instanceof SendMove || object instanceof Entry) {
             byte[] data = null;
             try {
                 data = serialize(object);
@@ -336,7 +340,7 @@ public class ClientService extends ConnectionService {
      */
     public void disconnect() {
         if (connectionState == ConnectionState.CONNECTED) {
-            Log.d(logTag, "disconnecting from "+connection.getName());
+            Log.d(logTag, "disconnecting from " + connection.getName());
             connectionsClient.disconnectFromEndpoint(connection.getId());
             connectionState = ConnectionState.DISCONNECTED;
             client.onDisconnected(connection);

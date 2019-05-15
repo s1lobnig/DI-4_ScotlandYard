@@ -11,6 +11,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.example.scotlandyard.map.GameMap;
+import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.messenger.Message;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
@@ -31,6 +32,8 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
 
     private ListAdapter connectedPlayersListAdapter;
     private String userName;
+    private boolean chooseMrXRandomly;
+    private boolean randomEventsEnabled;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,9 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
         userName = intent.getExtras().getString("USER_NAME");
         int maxPlayers = intent.getExtras().getInt("MAX_PLAYERS");
         boolean buttonEnabled = intent.getExtras().getBoolean("ENABLE_BUTTON");
+
+        chooseMrXRandomly = intent.getExtras().getBoolean("RANDOM_MR_X", true);
+        randomEventsEnabled = intent.getExtras().getBoolean("RANDOM_EVENTS", false);
 
         if (ServerService.isSingletonSet()) {
             ServerService.resetInstance();
@@ -63,10 +69,12 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
         game.getPlayers().add(host);
         game.setCurrentMembers(1); /* The server is also a player. */
 
+
         /* Start game initiated by server. */
         startGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                game.chooseMrX(chooseMrXRandomly);
                 Log.d("GAME_ACTIVITY", "Loading game map.");
 
                 serverService.send(new Message("START_GAME"));
@@ -77,6 +85,8 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
 
                 intent.putExtra("GAME", game);
                 intent.putExtra("IS_SERVER", true);
+
+                intent.putExtra("RANDOM_EVENTS", randomEventsEnabled);
 
                 startActivity(intent);
             }
@@ -174,6 +184,11 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
     }
 
     @Override
+    public void onRoadMapEntry(Entry entry) {
+
+    }
+
+    @Override
     public void onFailedConnecting(Endpoint endpoint) {
         //TODO inform player, that connecting has failed
         // Make a Toast: Couldn't connect with endpoint.
@@ -195,7 +210,7 @@ public class GameActivity extends AppCompatActivity implements ServerInterface {
         }
         game.getPlayers().remove(playerToRemove);
 
-        this.game.setCurrentMembers(this.game.getCurrentMembers() -1);
+        this.game.setCurrentMembers(this.game.getCurrentMembers() - 1);
 
         ((ArrayAdapter) connectedPlayersListAdapter).notifyDataSetChanged();
 

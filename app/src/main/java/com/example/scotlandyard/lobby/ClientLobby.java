@@ -10,6 +10,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.scotlandyard.map.GameMap;
+import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.messenger.Message;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
@@ -136,6 +137,12 @@ public class ClientLobby extends AppCompatActivity implements ClientInterface {
 
     }
 
+    @Override
+    public void onRoadMapEntry(Entry entry) {
+
+    }
+
+    /* Not used. */
     @Override
     public void onFailedConnecting(Endpoint endpoint) {
         Log.d(logTag, "onFailedConnecting() : " + endpoint.toString());

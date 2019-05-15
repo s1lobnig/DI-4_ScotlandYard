@@ -14,6 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.messenger.Message;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
@@ -262,6 +263,11 @@ public class GameList extends AppCompatActivity implements ClientInterface {
     @Override
     public void onSendMove(SendMove sendMove) {
         Log.d(logTag, "Move received");
+    }
+
+    @Override
+    public void onRoadMapEntry(Entry entry) {
+
     }
 
     /* Not needed anymore. It will be handled inside ClientLobby. */
