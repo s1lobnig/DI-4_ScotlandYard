@@ -14,6 +14,7 @@ import com.example.scotlandyard.map.motions.LatLngInterpolator;
 import com.example.scotlandyard.map.motions.MarkerAnimation;
 import com.example.scotlandyard.map.motions.RandomEvent;
 import com.example.scotlandyard.map.motions.SendMove;
+import com.example.scotlandyard.map.roadmap.RoadMap;
 import com.example.scotlandyard.messenger.Message;
 import com.example.scotlandyard.messenger.Messanger;
 import com.example.scotlandyard.Player;
@@ -87,6 +88,8 @@ public class GameMap extends AppCompatActivity
             R.drawable.player11
     };
 
+    private RoadMap roadMap;
+
     /**
      * @param savedInstanceState
      */
@@ -96,7 +99,7 @@ public class GameMap extends AppCompatActivity
         setContentView(R.layout.activity_game_navigation);
 
         //if game has not started yet
-        if(game == null) {
+        if (game == null) {
             Intent intent = getIntent();
             nickname = intent.getStringExtra("USERNAME");
             isServer = intent.getBooleanExtra("IS_SERVER", true);
@@ -113,6 +116,7 @@ public class GameMap extends AppCompatActivity
                 clientService.setClient(this);
                 logTag = "CLIENT_SERVICE";
             }
+            this.roadMap = new RoadMap();
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -201,6 +205,8 @@ public class GameMap extends AppCompatActivity
             intent = new Intent(this, PlayersOverview.class);
         } else if (id == R.id.nav_settings) {
             intent = new Intent(this, Settings.class);
+        } else if (id == R.id.nav_road_map) {
+            // TODO show current road-map
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -748,19 +754,19 @@ public class GameMap extends AppCompatActivity
 
     @Override
     public void onMessage(Message message) {
-        if(!isServer){
-            String [] txt = ((Message) message).getMessage().split(" ");
+        if (!isServer) {
+            String[] txt = ((Message) message).getMessage().split(" ");
 
-            if(txt[0].equals("NEXT_ROUND")){
+            if (txt[0].equals("NEXT_ROUND")) {
                 round++;
                 myPlayer.setMoved(false);
                 Toast.makeText(GameMap.this, "Runde " + round, Snackbar.LENGTH_LONG).show();
             }
-            if(txt.length == 3 && txt[0].equals("PLAYER") && txt[2].equals("QUITTED")){
+            if (txt.length == 3 && txt[0].equals("PLAYER") && txt[2].equals("QUITTED")) {
                 Player player = findPlayer(txt[1]);
                 deactivatePlayer(player);
             }
-            if(txt.length == 2 && txt[0].equals("END")){
+            if (txt.length == 2 && txt[0].equals("END")) {
                 Toast.makeText(GameMap.this, txt[1] + " hat gewonnen", Snackbar.LENGTH_LONG).show();
             }
         }
@@ -776,15 +782,15 @@ public class GameMap extends AppCompatActivity
     public void onSendMove(SendMove sendMove) {
         Player player = findPlayer(sendMove.getNickname());
         //if it is my Player to move
-        if(player.getNickname().equals(myPlayer.getNickname())){
+        if (player.getNickname().equals(myPlayer.getNickname())) {
             myPlayer.setMoved(true);
         }
         int field = sendMove.getField();
         Point point = Points.getPoints()[field];
-        Log.d("SEND_MOVE","receiving move from " + player.getNickname());
+        Log.d("SEND_MOVE", "receiving move from " + player.getNickname());
 
-        if(isServer){
-            if(player.isMoved()) {
+        if (isServer) {
+            if (player.isMoved()) {
                 return;
             }
             player.setMoved(true);
