@@ -7,6 +7,8 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.scotlandyard.map.GameMap;
@@ -59,6 +61,14 @@ public class ClientLobby extends AppCompatActivity implements ClientInterface {
     }
 
     @Override
+    /* When: server rejected connection, couldn't connect (for some reason), disconnected, client clicked back button. */
+    protected void onDestroy() {
+        super.onDestroy();
+
+        clientService.disconnect();
+    }
+
+    @Override
     public void onStartedDiscovery() {
         Log.d(logTag, "onStartedDiscovery()");
     }
@@ -87,6 +97,9 @@ public class ClientLobby extends AppCompatActivity implements ClientInterface {
     public void onConnected(Endpoint endpoint) {
         Log.d(logTag, "onConnected() : " + endpoint.toString());
 
+        ((TextView) findViewById(R.id.textConnectionInfo)).setText("Connection established");
+        ((ProgressBar) findViewById(R.id.progressBarConnection)).setProgress(60);
+
         Log.d("CLIENT_LOBBY", "Requesting game data...");
         new Thread(new Runnable() {
             @Override
@@ -97,6 +110,8 @@ public class ClientLobby extends AppCompatActivity implements ClientInterface {
                 } catch (InterruptedException e) {
                     Log.e("InterruptedExeption", e.getMessage(), e.getCause());
                 }
+                ((TextView) findViewById(R.id.textConnectionInfo)).setText("Waiting for server to start the game");
+                ((ProgressBar) findViewById(R.id.progressBarConnection)).setProgress(80);
                 clientService.send(new Message("GET_GAME_DATA"));
             }
         }).start();
