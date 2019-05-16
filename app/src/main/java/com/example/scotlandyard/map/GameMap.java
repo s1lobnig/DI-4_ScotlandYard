@@ -14,7 +14,7 @@ import android.util.Log;
 import com.example.scotlandyard.map.motions.LatLngInterpolator;
 import com.example.scotlandyard.map.motions.MarkerAnimation;
 import com.example.scotlandyard.map.motions.RandomEvent;
-import com.example.scotlandyard.map.motions.SendMove;
+import com.example.scotlandyard.map.motions.Move;
 import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.map.roadmap.PositionEntry;
 import com.example.scotlandyard.map.roadmap.RoadMap;
@@ -61,7 +61,6 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 public class GameMap extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, ClientInterface, ServerInterface {
@@ -264,11 +263,11 @@ public class GameMap extends AppCompatActivity
                             if (isServer) {
                                 Point point = Points.getPoints()[Points.getIndex(newLocation)];
                                 moveMarker(point, myPlayer, myPlayer.getIcon());
-                                serverService.send(new SendMove(myPlayer.getNickname(), Points.getIndex(newLocation)));
+                                serverService.send(new Move(myPlayer.getNickname(), Points.getIndex(newLocation)));
                                 myPlayer.setMoved(true);
                                 tryNextRound();
                             } else {
-                                clientService.send(new SendMove(myPlayer.getNickname(), Points.getIndex(newLocation)));
+                                clientService.send(new Move(myPlayer.getNickname(), Points.getIndex(newLocation)));
                             }
                         }
                         return isValid;
@@ -743,9 +742,9 @@ public class GameMap extends AppCompatActivity
 
     //@Stefan: Code should be run even if acitivity is not running (just without last line move Marker
     @Override
-    public void onSendMove(SendMove sendMove) {
-        Player player = manageGame.findPlayer(sendMove.getNickname());
-        int field = sendMove.getField();
+    public void onSendMove(Move move) {
+        Player player = manageGame.findPlayer(move.getNickname());
+        int field = move.getField();
         Point point = Points.getPoints()[field];
         Log.d("SEND_MOVE", "receiving move from " + player.getNickname());
 
@@ -753,7 +752,7 @@ public class GameMap extends AppCompatActivity
             if (player.isMoved()) {
                 return;
             }
-            serverService.send(sendMove);
+            serverService.send(move);
             player.setMoved(true);
             tryNextRound();
         }else{

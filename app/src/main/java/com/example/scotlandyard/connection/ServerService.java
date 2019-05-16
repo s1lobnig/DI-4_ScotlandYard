@@ -20,10 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-// do we need it?
-// TODO: It would be almost necessary to know from which endpoint the message comes: onMessage(Object message, Endpoint e) and onGameData(Object game, Endpoint e).
-// TODO: Make sending to a single client possible. Suggestion: sendMessage(Object object, Endpoint endpoint).
-
 /**
  * class representing a server in the service
  * logTag:                  log tag for log messages
@@ -37,7 +33,6 @@ public class ServerService extends ConnectionService{
     private Map<String, Endpoint> pendingConnections;
     private Map<String, Endpoint> establishedConnections;
     private ServerInterface server;
-    private static ServerService singleton = null;
 
     /**
      * Constructor
@@ -45,55 +40,11 @@ public class ServerService extends ConnectionService{
      * @param endpointName          name of the device (nickname)
      * @param connectionsClient     connectionsClient of google api of the activity
      */
-    private ServerService(@NonNull ServerInterface server, String endpointName, ConnectionsClient connectionsClient) {
+    public ServerService(@NonNull ServerInterface server, String endpointName, ConnectionsClient connectionsClient) {
         super(endpointName, connectionsClient);
         pendingConnections = new HashMap<>();
         establishedConnections = new HashMap<>();
         this.server = server;
-    }
-
-    /**
-     * function for retrieving singleton
-     * @return singleton of ServerService
-     * @throws IllegalStateException, if singleton is not set
-     */
-    public static ServerService getInstance() throws IllegalStateException {
-        if (singleton == null) {
-            throw new IllegalStateException("singleton not set");
-        }
-        return singleton;
-    }
-
-    /**
-     * function for retrieving singleton status
-     * @return      true, if singlet is set
-     */
-    public static boolean isSingletonSet() {
-        return (singleton != null);
-    }
-
-    /**
-     * function for setting singleton
-     * @param server                object implementing server interface
-     * @param endpointName          name of the device (nickname)
-     * @param connectionsClient     connectionsClient of google api of the activity
-     * @return                      singleton of ServerService
-     * @throws IllegalStateException, if singleton is already set
-     */
-    public static ServerService setInstance(ServerInterface server, String endpointName, ConnectionsClient connectionsClient) throws IllegalStateException {
-        if (singleton != null) {
-            throw new IllegalStateException("singleton already set");
-        }
-        singleton = new ServerService(server, endpointName, connectionsClient);
-        return singleton;
-    }
-
-    /**
-     * function for resetting singleton
-     */
-    public static void resetInstance() {
-        singleton.disconnectFromAll();
-        singleton = null;
     }
 
     /**
@@ -261,7 +212,7 @@ public class ServerService extends ConnectionService{
                         Log.d(logTag, "error in deserialization", ex);
                     }
                     if (object != null) {
-                        server.onDataReceived(object);
+                        server.onDataReceived(object, endpointId);
                     }
                 }
 
@@ -273,7 +224,7 @@ public class ServerService extends ConnectionService{
             };
 
     /**
-     * function for sending data over the connection
+     * function for broadcasting data over the connection
      * @param object       object to send
      */
     public void send(Object object) {
@@ -291,6 +242,28 @@ public class ServerService extends ConnectionService{
             }
             Payload payload = Payload.fromBytes(data);
             sendPayload(payload, establishedConnections.keySet());
+        }
+    }
+
+    /**
+     * function for sending data over the connection
+     * @param object       object to send
+     */
+    public void send(Object object, Set<String> connections) {
+        byte[] data = null;
+        try {
+            data = serialize(object);
+        } catch (IOException ex) {
+            Log.d(logTag, "error in serialization", ex);
+            server.onSendingFailed(object);
+        }
+        if (data != null) {
+            if (data.length > ConnectionsClient.MAX_BYTES_DATA_SIZE) {
+                Log.d(logTag, "byte array size > MAX_BYTES_DATA_SIZE");
+                // will this be a problem ?
+            }
+            Payload payload = Payload.fromBytes(data);
+            sendPayload(payload, connections);
         }
     }
 

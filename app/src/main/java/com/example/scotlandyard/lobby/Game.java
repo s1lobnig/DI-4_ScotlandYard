@@ -1,6 +1,7 @@
 package com.example.scotlandyard.lobby;
 
 import com.example.scotlandyard.Player;
+import com.example.scotlandyard.map.motions.Move;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -68,6 +69,11 @@ public class Game implements Serializable {
                 return true;
             }
         }
+        return false;
+    }
+
+    public boolean doMove(Move move) {
+        //TODO check and make the move
         return false;
     }
 

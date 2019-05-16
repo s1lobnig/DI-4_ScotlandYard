@@ -9,19 +9,21 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.scotlandyard.control.ClientLobbyInterface;
 import com.example.scotlandyard.map.GameMap;
 import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.messenger.Message;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
-import com.example.scotlandyard.map.motions.SendMove;
+import com.example.scotlandyard.map.motions.Move;
 import com.example.scotlandyard.connection.ClientInterface;
 import com.example.scotlandyard.connection.ClientService;
 import com.example.scotlandyard.connection.Endpoint;
 
+import java.util.ArrayList;
 import java.util.Map;
 
-public class ClientLobby extends AppCompatActivity implements ClientInterface {
+public class ClientLobby extends AppCompatActivity implements ClientLobbyInterface {
 
     private ClientService clientService; /* ClientService - used for communication with server(s). */
     private ListAdapter connectedPlayersListAdapter; /* Global variable because of updates. */
@@ -132,8 +134,8 @@ public class ClientLobby extends AppCompatActivity implements ClientInterface {
     }
 
     @Override
-    public void onSendMove(SendMove sendMove) {
-        Log.d(logTag, "onSendMove() : Message = " + sendMove.toString());
+    public void onSendMove(Move move) {
+        Log.d(logTag, "onSendMove() : Message = " + move.toString());
 
     }
 
@@ -178,5 +180,55 @@ public class ClientLobby extends AppCompatActivity implements ClientInterface {
         Log.d(logTag, "onSendingFailed()");
 
         //TODO show user, that sending has failed
+    }
+
+    @Override
+    public void showStartedDiscovering() {
+        
+    }
+
+    @Override
+    public void showFailedDiscovering() {
+
+    }
+
+    @Override
+    public void updateServerList(ArrayList<Endpoint> serverList) {
+
+    }
+
+    @Override
+    public void showStoppedDiscovery() {
+
+    }
+
+    @Override
+    public void showConnected(String endpointName) {
+
+    }
+
+    @Override
+    public void showConnectionFailed(String endpointName) {
+
+    }
+
+    @Override
+    public void showDisconnected(String endpointName) {
+
+    }
+
+    @Override
+    public void showAcceptingFailed(String endpointName) {
+
+    }
+
+    @Override
+    public void showSendingFailed(Object object) {
+
+    }
+
+    @Override
+    public void updateLobby(Lobby lobby) {
+
     }
 }

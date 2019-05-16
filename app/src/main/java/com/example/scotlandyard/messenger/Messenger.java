@@ -18,7 +18,7 @@ import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.connection.ServerInterface;
 import com.example.scotlandyard.connection.ServerService;
 import com.example.scotlandyard.lobby.Game;
-import com.example.scotlandyard.map.motions.SendMove;
+import com.example.scotlandyard.map.motions.Move;
 import com.example.scotlandyard.map.roadmap.Entry;
 
 import java.util.Map;
@@ -195,7 +195,7 @@ public class Messenger extends AppCompatActivity implements ServerInterface, Cli
     }
 
     @Override
-    public void onSendMove(SendMove sendMove) {
+    public void onSendMove(Move move) {
 
     }
 

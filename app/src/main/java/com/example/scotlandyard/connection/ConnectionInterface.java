@@ -1,10 +1,5 @@
 package com.example.scotlandyard.connection;
 
-import com.example.scotlandyard.lobby.Game;
-import com.example.scotlandyard.map.roadmap.Entry;
-import com.example.scotlandyard.messenger.Message;
-import com.example.scotlandyard.map.motions.SendMove;
-
 /**
  * basic interface of client or server
  */
@@ -13,7 +8,7 @@ public interface ConnectionInterface {
      * function is called, when data is received
      * @param object    object, which is received
      */
-    void onDataReceived(Object object);
+    void onDataReceived(Object object, String endpointId);
 
     /**
      * function is called, when connecting to an endpoint failed

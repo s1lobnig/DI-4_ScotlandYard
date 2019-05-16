@@ -72,11 +72,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".lobby.RegistrationActivty"
+            android:name=".lobby.GameJoin"
             android:theme="@style/AppTheme.ActionBar"></activity>
         <activity
-            android:name=".lobby.GameActivity"
-            android:parentActivityName=".lobby.RegistrationActivty"></activity>
+            android:name=".lobby.ServerLobby"
+            android:parentActivityName=".lobby.GameJoin"></activity>
     </application>
 
 </manifest>

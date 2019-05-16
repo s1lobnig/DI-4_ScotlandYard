@@ -33,7 +33,6 @@ public class ClientService extends ConnectionService {
     private Map<String, Endpoint> discoveredEndpoints;
     private Endpoint connection;
     private ClientInterface client;
-    private static ClientService singleton = null;
 
     /**
      * Constructor
@@ -42,58 +41,11 @@ public class ClientService extends ConnectionService {
      * @param endpointName      name of the device (nickname)
      * @param connectionsClient connectionsClient of google api of the activity
      */
-    private ClientService(@NonNull ClientInterface clientInterface, String endpointName, ConnectionsClient connectionsClient) {
+    public ClientService(@NonNull ClientInterface clientInterface, String endpointName, ConnectionsClient connectionsClient) {
         super(endpointName, connectionsClient);
         discoveredEndpoints = new HashMap<>();
         logTag = "ClientService";
         this.client = clientInterface;
-    }
-
-    /**
-     * function for retrieving singleton
-     *
-     * @return singleton of ClientService
-     * @throws IllegalStateException, if singleton is not set
-     */
-    public static ClientService getInstance() throws IllegalStateException {
-        if (singleton == null) {
-            throw new IllegalStateException("singleton not set");
-        }
-        return singleton;
-    }
-
-    /**
-     * function for setting singleton
-     *
-     * @param clientInterface   object implementing client interface
-     * @param endpointName      name of the device (nickname)
-     * @param connectionsClient connectionsClient of google api of the activity
-     * @return singleton of ClientInterface
-     * @throws IllegalStateException, if singleton is already set
-     */
-    public static ClientService setInstance(ClientInterface clientInterface, String endpointName, ConnectionsClient connectionsClient) throws IllegalStateException {
-        if (singleton != null) {
-            throw new IllegalStateException("singleton already set");
-        }
-        singleton = new ClientService(clientInterface, endpointName, connectionsClient);
-        return singleton;
-    }
-
-    /**
-     * function for resetting the singleton
-     */
-    public static void resetInstance() {
-        singleton.disconnect();
-        singleton = null;
-    }
-
-    /**
-     * function for retrieving singleton status
-     *
-     * @return true, if singlet is set
-     */
-    public static boolean isSingletonSet() {
-        return (singleton != null);
     }
 
     /**
@@ -258,7 +210,7 @@ public class ClientService extends ConnectionService {
                         Log.d(logTag, "error in deserialization", ex);
                     }
                     if (object != null) {
-                        client.onDataReceived(object);
+                        client.onDataReceived(object, endpointId);
                     }
                 }
 

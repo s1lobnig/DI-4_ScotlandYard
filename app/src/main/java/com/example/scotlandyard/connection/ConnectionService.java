@@ -70,4 +70,7 @@ public abstract class ConnectionService {
     public ConnectionState getConnectionState() {
         return connectionState;
     }
+
+    public abstract void send(Object object);
+
 }

@@ -14,7 +14,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.scotlandyard.lobby.GameCreate;
-import com.example.scotlandyard.lobby.RegistrationActivty;
+import com.example.scotlandyard.lobby.GameJoin;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -60,8 +60,8 @@ public class MainActivity extends AppCompatActivity {
         existingGames.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("MAIN_ACTIVITY", "Starting RegistrationActivty activity.");
-                startActivity(new Intent(MainActivity.this, RegistrationActivty.class));
+                Log.d("MAIN_ACTIVITY", "Starting GameJoin activity.");
+                startActivity(new Intent(MainActivity.this, GameJoin.class));
             }
         });
         createGame = findViewById(R.id.btnCreateGame);
