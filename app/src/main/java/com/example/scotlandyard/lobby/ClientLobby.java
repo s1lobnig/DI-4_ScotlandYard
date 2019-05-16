@@ -110,8 +110,15 @@ public class ClientLobby extends AppCompatActivity implements ClientInterface {
                 } catch (InterruptedException e) {
                     Log.e("InterruptedExeption", e.getMessage(), e.getCause());
                 }
-                ((TextView) findViewById(R.id.textConnectionInfo)).setText("Waiting for server to start the game");
-                ((ProgressBar) findViewById(R.id.progressBarConnection)).setProgress(80);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ((TextView) findViewById(R.id.textConnectionInfo)).setText("Waiting for server to start the game");
+                        ((ProgressBar) findViewById(R.id.progressBarConnection)).setProgress(80);
+                    }
+                });
+
                 clientService.send(new Message("GET_GAME_DATA"));
             }
         }).start();
@@ -138,6 +145,7 @@ public class ClientLobby extends AppCompatActivity implements ClientInterface {
 
         if (receivedMessage.equals("START_GAME")) {
             Log.d(logTag, "Game start initiated by server!");
+            ((ProgressBar) findViewById(R.id.progressBarConnection)).setProgress(100);
 
             Intent gameStartIntent = new Intent(ClientLobby.this, GameMap.class);
             gameStartIntent.putExtra("USERNAME", username);
