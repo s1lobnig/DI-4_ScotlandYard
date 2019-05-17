@@ -31,8 +31,11 @@ public class TicketEntry extends Entry {
     public View getView(Context context) {
         LayoutInflater viewInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         View convertView = viewInflater.inflate(R.layout.layout_road_map_entry_ticket, null);
+        ImageView ticketImage = (ImageView) convertView.findViewById(R.id.vehicleImg);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            ((ImageView) convertView.findViewById(R.id.vehicleImg)).setImageIcon(Icon.createWithResource(context, ticketUsed.getSign()));
+            ticketImage.setImageIcon(Icon.createWithResource(context, ticketUsed.getSign()));
+        } else {
+            ticketImage.setImageResource(ticketUsed.getSign());
         }
         ((EditText) convertView.findViewById(R.id.turn)).setText(turnNumber + "");
         return convertView;
