@@ -47,6 +47,7 @@ public class GameList extends AppCompatActivity implements ClientInterface {
 
         ((ProgressBar) findViewById(R.id.progressBarDiscovery)).setVisibility(View.GONE);
         ((Button) findViewById(R.id.rediscoverButton)).setVisibility(View.VISIBLE);
+        ((TextView) findViewById(R.id.textInfo)).setVisibility(View.GONE);
     }
 
     @Override
@@ -58,6 +59,7 @@ public class GameList extends AppCompatActivity implements ClientInterface {
 
         ((ProgressBar) findViewById(R.id.progressBarDiscovery)).setVisibility(View.GONE);
         ((Button) findViewById(R.id.rediscoverButton)).setVisibility(View.VISIBLE);
+        ((TextView) findViewById(R.id.textInfo)).setVisibility(View.GONE);
     }
 
     @Override
@@ -113,6 +115,7 @@ public class GameList extends AppCompatActivity implements ClientInterface {
                 clientService.startDiscovery();
                 ((ProgressBar) findViewById(R.id.progressBarDiscovery)).setVisibility(View.VISIBLE);
                 ((Button) findViewById(R.id.rediscoverButton)).setVisibility(View.GONE);
+                ((TextView) findViewById(R.id.textInfo)).setVisibility(View.VISIBLE);
             }
         });
 
@@ -123,6 +126,7 @@ public class GameList extends AppCompatActivity implements ClientInterface {
                 clientService.stopDiscovery();
                 ((ProgressBar) findViewById(R.id.progressBarDiscovery)).setVisibility(View.GONE);
                 ((Button) findViewById(R.id.rediscoverButton)).setVisibility(View.VISIBLE);
+                ((TextView) findViewById(R.id.textInfo)).setVisibility(View.GONE);
             }
         });
     }
@@ -186,6 +190,7 @@ public class GameList extends AppCompatActivity implements ClientInterface {
 
         ((ProgressBar) findViewById(R.id.progressBarDiscovery)).setVisibility(View.VISIBLE);
         ((Button) findViewById(R.id.rediscoverButton)).setVisibility(View.GONE);
+        ((TextView) findViewById(R.id.textInfo)).setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -224,6 +229,7 @@ public class GameList extends AppCompatActivity implements ClientInterface {
 
         ((ProgressBar) findViewById(R.id.progressBarDiscovery)).setVisibility(View.GONE);
         ((Button) findViewById(R.id.rediscoverButton)).setVisibility(View.VISIBLE);
+        ((TextView) findViewById(R.id.textInfo)).setVisibility(View.GONE);
     }
 
     /* Not needed anymore. It will be handled inside ClientLobby. */
