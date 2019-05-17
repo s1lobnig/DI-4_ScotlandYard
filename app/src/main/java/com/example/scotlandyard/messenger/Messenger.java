@@ -1,6 +1,7 @@
 package com.example.scotlandyard.messenger;
 
 import android.content.Intent;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -23,11 +24,14 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
 
 
     private EditText textMessage;
-    private ListView messageList;
+    private ListView messageListView;
+
     private MessageAdapter mMessageAdapter;
     private Message message;
-    private ArrayList<Message> messages;
-    private String logTag = "Messenger";
+    private static final String MYLISTKEY = "myMessageList";
+    Parcelable myListInstanceState;
+
+    private String logTag = "Messanger";
     private String nickname;
 
     @Override
@@ -41,6 +45,10 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messanger);
 
+        if(savedInstanceState!=null) {
+            myListInstanceState = savedInstanceState.getParcelable(MYLISTKEY);
+        }
+
         /* add Toolbar */
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Spieler Chat");
@@ -49,7 +57,7 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
         /* find views */
         textMessage = findViewById(R.id.edittext_chatbox);
         Button btnSend = findViewById(R.id.button_chatbox_send);
-        messageList = findViewById(R.id.message_list);
+        messageListView = findViewById(R.id.message_list);
 
         /*get data from Intent*/
         Intent intent = getIntent();
@@ -60,7 +68,10 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
 
         /*set the Adapter to listView*/
         mMessageAdapter = new MessageAdapter(this);
-        messageList.setAdapter(mMessageAdapter);
+        messageListView.setAdapter(mMessageAdapter);
+
+        /*restore old messages if they exist*/
+        messageListView.onRestoreInstanceState(myListInstanceState);
 
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,14 +100,13 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
         if(!(message.getNickname().equals(this.nickname))) {
             message.setBelongsToCurrentUser(false);
         }
-
         messages.add(message);
 
         /*display message*/
         mMessageAdapter.add(message);
 
         /*scroll the ListView to the last added element*/
-        messageList.setSelection(messageList.getCount() - 1);
+        messageListView.setSelection(messageListView.getCount() - 1);
 
     }
 
@@ -122,6 +132,31 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
     protected void onDestroy() {
         super.onDestroy();
         ((Server) Device.getInstance()).removeMessengerObserver();
+    }
+
+
+    /*methods to restore message list*/
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
+
+        // Save the user's current game state
+        savedInstanceState.putParcelable(MYLISTKEY, messageListView.onSaveInstanceState());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        myListInstanceState = messageListView.onSaveInstanceState();
+    }
+
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        // Always call the superclass so it can restore the view hierarchy
+        super.onRestoreInstanceState(savedInstanceState);
+
+        // Restore state members from saved instance
+        savedInstanceState.putParcelable(MYLISTKEY, messageListView.onSaveInstanceState());
     }
 
 

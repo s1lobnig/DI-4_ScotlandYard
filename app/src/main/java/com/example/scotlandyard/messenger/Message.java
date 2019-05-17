@@ -1,5 +1,7 @@
 package com.example.scotlandyard.messenger;
 
+import android.os.Parcelable;
+
 import java.io.Serializable;
 
 public class Message implements Serializable {
