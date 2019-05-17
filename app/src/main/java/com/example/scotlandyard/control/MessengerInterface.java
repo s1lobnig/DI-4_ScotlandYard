@@ -16,7 +16,7 @@ public interface MessengerInterface {
     void updateMessages(ArrayList<Message> messages);
 
     /**
-     * function is called, when an endpoint has disconnectd
+     * function is called, when an endpoint has disconnected
      * @param endpoint          disconnected endpoint
      */
     void showDisconnected(Endpoint endpoint);
