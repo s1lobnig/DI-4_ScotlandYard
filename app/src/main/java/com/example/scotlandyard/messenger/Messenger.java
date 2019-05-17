@@ -12,21 +12,12 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.example.scotlandyard.R;
-import com.example.scotlandyard.connection.ClientInterface;
-import com.example.scotlandyard.connection.ClientService;
 import com.example.scotlandyard.connection.Endpoint;
-import com.example.scotlandyard.connection.ServerInterface;
-import com.example.scotlandyard.connection.ServerService;
 import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.control.MessengerInterface;
 import com.example.scotlandyard.control.Server;
-import com.example.scotlandyard.lobby.Game;
-import com.example.scotlandyard.map.motions.Move;
-import com.example.scotlandyard.map.roadmap.Entry;
-import com.google.android.gms.nearby.Nearby;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 public class Messenger extends AppCompatActivity implements MessengerInterface {
 
@@ -78,8 +69,8 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
                 /*set message belong to current user*/
                 message.setBelongsToCurrentUser(true);
 
-                //Device.send(message);
-                updateMessages(messages);
+                Device.getInstance().send(message);
+                mMessageAdapter.add(message);
 
                 /*flush EditText and close keyboard after sending*/
                 textMessage.setText("");
@@ -94,13 +85,12 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
     public void updateMessages(ArrayList<Message> messages) {
         //TODO
         Log.d(logTag, "Chat message received!");
-
-        messages.add(message);
-
         /*check if message belongs to current user*/
         if(!(message.getNickname().equals(this.nickname))) {
             message.setBelongsToCurrentUser(false);
         }
+
+        messages.add(message);
 
         /*display message*/
         mMessageAdapter.add(message);
@@ -119,7 +109,7 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
     @Override
     public void showSendingFailed(Object object) {
         //TODO
-        Log.d(logTag, "sending had failed");
+        Log.d(logTag, "sending has failed");
     }
 
     @Override

@@ -119,7 +119,6 @@ public class GameMap extends AppCompatActivity
             public void onClick(View view) {
                 Intent mIntent = new Intent(GameMap.this, Messenger.class);
                 mIntent.putExtra("USERNAME", nickname);
-                mIntent.putExtra("IS_SERVER", isServer);
                 startActivity(mIntent);
             }
         });
