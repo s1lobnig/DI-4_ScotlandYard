@@ -14,6 +14,11 @@ import com.google.android.gms.nearby.connection.ConnectionsClient;
 import java.util.ArrayList;
 import java.util.Map;
 
+/**
+ * class representing a client in app
+ * lobbyObserver:           observer of lobby
+ * serverList:              list of servers found
+ */
 public class Client extends Device implements ClientInterface {
     private String logTag = "Client";
     private ClientLobbyInterface lobbyObserver;
@@ -23,6 +28,11 @@ public class Client extends Device implements ClientInterface {
         connectionService = new ClientService(this, endpointName, connectionsClient);
     }
 
+    /**
+     * function for adding lobby observer
+     * @param lobbyInterface            lobby observer
+     * @throws IllegalStateException    if already set
+     */
     public void addLobbyObserver(ClientLobbyInterface lobbyInterface) throws IllegalStateException {
         if (lobbyObserver != null) {
             throw new IllegalStateException("server lobby observer already added");
@@ -31,7 +41,10 @@ public class Client extends Device implements ClientInterface {
         Log.d(logTag, "added ClientLobbyInterface");
     }
 
-    public void removeLobbyObserver(ClientLobbyInterface lobbyInterface) {
+    /**
+     * function for removing lobby observer
+     */
+    public void removeLobbyObserver() {
         lobbyObserver = null;
         Log.d(logTag, "removed ClientLobbyInterface");
     }
@@ -106,7 +119,7 @@ public class Client extends Device implements ClientInterface {
         if (object instanceof Game) {
             Log.d(logTag, "game received");
             if (lobbyObserver != null) {
-                //TODO start game
+                lobbyObserver.startGame((Game)object);
             }
         }
     }
@@ -122,7 +135,12 @@ public class Client extends Device implements ClientInterface {
     @Override
     public void onDisconnected(Endpoint endpoint) {
         Log.d(logTag, "disconnected");
-        //TODO other observers
+        if (gameObserver != null) {
+            gameObserver.showDisconnected(endpoint);
+        }
+        if (messengerObserver != null) {
+            messengerObserver.showDisconnected(endpoint);
+        }
         if (lobbyObserver != null) {
             lobbyObserver.showDisconnected(endpoint.getName());
         }
@@ -139,7 +157,12 @@ public class Client extends Device implements ClientInterface {
     @Override
     public void onSendingFailed(Object object) {
         Log.d(logTag, "sending failed");
-        //TODO other observers
+        if (gameObserver != null) {
+            gameObserver.showSendingFailed(object);
+        }
+        if (messengerObserver != null) {
+            messengerObserver.showSendingFailed(object);
+        }
         if (lobbyObserver != null) {
             lobbyObserver.showSendingFailed(object);
         }
@@ -153,17 +176,23 @@ public class Client extends Device implements ClientInterface {
         }
     }
 
+    /**
+     * function for starting discovery
+     */
     public void startDiscovery() {
         Log.d(logTag, "starting discovery");
         ((ClientService)connectionService).startDiscovery();
     }
 
-    public void stopDiscovery() {
-        Log.d(logTag, "stopped discovery");
-        ((ClientService)connectionService).stopDiscovery();
-    }
-
     public ArrayList<Endpoint> getServerList() {
         return serverList;
+    }
+
+    /**
+     * function for connecting to an endpoint
+     * @param position      position of endpoint in list
+     */
+    public void connectToEndpoint(int position) {
+        ((ClientService) connectionService).connectToEndpoint(serverList.get(position));
     }
 }

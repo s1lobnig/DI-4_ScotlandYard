@@ -17,13 +17,15 @@ import com.example.scotlandyard.connection.ClientService;
 import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.connection.ServerInterface;
 import com.example.scotlandyard.connection.ServerService;
+import com.example.scotlandyard.control.MessengerInterface;
 import com.example.scotlandyard.lobby.Game;
 import com.example.scotlandyard.map.motions.Move;
 import com.example.scotlandyard.map.roadmap.Entry;
 
+import java.util.ArrayList;
 import java.util.Map;
 
-public class Messenger extends AppCompatActivity implements ServerInterface, ClientInterface {
+public class Messenger extends AppCompatActivity implements MessengerInterface {
 
 
     private EditText textMessage;
@@ -32,8 +34,6 @@ public class Messenger extends AppCompatActivity implements ServerInterface, Cli
     private MessageAdapter mMessageAdapter;
     private boolean isServer;
     private String logTag;
-    private ServerService serverService;
-    private ClientService clientService;
     private String nickname;
 
     @Override
@@ -64,18 +64,6 @@ public class Messenger extends AppCompatActivity implements ServerInterface, Cli
         isServer = intent.getBooleanExtra("IS_SERVER", false);
         nickname = intent.getStringExtra("USERNAME");
 
-
-        /*check if user is server or client*/
-        if (isServer) {
-            serverService = ServerService.getInstance();
-            serverService.setServer(this);
-            logTag = "SERVER_SERVICE";
-        } else {
-            clientService = ClientService.getInstance();
-            clientService.setClient(this);
-            logTag = "CLIENT_SERVICE";
-        }
-
         /*set the Adapter to listView*/
         mMessageAdapter = new MessageAdapter(this);
         messageList.setAdapter(mMessageAdapter);
@@ -99,7 +87,7 @@ public class Messenger extends AppCompatActivity implements ServerInterface, Cli
 
                 } else {
                     Log.d(logTag, "Client is sending chat message to server");
-                    clientService.send(message);
+                    //clientService.send(message);
                 }
 
                 /*scroll the ListView to the last added element*/
@@ -114,62 +102,7 @@ public class Messenger extends AppCompatActivity implements ServerInterface, Cli
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
-    @Override
-    public void onStartedDiscovery() {
-
-    }
-
-    @Override
-    public void onFailedDiscovery() {
-
-    }
-
-    @Override
-    public void onEndpointFound(Map<String, Endpoint> discoveredEndpoints) {
-
-    }
-
-    @Override
-    public void onEndpointLost(Map<String, Endpoint> discoveredEndpoints) {
-
-    }
-
-    @Override
-    public void onStoppedDiscovery() {
-
-    }
-
-    @Override
-    public void onConnected(Endpoint endpoint) {
-
-    }
-
-    @Override
-    public void onStartedAdvertising() {
-
-    }
-
-    @Override
-    public void onFailedAdvertising() {
-
-    }
-
-    @Override
-    public void onStoppedAdvertising() {
-
-    }
-
-    @Override
-    public void onConnectionRequested(Endpoint endpoint) {
-
-    }
-
-    @Override
-    public void onGameData(Game game) {
-
-    }
-
-    @Override
+    //TODO add this to new interface function
     public void onMessage(Message message) {
         Log.d(logTag, "Chat message received!");
 
@@ -180,7 +113,7 @@ public class Messenger extends AppCompatActivity implements ServerInterface, Cli
             Log.d(logTag, "Server is sending chat message to clients");
 
             /*show received message for all users*/
-            serverService.send(receivedMessage);
+            //serverService.send(receivedMessage);
 
         }
 
@@ -195,36 +128,17 @@ public class Messenger extends AppCompatActivity implements ServerInterface, Cli
     }
 
     @Override
-    public void onSendMove(Move move) {
-
+    public void updateMessages(ArrayList<Message> messages) {
+        //TODO
     }
 
     @Override
-    public void onRoadMapEntry(Entry entry) {
-
+    public void showDisconnected(Endpoint endpoint) {
+        //TODO
     }
 
     @Override
-    public void onFailedConnecting(Endpoint endpoint) {
-
-    }
-
-    @Override
-    public void onDisconnected(Endpoint endpoint) {
-
-    }
-
-    @Override
-    public void onFailedAcceptConnection(Endpoint endpoint) {
-
-    }
-
-    @Override
-    public void onSendingFailed(Object object) {
-
-    }
-
-    public void addMessageAdapter(Message message){
-
+    public void showSendingFailed(Object object) {
+        //TODO
     }
 }

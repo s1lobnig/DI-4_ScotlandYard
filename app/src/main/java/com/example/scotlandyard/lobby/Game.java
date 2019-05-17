@@ -72,15 +72,11 @@ public class Game implements Serializable {
         return false;
     }
 
-    public boolean doMove(Move move) {
-        //TODO check and make the move
-        return false;
-    }
-
     public void setPlayers(ArrayList<Player> players) {
         this.players = players;
     }
 
+    /* not working
     public void chooseMrX(boolean chooseMrXRandomly) {
         if (chooseMrXRandomly) {
             players.get(random.nextInt(players.size())).setMrX(true);
@@ -95,5 +91,5 @@ public class Game implements Serializable {
             else
                 players.get(candidatesForMrX.get(random.nextInt(candidatesForMrX.size()))).setMrX(true);
         }
-    }
+    }*/
 }

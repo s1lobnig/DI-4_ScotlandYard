@@ -11,6 +11,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
+import com.example.scotlandyard.control.GameInterface;
 import com.example.scotlandyard.map.motions.LatLngInterpolator;
 import com.example.scotlandyard.map.motions.MarkerAnimation;
 import com.example.scotlandyard.map.motions.RandomEvent;
@@ -63,7 +64,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GameMap extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, ClientInterface, ServerInterface {
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, GameInterface {
 
     private static ServerService serverService;
     private static ClientService clientService;
@@ -94,7 +95,7 @@ public class GameMap extends AppCompatActivity
             nickname = intent.getStringExtra("USERNAME");
             isServer = intent.getBooleanExtra("IS_SERVER", true);
             manageGame = new ManageGameData();
-
+            /*
             if (isServer) {
                 manageGame.game = ((Game) intent.getSerializableExtra("GAME"));
                 serverService = ServerService.getInstance();
@@ -104,7 +105,7 @@ public class GameMap extends AppCompatActivity
                 clientService = ClientService.getInstance();
                 clientService.setClient(this);
                 logTag = "CLIENT_SERVICE";
-            }
+            }*/
             this.roadMap = new RoadMap();
         }
 
@@ -809,6 +810,21 @@ public class GameMap extends AppCompatActivity
     @Override
     public void onSendingFailed(Object object) {
         Log.e(logTag, "Sending failed");
+        //TODO
+    }
+
+    @Override
+    public void updateMove(Move move) {
+        //TODO
+    }
+
+    @Override
+    public void showDisconnected(Endpoint endpoint) {
+        //TODO
+    }
+
+    @Override
+    public void showSendingFailed(Object object) {
         //TODO
     }
 }

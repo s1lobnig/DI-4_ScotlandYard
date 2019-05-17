@@ -42,11 +42,13 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
     @Override
     protected void onStop() {
         super.onStop();
+        ((Client) Device.getInstance()).removeLobbyObserver();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        ((Client) Device.getInstance()).removeLobbyObserver();
     }
 
     @Override
@@ -81,10 +83,7 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
         gameListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                /* After the button 'playGame' has been clicked the discovery will stop. */
-                ((Client) Device.getInstance()).stopDiscovery();
-
-                //TODO connect
+                ((Client) Device.getInstance()).connectToEndpoint(position);
             }
         });
 
@@ -144,6 +143,11 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
     }
 
     @Override
+    public void startGame(Game game) {
+        Log.d(logTag, "should not happen here");
+    }
+
+    @Override
     public void showConnectionFailed(String endpointName) {
         //TODO show user that connecting to that endpoint has failed
     }
@@ -169,6 +173,7 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
         Log.d(logTag, "Loading client lobby.");
         Intent intent = new Intent(GameList.this, ClientLobby.class);
         intent.putExtra("LOBBY", lobby);
+        intent.putExtra("PLAYER", player);
         startActivity(intent);
     }
 

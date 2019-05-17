@@ -66,6 +66,7 @@ public class GameCreate extends AppCompatActivity {
                     player.setHost(true);
                     Lobby lobby = new Lobby(lobbyname, player, randomEvents.isChecked(), chooseMrXRandomly.isChecked(), Integer.parseInt(numPlayer));
                     gameStartIntent.putExtra("LOBBY", lobby);
+                    gameStartIntent.putExtra("PLAYER", player);
                     Log.d(logTag, "starting ServerLobby");
                     startActivity(gameStartIntent);
                 }

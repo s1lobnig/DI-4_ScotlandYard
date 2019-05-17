@@ -12,15 +12,23 @@ import com.google.android.gms.nearby.connection.ConnectionsClient;
 
 import java.util.Set;
 
+/**
+ * class representing a server in the app
+ * lobbyObserver:       observer of lobby
+ */
 public class Server extends Device implements ServerInterface  {
     private String logTag = "Server";
     private ServerLobbyInterface lobbyObserver;
-
 
     Server(String endpointName, ConnectionsClient connectionsClient) {
         connectionService = new ServerService(this, endpointName, connectionsClient);
     }
 
+    /**
+     * function for adding lobby observer
+     * @param lobbyInterface            lobby observer
+     * @throws IllegalStateException    if already set
+     */
     public void addLobbyObserver(ServerLobbyInterface lobbyInterface) throws IllegalStateException {
         if (lobbyObserver != null) {
             throw new IllegalStateException("server lobby observer already added");
@@ -29,7 +37,10 @@ public class Server extends Device implements ServerInterface  {
         Log.d(logTag, "added ServerLobbyInterface");
     }
 
-    public void removeLobbyObserver(ServerLobbyInterface lobbyInterface) {
+    /**
+     * function for removing lobby observer
+     */
+    public void removeLobbyObserver() {
         lobbyObserver = null;
         Log.d(logTag, "removed ServerLobbyInterface");
     }
@@ -74,10 +85,18 @@ public class Server extends Device implements ServerInterface  {
         }
     }
 
+    /**
+     * function for accepting connection
+     * @param endpoint  endpoint to accept
+     */
     public void acceptConnection(Endpoint endpoint) {
         ((ServerService) connectionService).acceptConnection(endpoint);
     }
 
+    /**
+     * function for rejecting connection
+     * @param endpoint  endpoint to reject
+     */
     public void rejectConnection(Endpoint endpoint) {
         ((ServerService) connectionService).rejectConnection(endpoint);
     }
@@ -89,15 +108,17 @@ public class Server extends Device implements ServerInterface  {
             Set<String> connections = ((ServerService)connectionService).getEstablishedConnections().keySet();
             connections.remove(endpointId);
             ((ServerService)connectionService).send(object, connections);
+            if (messengerObserver != null) {
+                messengerObserver.updateMessages(messageList);
+            }
         }
         if (object instanceof Move) {
-            if (game.doMove((Move)object)) {
-                Log.d(logTag, "move received");
-                Set<String> connections = ((ServerService)connectionService).getEstablishedConnections().keySet();
-                connections.remove(endpointId);
-                ((ServerService)connectionService).send(object, connections);
-            } else {
-                Log.d(logTag, "not a valid move");
+            Log.d(logTag, "move received");
+            Set<String> connections = ((ServerService)connectionService).getEstablishedConnections().keySet();
+            connections.remove(endpointId);
+            ((ServerService)connectionService).send(object, connections);
+            if (gameObserver != null) {
+                gameObserver.updateMove((Move)object);
             }
         }
 
@@ -114,7 +135,12 @@ public class Server extends Device implements ServerInterface  {
     @Override
     public void onDisconnected(Endpoint endpoint) {
         Log.d(logTag, "endpoint disconnected");
-        //TODO other observers
+        if (gameObserver != null) {
+            gameObserver.showDisconnected(endpoint);
+        }
+        if (messengerObserver != null) {
+            messengerObserver.showDisconnected(endpoint);
+        }
         if (lobbyObserver != null) {
             lobby.removePlayer(endpoint.getName());
             lobbyObserver.updateLobby(lobby);
@@ -132,7 +158,12 @@ public class Server extends Device implements ServerInterface  {
     @Override
     public void onSendingFailed(Object object) {
         Log.d(logTag, "sending failed");
-        //TODO other observers
+        if (gameObserver != null) {
+            gameObserver.showSendingFailed(object);
+        }
+        if (messengerObserver != null) {
+            messengerObserver.showSendingFailed(object);
+        }
         if (lobbyObserver != null) {
             lobbyObserver.showSendingFailed(object);
         }

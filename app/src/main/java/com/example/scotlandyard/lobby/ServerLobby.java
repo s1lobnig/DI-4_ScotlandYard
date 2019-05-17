@@ -23,6 +23,7 @@ import com.google.android.gms.nearby.Nearby;
 public class ServerLobby extends AppCompatActivity implements ServerLobbyInterface {
     private String logTag = "ServerLobby";
     private ListAdapter connectedPlayersListAdapter;
+    private Player player;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +36,7 @@ public class ServerLobby extends AppCompatActivity implements ServerLobbyInterfa
         /* Get intent data. */
         Intent intent = getIntent();
         Lobby lobby = (Lobby)intent.getSerializableExtra("LOBBY");
+        player = (Player)intent.getSerializableExtra("PLAYER");
 
         //TODO show lobby information in this activity (maxPlayers, randomMr.X, randomEvents)
 
@@ -43,6 +45,7 @@ public class ServerLobby extends AppCompatActivity implements ServerLobbyInterfa
         }
         try {
             Server server = (Server)Device.setServer(lobby.getLobbyName(), Nearby.getConnectionsClient(this));
+            server.setLobby(lobby);
             server.addLobbyObserver(this);
             server.startAdvertising();
         } catch (IllegalStateException ex) {
@@ -56,7 +59,9 @@ public class ServerLobby extends AppCompatActivity implements ServerLobbyInterfa
                 Log.d(logTag, "Loading game map.");
 
                 Intent intent = new Intent(ServerLobby.this, GameMap.class);
-                // TODO create game
+                Game game = new Game(((Server) Device.getInstance()).getLobby().getLobbyName(), ((Server) Device.getInstance()).getLobby().getMaxPlayers());
+                game.setPlayers(((Server) Device.getInstance()).getLobby().getPlayerList());
+                //TODO write lobby information to the game
                 startActivity(intent);
             }
         });
@@ -68,13 +73,13 @@ public class ServerLobby extends AppCompatActivity implements ServerLobbyInterfa
     @Override
     protected void onStop() {
         super.onStop();
-        ((Server) Device.getInstance()).removeLobbyObserver(this);
+        ((Server) Device.getInstance()).removeLobbyObserver();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ((Server) Device.getInstance()).removeLobbyObserver(this);
+        ((Server) Device.getInstance()).removeLobbyObserver();
     }
 
     public void showFailedAdvertising() {
