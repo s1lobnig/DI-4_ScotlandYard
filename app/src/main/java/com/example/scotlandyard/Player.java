@@ -91,6 +91,7 @@ public class Player implements Serializable {
         this.marker = marker;
     }
 
+
     public void decreaseNumberOfTickets(Integer key){
         tickets.put(key, tickets.get(key)-1);
     }
