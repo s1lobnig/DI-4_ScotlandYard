@@ -138,6 +138,7 @@ public class Device {
      */
     public void send(Message message) {
         connectionService.send(message);
+        messageList.add(message);
     }
 
     /**

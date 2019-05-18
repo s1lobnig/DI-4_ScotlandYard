@@ -62,6 +62,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class GameMap extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, GameInterface {
@@ -621,7 +622,7 @@ public class GameMap extends AppCompatActivity
         randomEventsEnabled = manageGame.game.isRandomEventsEnabled();
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myPlayer.getPosition().getLatLng(), 16f), 3000, null);
     }
-
+    /*
     @Override
     public void onStartedDiscovery() {
         Log.e(logTag, "Started discovery in GameMap.");
@@ -703,13 +704,13 @@ public class GameMap extends AppCompatActivity
                 Toast.makeText(GameMap.this, txt[1] + " hat gewonnen", Snackbar.LENGTH_LONG).show();
             }
         }
-    }
+    }*/
 
     private void deactivatePlayer(Player player) {
         manageGame.deactivatePlayer(player);
         player.getMarker().remove();
     }
-
+    /*
     //@Stefan: Code should be run even if acitivity is not running (just without last line move Marker
     @Override
     public void onSendMove(Move move) {
@@ -741,7 +742,7 @@ public class GameMap extends AppCompatActivity
         } else {
             roadMap.addEntry(entry);
         }
-    }
+    }*/
 
     private void tryNextRound(){
         if(manageGame.tryNextRound() == 1){
@@ -752,7 +753,7 @@ public class GameMap extends AppCompatActivity
             Toast.makeText(GameMap.this, "MisterX hat gewonnen", Snackbar.LENGTH_LONG).show();
         }
     }
-
+    /*
     @Override
     public void onFailedConnecting(Endpoint endpoint) {
         Log.d(logTag, "Connecting failed in GameMap");
@@ -780,7 +781,7 @@ public class GameMap extends AppCompatActivity
     public void onSendingFailed(Object object) {
         Log.e(logTag, "Sending failed");
         //TODO
-    }
+    }*/
 
     @Override
     public void updateMove(Move move) {
