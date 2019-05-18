@@ -3,6 +3,7 @@ package com.example.scotlandyard.ticketTests;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
 import com.example.scotlandyard.lobby.Game;
+import com.example.scotlandyard.map.ManageGameData;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,6 +16,7 @@ public class UnitTestsTickets {
 
     private Player testPlayer;
     private Game game;
+    private ManageGameData manageGameData;
     private HashMap<Integer, Integer> tickets;
     private ArrayList<Player> playerList;
 
@@ -22,6 +24,8 @@ public class UnitTestsTickets {
     public void setup() {
         testPlayer = new Player("testPlayer");
         tickets = testPlayer.getTickets();
+        manageGameData = new ManageGameData();
+        playerList = new ArrayList<>();
         playerList.add(testPlayer);
         playerList.add(new Player("player2"));
         playerList.add(new Player("player3"));
@@ -37,12 +41,12 @@ public class UnitTestsTickets {
     //check if all keys are present in the hashmap
     @Test
     public void testKeysOfHashmap() {
-        Assert.assertEquals(true, tickets.containsKey("pedestrian_tickets"));
-        Assert.assertEquals(true, tickets.containsKey("bicycle_tickets"));
-        Assert.assertEquals(true, tickets.containsKey("bus_tickets"));
-        Assert.assertEquals(true, tickets.containsKey("taxi_tickets"));
-        Assert.assertEquals(true, tickets.containsKey("black_tickets"));
-        Assert.assertEquals(true, tickets.containsKey("double_tickets"));
+        Assert.assertEquals(true, tickets.containsKey(R.string.PEDESTRIAN_TICKET_KEY));
+        Assert.assertEquals(true, tickets.containsKey(R.string.BICYCLE_TICKET_KEY));
+        Assert.assertEquals(true, tickets.containsKey(R.string.BUS_TICKET_KEY));
+        Assert.assertEquals(true, tickets.containsKey(R.string.TAXI_TICKET_KEY));
+        Assert.assertEquals(true, tickets.containsKey(R.string.DOUBLE_TICKET_KEY));
+        Assert.assertEquals(true, tickets.containsKey(R.string.BLACK_TICKET_KEY));
     }
 
     //check if after initializing a player, all tickets are null
@@ -57,6 +61,7 @@ public class UnitTestsTickets {
     @Test
     public void testDetectiveTickets(){
         testPlayer.setMrX(false);
+        manageGameData.setTickets(testPlayer);
         Assert.assertEquals(5, tickets.get(R.string.PEDESTRIAN_TICKET_KEY).intValue());
         Assert.assertEquals(4, tickets.get(R.string.BICYCLE_TICKET_KEY).intValue());
         Assert.assertEquals(2, tickets.get(R.string.BUS_TICKET_KEY).intValue());
@@ -69,6 +74,7 @@ public class UnitTestsTickets {
     @Test
     public void testMrXTickets(){
         testPlayer.setMrX(true);
+        manageGameData.setTickets(testPlayer);
         Assert.assertEquals(5, tickets.get(R.string.PEDESTRIAN_TICKET_KEY).intValue());
         Assert.assertEquals(4, tickets.get(R.string.BICYCLE_TICKET_KEY).intValue());
         Assert.assertEquals(2, tickets.get(R.string.BUS_TICKET_KEY).intValue());
@@ -76,4 +82,6 @@ public class UnitTestsTickets {
         Assert.assertEquals(1, tickets.get(R.string.DOUBLE_TICKET_KEY).intValue());
         Assert.assertEquals(5, tickets.get(R.string.BLACK_TICKET_KEY).intValue());
     }
+
+    //TODO: check if tickets get reduced after making a move
 }

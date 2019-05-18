@@ -99,7 +99,7 @@ public class ManageGameData {
         return point.getLatLng();
     }
 
-    private void setTickets(Player player) {
+    public void setTickets(Player player) {
         //set Ticket for Mr. X
         if (player.isMrX()) {
             player.initializeNumberOfTickets(new Object[][]{
