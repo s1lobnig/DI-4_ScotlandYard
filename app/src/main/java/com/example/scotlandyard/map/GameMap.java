@@ -311,7 +311,7 @@ public class GameMap extends AppCompatActivity
 
     private boolean moveMarker(Point p, Player player, int playerIcon) {
         if (randomEventsEnabled) {
-            int r = randomNumber.nextInt(100) % 10;
+            int r = (new Random()).nextInt(100) % 10;
             if (false && r < 3) {
                 if (playerPenaltay == 0) {
                     return moveWithRandomEvent(player, p, playerIcon);
@@ -618,6 +618,7 @@ public class GameMap extends AppCompatActivity
                 myPlayer = p;
             }
         }
+        randomEventsEnabled = manageGame.game.isRandomEventsEnabled();
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myPlayer.getPosition().getLatLng(), 16f), 3000, null);
     }
 

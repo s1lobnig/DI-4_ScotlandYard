@@ -42,13 +42,25 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
     @Override
     protected void onStop() {
         super.onStop();
+		
+		((Client) Device.getInstance()).stopDiscovery();
         ((Client) Device.getInstance()).removeLobbyObserver();
+
+        ((ProgressBar) findViewById(R.id.progressBarDiscovery)).setVisibility(View.GONE);
+        ((Button) findViewById(R.id.rediscoverButton)).setVisibility(View.VISIBLE);
+        ((TextView) findViewById(R.id.textInfo)).setVisibility(View.GONE);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+		
+		((Client) Device.getInstance()).stopDiscovery();
         ((Client) Device.getInstance()).removeLobbyObserver();
+
+        ((ProgressBar) findViewById(R.id.progressBarDiscovery)).setVisibility(View.GONE);
+        ((Button) findViewById(R.id.rediscoverButton)).setVisibility(View.VISIBLE);
+        ((TextView) findViewById(R.id.textInfo)).setVisibility(View.GONE);
     }
 
     @Override
@@ -94,6 +106,7 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
             public void onClick(View v) {
                 ((ProgressBar) findViewById(R.id.progressBarDiscovery)).setVisibility(View.VISIBLE);
                 ((Button) findViewById(R.id.rediscoverButton)).setVisibility(View.GONE);
+                ((TextView) findViewById(R.id.textInfo)).setVisibility(View.VISIBLE);
             }
         });
 
@@ -102,27 +115,26 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
             public void onClick(View v) {
                 ((ProgressBar) findViewById(R.id.progressBarDiscovery)).setVisibility(View.GONE);
                 ((Button) findViewById(R.id.rediscoverButton)).setVisibility(View.VISIBLE);
+                ((TextView) findViewById(R.id.textInfo)).setVisibility(View.GONE);
             }
         });
     }
 
     @Override
     public void showStartedDiscovering() {
-        //TODO show user that discovery has started
         ((ProgressBar) findViewById(R.id.progressBarDiscovery)).setVisibility(View.VISIBLE);
         ((Button) findViewById(R.id.rediscoverButton)).setVisibility(View.GONE);
+        ((TextView) findViewById(R.id.textInfo)).setVisibility(View.VISIBLE);
     }
 
     @Override
     public void showFailedDiscovering() {
-        //TODO show user that discovery has failed
         String notification = "Es konnte kein Server gefunden werden (das Gerät unterstützt die Nearby API nicht oder die Ressourcen wurden bereits verwendet).";
         Toast.makeText(getApplicationContext(), notification, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void updateServerList(ArrayList<Endpoint> serverList) {
-        //TODO show user the new serverList
         listAdapter.clear();
         listAdapter.addAll(serverList);
         listAdapter.notifyDataSetChanged();
@@ -130,14 +142,13 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
 
     @Override
     public void showStoppedDiscovery() {
-        //TODO show user that discovery has stopped
         ((ProgressBar) findViewById(R.id.progressBarDiscovery)).setVisibility(View.GONE);
         ((Button) findViewById(R.id.rediscoverButton)).setVisibility(View.VISIBLE);
+        ((TextView) findViewById(R.id.textInfo)).setVisibility(View.GONE);
     }
 
     @Override
     public void showConnected(String endpointName) {
-        //TODO show user that we are connected to that endpoint
         String notification = "Sie sind verbunden und warten darauf, der Lobby beizutreten.";
         Toast.makeText(getApplicationContext(), notification, Toast.LENGTH_LONG).show();
     }

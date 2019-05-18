@@ -7,6 +7,8 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.scotlandyard.control.Client;
@@ -95,7 +97,6 @@ public class ClientLobby extends AppCompatActivity implements ClientLobbyInterfa
 
     @Override
     public void showDisconnected(String endpointName) {
-        //TODO show user that we have disconnected
         Log.d(logTag, "onDisconnected() : " + endpointName);
 
         String notification = "Verbindung zum Server verloren.";

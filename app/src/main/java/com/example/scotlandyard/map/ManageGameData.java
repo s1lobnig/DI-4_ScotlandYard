@@ -74,10 +74,10 @@ public class ManageGameData {
         return false;
     }
 
-    void givePlayerPositionAndIcon(){
+    void givePlayerPositionAndIcon() {
         Player player;
         for (int i = 0; i < game.getPlayers().size(); i++) {
-            player =game.getPlayers().get(i);
+            player = game.getPlayers().get(i);
             player.setIcon(PLAYER_ICONS[i]);
             LatLng position = getNewPlayerPosition();
             player.setPosition(new Point(position.latitude, position.longitude));
@@ -92,7 +92,7 @@ public class ManageGameData {
         int position = (new Random()).nextInt(Points.getPoints().length);
         Point point = Points.POINTS[position];
         for (Player p : game.getPlayers()) {
-            if(p.getPosition() == point){
+            if (p.getPosition() == point) {
                 return getNewPlayerPosition();
             }
         }
@@ -101,21 +101,24 @@ public class ManageGameData {
 
     //set and check tickets
     private void setTickets(Player player) {
-        /*if (player.isMrX()){
-             host.initializeNumberOfTickets(new Object[][]{
-                {R.string.PEDESTRIAN_TICKET_KEY,5},
-                {R.string.BICYCLE_TICKET_KEY,4},
-                {R.string.BUS_TICKET_KEY,2},
-                {R.string.BLACK_TICKET_KEY, game.getPlayers.size() -1},
-        });
-         }else{
-        */
-        player.initializeNumberOfTickets(new Object[][]{
-                {R.string.PEDESTRIAN_TICKET_KEY, 5},
-                {R.string.BICYCLE_TICKET_KEY, 4},
-                {R.string.BUS_TICKET_KEY, 2},
-                {R.string.BLACK_TICKET_KEY, 0},
-        });
+        //set Ticket for Mr. X
+        if (player.isMrX()) {
+            player.initializeNumberOfTickets(new Object[][]{
+                    {R.string.PEDESTRIAN_TICKET_KEY, 5},
+                    {R.string.BICYCLE_TICKET_KEY, 4},
+                    {R.string.BUS_TICKET_KEY, 2},
+                    {R.string.BLACK_TICKET_KEY, game.getPlayers().size() - 1},
+            });
+        } else {
+            //set Tickets for all other players
+            player.initializeNumberOfTickets(new Object[][]{
+                    {R.string.PEDESTRIAN_TICKET_KEY, 5},
+                    {R.string.BICYCLE_TICKET_KEY, 4},
+                    {R.string.BUS_TICKET_KEY, 2},
+                    {R.string.BLACK_TICKET_KEY, 0},
+            });
+        }
+
     }
 
     boolean checkForValidTicket(Player player, int vehicle) {
