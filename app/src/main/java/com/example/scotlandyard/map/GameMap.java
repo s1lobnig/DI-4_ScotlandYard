@@ -113,6 +113,7 @@ public class GameMap extends AppCompatActivity
         toolbar.setTitle(nickname);
         setSupportActionBar(toolbar);
 
+        //TODO: Set the fab to another color when message is received
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -281,39 +282,7 @@ public class GameMap extends AppCompatActivity
         });
     }
 
-    private boolean checkForValidTicket(Player player, int vehicle) {
-        boolean validTicket = false;
-        HashMap<Integer, Integer> tickets = player.getTickets();
-        switch (vehicle) {
-            case 0:
-                if (tickets.get(R.string.PEDESTRIAN_TICKET_KEY) > 0) {
-                    validTicket = true;
-                    player.decreaseNumberOfTickets(R.string.PEDESTRIAN_TICKET_KEY);
-                }
-                break;
-            case 1:
-                if (tickets.get(R.string.BICYCLE_TICKET_KEY) > 0) {
-                    validTicket = true;
-                    player.decreaseNumberOfTickets(R.string.BICYCLE_TICKET_KEY);
-                }
-                break;
-            case 2:
-                if (tickets.get(R.string.BUS_TICKET_KEY) > 0) {
-                    validTicket = true;
-                    player.decreaseNumberOfTickets(R.string.BUS_TICKET_KEY);
-                }
-                break;
-            case 3:
-                if (tickets.get(R.string.BLACK_TICKET_KEY) > 0) {
-                    validTicket = true;
-                    player.decreaseNumberOfTickets(R.string.BLACK_TICKET_KEY);
-                }
-                break;
-            default:
-                validTicket = false;
-        }
-        return validTicket;
-    }
+
 
     private boolean moveWithRandomEvent(Player player, Point p, int playerIcon) {
         RandomEvent r = new RandomEvent();
@@ -358,7 +327,7 @@ public class GameMap extends AppCompatActivity
         Point newLocation = new Point(destination.getPosition().latitude, destination.getPosition().longitude);
         Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
         if ((Boolean) routeToTake[0]) {
-            boolean enoughTickets = checkForValidTicket(player, (int) routeToTake[2]);
+            boolean enoughTickets = manageGame.checkForValidTicket(player, (int) routeToTake[2]);
             if (!enoughTickets) {
                 //Toast to indicate that player has not enough tickets for reachable field
                 Toast.makeText(GameMap.this, "Nicht genügend Tickets", Snackbar.LENGTH_LONG).show();
