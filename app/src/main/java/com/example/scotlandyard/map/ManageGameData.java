@@ -6,6 +6,7 @@ import com.example.scotlandyard.lobby.Game;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
+import java.util.HashMap;
 import java.util.Random;
 
 public class ManageGameData {
@@ -98,6 +99,7 @@ public class ManageGameData {
         return point.getLatLng();
     }
 
+    //set and check tickets
     private void setTickets(Player player) {
         /*if (player.isMrX()){
              host.initializeNumberOfTickets(new Object[][]{
@@ -114,5 +116,39 @@ public class ManageGameData {
                 {R.string.BUS_TICKET_KEY, 2},
                 {R.string.BLACK_TICKET_KEY, 0},
         });
+    }
+
+    boolean checkForValidTicket(Player player, int vehicle) {
+        boolean validTicket = false;
+        HashMap<Integer, Integer> tickets = player.getTickets();
+        switch (vehicle) {
+            case 0:
+                if (tickets.get(R.string.PEDESTRIAN_TICKET_KEY) > 0) {
+                    validTicket = true;
+                    player.decreaseNumberOfTickets(R.string.PEDESTRIAN_TICKET_KEY);
+                }
+                break;
+            case 1:
+                if (tickets.get(R.string.BICYCLE_TICKET_KEY) > 0) {
+                    validTicket = true;
+                    player.decreaseNumberOfTickets(R.string.BICYCLE_TICKET_KEY);
+                }
+                break;
+            case 2:
+                if (tickets.get(R.string.BUS_TICKET_KEY) > 0) {
+                    validTicket = true;
+                    player.decreaseNumberOfTickets(R.string.BUS_TICKET_KEY);
+                }
+                break;
+            case 3:
+                if (tickets.get(R.string.BLACK_TICKET_KEY) > 0) {
+                    validTicket = true;
+                    player.decreaseNumberOfTickets(R.string.BLACK_TICKET_KEY);
+                }
+                break;
+            default:
+                validTicket = false;
+        }
+        return validTicket;
     }
 }

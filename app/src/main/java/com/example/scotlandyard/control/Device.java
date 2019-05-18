@@ -136,7 +136,7 @@ public class Device {
      * function for sending a message
      * @param message   message to send
      */
-    void send(Message message) {
+    public void send(Message message) {
         connectionService.send(message);
     }
 
