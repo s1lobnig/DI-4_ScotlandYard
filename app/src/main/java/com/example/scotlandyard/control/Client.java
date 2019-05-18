@@ -101,13 +101,9 @@ public class Client extends Device implements ClientInterface {
             }
         }
         if (object instanceof Move) {
-            if (game.doMove((Move)object)) {
-                Log.d(logTag, "move received");
-                if (gameObserver != null) {
-                    gameObserver.updateMove((Move)object);
-                }
-            } else {
-                Log.d(logTag, "not a valid move");
+            Log.d(logTag, "move received");
+            if (gameObserver != null) {
+                gameObserver.updateMove((Move)object);
             }
         }
         if (object instanceof Lobby) {
@@ -182,6 +178,14 @@ public class Client extends Device implements ClientInterface {
     public void startDiscovery() {
         Log.d(logTag, "starting discovery");
         ((ClientService)connectionService).startDiscovery();
+    }
+
+    /**
+     * function for starting discovery
+     */
+    public void stopDiscovery() {
+        Log.d(logTag, "stopping discovery");
+        ((ClientService)connectionService).stopDiscovery();
     }
 
     public ArrayList<Endpoint> getServerList() {
