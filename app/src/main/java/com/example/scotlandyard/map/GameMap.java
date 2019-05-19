@@ -56,6 +56,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -69,6 +70,11 @@ public class GameMap extends AppCompatActivity
     private static ServerService serverService;
     private static ClientService clientService;
     private static ManageGameData manageGame;
+
+    private TextView pedestrianTickets;
+    private TextView bicycleTickets;
+    private TextView busTickets;
+    private TextView blackTickets;
 
     private boolean isServer;
     private static String logTag;
