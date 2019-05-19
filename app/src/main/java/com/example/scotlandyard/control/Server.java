@@ -7,7 +7,6 @@ import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.connection.ServerInterface;
 import com.example.scotlandyard.connection.ServerService;
 import com.example.scotlandyard.map.ManageGameData;
-import com.example.scotlandyard.map.MapNotification;
 import com.example.scotlandyard.map.motions.Move;
 import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.messenger.Message;
@@ -134,14 +133,14 @@ public class Server extends Device implements ServerInterface {
     }
 
     private void manageMove(Move move) {
-        Player player = ManageGameData.findPlayer(move.getNickname());
+        Player player = ManageGameData.findPlayer(this.game, move.getNickname());
 
         if (player.isMoved()) {
             return;
         }
         send(move);
         player.setMoved(true);
-        switch (ManageGameData.tryNextRound()) {
+        switch (ManageGameData.tryNextRound(game)) {
             case 1:
                 send(new Message("NEXT_ROUND"));
                 //TODO: show next Round

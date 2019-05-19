@@ -62,7 +62,6 @@ import java.util.Random;
 public class GameMap extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, GameInterface {
 
-    private static ManageGameData manageGame;
     private static Device device;
 
     private static final String TAG = GameMap.class.getSimpleName();
@@ -83,7 +82,6 @@ public class GameMap extends AppCompatActivity
         if(device == null) {
             device = Device.getInstance();
             device.addGameObserver(this);
-            manageGame = new ManageGameData();
             device.setRoadMap(new RoadMap());
         }
 
@@ -232,7 +230,7 @@ public class GameMap extends AppCompatActivity
 
         //if gmae has not started
         if (Device.isServer() && myPlayer == null) {
-            manageGame.makeGame();
+            device.setGame(ManageGameData.makeGame(Device.getLobby()));
             device.sendGame();
         }
         setupGame();
@@ -240,7 +238,7 @@ public class GameMap extends AppCompatActivity
             @Override
             public boolean onMarkerClick(final Marker field) {
                 //TODO: check if game has end
-                if (!manageGame.isPlayer(field)) {
+                if (!ManageGameData.isPlayer(device.getGame(), field)) {
                     if (!myPlayer.isMoved()) {
                         boolean isValid = isValidMove(field, myPlayer);
                         if (isValid) {
@@ -311,7 +309,7 @@ public class GameMap extends AppCompatActivity
         Point newLocation = new Point(destination.getPosition().latitude, destination.getPosition().longitude);
         Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
         if ((Boolean) routeToTake[0]) {
-            boolean enoughTickets = manageGame.checkForValidTicket(player, (int) routeToTake[2]);
+            boolean enoughTickets = ManageGameData.checkForValidTicket(player, (int) routeToTake[2]);
             if (!enoughTickets) {
                 //Toast to indicate that player has not enough tickets for reachable field
                 Toast.makeText(GameMap.this, "Nicht genügend Tickets", Snackbar.LENGTH_LONG).show();
@@ -590,25 +588,27 @@ public class GameMap extends AppCompatActivity
     }
 
     private void setupGame() {
-        for (Player p : Device.getGame().getPlayers()) {
-            MarkerOptions markerOptions = new MarkerOptions()
-                    .position(p.getPosition().getLatLng())
-                    .icon(BitmapDescriptorFactory.fromResource(p.getIcon()));
-            p.setMarker(mMap.addMarker(markerOptions));
-            p.getMarker().setTitle(p.getNickname());
+        for (Player p : device.getGame().getPlayers()) {
+            if(p.isActive()) {
+                MarkerOptions markerOptions = new MarkerOptions()
+                        .position(p.getPosition().getLatLng())
+                        .icon(BitmapDescriptorFactory.fromResource(p.getIcon()));
+                p.setMarker(mMap.addMarker(markerOptions));
+                p.getMarker().setTitle(p.getNickname());
+            }
             if (p.getNickname().equals(device.getNickname())) {
                 myPlayer = p;
             }
         }
-        randomEventsEnabled = Device.getGame().isRandomEventsEnabled();
+        randomEventsEnabled = device.getGame().isRandomEventsEnabled();
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myPlayer.getPosition().getLatLng(), 16f), 3000, null);
     }
 
     private void tryNextRound(){
-        int result = manageGame.tryNextRound();
+        int result = ManageGameData.tryNextRound(device.getGame());
         if(result == 1){
             device.send(new MapNotification("NEXT_ROUND"));
-            Toast.makeText(GameMap.this, "Runde " + Device.getGame().getRound(), Snackbar.LENGTH_LONG).show();
+            Toast.makeText(GameMap.this, "Runde " + device.getGame().getRound(), Snackbar.LENGTH_LONG).show();
         }else if(result == 0){
             device.send(new MapNotification("END MisterX")); //MisterX hat gewonnen
             Toast.makeText(GameMap.this, "MisterX hat gewonnen", Snackbar.LENGTH_LONG).show();
@@ -617,7 +617,7 @@ public class GameMap extends AppCompatActivity
 
     @Override
     public void updateMove(Move move) {
-        Player player = manageGame.findPlayer(move.getNickname());
+        Player player = ManageGameData.findPlayer(device.getGame(), move.getNickname());
         int field = move.getField();
         Point point = Points.getPoints()[field];
 

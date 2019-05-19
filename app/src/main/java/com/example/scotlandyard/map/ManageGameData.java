@@ -26,8 +26,8 @@ public class ManageGameData {
             R.drawable.player11
     };
 
-    public static Player findPlayer(String nickname) {
-        for (Player p : Device.getGame().getPlayers()) {
+    public static Player findPlayer(Game game, String nickname) {
+        for (Player p : game.getPlayers()) {
             if (p.getNickname().equals(nickname)) {
                 return p;
             }
@@ -40,8 +40,8 @@ public class ManageGameData {
         player.setActive(false);
     }
 
-    private static boolean isRoundFinished() {
-        for (Player p : Device.getGame().getPlayers()) {
+    private static boolean isRoundFinished(Game game) {
+        for (Player p : game.getPlayers()) {
             if (p.isActive() && !p.isMoved()) {
                 return false;
             }
@@ -49,12 +49,12 @@ public class ManageGameData {
         return true;
     }
 
-    public static int tryNextRound() {
-        if (isRoundFinished()) {
-            if (Device.getGame().getRound() < 12) {
+    public static int tryNextRound(Game game) {
+        if (isRoundFinished(game)) {
+            if (game.getRound() < 12) {
                 //Round finished
-                Device.getGame().nextRound();
-                for (Player p : Device.getGame().getPlayers()) {
+                game.nextRound();
+                for (Player p : game.getPlayers()) {
                     p.setMoved(false);
                 }
                 return 1;
@@ -66,8 +66,8 @@ public class ManageGameData {
         return -1;
     }
 
-    boolean isPlayer(Marker field) {
-        for (Player player : Device.getGame().getPlayers()) {
+    static boolean isPlayer(Game game, Marker field) {
+        for (Player player : game.getPlayers()) {
             if (player.getMarker().equals(field)) {
                 return true;
             }
@@ -75,40 +75,40 @@ public class ManageGameData {
         return false;
     }
 
-    void givePlayerPositionAndIcon() {
+    private static void givePlayerPositionAndIcon(Game game) {
         Player player;
-        for (int i = 0; i < Device.getGame().getPlayers().size(); i++) {
-            player = Device.getGame().getPlayers().get(i);
+        for (int i = 0; i < game.getPlayers().size(); i++) {
+            player = game.getPlayers().get(i);
             player.setIcon(PLAYER_ICONS[i]);
-            LatLng position = getNewPlayerPosition();
+            LatLng position = getNewPlayerPosition(game);
             player.setPosition(new Point(position.latitude, position.longitude));
             player.setMoved(false);
             //setTickets for every player
-            setTickets(Device.getGame().getPlayers().get(i));
+            setTickets(game, game.getPlayers().get(i));
         }
     }
 
     //returns a free position
-    private LatLng getNewPlayerPosition() {
+    private static LatLng getNewPlayerPosition(Game game) {
         int position = (new Random()).nextInt(Points.getPoints().length);
         Point point = Points.POINTS[position];
-        for (Player p : Device.getGame().getPlayers()) {
+        for (Player p : game.getPlayers()) {
             if (p.getPosition() == point) {
-                return getNewPlayerPosition();
+                return getNewPlayerPosition(game);
             }
         }
         return point.getLatLng();
     }
 
     //set and check tickets
-    private void setTickets(Player player) {
+    private static void setTickets(Game game, Player player) {
         //set Ticket for Mr. X
         if (player.isMrX()) {
             player.initializeNumberOfTickets(new Object[][]{
                     {R.string.PEDESTRIAN_TICKET_KEY, 5},
                     {R.string.BICYCLE_TICKET_KEY, 4},
                     {R.string.BUS_TICKET_KEY, 2},
-                    {R.string.BLACK_TICKET_KEY, Device.getGame().getPlayers().size() - 1},
+                    {R.string.BLACK_TICKET_KEY, game.getPlayers().size() - 1},
             });
         } else {
             //set Tickets for all other players
@@ -122,7 +122,7 @@ public class ManageGameData {
 
     }
 
-    boolean checkForValidTicket(Player player, int vehicle) {
+    static boolean checkForValidTicket(Player player, int vehicle) {
         boolean validTicket = false;
         HashMap<Integer, Integer> tickets = player.getTickets();
         switch (vehicle) {
@@ -156,11 +156,10 @@ public class ManageGameData {
         return validTicket;
     }
 
-    public void makeGame() {
-        Lobby lobby = Device.getLobby();
+    public static Game makeGame(Lobby lobby) {
         Game game = new Game(lobby.getLobbyName(), lobby.getMaxPlayers(), lobby.getPlayerCount(), 1, lobby.isRandomEvents(), lobby.getPlayerList());
         game.chooseMrX(lobby.isRandomMrX());
-        Device.setGame(game);
-        givePlayerPositionAndIcon();
+        givePlayerPositionAndIcon(game);
+        return game;
     }
 }

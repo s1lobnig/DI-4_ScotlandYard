@@ -1,8 +1,6 @@
 package com.example.scotlandyard.control;
 
-import android.support.design.widget.Snackbar;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.connection.ClientInterface;
@@ -10,11 +8,8 @@ import com.example.scotlandyard.connection.ClientService;
 import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.lobby.Game;
 import com.example.scotlandyard.lobby.Lobby;
-import com.example.scotlandyard.map.GameMap;
 import com.example.scotlandyard.map.ManageGameData;
 import com.example.scotlandyard.map.MapNotification;
-import com.example.scotlandyard.map.Point;
-import com.example.scotlandyard.map.Points;
 import com.example.scotlandyard.map.motions.Move;
 import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.messenger.Message;
@@ -113,7 +108,7 @@ public class Client extends Device implements ClientInterface {
         if (object instanceof Move) {
             Move move = (Move) object;
             Log.d(logTag, "move received");
-            Player player = ManageGameData.findPlayer(move.getNickname());
+            Player player = ManageGameData.findPlayer(game, move.getNickname());
             player.setMoved(true);
 
             if (gameObserver != null) {
@@ -147,11 +142,11 @@ public class Client extends Device implements ClientInterface {
 
         if(txt[0].equals("NEXT_ROUND")){
            game.nextRound();
-            ManageGameData.findPlayer(nickname).setMoved(false);
+            ManageGameData.findPlayer(game, nickname).setMoved(false);
             //Toast.makeText(GameMap.this, "Runde " + game.getRound(), Snackbar.LENGTH_LONG).show();
         }
         if (txt.length == 3 && txt[0].equals("PLAYER") && txt[2].equals("QUITTED")){
-            Player player = ManageGameData.findPlayer(txt[1]);
+            Player player = ManageGameData.findPlayer(game, txt[1]);
             ManageGameData.deactivatePlayer(player);
         }
         if (txt.length == 2 && txt[0].equals("END")) {

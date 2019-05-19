@@ -2,7 +2,6 @@ package com.example.scotlandyard.control;
 
 import android.util.Log;
 
-import com.example.scotlandyard.Player;
 import com.example.scotlandyard.connection.ConnectionService;
 import com.example.scotlandyard.lobby.Game;
 import com.example.scotlandyard.lobby.Lobby;
@@ -29,7 +28,7 @@ public class Device {
     GameInterface gameObserver;
     ConnectionService connectionService;
     static Lobby lobby;
-    static Game game;
+    Game game;
     RoadMap roadMap;
     String nickname;
     ArrayList<Message> messageList;
@@ -190,12 +189,12 @@ public class Device {
         return lobby;
     }
 
-    public static Game getGame() {
-        return game;
+    public Game getGame() {
+        return this.game;
     }
 
-    public static void setGame(Game g) {
-        game = g;
+    public void setGame(Game game) {
+        this.game = game;
     }
 
     public RoadMap getRoadMap() {
