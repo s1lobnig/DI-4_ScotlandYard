@@ -59,7 +59,7 @@ public class UnitTestsTickets {
 
     //check detective tickets
     @Test
-    public void testDetectiveTickets(){
+    public void testDetectiveTickets() {
         testPlayer.setMrX(false);
         manageGameData.setTickets(testPlayer);
         Assert.assertEquals(5, tickets.get(R.string.PEDESTRIAN_TICKET_KEY).intValue());
@@ -72,16 +72,23 @@ public class UnitTestsTickets {
 
     //check mrX tickets
     @Test
-    public void testMrXTickets(){
+    public void testMrXTickets() {
         testPlayer.setMrX(true);
         manageGameData.setTickets(testPlayer);
-        Assert.assertEquals(5, tickets.get(R.string.PEDESTRIAN_TICKET_KEY).intValue());
-        Assert.assertEquals(4, tickets.get(R.string.BICYCLE_TICKET_KEY).intValue());
-        Assert.assertEquals(2, tickets.get(R.string.BUS_TICKET_KEY).intValue());
+        Assert.assertEquals(Integer.MAX_VALUE, tickets.get(R.string.PEDESTRIAN_TICKET_KEY).intValue());
+        Assert.assertEquals(Integer.MAX_VALUE, tickets.get(R.string.BICYCLE_TICKET_KEY).intValue());
+        Assert.assertEquals(Integer.MAX_VALUE, tickets.get(R.string.BUS_TICKET_KEY).intValue());
         Assert.assertEquals(2, tickets.get(R.string.TAXI_TICKET_KEY).intValue());
         Assert.assertEquals(1, tickets.get(R.string.DOUBLE_TICKET_KEY).intValue());
         Assert.assertEquals(5, tickets.get(R.string.BLACK_TICKET_KEY).intValue());
     }
 
+    //TODO: check for validTicket when there are not enough tickets
+
+
+
+
     //TODO: check if tickets get reduced after making a move
+
 }
+

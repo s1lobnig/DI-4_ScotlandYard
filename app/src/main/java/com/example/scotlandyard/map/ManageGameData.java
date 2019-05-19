@@ -103,9 +103,9 @@ public class ManageGameData {
         //set Ticket for Mr. X
         if (player.isMrX()) {
             player.initializeNumberOfTickets(new Object[][]{
-                    {R.string.PEDESTRIAN_TICKET_KEY, 5},
-                    {R.string.BICYCLE_TICKET_KEY, 4},
-                    {R.string.BUS_TICKET_KEY, 2},
+                    {R.string.PEDESTRIAN_TICKET_KEY, Integer.MAX_VALUE},
+                    {R.string.BICYCLE_TICKET_KEY, Integer.MAX_VALUE},
+                    {R.string.BUS_TICKET_KEY, Integer.MAX_VALUE},
                     {R.string.TAXI_TICKET_KEY, 2},
                     {R.string.DOUBLE_TICKET_KEY, 1},
                     {R.string.BLACK_TICKET_KEY, game.getPlayers().size() - 1},
@@ -124,7 +124,7 @@ public class ManageGameData {
 
     }
 
-    boolean checkForValidTicket(Player player, int vehicle) {
+   public boolean checkForValidTicket(Player player, int vehicle) {
         boolean validTicket = false;
         HashMap<Integer, Integer> tickets = player.getTickets();
         switch (vehicle) {
