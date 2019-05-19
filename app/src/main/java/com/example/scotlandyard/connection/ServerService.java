@@ -299,14 +299,20 @@ public class ServerService extends ConnectionService{
      * @param endpoint  endpoint to disconnect from
      */
     public void disconnect(@NonNull Endpoint endpoint) {
-        if (connectionState == ConnectionState.CONNECTED) {
+        if (connectionState == ConnectionState.CONNECTED || connectionState == ConnectionState.ADVERTISING_CONNECTED) {
             Endpoint endpoint2 = establishedConnections.get(endpoint.getId());
             if (endpoint2 != null) {
                 Log.d(logTag, "disconnecting from "+endpoint.getName());
                 connectionsClient.disconnectFromEndpoint(endpoint.getId());
                 establishedConnections.remove(endpoint.getId());
-                if (establishedConnections.isEmpty()) {
-                    connectionState = ConnectionState.DISCONNECTED;
+                if (connectionState == ConnectionState.ADVERTISING_CONNECTED) {
+                    if (establishedConnections.isEmpty()) {
+                        connectionState = ConnectionState.ADVERTISING;
+                    }
+                } else {
+                    if (establishedConnections.isEmpty()) {
+                        connectionState = ConnectionState.DISCONNECTED;
+                    }
                 }
                 server.onDisconnected(endpoint2);
             }
@@ -323,7 +329,14 @@ public class ServerService extends ConnectionService{
                 Endpoint endpoint = establishedConnections.get(k);
                 if (endpoint != null) {
                     disconnect(endpoint);
+                    server.onDisconnected(endpoint);
                 }
+            }
+            establishedConnections.clear();
+            if (connectionState == ConnectionState.ADVERTISING_CONNECTED) {
+                connectionState = ConnectionState.ADVERTISING;
+            } else {
+                connectionState = ConnectionState.DISCONNECTED;
             }
         }
     }
