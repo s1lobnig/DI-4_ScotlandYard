@@ -24,6 +24,15 @@ public class Game implements Serializable {
         this.currentMembers = 1;
     }
 
+    public Game(String gameName, int maxMembers, int currentMembers, int round, boolean randomEventsEnabled, ArrayList<Player> players) {
+        this.gameName = gameName;
+        this.maxMembers = maxMembers;
+        this.currentMembers = currentMembers;
+        this.round = round;
+        this.randomEventsEnabled = randomEventsEnabled;
+        this.players = players;
+    }
+
     public String getGameName() {
         return gameName;
     }
@@ -72,20 +81,11 @@ public class Game implements Serializable {
         return players;
     }
 
-    public boolean nickAlreadyUsed(String nick) {
-        for (Player p : players) {
-            if (nick.equals(p.getNickname())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public void setPlayers(ArrayList<Player> players) {
         this.players = players;
     }
 
-    /* not working
+    // not working
     public void chooseMrX(boolean chooseMrXRandomly) {
         if (chooseMrXRandomly) {
             players.get(random.nextInt(players.size())).setMrX(true);
@@ -100,5 +100,5 @@ public class Game implements Serializable {
             else
                 players.get(candidatesForMrX.get(random.nextInt(candidatesForMrX.size()))).setMrX(true);
         }
-    }*/
+    }
 }

@@ -11,6 +11,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
+import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.control.GameInterface;
 import com.example.scotlandyard.map.motions.LatLngInterpolator;
 import com.example.scotlandyard.map.motions.MarkerAnimation;
@@ -27,11 +28,7 @@ import com.example.scotlandyard.Player;
 import com.example.scotlandyard.PlayersOverview;
 import com.example.scotlandyard.R;
 import com.example.scotlandyard.Settings;
-import com.example.scotlandyard.connection.ClientInterface;
-import com.example.scotlandyard.connection.ClientService;
 import com.example.scotlandyard.connection.Endpoint;
-import com.example.scotlandyard.connection.ServerInterface;
-import com.example.scotlandyard.connection.ServerService;
 import com.example.scotlandyard.lobby.Game;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -60,26 +57,17 @@ import android.view.View;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 public class GameMap extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, GameInterface {
 
-    private static ServerService serverService;
-    private static ClientService clientService;
-    private static ManageGameData manageGame;
+    private static Device device;
 
-    private boolean isServer;
-    private static String logTag;
-    private static String nickname;
     private static final String TAG = GameMap.class.getSimpleName();
     private GoogleMap mMap;
     private static int playerPenaltay = 0;
-    private Player myPlayer;
-
-    private RoadMap roadMap;
+    private static Player myPlayer;
     private boolean randomEventsEnabled;
 
     /**
@@ -91,27 +79,14 @@ public class GameMap extends AppCompatActivity
         setContentView(R.layout.activity_game_navigation);
 
         //if game has not started yet
-        if(nickname == null) {
-            Intent intent = getIntent();
-            nickname = intent.getStringExtra("USERNAME");
-            isServer = intent.getBooleanExtra("IS_SERVER", true);
-            manageGame = new ManageGameData();
-            /*
-            if (isServer) {
-                manageGame.game = ((Game) intent.getSerializableExtra("GAME"));
-                serverService = ServerService.getInstance();
-                serverService.setServer(this);
-                logTag = "SERVER_SERVICE";
-            } else {
-                clientService = ClientService.getInstance();
-                clientService.setClient(this);
-                logTag = "CLIENT_SERVICE";
-            }*/
-            this.roadMap = new RoadMap();
+        if(device == null) {
+            device = Device.getInstance();
+            device.addGameObserver(this);
+            device.setRoadMap(new RoadMap());
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(nickname);
+        toolbar.setTitle(device.getNickname());
         setSupportActionBar(toolbar);
 
         //TODO: Set the fab to another color when message is received
@@ -120,7 +95,7 @@ public class GameMap extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 Intent mIntent = new Intent(GameMap.this, Messenger.class);
-                mIntent.putExtra("USERNAME", nickname);
+                mIntent.putExtra("USERNAME", device.getNickname());
                 startActivity(mIntent);
             }
         });
@@ -143,6 +118,13 @@ public class GameMap extends AppCompatActivity
         }
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.map, fragment).commit();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        device.removeGameObserver();
     }
 
     /**
@@ -199,7 +181,7 @@ public class GameMap extends AppCompatActivity
         } else if (id == R.id.nav_road_map) {
             DialogFragment roadMapDialog = new RoadMapDialog();
             Bundle args = new Bundle();
-            args.putSerializable("ROAD_MAP", roadMap);
+            args.putSerializable("ROAD_MAP", device.getRoadMap());
             roadMapDialog.setArguments(args);
             roadMapDialog.show(getSupportFragmentManager(), "RoadMapDisplay");
         }
@@ -247,29 +229,28 @@ public class GameMap extends AppCompatActivity
         setFields();
 
         //if gmae has not started
-        if (isServer && myPlayer == null) {
-            manageGame.givePlayerPositionAndIcon();
-            serverService.send(manageGame.game);
+        if (Device.isServer() && myPlayer == null) {
+            device.setGame(ManageGameData.makeGame(Device.getLobby()));
+            device.sendGame();
         }
-        if(manageGame.game != null) {
-            setupGame();
-        }
+        setupGame();
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker field) {
-                if (!manageGame.isPlayer(field)) {
+                //TODO: check if game has end
+                if (!ManageGameData.isPlayer(device.getGame(), field)) {
                     if (!myPlayer.isMoved()) {
                         boolean isValid = isValidMove(field, myPlayer);
                         if (isValid) {
                             Point newLocation = new Point(field.getPosition().latitude, field.getPosition().longitude);
-                            if (isServer) {
+                            if (Device.isServer()) {
                                 Point point = Points.getPoints()[Points.getIndex(newLocation)];
                                 moveMarker(point, myPlayer, myPlayer.getIcon());
-                                serverService.send(new Move(myPlayer.getNickname(), Points.getIndex(newLocation)));
+                                device.send(new Move(myPlayer.getNickname(), Points.getIndex(newLocation)));
                                 myPlayer.setMoved(true);
                                 tryNextRound();
                             } else {
-                                clientService.send(new Move(myPlayer.getNickname(), Points.getIndex(newLocation)));
+                                device.send(new Move(myPlayer.getNickname(), Points.getIndex(newLocation)));
                             }
                         }
                         return isValid;
@@ -328,7 +309,7 @@ public class GameMap extends AppCompatActivity
         Point newLocation = new Point(destination.getPosition().latitude, destination.getPosition().longitude);
         Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
         if ((Boolean) routeToTake[0]) {
-            boolean enoughTickets = manageGame.checkForValidTicket(player, (int) routeToTake[2]);
+            boolean enoughTickets = ManageGameData.checkForValidTicket(player, (int) routeToTake[2]);
             if (!enoughTickets) {
                 //Toast to indicate that player has not enough tickets for reachable field
                 Toast.makeText(GameMap.this, "Nicht genügend Tickets", Snackbar.LENGTH_LONG).show();
@@ -381,18 +362,16 @@ public class GameMap extends AppCompatActivity
             }
             if (myPlayer.isMrX()) {
                 Entry entry;
-                int lastTurn = roadMap.getNumberOfEntries();
+                int lastTurn = device.getRoadMap().getNumberOfEntries();
                 if (lastTurn == 2 || lastTurn == 6 || lastTurn == 11) {
                     entry = new PositionEntry(lastTurn + 1, Points.getIndex(newLocation) + 1);
                 } else {
                     entry = new TicketEntry(lastTurn + 1, ticket);
                 }
-                if (isServer) {
-                    roadMap.addEntry(entry);
-                    serverService.send(entry);
-                } else {
-                    clientService.send(entry);
+                if (Device.isServer()) {
+                    device.getRoadMap().addEntry(entry);
                 }
+                device.send(entry);
             }
             int animationDuration = 3000;
             if (!(playerPenaltay > 0 && icon == R.drawable.bicycle)) {
@@ -609,192 +588,66 @@ public class GameMap extends AppCompatActivity
     }
 
     private void setupGame() {
-        for (Player p : manageGame.game.getPlayers()) {
-            MarkerOptions markerOptions = new MarkerOptions()
-                    .position(p.getPosition().getLatLng())
-                    .icon(BitmapDescriptorFactory.fromResource(p.getIcon()));
-            p.setMarker(mMap.addMarker(markerOptions));
-            p.getMarker().setTitle(p.getNickname());
-            if (p.getNickname().equals(nickname)) {
+        for (Player p : device.getGame().getPlayers()) {
+            if(p.isActive()) {
+                MarkerOptions markerOptions = new MarkerOptions()
+                        .position(p.getPosition().getLatLng())
+                        .icon(BitmapDescriptorFactory.fromResource(p.getIcon()));
+                p.setMarker(mMap.addMarker(markerOptions));
+                p.getMarker().setTitle(p.getNickname());
+            }
+            if (p.getNickname().equals(device.getNickname())) {
                 myPlayer = p;
             }
         }
-        randomEventsEnabled = manageGame.game.isRandomEventsEnabled();
+        randomEventsEnabled = device.getGame().isRandomEventsEnabled();
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myPlayer.getPosition().getLatLng(), 16f), 3000, null);
     }
-    /*
-    @Override
-    public void onStartedDiscovery() {
-        Log.e(logTag, "Started discovery in GameMap.");
-    }
 
-    @Override
-    public void onFailedDiscovery() {
-        Log.d(logTag, "Failed discovery in GameMap.");
-    }
-
-    @Override
-    public void onEndpointFound(Map<String, Endpoint> discoveredEndpoints) {
-        Log.d(logTag, "Endpoint found in GameMap");
-    }
-
-    @Override
-    public void onEndpointLost(Map<String, Endpoint> discoveredEndpoints) {
-        Log.d(logTag, "Endpoint lost in GameMap");
-    }
-
-    @Override
-    public void onStoppedDiscovery() {
-        Log.d(logTag, "stopped discovery in GameMap");
-    }
-
-    @Override
-    public void onConnected(Endpoint endpoint) {
-        Log.d(logTag, "on connected to endpoint in GameMap");
-    }
-
-    @Override
-    public void onStartedAdvertising() {
-        Log.d(logTag, "Started advertising in GameMap");
-    }
-
-    @Override
-    public void onFailedAdvertising() {
-        Log.d(logTag, "Failed advertising in GameMap");
-    }
-
-    @Override
-    public void onStoppedAdvertising() {
-        Log.d(logTag, "Stopped advertising in GameMap");
-    }
-
-    @Override
-    public void onConnectionRequested(Endpoint endpoint) {
-        Log.d(logTag, "On connection request in GameMap");
-    }
-
-    //@Stefan: if activity not running just game must me saved
-    @Override
-    public void onGameData(Game game) {
-        Log.d(logTag, "Got game data");
-        if (!isServer) {
-            manageGame.game = game;
-            if(mMap != null) {
-                setupGame();
-            }
+    private void tryNextRound(){
+        int result = ManageGameData.tryNextRound(device.getGame());
+        if(result == 1){
+            device.send(new MapNotification("NEXT_ROUND"));
+            Toast.makeText(GameMap.this, "Runde " + device.getGame().getRound(), Snackbar.LENGTH_LONG).show();
+        }else if(result == 0){
+            device.send(new MapNotification("END MisterX")); //MisterX hat gewonnen
+            Toast.makeText(GameMap.this, "MisterX hat gewonnen", Snackbar.LENGTH_LONG).show();
         }
     }
 
-    //@Stefan: Code should be run even if activity is not running
     @Override
-    public void onMessage(Message message) {
-        if(!isServer){
-            String [] txt = message.getMessage().split(" ");
-
-            if(txt[0].equals("NEXT_ROUND")){
-                manageGame.game.nextRound();
-                myPlayer.setMoved(false);
-                Toast.makeText(GameMap.this, "Runde " + manageGame.game.getRound(), Snackbar.LENGTH_LONG).show();
-            }
-            if (txt.length == 3 && txt[0].equals("PLAYER") && txt[2].equals("QUITTED")){
-                Player player = manageGame.findPlayer(txt[1]);
-                deactivatePlayer(player);
-            }
-            if (txt.length == 2 && txt[0].equals("END")) {
-                Toast.makeText(GameMap.this, txt[1] + " hat gewonnen", Snackbar.LENGTH_LONG).show();
-            }
-        }
-    }*/
-
-    private void deactivatePlayer(Player player) {
-        manageGame.deactivatePlayer(player);
-        player.getMarker().remove();
-    }
-    /*
-    //@Stefan: Code should be run even if acitivity is not running (just without last line move Marker
-    @Override
-    public void onSendMove(Move move) {
-        Player player = manageGame.findPlayer(move.getNickname());
+    public void updateMove(Move move) {
+        Player player = ManageGameData.findPlayer(device.getGame(), move.getNickname());
         int field = move.getField();
         Point point = Points.getPoints()[field];
-        Log.d("SEND_MOVE", "receiving move from " + player.getNickname());
 
-        if (isServer) {
-            if (player.isMoved()) {
-                return;
-            }
-            serverService.send(move);
-            player.setMoved(true);
-            tryNextRound();
-        }else{
-            player.setMoved(true);
-        }
         moveMarker(point, player, player.getIcon());
     }
 
     @Override
-    public void onRoadMapEntry(Entry entry) {
-        if (isServer) {
-            if (!myPlayer.isMrX()) {
-                roadMap.addEntry(entry);
-                serverService.send(entry);
-            }
-        } else {
-            roadMap.addEntry(entry);
-        }
-    }*/
-
-    private void tryNextRound(){
-        if(manageGame.tryNextRound() == 1){
-            serverService.send(new Message("NEXT_ROUND"));
-            Toast.makeText(GameMap.this, "Runde " + manageGame.game.getRound(), Snackbar.LENGTH_LONG).show();
-        }else if(manageGame.tryNextRound() == 0){
-            serverService.send(new Message("END MisterX")); //MisterX hat gewonnen
-            Toast.makeText(GameMap.this, "MisterX hat gewonnen", Snackbar.LENGTH_LONG).show();
-        }
-    }
-    /*
-    @Override
-    public void onFailedConnecting(Endpoint endpoint) {
-        Log.d(logTag, "Connecting failed in GameMap");
+    public void removePlayer(Player player) {
+        player.getMarker().remove();
     }
 
-    //@Stefan: Code should be run even if activity is not running
     @Override
-    public void onDisconnected(Endpoint endpoint) {
-        Log.d(logTag, endpoint.getName() + " has disconnected");
-        if (isServer) {
-            Player lostPlayer = manageGame.findPlayer(endpoint.getName());
-            deactivatePlayer(lostPlayer);
-            serverService.send(new Message("PLAYER " + lostPlayer.getNickname() + " QUITTED"));
+    public void showDisconnected(Endpoint endpoint) {
+        if (Device.isServer()) {
+            Toast.makeText(GameMap.this, "Verbindung zu Server verlohren!", Toast.LENGTH_LONG).show();
         } else {
+            Toast.makeText(GameMap.this, "Verbindung zu Player " + endpoint.getName() + " verlohren!", Toast.LENGTH_LONG).show();
             //TODO: Server lost!
         }
     }
 
     @Override
-    public void onFailedAcceptConnection(Endpoint endpoint) {
-        Log.d(logTag, "Failed accepting connection in GameMap");
-    }
-
-    @Override
-    public void onSendingFailed(Object object) {
-        Log.e(logTag, "Sending failed");
-        //TODO
-    }*/
-
-    @Override
-    public void updateMove(Move move) {
-        //TODO
-    }
-
-    @Override
-    public void showDisconnected(Endpoint endpoint) {
-        //TODO
-    }
-
-    @Override
     public void showSendingFailed(Object object) {
-        //TODO
+        String notification = "Objekt";
+        if(object instanceof Game){
+            notification = "Gamedaten";
+        }else if (object instanceof Move){
+            notification = "Zug";
+        }
+        Toast.makeText(GameMap.this, notification + "konnte nicht gesendet werden!", Toast.LENGTH_LONG).show();
+        //TODO give possibility to sync the game again
     }
 }

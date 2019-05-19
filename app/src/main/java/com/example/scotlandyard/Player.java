@@ -21,6 +21,7 @@ public class Player implements Serializable {
     public Player(String nickname) {
         this.nickname = nickname;
         isActive = true;
+        moved = false;
         this.nickname = nickname;
         this.isHost = false;
         this.isMrX = false;

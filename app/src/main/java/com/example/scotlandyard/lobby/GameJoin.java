@@ -23,23 +23,6 @@ public class GameJoin extends AppCompatActivity {
         startGame = (Button) findViewById(R.id.btnStartGame);
         inputField = (EditText) findViewById(R.id.editTextInputField);
 
-        inputField.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
         startGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

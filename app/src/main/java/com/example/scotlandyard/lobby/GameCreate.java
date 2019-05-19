@@ -11,6 +11,8 @@ import com.example.scotlandyard.Player;
 
 import com.example.scotlandyard.R;
 
+import java.util.ArrayList;
+
 public class GameCreate extends AppCompatActivity {
 
     private String logTag = "GameCreate";
@@ -27,6 +29,8 @@ public class GameCreate extends AppCompatActivity {
 
         userName = findViewById(R.id.userName);
         maxPlayers = findViewById(R.id.maxPlayers);
+        randomEvents = findViewById(R.id.randomEvents);
+        chooseMrXRandomly = findViewById(R.id.randomMrX);
         lobbyName = findViewById(R.id.lobbyName);
 
         findViewById(R.id.createServerBtn).setOnClickListener(new View.OnClickListener() {
@@ -47,7 +51,7 @@ public class GameCreate extends AppCompatActivity {
                     userName.setError("Spielername darf nicht leer sein!");
                     enable = false;
                 }
-                if (nickname.isEmpty() || splittedN.length != 1) {
+                if (splittedN.length != 1) {
                     userName.setError("Spielername darf keine Leerzeichen enthalten!");
                     enable = false;
                 }
@@ -64,9 +68,10 @@ public class GameCreate extends AppCompatActivity {
                     Intent gameStartIntent = new Intent(GameCreate.this, ServerLobby.class);
                     Player player = new Player(nickname);
                     player.setHost(true);
-                    Lobby lobby = new Lobby(lobbyname, player, randomEvents.isChecked(), chooseMrXRandomly.isChecked(), Integer.parseInt(numPlayer));
+                    ArrayList<Player> playerlist = new ArrayList<>();
+                    playerlist.add(player);
+                    Lobby lobby = new Lobby(lobbyname, playerlist, randomEvents.isChecked(), chooseMrXRandomly.isChecked(), Integer.parseInt(numPlayer));
                     gameStartIntent.putExtra("LOBBY", lobby);
-                    gameStartIntent.putExtra("PLAYER", player);
                     Log.d(logTag, "starting ServerLobby");
                     startActivity(gameStartIntent);
                 }

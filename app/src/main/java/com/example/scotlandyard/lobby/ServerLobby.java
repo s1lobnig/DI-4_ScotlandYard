@@ -23,7 +23,6 @@ import com.google.android.gms.nearby.Nearby;
 public class ServerLobby extends AppCompatActivity implements ServerLobbyInterface {
     private String logTag = "ServerLobby";
     private ListAdapter connectedPlayersListAdapter;
-    private Player player;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +35,6 @@ public class ServerLobby extends AppCompatActivity implements ServerLobbyInterfa
         /* Get intent data. */
         Intent intent = getIntent();
         Lobby lobby = (Lobby)intent.getSerializableExtra("LOBBY");
-        player = (Player)intent.getSerializableExtra("PLAYER");
 
         //TODO show lobby information in this activity (maxPlayers, randomMr.X, randomEvents)
 
@@ -47,6 +45,7 @@ public class ServerLobby extends AppCompatActivity implements ServerLobbyInterfa
             Server server = (Server)Device.setServer(lobby.getLobbyName(), Nearby.getConnectionsClient(this));
             server.setLobby(lobby);
             server.addLobbyObserver(this);
+            server.setNickname(lobby.getPlayerList().get(0).getNickname());
             server.startAdvertising();
         } catch (IllegalStateException ex) {
             Log.d(logTag, "failed setting instance", ex);

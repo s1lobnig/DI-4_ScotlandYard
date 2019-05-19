@@ -70,6 +70,10 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        /* Get intent data. */
+        Intent intent = getIntent();
+        player = (Player)intent.getSerializableExtra("PLAYER");
+
         if (Device.isSingletonSet()) {
             Device.resetInstance();
         }
@@ -86,10 +90,6 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
         //setAdapter to listView to show all existing games
         listAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, ((Client) Device.getInstance()).getServerList());
         gameListView.setAdapter(listAdapter);
-
-        /* Get intent data. */
-        Intent intent = getIntent();
-        player = (Player)intent.getSerializableExtra("PLAYER");
 
         /* Called when clicked on an item from the list of available servers. */
         gameListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -180,6 +180,8 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
 
     @Override
     public void updateLobby(Lobby lobby) {
+        ((Client) Device.getInstance()).removeLobbyObserver();
+
         /* Start Client Lobby activity. */
         Log.d(logTag, "Loading client lobby.");
         Intent intent = new Intent(GameList.this, ClientLobby.class);

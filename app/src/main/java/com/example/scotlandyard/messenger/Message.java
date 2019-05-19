@@ -10,9 +10,6 @@ public class Message implements Serializable {
     private String nicknameSender;
     private boolean belongsToCurrentUser; // is this message sent by us?
 
-    private Message() {
-    }
-
     /**
      * Constructor for creating messages send in messenger
      * @param message
