@@ -2,6 +2,7 @@ package com.example.scotlandyard.map;
 
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
+import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.lobby.Game;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -10,7 +11,6 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class ManageGameData {
-    static Game game;
     private static final int[] PLAYER_ICONS = {
             R.drawable.player1,
             R.drawable.player2,
@@ -25,8 +25,8 @@ public class ManageGameData {
             R.drawable.player11
     };
 
-    Player findPlayer(String nickname) {
-        for (Player p : game.getPlayers()) {
+    public static Player findPlayer(String nickname) {
+        for (Player p : Device.getGame().getPlayers()) {
             if (p.getNickname().equals(nickname)) {
                 return p;
             }
@@ -34,13 +34,13 @@ public class ManageGameData {
         return null;
     }
 
-    void deactivatePlayer(Player player) {
+    public static void deactivatePlayer(Player player) {
         player.setMoved(true); //so he does not have to move in this round
         player.setActive(false);
     }
 
-    private boolean isRoundFinished() {
-        for (Player p : game.getPlayers()) {
+    private static boolean isRoundFinished() {
+        for (Player p : Device.getGame().getPlayers()) {
             if (p.isActive() && !p.isMoved()) {
                 return false;
             }
@@ -48,12 +48,12 @@ public class ManageGameData {
         return true;
     }
 
-    int tryNextRound() {
+    public static int tryNextRound() {
         if (isRoundFinished()) {
-            if (game.getRound() < 12) {
+            if (Device.getGame().getRound() < 12) {
                 //Round finished
-                game.nextRound();
-                for (Player p : game.getPlayers()) {
+                Device.getGame().nextRound();
+                for (Player p : Device.getGame().getPlayers()) {
                     p.setMoved(false);
                 }
                 return 1;
@@ -66,7 +66,7 @@ public class ManageGameData {
     }
 
     boolean isPlayer(Marker field) {
-        for (Player player : game.getPlayers()) {
+        for (Player player : Device.getGame().getPlayers()) {
             if (player.getMarker().equals(field)) {
                 return true;
             }
@@ -76,14 +76,14 @@ public class ManageGameData {
 
     void givePlayerPositionAndIcon() {
         Player player;
-        for (int i = 0; i < game.getPlayers().size(); i++) {
-            player = game.getPlayers().get(i);
+        for (int i = 0; i < Device.getGame().getPlayers().size(); i++) {
+            player = Device.getGame().getPlayers().get(i);
             player.setIcon(PLAYER_ICONS[i]);
             LatLng position = getNewPlayerPosition();
             player.setPosition(new Point(position.latitude, position.longitude));
             player.setMoved(false);
             //setTickets for every player
-            setTickets(game.getPlayers().get(i));
+            setTickets(Device.getGame().getPlayers().get(i));
         }
     }
 
@@ -91,7 +91,7 @@ public class ManageGameData {
     private LatLng getNewPlayerPosition() {
         int position = (new Random()).nextInt(Points.getPoints().length);
         Point point = Points.POINTS[position];
-        for (Player p : game.getPlayers()) {
+        for (Player p : Device.getGame().getPlayers()) {
             if (p.getPosition() == point) {
                 return getNewPlayerPosition();
             }
@@ -107,7 +107,7 @@ public class ManageGameData {
                     {R.string.PEDESTRIAN_TICKET_KEY, 5},
                     {R.string.BICYCLE_TICKET_KEY, 4},
                     {R.string.BUS_TICKET_KEY, 2},
-                    {R.string.BLACK_TICKET_KEY, game.getPlayers().size() - 1},
+                    {R.string.BLACK_TICKET_KEY, Device.getGame().getPlayers().size() - 1},
             });
         } else {
             //set Tickets for all other players

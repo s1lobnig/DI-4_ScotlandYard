@@ -2,10 +2,13 @@ package com.example.scotlandyard.control;
 
 import android.util.Log;
 
+import com.example.scotlandyard.Player;
 import com.example.scotlandyard.connection.ConnectionService;
 import com.example.scotlandyard.lobby.Game;
 import com.example.scotlandyard.lobby.Lobby;
 import com.example.scotlandyard.map.motions.Move;
+import com.example.scotlandyard.map.roadmap.Entry;
+import com.example.scotlandyard.map.roadmap.RoadMap;
 import com.example.scotlandyard.messenger.Message;
 import com.google.android.gms.nearby.connection.ConnectionsClient;
 
@@ -25,7 +28,10 @@ public class Device {
     GameInterface gameObserver;
     ConnectionService connectionService;
     Lobby lobby;
-    Game game;
+    static Game game;
+    Player myPlayer;
+    RoadMap roadMap;
+    String nickname;
     ArrayList<Message> messageList;
 
     Device() {
@@ -90,6 +96,10 @@ public class Device {
         return (singleton != null);
     }
 
+    public static boolean isServer(){
+        return (singleton instanceof Server);
+    }
+
     /**
      * function for adding a message observer
      * @param messengerInterface        message observer
@@ -145,8 +155,23 @@ public class Device {
      * function for sending a move
      * @param move      move to send
      */
-    void send(Move move) {
+    public void send(Move move) {
         connectionService.send(move);
+    }
+
+    /**
+     * function for sending a move
+     * @param entry      move to send
+     */
+    public void send(Entry entry) {
+        connectionService.send(entry);
+    }
+
+    /**
+     * function for sending a move
+     */
+    public void sendGame() {
+        connectionService.send(game);
     }
 
     public void setLobby(Lobby lobby) {
@@ -157,12 +182,28 @@ public class Device {
         return lobby;
     }
 
-    public Game getGame() {
+    public static Game getGame() {
         return game;
     }
 
     public void setGame(Game game) {
         this.game = game;
+    }
+
+    public RoadMap getRoadMap() {
+        return roadMap;
+    }
+
+    public void setRoadMap(RoadMap roadMap) {
+        this.roadMap = roadMap;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     public ArrayList<Message> getMessageList() {

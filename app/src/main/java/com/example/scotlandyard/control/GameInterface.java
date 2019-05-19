@@ -1,5 +1,6 @@
 package com.example.scotlandyard.control;
 
+import com.example.scotlandyard.Player;
 import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.map.motions.Move;
 
@@ -12,6 +13,11 @@ public interface GameInterface {
      * @param move      Move which is received
      */
     void updateMove(Move move);
+
+    /**
+     * @param player    Player who has quitted and must be removed
+     */
+    void removePlayer(Player player);
 
     /**
      * function is called, when an endpoint has disconnectd
