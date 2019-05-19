@@ -4,6 +4,7 @@ Repository für das SE2 Projekt der Gruppe DI-4. Mit Hilfe von SCRUM wird versuc
 
 ## Spielbeschreibung
 In diesem Spieleklassiker übernimmt ein Spieler die Rolle des geheimnisvollen Schurken Mister X, während die anderen Spieler die Rolle von Detektiven übernehmen, die dann Mister X fangen müssen. Im Gegensatz zum Original, mit der Londonkarte als Spielbrett, gestalten wir die Alpen-Adria Universität Klagenfurt mittels Google Maps und selbst arrangierten Routen als Spielumgebung. 
+![Screenshot der Map](https://raw.githubusercontent.com/s1lobnig/DI-4_ScotlandYard/master/Screenshot_20190518-144325.jpg)
 
 Beim Erstellen der Spiels kann eine zufällige Vergabe von Mister X gewählt werden, andernfalls einigen sich die Spieler auf eine Person.
 
