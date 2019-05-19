@@ -69,8 +69,6 @@ public class GameMap extends AppCompatActivity
     private GoogleMap mMap;
     private static int playerPenaltay = 0;
     private static Player myPlayer;
-
-    //private RoadMap roadMap;
     private boolean randomEventsEnabled;
 
     /**
@@ -127,7 +125,7 @@ public class GameMap extends AppCompatActivity
     @Override
     protected void onStop() {
         super.onStop();
-        
+
         device.removeGameObserver();
     }
 
@@ -606,10 +604,6 @@ public class GameMap extends AppCompatActivity
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myPlayer.getPosition().getLatLng(), 16f), 3000, null);
     }
 
-    private void removeMarker(Player player) {
-        player.getMarker().remove();
-    }
-
     private void tryNextRound(){
         if(manageGame.tryNextRound() == 1){
             device.send(new Message("NEXT_ROUND"));
@@ -631,7 +625,7 @@ public class GameMap extends AppCompatActivity
 
     @Override
     public void removePlayer(Player player) {
-        removeMarker(player);
+        player.getMarker().remove();
     }
 
     @Override

@@ -29,7 +29,6 @@ public class Device {
     ConnectionService connectionService;
     Lobby lobby;
     static Game game;
-    Player myPlayer;
     RoadMap roadMap;
     String nickname;
     ArrayList<Message> messageList;
@@ -205,6 +204,8 @@ public class Device {
     public void setNickname(String nickname) {
         this.nickname = nickname;
     }
+
+
 
     public ArrayList<Message> getMessageList() {
         return messageList;

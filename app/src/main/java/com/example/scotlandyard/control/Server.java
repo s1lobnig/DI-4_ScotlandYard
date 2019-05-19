@@ -119,42 +119,40 @@ public class Server extends Device implements ServerInterface {
         }
         if (object instanceof Move) {
             Log.d(logTag, "move received");
-
-            Move move = (Move) object;
-            Log.d(logTag, "move received");
-            Player player = ManageGameData.findPlayer(move.getNickname());
-
-            if (player.isMoved()) {
-                return;
-            }
-            send(move);
-            player.setMoved(true);
-            switch (ManageGameData.tryNextRound()) {
-                case 1:
-                    send(new Message("NEXT_ROUND"));
-                    //TODO: show next Round
-                    break;
-                case 0:
-                    send(new Message("END MisterX")); //MisterX hat gewonnen
-                    //TODO: show next Round
-                    break;
-            }
-            if(object instanceof Entry){
-                Entry entry = (Entry) object;
+            manageMove((Move) object);
+        }
+        if (object instanceof Entry) {
+            Entry entry = (Entry) object;
+            roadMap.addEntry(entry);
+            if (!game.getPlayers().get(0).isMrX()) {
                 roadMap.addEntry(entry);
-                if (!game.getPlayers().get(0).isMrX()) {
-                    roadMap.addEntry(entry);
-                    send(entry);
-                }
-            }
-            if (gameObserver != null) {
-                gameObserver.updateMove(move);
-            }
-            if (gameObserver != null) {
-                gameObserver.updateMove((Move) object);
+                send(entry);
             }
         }
 
+    }
+
+    private void manageMove(Move move) {
+        Player player = ManageGameData.findPlayer(move.getNickname());
+
+        if (player.isMoved()) {
+            return;
+        }
+        send(move);
+        player.setMoved(true);
+        switch (ManageGameData.tryNextRound()) {
+            case 1:
+                send(new Message("NEXT_ROUND"));
+                //TODO: show next Round
+                break;
+            case 0:
+                send(new Message("END MisterX")); //MisterX hat gewonnen
+                //TODO: show next Round
+                break;
+        }
+        if (gameObserver != null) {
+            gameObserver.updateMove(move);
+        }
     }
 
     @Override
