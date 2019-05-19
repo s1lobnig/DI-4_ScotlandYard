@@ -39,6 +39,8 @@
     <string name="BICYCLE_TICKET_KEY">bicycle_tickets</string>
     <string name="BUS_TICKET_KEY">bus_tickets</string>
     <string name="BLACK_TICKET_KEY">black_tickets</string>
+    <string name="TAXI_TICKET_KEY">taxi_tickets</string>
+    <string name="DOUBLE_TICKET_KEY">double_tickets</string>
 
     <string name="RODA_MAP_DIALOG_TITLE">MR.X\S MOMENTANER FAHRPLAN</string>
     <string name="SearchServer">Searching for servers...</string>

@@ -30,6 +30,8 @@ public class Player implements Serializable {
         this.tickets.put(R.string.PEDESTRIAN_TICKET_KEY, 0);
         this.tickets.put(R.string.BICYCLE_TICKET_KEY, 0);
         this.tickets.put(R.string.BUS_TICKET_KEY, 0);
+        this.tickets.put(R.string.TAXI_TICKET_KEY, 0);
+        this.tickets.put(R.string.DOUBLE_TICKET_KEY, 0);
         this.tickets.put(R.string.BLACK_TICKET_KEY, 0);
     }
 
@@ -88,6 +90,7 @@ public class Player implements Serializable {
     public void setMarker(Marker marker) {
         this.marker = marker;
     }
+
 
     public void decreaseNumberOfTickets(Integer key){
         tickets.put(key, tickets.get(key)-1);
