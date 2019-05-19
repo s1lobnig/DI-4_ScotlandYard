@@ -1,6 +1,8 @@
 package com.example.scotlandyard.map;
 
-public class MapNotification {
+import java.io.Serializable;
+
+public class MapNotification implements Serializable {
     private String notification;
 
     public MapNotification(String notification){

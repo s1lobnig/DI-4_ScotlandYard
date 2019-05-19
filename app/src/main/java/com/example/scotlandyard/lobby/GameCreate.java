@@ -11,6 +11,8 @@ import com.example.scotlandyard.Player;
 
 import com.example.scotlandyard.R;
 
+import java.util.ArrayList;
+
 public class GameCreate extends AppCompatActivity {
 
     private String logTag = "GameCreate";
@@ -66,7 +68,9 @@ public class GameCreate extends AppCompatActivity {
                     Intent gameStartIntent = new Intent(GameCreate.this, ServerLobby.class);
                     Player player = new Player(nickname);
                     player.setHost(true);
-                    Lobby lobby = new Lobby(lobbyname, player, randomEvents.isChecked(), chooseMrXRandomly.isChecked(), Integer.parseInt(numPlayer));
+                    ArrayList<Player> playerlist = new ArrayList<>();
+                    playerlist.add(player);
+                    Lobby lobby = new Lobby(lobbyname, playerlist, randomEvents.isChecked(), chooseMrXRandomly.isChecked(), Integer.parseInt(numPlayer));
                     gameStartIntent.putExtra("LOBBY", lobby);
                     Log.d(logTag, "starting ServerLobby");
                     startActivity(gameStartIntent);

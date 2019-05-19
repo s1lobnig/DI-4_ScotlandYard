@@ -232,7 +232,7 @@ public class GameMap extends AppCompatActivity
 
         //if gmae has not started
         if (Device.isServer() && myPlayer == null) {
-            manageGame.givePlayerPositionAndIcon();
+            manageGame.makeGame();
             device.sendGame();
         }
         setupGame();
@@ -605,11 +605,12 @@ public class GameMap extends AppCompatActivity
     }
 
     private void tryNextRound(){
-        if(manageGame.tryNextRound() == 1){
-            device.send(new Message("NEXT_ROUND"));
+        int result = manageGame.tryNextRound();
+        if(result == 1){
+            device.send(new MapNotification("NEXT_ROUND"));
             Toast.makeText(GameMap.this, "Runde " + Device.getGame().getRound(), Snackbar.LENGTH_LONG).show();
-        }else if(manageGame.tryNextRound() == 0){
-            device.send(new Message("END MisterX")); //MisterX hat gewonnen
+        }else if(result == 0){
+            device.send(new MapNotification("END MisterX")); //MisterX hat gewonnen
             Toast.makeText(GameMap.this, "MisterX hat gewonnen", Snackbar.LENGTH_LONG).show();
         }
     }

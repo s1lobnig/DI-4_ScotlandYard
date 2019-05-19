@@ -6,6 +6,7 @@ import com.example.scotlandyard.Player;
 import com.example.scotlandyard.connection.ConnectionService;
 import com.example.scotlandyard.lobby.Game;
 import com.example.scotlandyard.lobby.Lobby;
+import com.example.scotlandyard.map.MapNotification;
 import com.example.scotlandyard.map.motions.Move;
 import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.map.roadmap.RoadMap;
@@ -27,7 +28,7 @@ public class Device {
     MessengerInterface messengerObserver;
     GameInterface gameObserver;
     ConnectionService connectionService;
-    Lobby lobby;
+    static Lobby lobby;
     static Game game;
     RoadMap roadMap;
     String nickname;
@@ -43,7 +44,7 @@ public class Device {
      * @throws IllegalStateException    if singleton is not set
      */
     public static Device getInstance() throws IllegalStateException {
-        if (isSingletonSet()) {
+        if (!isSingletonSet()) {
             throw new IllegalStateException("singleton not set");
         }
         return singleton;
@@ -151,6 +152,14 @@ public class Device {
     }
 
     /**
+     * function for sending a message
+     * @param notification   map notification to send
+     */
+    public void send(MapNotification notification) {
+        connectionService.send(notification);
+    }
+
+    /**
      * function for sending a move
      * @param move      move to send
      */
@@ -177,7 +186,7 @@ public class Device {
         this.lobby = lobby;
     }
 
-    public Lobby getLobby() {
+    public static Lobby getLobby() {
         return lobby;
     }
 
@@ -185,8 +194,8 @@ public class Device {
         return game;
     }
 
-    public void setGame(Game game) {
-        this.game = game;
+    public static void setGame(Game g) {
+        game = g;
     }
 
     public RoadMap getRoadMap() {

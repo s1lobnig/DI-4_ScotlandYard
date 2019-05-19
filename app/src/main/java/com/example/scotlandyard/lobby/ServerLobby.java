@@ -45,6 +45,7 @@ public class ServerLobby extends AppCompatActivity implements ServerLobbyInterfa
             Server server = (Server)Device.setServer(lobby.getLobbyName(), Nearby.getConnectionsClient(this));
             server.setLobby(lobby);
             server.addLobbyObserver(this);
+            server.setNickname(lobby.getPlayerList().get(0).getNickname());
             server.startAdvertising();
         } catch (IllegalStateException ex) {
             Log.d(logTag, "failed setting instance", ex);

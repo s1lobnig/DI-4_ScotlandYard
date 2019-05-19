@@ -4,6 +4,7 @@ import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
 import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.lobby.Game;
+import com.example.scotlandyard.lobby.Lobby;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
@@ -153,5 +154,13 @@ public class ManageGameData {
                 validTicket = false;
         }
         return validTicket;
+    }
+
+    public void makeGame() {
+        Lobby lobby = Device.getLobby();
+        Game game = new Game(lobby.getLobbyName(), lobby.getMaxPlayers(), lobby.getPlayerCount(), 1, lobby.isRandomEvents(), lobby.getPlayerList());
+        game.chooseMrX(lobby.isRandomMrX());
+        Device.setGame(game);
+        givePlayerPositionAndIcon();
     }
 }
