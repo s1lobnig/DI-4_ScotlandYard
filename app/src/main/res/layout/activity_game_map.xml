@@ -21,8 +21,8 @@
 
         <TextView
             android:id="@+id/pedestrianTicket"
-            android:layout_width="60dp"
-            android:layout_height="50dp"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
             android:layout_marginTop="50dp"
             android:background="@drawable/ticket_yellow"
             android:gravity="center"
@@ -33,8 +33,8 @@
 
         <TextView
             android:id="@+id/bicycleTicket"
-            android:layout_width="60dp"
-            android:layout_height="50dp"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
             android:layout_marginTop="50dp"
             android:background="@drawable/ticket_orange"
             android:gravity="center"
@@ -45,8 +45,8 @@
 
         <TextView
             android:id="@+id/busTicket"
-            android:layout_width="60dp"
-            android:layout_height="50dp"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
             android:layout_marginTop="50dp"
             android:background="@drawable/ticket_red"
             android:gravity="center"
@@ -56,21 +56,9 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/taxiTicket"
-            android:layout_width="60dp"
-            android:layout_height="50dp"
-            android:layout_marginTop="50dp"
-            android:background="@drawable/ticket_blue"
-            android:gravity="center"
-            android:text="0"
-            android:textColor="@color/colorText"
-            android:textSize="30sp"
-            android:textStyle="bold" />
-
-        <TextView
             android:id="@+id/blackTicket"
-            android:layout_width="60dp"
-            android:layout_height="50dp"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
             android:layout_marginTop="50dp"
             android:background="@drawable/ticket_black"
             android:gravity="center"
@@ -80,9 +68,21 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/taxiTicket"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="50dp"
+            android:background="@drawable/ticket_blue"
+            android:gravity="center"
+            android:text="0"
+            android:textColor="@color/colorText"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <TextView
             android:id="@+id/doubleTicket"
-            android:layout_width="60dp"
-            android:layout_height="50dp"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
             android:layout_marginTop="50dp"
             android:background="@drawable/ticket_green"
             android:gravity="center"
