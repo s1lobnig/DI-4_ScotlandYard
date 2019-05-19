@@ -56,4 +56,13 @@ public class Lobby implements Serializable {
             }
         }
     }
+
+    public boolean nickAlreadyUsed(String nick) {
+        for (Player p : playerList) {
+            if (nick.equals(p.getNickname())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

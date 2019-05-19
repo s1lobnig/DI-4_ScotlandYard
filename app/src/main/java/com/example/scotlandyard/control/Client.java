@@ -35,6 +35,7 @@ public class Client extends Device implements ClientInterface {
 
     Client(String endpointName, ConnectionsClient connectionsClient) {
         connectionService = new ClientService(this, endpointName, connectionsClient);
+        serverList = new ArrayList<>();
     }
 
     /**

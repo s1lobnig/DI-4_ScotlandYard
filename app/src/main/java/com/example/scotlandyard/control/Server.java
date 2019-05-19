@@ -7,6 +7,7 @@ import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.connection.ServerInterface;
 import com.example.scotlandyard.connection.ServerService;
 import com.example.scotlandyard.map.ManageGameData;
+import com.example.scotlandyard.map.MapNotification;
 import com.example.scotlandyard.map.motions.Move;
 import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.messenger.Message;
@@ -74,7 +75,7 @@ public class Server extends Device implements ServerInterface {
         Log.d(logTag, endpoint.toString() + " has requested connection.");
         if (lobbyObserver != null) {
             if (lobby.getPlayerCount() < lobby.getMaxPlayers()) {
-                if (!this.game.nickAlreadyUsed(endpoint.getName())) {
+                if (!lobby.nickAlreadyUsed(endpoint.getName())) {
                     lobbyObserver.showConnectionRequest(endpoint);
                 } else {
                     Log.d(logTag, "nick already in use");
@@ -166,9 +167,9 @@ public class Server extends Device implements ServerInterface {
     @Override
     public void onDisconnected(Endpoint endpoint) {
         Log.d(logTag, "endpoint disconnected");
-        Player lostPlayer = ManageGameData.findPlayer(endpoint.getName());
-        ManageGameData.deactivatePlayer(lostPlayer);
-        send(new Message("PLAYER " + lostPlayer.getNickname() + " QUITTED"));
+        //Player lostPlayer = ManageGameData.findPlayer(endpoint.getName());
+        //ManageGameData.deactivatePlayer(lostPlayer);
+        //send(new MapNotification("PLAYER " + lostPlayer.getNickname() + " QUITTED"));
 
         if (gameObserver != null) {
             gameObserver.showDisconnected(endpoint);
