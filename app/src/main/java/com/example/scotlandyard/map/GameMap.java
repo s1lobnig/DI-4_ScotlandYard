@@ -74,7 +74,9 @@ public class GameMap extends AppCompatActivity
     private TextView pedestrianTickets;
     private TextView bicycleTickets;
     private TextView busTickets;
+    private TextView taxiTickets;
     private TextView blackTickets;
+    private TextView doubleTickets;
 
     private boolean isServer;
     private static String logTag;
@@ -118,6 +120,13 @@ public class GameMap extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(nickname);
         setSupportActionBar(toolbar);
+
+        pedestrianTickets = findViewById(R.id.pedestrianTicket);
+        bicycleTickets = findViewById(R.id.bicycleTicket);
+        busTickets = findViewById(R.id.busTicket);
+        blackTickets = findViewById(R.id.blackTicket);
+        taxiTickets = findViewById(R.id.taxiTicket);
+        doubleTickets = findViewById(R.id.doubleTicket);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -259,6 +268,7 @@ public class GameMap extends AppCompatActivity
         if(manageGame.game != null) {
             setupGame();
         }
+        visualizeTickets();
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker field) {
@@ -312,6 +322,7 @@ public class GameMap extends AppCompatActivity
         if (!doNotGo) {
             return move(player, p, goBack, randomRoute, playerIcon);
         }
+        visualizeTickets();
         return false;
     }
 
@@ -384,6 +395,7 @@ public class GameMap extends AppCompatActivity
                     icon = -1;
                     ticket = -1;
             }
+            visualizeTickets();
             if (myPlayer.isMrX()) {
                 Entry entry;
                 int lastTurn = roadMap.getNumberOfEntries();
@@ -444,6 +456,24 @@ public class GameMap extends AppCompatActivity
         // Toast to indicate that the clicked location is not reachable from the current location
         Toast.makeText(GameMap.this, "Unreachable Point :(", Snackbar.LENGTH_LONG).show();
         return false;
+    }
+
+    public void visualizeTickets(){
+        if(myPlayer.isMrX()) {
+            pedestrianTickets.setText("∞");
+            bicycleTickets.setText("∞");
+            busTickets.setText("∞");
+            blackTickets.setText(myPlayer.getTickets().get(R.string.BLACK_TICKET_KEY).toString());
+            taxiTickets.setText(myPlayer.getTickets().get(R.string.TAXI_TICKET_KEY).toString());
+            doubleTickets.setText(myPlayer.getTickets().get(R.string.DOUBLE_TICKET_KEY).toString());
+        }else{
+            pedestrianTickets.setText(myPlayer.getTickets().get(R.string.PEDESTRIAN_TICKET_KEY).toString());
+            bicycleTickets.setText(myPlayer.getTickets().get(R.string.BICYCLE_TICKET_KEY).toString());
+            busTickets.setText(myPlayer.getTickets().get(R.string.BUS_TICKET_KEY).toString());
+            blackTickets.setVisibility(View.INVISIBLE);
+            taxiTickets.setVisibility(View.INVISIBLE);
+            doubleTickets.setVisibility(View.INVISIBLE);
+        }
     }
 
     /**
