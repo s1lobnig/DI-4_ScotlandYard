@@ -39,19 +39,22 @@ public class checkValidTicketParameterTest {
         testPlayer = new Player("testPlayer");
         manageGameData = new ManageGameData();
     }
-
     //check not valid detective tickets
-    @Test
     public void testNotEnoughTicketsDetectives(){
         Assert.assertEquals(false, manageGameData.checkForValidTicket(testPlayer, key));
     }
 
     //TODO: check not valid MrX tickets. Need do implement taxi and double tickets in method
     //check not valid mrX tickets
-    @Test
     public void testNotEnoughTicketsMrX(){
         testPlayer.setMrX(true);
         Assert.assertEquals(false, manageGameData.checkForValidTicket(testPlayer, key));
     }
 
+    //check for validTicket when there are not enough tickets
+    @Test
+    public void testValidTickets(){
+        testNotEnoughTicketsDetectives();
+        testNotEnoughTicketsMrX();
+    }
 }

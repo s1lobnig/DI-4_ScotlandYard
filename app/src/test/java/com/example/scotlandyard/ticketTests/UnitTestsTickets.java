@@ -80,15 +80,11 @@ public class UnitTestsTickets {
         Assert.assertEquals(Integer.MAX_VALUE, tickets.get(R.string.BUS_TICKET_KEY).intValue());
         Assert.assertEquals(2, tickets.get(R.string.TAXI_TICKET_KEY).intValue());
         Assert.assertEquals(1, tickets.get(R.string.DOUBLE_TICKET_KEY).intValue());
+        //need to outsource some logik from GameMap first
         Assert.assertEquals(5, tickets.get(R.string.BLACK_TICKET_KEY).intValue());
     }
 
-    //TODO: check for validTicket when there are not enough tickets
-
-
-
-
     //TODO: check if tickets get reduced after making a move
-
+    //need to wait for outsourced logic in GameMap
 }
 
