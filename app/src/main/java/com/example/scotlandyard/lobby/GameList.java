@@ -42,9 +42,6 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
     @Override
     protected void onStop() {
         super.onStop();
-		
-		((Client) Device.getInstance()).stopDiscovery();
-        ((Client) Device.getInstance()).removeLobbyObserver();
 
         ((ProgressBar) findViewById(R.id.progressBarDiscovery)).setVisibility(View.GONE);
         ((Button) findViewById(R.id.rediscoverButton)).setVisibility(View.VISIBLE);
@@ -54,8 +51,7 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-		
-		((Client) Device.getInstance()).stopDiscovery();
+
         ((Client) Device.getInstance()).removeLobbyObserver();
 
         ((ProgressBar) findViewById(R.id.progressBarDiscovery)).setVisibility(View.GONE);
@@ -72,13 +68,13 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
 
         /* Get intent data. */
         Intent intent = getIntent();
-        player = (Player)intent.getSerializableExtra("PLAYER");
+        player = (Player) intent.getSerializableExtra("PLAYER");
 
         if (Device.isSingletonSet()) {
             Device.resetInstance();
         }
         try {
-            Client client = (Client)Device.setClient(player.getNickname(), Nearby.getConnectionsClient(this));
+            Client client = (Client) Device.setClient(player.getNickname(), Nearby.getConnectionsClient(this));
             client.addLobbyObserver(this);
             client.startDiscovery();
         } catch (IllegalStateException ex) {
@@ -98,7 +94,6 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
                 ((Client) Device.getInstance()).connectToEndpoint(position);
             }
         });
-
 
 
         findViewById(R.id.rediscoverButton).setOnClickListener(new View.OnClickListener() {
@@ -149,8 +144,8 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
 
     @Override
     public void showConnected(String endpointName) {
-        String notification = "Sie sind verbunden und warten darauf, der Lobby beizutreten.";
-        Toast.makeText(getApplicationContext(), notification, Toast.LENGTH_LONG).show();
+        /*String notification = "Sie sind verbunden und warten darauf, der Lobby beizutreten.";
+        Toast.makeText(getApplicationContext(), notification, Toast.LENGTH_LONG).show();*/
     }
 
     @Override

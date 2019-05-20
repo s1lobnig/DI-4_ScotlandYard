@@ -7,9 +7,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.example.scotlandyard.connection.ServerService;
 import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.control.ClientLobbyInterface;
 import com.example.scotlandyard.control.Server;
@@ -23,6 +26,7 @@ import com.google.android.gms.nearby.Nearby;
 public class ServerLobby extends AppCompatActivity implements ServerLobbyInterface {
     private String logTag = "ServerLobby";
     private ListAdapter connectedPlayersListAdapter;
+    private Player player;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,15 +38,23 @@ public class ServerLobby extends AppCompatActivity implements ServerLobbyInterfa
 
         /* Get intent data. */
         Intent intent = getIntent();
-        Lobby lobby = (Lobby)intent.getSerializableExtra("LOBBY");
+        Lobby lobby = (Lobby) intent.getSerializableExtra("LOBBY");
+        player = (Player) intent.getSerializableExtra("PLAYER");
 
         //TODO show lobby information in this activity (maxPlayers, randomMr.X, randomEvents)
+        //maxPlayers in what form?
+
+        ((CheckBox) findViewById(R.id.randomEvents)).setChecked(lobby.isRandomEvents());
+        ((CheckBox) findViewById(R.id.randomMrX)).setChecked(lobby.isRandomMrX());
+
+        ((CheckBox) findViewById(R.id.randomEvents)).setEnabled(false);
+        ((CheckBox) findViewById(R.id.randomMrX)).setEnabled(false);
 
         if (Device.isSingletonSet()) {
             Device.resetInstance();
         }
         try {
-            Server server = (Server)Device.setServer(lobby.getLobbyName(), Nearby.getConnectionsClient(this));
+            Server server = (Server) Device.setServer(lobby.getLobbyName(), Nearby.getConnectionsClient(this));
             server.setLobby(lobby);
             server.addLobbyObserver(this);
             server.setNickname(lobby.getPlayerList().get(0).getNickname());
@@ -73,12 +85,14 @@ public class ServerLobby extends AppCompatActivity implements ServerLobbyInterfa
     protected void onStop() {
         super.onStop();
         ((Server) Device.getInstance()).removeLobbyObserver();
+        ((Server) Device.getInstance()).stopAdvertising();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         ((Server) Device.getInstance()).removeLobbyObserver();
+        ((Server) Device.getInstance()).stopAdvertising();
     }
 
     public void showFailedAdvertising() {
@@ -100,16 +114,25 @@ public class ServerLobby extends AppCompatActivity implements ServerLobbyInterfa
     @Override
     public void showConnectionFailed(String endpointName) {
         //TODO show user that connection to endpoint has failed
+
+        String notification = "Verbindung zum Server konnte nicht hergestellt werden.";
+        Toast.makeText(getApplicationContext(), notification, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void showDisconnected(String endpointName) {
         Log.d(logTag, "should not be called.");
+
+        String notification = "Verbindung zum Server verloren.";
+        Toast.makeText(getApplicationContext(), notification, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void showAcceptingFailed(String endpointName) {
         //TODO show user that connection accept to endpoint has failed
+
+        String notification = "Verbindung zum Server konnte nicht hergestellt werden.";
+        Toast.makeText(getApplicationContext(), notification, Toast.LENGTH_LONG).show();
     }
 
     @Override

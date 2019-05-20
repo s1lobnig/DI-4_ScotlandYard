@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -25,6 +27,7 @@ public class ClientLobby extends AppCompatActivity implements ClientLobbyInterfa
     private ListAdapter connectedPlayersListAdapter; /* Global variable because of updates. */
     private String logTag = "ClientLobby";
     private Player player;
+    ArrayList<Player> players;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,15 +36,16 @@ public class ClientLobby extends AppCompatActivity implements ClientLobbyInterfa
 
         Intent intent = getIntent();
         Lobby lobby = (Lobby)intent.getSerializableExtra("LOBBY");
-        player = (Player)intent.getSerializableExtra("PLAYER");
+        player = (Player) intent.getSerializableExtra("PLAYER");
+        players = new ArrayList<>();
 
         ListView connectedPlayersList = (ListView) findViewById(R.id.playersList);
 
-        connectedPlayersListAdapter = new ArrayAdapter<Player>(this, android.R.layout.simple_list_item_1, lobby.getPlayerList());
+        connectedPlayersListAdapter = new ArrayAdapter<Player>(this, android.R.layout.simple_list_item_1, players);
         connectedPlayersList.setAdapter(connectedPlayersListAdapter);
 
-        updateLobby(lobby);
         ((Client) Device.getInstance()).addLobbyObserver(this);
+        updateLobby(lobby);
     }
 
     @Override
@@ -84,6 +88,10 @@ public class ClientLobby extends AppCompatActivity implements ClientLobbyInterfa
     @Override
     public void startGame(Game game) {
         Log.d(logTag, "Game start initiated by server!");
+
+        ((TextView) findViewById(R.id.textConnectionInfo)).setText("Das Spiel wird gestartet...");
+        ((ProgressBar) findViewById(R.id.progressBarConnection)).setProgress(100);
+
         Intent gameStartIntent = new Intent(ClientLobby.this, GameMap.class);
         gameStartIntent.putExtra("USERNAME", player.getNickname());
         gameStartIntent.putExtra("IS_SERVER", false);
@@ -102,7 +110,6 @@ public class ClientLobby extends AppCompatActivity implements ClientLobbyInterfa
         String notification = "Verbindung zum Server verloren.";
         Toast.makeText(getApplicationContext(), notification, Toast.LENGTH_LONG).show();
 
-        finish();
     }
 
     @Override
@@ -118,6 +125,16 @@ public class ClientLobby extends AppCompatActivity implements ClientLobbyInterfa
     @Override
     public void updateLobby(Lobby lobby) {
         //TODO show lobby information in this activity (joined players, maxPlayers, randomMr.X, randomEvents)
+
+        ((CheckBox) findViewById(R.id.randomEvents)).setChecked(lobby.isRandomEvents());
+        ((CheckBox) findViewById(R.id.randomMrX)).setChecked(lobby.isRandomMrX());
+
+        ((CheckBox) findViewById(R.id.randomEvents)).setEnabled(false);
+        ((CheckBox) findViewById(R.id.randomMrX)).setEnabled(false);
+
+        players.clear();
+        players.addAll(lobby.getPlayerList());
         ((ArrayAdapter) connectedPlayersListAdapter).notifyDataSetChanged();
+
     }
 }
