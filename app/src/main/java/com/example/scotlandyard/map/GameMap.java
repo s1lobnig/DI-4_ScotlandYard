@@ -16,6 +16,7 @@ import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.control.GameInterface;
 import com.example.scotlandyard.map.motions.LatLngInterpolator;
 import com.example.scotlandyard.map.motions.MarkerAnimation;
+import com.example.scotlandyard.map.motions.MovingLogic;
 import com.example.scotlandyard.map.motions.RandomEvent;
 import com.example.scotlandyard.map.motions.Move;
 import com.example.scotlandyard.map.roadmap.Entry;
@@ -336,12 +337,12 @@ public class GameMap extends AppCompatActivity
             Routes.getRandomRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
         }
         Route r = (Route) routeToTake[1];
-        int[] iconAndTicket = Move.getIconAndTicket((int) routeToTake[2]);
+        int[] iconAndTicket = MovingLogic.getIconAndTicket((int) routeToTake[2]);
         int icon = iconAndTicket[0];
         int ticket = iconAndTicket[1];
         if (player.isMrX()) {
             int lastTurn = device.getRoadMap().getNumberOfEntries();
-            Entry entry = Move.getRoadMapEntry(lastTurn, newLocation, ticket);
+            Entry entry = MovingLogic.getRoadMapEntry(lastTurn, newLocation, ticket);
             if (Device.isServer()) {
                 device.getRoadMap().addEntry(entry);
             }
@@ -352,24 +353,24 @@ public class GameMap extends AppCompatActivity
                 player.decreasePenalty();
             if (r.getIntermediates() != null) {
                 player.getMarker().setIcon(BitmapDescriptorFactory.fromResource(icon));
-                Object[] routeSliceTimings = Move.getRouteSlicesAndTimings(r, Points.getIndex(currentPoint) + 1);
+                Object[] routeSliceTimings = MovingLogic.getRouteSlicesAndTimings(r, Points.getIndex(currentPoint) + 1);
                 ArrayList<LatLng> routePoints = (ArrayList) routeSliceTimings[0];
                 ArrayList<Float> timeSlices = (ArrayList) routeSliceTimings[1];
                 LatLng finalPos = p.getLatLng();
                 if (goBack) {
                     // if random event "Go Back" then...
-                    Move.createGoBackRoute(timeSlices, routePoints, p);
+                    MovingLogic.createGoBackRoute(timeSlices, routePoints, p);
                     finalPos = player.getMarker().getPosition();
                 }
-                Move.runMarkerAnimation(player, routePoints, timeSlices, finalPos, icon, playerIcon);
+                MovingLogic.runMarkerAnimation(player, routePoints, timeSlices, finalPos, icon, playerIcon);
             } else {
                 if (!goBack) {
-                    Move.runMarkerAnimation(player, null, null, p.getLatLng(), icon, playerIcon);
+                    MovingLogic.runMarkerAnimation(player, null, null, p.getLatLng(), icon, playerIcon);
                 } else {
-                    ArrayList[] goBackRouteAndSlices = Move.createGoBackRoute(p.getLatLng());
+                    ArrayList[] goBackRouteAndSlices = MovingLogic.createGoBackRoute(p.getLatLng());
                     ArrayList<Float> timeSlices = goBackRouteAndSlices[0];
                     ArrayList<LatLng> routePoints = goBackRouteAndSlices[1];
-                    Move.runMarkerAnimation(player, routePoints, timeSlices, player.getMarker().getPosition(), icon, playerIcon);
+                    MovingLogic.runMarkerAnimation(player, routePoints, timeSlices, player.getMarker().getPosition(), icon, playerIcon);
                 }
             }
         } else {
