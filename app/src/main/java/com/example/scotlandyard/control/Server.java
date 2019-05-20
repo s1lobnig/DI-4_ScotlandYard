@@ -220,4 +220,9 @@ public class Server extends Device implements ServerInterface {
         ((ServerService) connectionService).startAdvertising();
     }
 
+    public void stopAdvertising() {
+        Log.d(logTag, "stopped advertising");
+        ((ServerService) connectionService).stopAdvertising();
+    }
+
 }
