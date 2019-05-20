@@ -71,7 +71,7 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
         messageListView.setAdapter(mMessageAdapter);
 
         /*restore old messages if they exist*/
-        messageListView.onRestoreInstanceState(myListInstanceState);
+       // messageListView.onRestoreInstanceState(myListInstanceState);
 
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
