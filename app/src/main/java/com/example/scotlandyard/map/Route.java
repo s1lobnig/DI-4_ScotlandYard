@@ -64,4 +64,32 @@ public class Route {
         }
         return distance;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null)
+            return false;
+        if (o instanceof Route) {
+            Route r = (Route) o;
+            if (r.getStartPoint() == startPoint && r.getEndPoint() == endPoint) {
+                if (r.getIntermediates() == null && intermediates == null)
+                    return true;
+                if (r.getIntermediates() != null && intermediates != null && r.getIntermediates().length == intermediates.length) {
+                    for (int i = 0; i < intermediates.length; i++) {
+                        if (!(intermediates[i]).equals(r.getIntermediates()[i]))
+                            return false;
+                    }
+                    return true;
+                }
+                return false;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

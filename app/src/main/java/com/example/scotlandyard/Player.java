@@ -17,6 +17,7 @@ public class Player implements Serializable {
     private boolean isMrX;
     private boolean wantsToBeMrX;
     private HashMap<Integer, Integer> tickets; //Hashmap for storing tickets
+    private int penalty;
 
     public Player(String nickname) {
         this.nickname = nickname;
@@ -32,6 +33,7 @@ public class Player implements Serializable {
         this.tickets.put(R.string.BICYCLE_TICKET_KEY, 0);
         this.tickets.put(R.string.BUS_TICKET_KEY, 0);
         this.tickets.put(R.string.BLACK_TICKET_KEY, 0);
+        this.penalty = 0;
     }
 
     public String getNickname() {
@@ -90,13 +92,13 @@ public class Player implements Serializable {
         this.marker = marker;
     }
 
-    public void decreaseNumberOfTickets(Integer key){
-        tickets.put(key, tickets.get(key)-1);
+    public void decreaseNumberOfTickets(Integer key) {
+        tickets.put(key, tickets.get(key) - 1);
     }
 
-    public void initializeNumberOfTickets(Object[][] initialTickets){
+    public void initializeNumberOfTickets(Object[][] initialTickets) {
         for (int i = 0; i < initialTickets.length; i++) {
-            tickets.put((Integer) initialTickets[i][0],(Integer)initialTickets[i][1]);
+            tickets.put((Integer) initialTickets[i][0], (Integer) initialTickets[i][1]);
         }
     }
 
@@ -118,6 +120,18 @@ public class Player implements Serializable {
 
     public HashMap<Integer, Integer> getTickets() {
         return tickets;
+    }
+
+    public void setPenalty(int penalty) {
+        this.penalty = penalty;
+    }
+
+    public int getPenalty() {
+        return penalty;
+    }
+
+    public void decreasePenalty() {
+        penalty--;
     }
 
     @Override
