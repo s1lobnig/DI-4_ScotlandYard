@@ -131,6 +131,7 @@ public class Client extends Device implements ClientInterface {
         }
         if (object instanceof Game) {
             Log.d(logTag, "game received");
+            game = (Game) object;
             if (lobbyObserver != null) {
                 lobbyObserver.startGame((Game)object);
             }

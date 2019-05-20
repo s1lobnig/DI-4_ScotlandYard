@@ -34,7 +34,7 @@ public class Device {
     ArrayList<Message> messageList;
 
     Device() {
-
+        messageList = new ArrayList<>();
     }
 
     /**

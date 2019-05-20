@@ -2,7 +2,6 @@ package com.example.scotlandyard.map;
 
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
-import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.lobby.Game;
 import com.example.scotlandyard.lobby.Lobby;
 import com.google.android.gms.maps.model.LatLng;
@@ -100,7 +99,7 @@ public class ManageGameData {
         return point.getLatLng();
     }
 
-    public static void setTickets(Player player) {
+    public static void setTickets(Game game, Player player) {
         //set Ticket for Mr. X
         if (player.isMrX()) {
             player.initializeNumberOfTickets(new Object[][]{

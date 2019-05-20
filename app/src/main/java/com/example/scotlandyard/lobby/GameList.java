@@ -176,6 +176,7 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
     @Override
     public void updateLobby(Lobby lobby) {
         ((Client) Device.getInstance()).removeLobbyObserver();
+        Device.getInstance().setNickname(player.getNickname());
 
         /* Start Client Lobby activity. */
         Log.d(logTag, "Loading client lobby.");
