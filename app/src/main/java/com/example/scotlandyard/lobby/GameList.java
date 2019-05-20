@@ -43,9 +43,6 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
     protected void onStop() {
         super.onStop();
 
-        ((Client) Device.getInstance()).stopDiscovery();
-        ((Client) Device.getInstance()).removeLobbyObserver();
-
         ((ProgressBar) findViewById(R.id.progressBarDiscovery)).setVisibility(View.GONE);
         ((Button) findViewById(R.id.rediscoverButton)).setVisibility(View.VISIBLE);
         ((TextView) findViewById(R.id.textInfo)).setVisibility(View.GONE);
@@ -55,7 +52,6 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
     protected void onDestroy() {
         super.onDestroy();
 
-        ((Client) Device.getInstance()).stopDiscovery();
         ((Client) Device.getInstance()).removeLobbyObserver();
 
         ((ProgressBar) findViewById(R.id.progressBarDiscovery)).setVisibility(View.GONE);
@@ -148,8 +144,8 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
 
     @Override
     public void showConnected(String endpointName) {
-        String notification = "Sie sind verbunden und warten darauf, der Lobby beizutreten.";
-        Toast.makeText(getApplicationContext(), notification, Toast.LENGTH_LONG).show();
+        /*String notification = "Sie sind verbunden und warten darauf, der Lobby beizutreten.";
+        Toast.makeText(getApplicationContext(), notification, Toast.LENGTH_LONG).show();*/
     }
 
     @Override

@@ -29,7 +29,7 @@
     <string name="start_game">Spiel starten</string>
     <string name="waiting_on_server">Warten auf den Server, um das Spiel zu starten</string>
     <string name="liste_der_aktiven_spieler">Liste der aktiven Spieler:</string>
-    <string name="rediscover">Rediscover</string>
+    <string name="rediscover">Suchen</string>
     <!-- Text für "GoBack" Random event - Toast -->
     <string name="randEventGoBack">Oh nein! Du hast was vergessen! Du musst wieder zurück gehen</string>
     <!-- Text für "NaviSaysNo" Random event - Toast -->

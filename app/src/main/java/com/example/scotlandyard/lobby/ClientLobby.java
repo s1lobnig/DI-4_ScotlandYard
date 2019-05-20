@@ -37,14 +37,15 @@ public class ClientLobby extends AppCompatActivity implements ClientLobbyInterfa
         Intent intent = getIntent();
         Lobby lobby = (Lobby)intent.getSerializableExtra("LOBBY");
         player = (Player) intent.getSerializableExtra("PLAYER");
+        players = new ArrayList<>();
 
         ListView connectedPlayersList = (ListView) findViewById(R.id.playersList);
 
-        connectedPlayersListAdapter = new ArrayAdapter<Player>(this, android.R.layout.simple_list_item_1, lobby.getPlayerList());
+        connectedPlayersListAdapter = new ArrayAdapter<Player>(this, android.R.layout.simple_list_item_1, players);
         connectedPlayersList.setAdapter(connectedPlayersListAdapter);
-        
-        updateLobby(lobby);
+
         ((Client) Device.getInstance()).addLobbyObserver(this);
+        updateLobby(lobby);
     }
 
     @Override
@@ -109,7 +110,6 @@ public class ClientLobby extends AppCompatActivity implements ClientLobbyInterfa
         String notification = "Verbindung zum Server verloren.";
         Toast.makeText(getApplicationContext(), notification, Toast.LENGTH_LONG).show();
 
-        finish();
     }
 
     @Override
@@ -129,11 +129,12 @@ public class ClientLobby extends AppCompatActivity implements ClientLobbyInterfa
         ((CheckBox) findViewById(R.id.randomEvents)).setChecked(lobby.isRandomEvents());
         ((CheckBox) findViewById(R.id.randomMrX)).setChecked(lobby.isRandomMrX());
 
+        ((CheckBox) findViewById(R.id.randomEvents)).setEnabled(false);
+        ((CheckBox) findViewById(R.id.randomMrX)).setEnabled(false);
+
         players.clear();
         players.addAll(lobby.getPlayerList());
         ((ArrayAdapter) connectedPlayersListAdapter).notifyDataSetChanged();
 
-        ((TextView) findViewById(R.id.textConnectionInfo)).setText("Warten auf den Server, um das Spiel zu starten...");
-        ((ProgressBar) findViewById(R.id.progressBarConnection)).setProgress(80);
     }
 }

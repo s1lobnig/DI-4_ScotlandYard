@@ -66,8 +66,11 @@
         layout="@layout/content_game_presettings"
         android:layout_width="301dp"
         android:layout_height="127dp"
-        tools:layout_editor_absoluteX="55dp"
-        tools:layout_editor_absoluteY="259dp" />
+        android:layout_marginStart="52dp"
+        android:layout_marginLeft="52dp"
+        android:layout_marginBottom="36dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/createServerBtn"
