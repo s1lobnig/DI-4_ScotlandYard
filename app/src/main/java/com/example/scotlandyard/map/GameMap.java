@@ -56,6 +56,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -66,6 +67,13 @@ public class GameMap extends AppCompatActivity
 
     private static Device device;
 
+    private TextView pedestrianTickets;
+    private TextView bicycleTickets;
+    private TextView busTickets;
+    private TextView taxiTickets;
+    private TextView blackTickets;
+    private TextView doubleTickets;
+    
     private static final String TAG = GameMap.class.getSimpleName();
     private GoogleMap mMap;
     private static Player myPlayer;
@@ -95,6 +103,13 @@ public class GameMap extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(device.getNickname());
         setSupportActionBar(toolbar);
+
+        pedestrianTickets = findViewById(R.id.pedestrianTicket);
+        bicycleTickets = findViewById(R.id.bicycleTicket);
+        busTickets = findViewById(R.id.busTicket);
+        blackTickets = findViewById(R.id.blackTicket);
+        taxiTickets = findViewById(R.id.taxiTicket);
+        doubleTickets = findViewById(R.id.doubleTicket);
 
         //TODO: Set the fab to another color when message is received
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -240,7 +255,9 @@ public class GameMap extends AppCompatActivity
             device.setGame(ManageGameData.makeGame(Device.getLobby()));
             device.sendGame();
         }
+
         setupGame();
+        visualizeTickets();
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker field) {
@@ -334,6 +351,7 @@ public class GameMap extends AppCompatActivity
         if (!doNotGo) {
             return move(player, p, goBack, randomRoute, playerIcon);
         }
+        visualizeTickets();
         return false;
     }
 
@@ -349,6 +367,7 @@ public class GameMap extends AppCompatActivity
         int[] iconAndTicket = MovingLogic.getIconAndTicket((int) routeToTake[2]);
         int icon = iconAndTicket[0];
         int ticket = iconAndTicket[1];
+        visualizeTickets();
         if (player.isMrX()) {
             int lastTurn = device.getRoadMap().getNumberOfEntries();
             Entry entry = MovingLogic.getRoadMapEntry(lastTurn, newLocation, ticket);
@@ -390,6 +409,23 @@ public class GameMap extends AppCompatActivity
 
     }
 
+    public void visualizeTickets(){
+        if(myPlayer.isMrX()) {
+            pedestrianTickets.setText("∞");
+            bicycleTickets.setText("∞");
+            busTickets.setText("∞");
+            blackTickets.setText(myPlayer.getTickets().get(R.string.BLACK_TICKET_KEY).toString());
+            taxiTickets.setText(myPlayer.getTickets().get(R.string.TAXI_TICKET_KEY).toString());
+            doubleTickets.setText(myPlayer.getTickets().get(R.string.DOUBLE_TICKET_KEY).toString());
+        }else{
+            pedestrianTickets.setText(myPlayer.getTickets().get(R.string.PEDESTRIAN_TICKET_KEY).toString());
+            bicycleTickets.setText(myPlayer.getTickets().get(R.string.BICYCLE_TICKET_KEY).toString());
+            busTickets.setText(myPlayer.getTickets().get(R.string.BUS_TICKET_KEY).toString());
+            blackTickets.setVisibility(View.INVISIBLE);
+            taxiTickets.setVisibility(View.INVISIBLE);
+            doubleTickets.setVisibility(View.INVISIBLE);
+        }
+    }
 
     /**
      * Adds all Points to the map and calls drawRoutes() at the end

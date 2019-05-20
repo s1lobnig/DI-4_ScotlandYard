@@ -100,14 +100,15 @@ public class ManageGameData {
         return point.getLatLng();
     }
 
-    //set and check tickets
-    private static void setTickets(Game game, Player player) {
+    public static void setTickets(Player player) {
         //set Ticket for Mr. X
         if (player.isMrX()) {
             player.initializeNumberOfTickets(new Object[][]{
-                    {R.string.PEDESTRIAN_TICKET_KEY, 5},
-                    {R.string.BICYCLE_TICKET_KEY, 4},
-                    {R.string.BUS_TICKET_KEY, 2},
+                    {R.string.PEDESTRIAN_TICKET_KEY, Integer.MAX_VALUE},
+                    {R.string.BICYCLE_TICKET_KEY, Integer.MAX_VALUE},
+                    {R.string.BUS_TICKET_KEY, Integer.MAX_VALUE},
+                    {R.string.TAXI_TICKET_KEY, 2},
+                    {R.string.DOUBLE_TICKET_KEY, 1},
                     {R.string.BLACK_TICKET_KEY, game.getPlayers().size() - 1},
             });
         } else {
@@ -116,13 +117,15 @@ public class ManageGameData {
                     {R.string.PEDESTRIAN_TICKET_KEY, 5},
                     {R.string.BICYCLE_TICKET_KEY, 4},
                     {R.string.BUS_TICKET_KEY, 2},
+                    {R.string.TAXI_TICKET_KEY, 0},
+                    {R.string.DOUBLE_TICKET_KEY, 0},
                     {R.string.BLACK_TICKET_KEY, 0},
             });
         }
 
     }
 
-    static boolean checkForValidTicket(Player player, int vehicle) {
+   public static boolean checkForValidTicket(Player player, int vehicle) {
         boolean validTicket = false;
         HashMap<Integer, Integer> tickets = player.getTickets();
         switch (vehicle) {
@@ -155,7 +158,7 @@ public class ManageGameData {
         }
         return validTicket;
     }
-
+  
     public static Game makeGame(Lobby lobby) {
         Game game = new Game(lobby.getLobbyName(), lobby.getMaxPlayers(), lobby.getPlayerCount(), 1, lobby.isRandomEvents(), lobby.getPlayerList());
         game.chooseMrX(lobby.isRandomMrX());
