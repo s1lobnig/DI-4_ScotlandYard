@@ -53,4 +53,8 @@ public class RandomEvent {
         this.AllTexts[3][2] = "Du wurdest von Martin Hitzs KOllegen entführt und kommst an einen anderen Ort heruas.";
         this.AllTexts[3][3] = "Weine nicht wenn der Regen fällt. DAM DAM. Ähm du kommst wo anders raus als gewollt.";
     }
+
+    public void setID(int randomEvent) {
+        this.id = randomEvent;
+    }
 }

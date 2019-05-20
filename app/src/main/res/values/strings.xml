@@ -29,7 +29,7 @@
     <string name="start_game">Spiel starten</string>
     <string name="waiting_on_server">Warten auf den Server, um das Spiel zu starten</string>
     <string name="liste_der_aktiven_spieler">Liste der aktiven Spieler:</string>
-    <string name="rediscover">Rediscover</string>
+    <string name="rediscover">Suchen</string>
     <!-- Text für "GoBack" Random event - Toast -->
     <string name="randEventGoBack">Oh nein! Du hast was vergessen! Du musst wieder zurück gehen</string>
     <!-- Text für "NaviSaysNo" Random event - Toast -->
@@ -43,6 +43,10 @@
     <string name="DOUBLE_TICKET_KEY">double_tickets</string>
 
     <string name="RODA_MAP_DIALOG_TITLE">MR.X\S MOMENTANER FAHRPLAN</string>
-    <string name="SearchServer">Searching for servers...</string>
-    <string name="establishConn">Establishing connection with the server...</string>
+
+    <string name="lobbyname">Lobbyname</string>
+
+    <string name="SearchServer">Suche nach den Servern...</string>
+    <string name="establishConn">Verbindung zum Server wird hergestellt...</string>
+
 </resources>

@@ -33,4 +33,17 @@ public class PositionEntry extends Entry {
         ((EditText) convertView.findViewById(R.id.turn)).setText(turnNumber + "");
         return convertView;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o instanceof Entry){
+            if(o instanceof PositionEntry){
+                PositionEntry positionEntry = (PositionEntry)o;
+                if(positionEntry.position == position && positionEntry.turnNumber == turnNumber)
+                    return true;
+            }
+            return false;
+        }
+        return false;
+    }
 }

@@ -1,6 +1,7 @@
 package com.example.scotlandyard.messenger;
 
 import android.content.Intent;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -12,28 +13,25 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.example.scotlandyard.R;
-import com.example.scotlandyard.connection.ClientInterface;
-import com.example.scotlandyard.connection.ClientService;
 import com.example.scotlandyard.connection.Endpoint;
-import com.example.scotlandyard.connection.ServerInterface;
-import com.example.scotlandyard.connection.ServerService;
-import com.example.scotlandyard.lobby.Game;
-import com.example.scotlandyard.map.motions.SendMove;
-import com.example.scotlandyard.map.roadmap.Entry;
+import com.example.scotlandyard.control.Device;
+import com.example.scotlandyard.control.MessengerInterface;
+import com.example.scotlandyard.control.Server;
 
-import java.util.Map;
+import java.util.ArrayList;
 
-public class Messenger extends AppCompatActivity implements ServerInterface, ClientInterface {
+public class Messenger extends AppCompatActivity implements MessengerInterface {
 
 
     private EditText textMessage;
-    private ListView messageList;
+    private ListView messageListView;
 
     private MessageAdapter mMessageAdapter;
-    private boolean isServer;
-    private String logTag;
-    private ServerService serverService;
-    private ClientService clientService;
+    private Message message;
+    private static final String MYLISTKEY = "myMessageList";
+    Parcelable myListInstanceState;
+
+    private String logTag = "Messanger";
     private String nickname;
 
     @Override
@@ -47,63 +45,43 @@ public class Messenger extends AppCompatActivity implements ServerInterface, Cli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messanger);
 
+        if(savedInstanceState!=null) {
+            myListInstanceState = savedInstanceState.getParcelable(MYLISTKEY);
+        }
+
         /* add Toolbar */
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Spieler Chat");
         setSupportActionBar(toolbar);
 
-
         /* find views */
-
         textMessage = findViewById(R.id.edittext_chatbox);
         Button btnSend = findViewById(R.id.button_chatbox_send);
-        messageList = findViewById(R.id.message_list);
+        messageListView = findViewById(R.id.message_list);
 
-        /*get data from Intent to distinguish between host and client*/
+        /*get data from Intent*/
         Intent intent = getIntent();
-        isServer = intent.getBooleanExtra("IS_SERVER", false);
         nickname = intent.getStringExtra("USERNAME");
 
-
-        /*check if user is server or client*/
-        if (isServer) {
-            serverService = ServerService.getInstance();
-            serverService.setServer(this);
-            logTag = "SERVER_SERVICE";
-        } else {
-            clientService = ClientService.getInstance();
-            clientService.setClient(this);
-            logTag = "CLIENT_SERVICE";
-        }
+        /*add messenger observer*/
+        Device.getInstance().addMessengerObserver(this);
 
         /*set the Adapter to listView*/
         mMessageAdapter = new MessageAdapter(this);
-        messageList.setAdapter(mMessageAdapter);
+        messageListView.setAdapter(mMessageAdapter);
+
+        /*restore old messages if they exist*/
+        messageListView.onRestoreInstanceState(myListInstanceState);
 
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String textM = textMessage.getText().toString();
-
+                message = new Message(textMessage.getText().toString(), nickname);
                 /*set message belong to current user*/
-                Message message = new Message(textM, nickname);
                 message.setBelongsToCurrentUser(true);
 
-                /*add message to the listView*/
+                Device.getInstance().send(message);
                 mMessageAdapter.add(message);
-
-                /*test to check if message comes from server or not*/
-                if (isServer) {
-                    /*send message to all players*/
-                    onMessage(message);
-
-                } else {
-                    Log.d(logTag, "Client is sending chat message to server");
-                    clientService.send(message);
-                }
-
-                /*scroll the ListView to the last added element*/
-                messageList.setSelection(messageList.getCount() - 1);
 
                 /*flush EditText and close keyboard after sending*/
                 textMessage.setText("");
@@ -115,116 +93,71 @@ public class Messenger extends AppCompatActivity implements ServerInterface, Cli
     }
 
     @Override
-    public void onStartedDiscovery() {
-
-    }
-
-    @Override
-    public void onFailedDiscovery() {
-
-    }
-
-    @Override
-    public void onEndpointFound(Map<String, Endpoint> discoveredEndpoints) {
-
-    }
-
-    @Override
-    public void onEndpointLost(Map<String, Endpoint> discoveredEndpoints) {
-
-    }
-
-    @Override
-    public void onStoppedDiscovery() {
-
-    }
-
-    @Override
-    public void onConnected(Endpoint endpoint) {
-
-    }
-
-    @Override
-    public void onStartedAdvertising() {
-
-    }
-
-    @Override
-    public void onFailedAdvertising() {
-
-    }
-
-    @Override
-    public void onStoppedAdvertising() {
-
-    }
-
-    @Override
-    public void onConnectionRequested(Endpoint endpoint) {
-
-    }
-
-    @Override
-    public void onGameData(Game game) {
-
-    }
-
-    @Override
-    public void onMessage(Message message) {
+    public void updateMessages(ArrayList<Message> messages) {
+        //TODO
         Log.d(logTag, "Chat message received!");
-
-        String textOfMessage = ((Message) message).getMessage();
-        Message receivedMessage = new Message(textOfMessage,((Message) message).getNickname());
-
-        if (isServer) {
-            Log.d(logTag, "Server is sending chat message to clients");
-
-            /*show received message for all users*/
-            serverService.send(receivedMessage);
-
-        }
-
         /*check if message belongs to current user*/
-        if(!(receivedMessage.getNickname().equals(this.nickname))) {
-            receivedMessage.setBelongsToCurrentUser(false);
-
-            mMessageAdapter.add(receivedMessage);
-            /*scroll the ListView to the last added element*/
-            messageList.setSelection(messageList.getCount() - 1);
+        if(!(message.getNickname().equals(this.nickname))) {
+            message.setBelongsToCurrentUser(false);
         }
-    }
+        messages.add(message);
 
-    @Override
-    public void onSendMove(SendMove sendMove) {
+        /*display message*/
+        mMessageAdapter.add(message);
 
-    }
-
-    @Override
-    public void onRoadMapEntry(Entry entry) {
+        /*scroll the ListView to the last added element*/
+        messageListView.setSelection(messageListView.getCount() - 1);
 
     }
 
     @Override
-    public void onFailedConnecting(Endpoint endpoint) {
-
+    public void showDisconnected(Endpoint endpoint) {
+        //TODO
+        Log.d(logTag, "should not be called");
     }
 
     @Override
-    public void onDisconnected(Endpoint endpoint) {
-
+    public void showSendingFailed(Object object) {
+        //TODO
+        Log.d(logTag, "sending has failed");
     }
 
     @Override
-    public void onFailedAcceptConnection(Endpoint endpoint) {
-
+    protected void onStop() {
+        super.onStop();
+        ((Server) Device.getInstance()).removeMessengerObserver();
     }
 
     @Override
-    public void onSendingFailed(Object object) {
-
+    protected void onDestroy() {
+        super.onDestroy();
+        ((Server) Device.getInstance()).removeMessengerObserver();
     }
 
-    public void addMessageAdapter(Message message){
 
+    /*methods to restore message list*/
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
+
+        // Save the user's current game state
+        savedInstanceState.putParcelable(MYLISTKEY, messageListView.onSaveInstanceState());
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        myListInstanceState = messageListView.onSaveInstanceState();
+    }
+
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        // Always call the superclass so it can restore the view hierarchy
+        super.onRestoreInstanceState(savedInstanceState);
+
+        // Restore state members from saved instance
+        savedInstanceState.putParcelable(MYLISTKEY, messageListView.onSaveInstanceState());
+    }
+
+
 }

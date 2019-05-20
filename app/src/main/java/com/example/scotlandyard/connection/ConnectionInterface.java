@@ -1,41 +1,14 @@
 package com.example.scotlandyard.connection;
 
-import com.example.scotlandyard.lobby.Game;
-import com.example.scotlandyard.map.roadmap.Entry;
-import com.example.scotlandyard.messenger.Message;
-import com.example.scotlandyard.map.motions.SendMove;
-
 /**
  * basic interface of client or server
  */
 public interface ConnectionInterface {
     /**
-     * function is called, when game data is received
-     *
-     * @param game game data
+     * function is called, when data is received
+     * @param object    object, which is received
      */
-    void onGameData(Game game);
-
-    /**
-     * function is called, when a chat message is received
-     *
-     * @param message chat message
-     */
-    void onMessage(Message message);
-
-    /**
-     * function is called, when a move is received
-     *
-     * @param sendMove move
-     */
-    void onSendMove(SendMove sendMove);
-
-    /**
-     * function is called, when a road map entry is received
-     *
-     * @param entry entry
-     */
-    void onRoadMapEntry(Entry entry);
+    void onDataReceived(Object object, String endpointId);
 
     /**
      * function is called, when connecting to an endpoint failed

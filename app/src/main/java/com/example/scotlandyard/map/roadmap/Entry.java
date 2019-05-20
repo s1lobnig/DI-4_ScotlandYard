@@ -22,4 +22,8 @@ public abstract class Entry implements Serializable {
 
     public abstract View getView(Context context);
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }
