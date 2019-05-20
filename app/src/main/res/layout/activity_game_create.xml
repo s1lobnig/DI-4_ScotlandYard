@@ -66,8 +66,16 @@
         layout="@layout/content_game_presettings"
         android:layout_width="301dp"
         android:layout_height="127dp"
-        tools:layout_editor_absoluteX="55dp"
-        tools:layout_editor_absoluteY="259dp" />
+        android:layout_marginStart="56dp"
+        android:layout_marginLeft="56dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="55dp"
+        android:layout_marginRight="55dp"
+        android:layout_marginBottom="171dp"
+        app:layout_constraintBottom_toTopOf="@+id/createServerBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/maxPlayers" />
 
     <Button
         android:id="@+id/createServerBtn"

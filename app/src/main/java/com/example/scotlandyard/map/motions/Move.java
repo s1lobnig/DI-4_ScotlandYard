@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 public class Move implements Serializable {
 
-    private static final int ANIMATION_DURATION = 3000;
+    public static final int ANIMATION_DURATION = 3000;
 
     private String nickname;
     private int field;
@@ -48,8 +48,8 @@ public class Move implements Serializable {
 
 
     /**
-     * @param r                 Route-Object
-     * @param startPos          Current location-index
+     * @param r        Route-Object
+     * @param startPos Current location-index
      * @return { ArrayList<LatLang> in the correct order (either original (if
      * current position = route.StartPos) or revered) ArrayList<Float> which
      * contains the animation-duration-slices according to the
@@ -140,7 +140,7 @@ public class Move implements Serializable {
         return new ArrayList[]{timeSlices, routePoints};
     }
 
-    public static void createGoBackRoute(ArrayList<Float> timeSlices, ArrayList<LatLng> routePoints, Point p) {
+    public static ArrayList[] createGoBackRoute(ArrayList<Float> timeSlices, ArrayList<LatLng> routePoints, Point p) {
         int size = timeSlices.size();
         for (int i = size - 1; i >= 0; i--) {
             timeSlices.add(timeSlices.get(i));
@@ -150,6 +150,7 @@ public class Move implements Serializable {
         for (int i = size - 1; i >= 0; i--) {
             routePoints.add(routePoints.get(i));
         }
+        return new ArrayList[]{timeSlices, routePoints};
     }
 
     public static int[] getIconAndTicket(int vehicle) {
