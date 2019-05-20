@@ -2,10 +2,13 @@ package com.example.scotlandyard.lobby;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -84,7 +87,7 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
         gameListView = findViewById(R.id.list_currentGames);
 
         //setAdapter to listView to show all existing games
-        listAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, ((Client) Device.getInstance()).getServerList());
+        listAdapter = new MyListAdapter(this, R.layout.game_item, ((Client) Device.getInstance()).getServerList());
         gameListView.setAdapter(listAdapter);
 
         /* Called when clicked on an item from the list of available servers. */
@@ -187,11 +190,10 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
     }
 
     //need adapter to design a list item and add it to list
-    /*private class MyListAdapter extends ArrayAdapter<Endpoint> {
+    private class MyListAdapter extends ArrayAdapter<Endpoint> {
         private int layout;
-        private String logTag = "CLIENT_SERVICE";
 
-        public MyListAdapter(Context context, int resource, List<Endpoint> objects) {
+        public MyListAdapter(GameList context, int resource, ArrayList<Endpoint> objects) {
             super(context, resource, objects);
             layout = resource;
         }
@@ -214,8 +216,9 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
                     @Override
                     public void onClick(View v) {
                         // Request connection to server.
-                        Log.d(logTag, "Requesting connection to "+endpoints.get(position));
-                        clientService.connectToEndpoint(endpoints.get(position));
+
+                            ((Client) Device.getInstance()).connectToEndpoint(position);
+
 
                     }
                 });
@@ -231,7 +234,7 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
             return convertView;
 
         }
-    }*/
+    }
 
     //what i need in my view
     public class ViewHolder {

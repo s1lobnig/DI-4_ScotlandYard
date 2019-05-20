@@ -30,6 +30,7 @@ public class UnitTestsTickets {
         playerList.add(new Player("player2"));
         playerList.add(new Player("player3"));
         playerList.add(new Player("player4"));
+        game = new Game("Test", 4, 4, 5, false, playerList);
     }
 
     //check if hashmap has the correct size
@@ -81,7 +82,7 @@ public class UnitTestsTickets {
         Assert.assertEquals(2, tickets.get(R.string.TAXI_TICKET_KEY).intValue());
         Assert.assertEquals(1, tickets.get(R.string.DOUBLE_TICKET_KEY).intValue());
         //need to outsource some logik from GameMap first
-        Assert.assertEquals(5, tickets.get(R.string.BLACK_TICKET_KEY).intValue());
+        Assert.assertEquals(3, tickets.get(R.string.BLACK_TICKET_KEY).intValue());
     }
 
     //TODO: check if tickets get reduced after making a move
