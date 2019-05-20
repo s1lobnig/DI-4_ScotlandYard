@@ -82,7 +82,7 @@ public class MarkerAnimation {
      * @param timeSlices           .............time the animation should last
      * @param icon               .................marker icon during the animation
      */
-    public static void moveMarkerToTarget(final Marker marker, final ArrayList<LatLng> route, final ArrayList<Float> timeSlices, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, int icon, boolean randEvent, Context context, int finalIcon) {
+    public static void moveMarkerToTarget(final Marker marker, final ArrayList<LatLng> route, final ArrayList<Float> timeSlices, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, int icon, int finalIcon) {
         final Handler handler = new Handler();
         marker.setIcon(BitmapDescriptorFactory.fromResource(icon));
         ArrayList<MarkerMotion> motions = new ArrayList<>();
@@ -99,10 +99,6 @@ public class MarkerAnimation {
             else
                 motion = new MarkerMotion(marker, next, latLngInterpolator, timeSlices.get(i), icon);
             motion.setHandler(handler);
-            // if random event "GoBack", then define where to show the toast
-            if (randEvent && i == route.size() / 2) {
-                motion.setShowToast(true, context);
-            }
             motions.add(motion);
         }
         int i = 0;
@@ -144,8 +140,6 @@ class MarkerMotion implements Runnable {
         this.nextMotion = null;
         this.current = marker.getPosition();
         this.start = SystemClock.uptimeMillis();
-        this.showToast = false;
-        this.toastContext = null;
         this.finalIcon = finalIcon;
     }
 
@@ -166,11 +160,6 @@ class MarkerMotion implements Runnable {
         this.start = SystemClock.uptimeMillis();
     }
 
-    public void setShowToast(boolean showToast, Context context) {
-        this.showToast = showToast;
-        this.toastContext = context;
-    }
-
     @Override
     public void run() {
         elapsed = SystemClock.uptimeMillis() - start;
@@ -181,9 +170,6 @@ class MarkerMotion implements Runnable {
             handler.postDelayed(this, 16);
         } else {
             marker.setPosition(nextPoint);
-            if (showToast) {
-                Toast.makeText(toastContext, R.string.randEventGoBack, Toast.LENGTH_LONG).show();
-            }
             if (nextMotion != null) {
                 nextMotion.setMarker(marker);
                 nextMotion.setStart();
