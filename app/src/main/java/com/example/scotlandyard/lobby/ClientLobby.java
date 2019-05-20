@@ -35,23 +35,16 @@ public class ClientLobby extends AppCompatActivity implements ClientLobbyInterfa
         setContentView(R.layout.activity_client_lobby);
 
         Intent intent = getIntent();
-        players = new ArrayList<>();
+        Lobby lobby = (Lobby)intent.getSerializableExtra("LOBBY");
         player = (Player) intent.getSerializableExtra("PLAYER");
 
         ListView connectedPlayersList = (ListView) findViewById(R.id.playersList);
 
-        connectedPlayersListAdapter = new ArrayAdapter<Player>(this, android.R.layout.simple_list_item_1, players);
+        connectedPlayersListAdapter = new ArrayAdapter<Player>(this, android.R.layout.simple_list_item_1, lobby.getPlayerList());
         connectedPlayersList.setAdapter(connectedPlayersListAdapter);
-
+        
+        updateLobby(lobby);
         ((Client) Device.getInstance()).addLobbyObserver(this);
-
-        ((CheckBox) findViewById(R.id.randomEvents)).setEnabled(false);
-        ((CheckBox) findViewById(R.id.randomMrX)).setEnabled(false);
-
-        ((TextView) findViewById(R.id.textConnectionInfo)).setText("Verbindung zum Server wird hergestellt ...");
-        ((ProgressBar) findViewById(R.id.progressBarConnection)).setProgress(20);
-
-        ((Client) Device.getInstance()).connectToEndpoint(intent.getIntExtra("ENDPOINT_INDEX", 0));
     }
 
     @Override
@@ -88,10 +81,7 @@ public class ClientLobby extends AppCompatActivity implements ClientLobbyInterfa
 
     @Override
     public void showConnected(String endpointName) {
-        Log.d(logTag, "Connected with " + endpointName);
-
-        ((TextView) findViewById(R.id.textConnectionInfo)).setText("Verbindung wurde hergestellt.");
-        ((ProgressBar) findViewById(R.id.progressBarConnection)).setProgress(60);
+        Log.d(logTag, "should not happen");
     }
 
     @Override
@@ -110,9 +100,6 @@ public class ClientLobby extends AppCompatActivity implements ClientLobbyInterfa
     @Override
     public void showConnectionFailed(String endpointName) {
         Log.d(logTag, "should not happen");
-
-        String notification = "Verbindung zum Server konnte nicht hergestellt werden.";
-        Toast.makeText(getApplicationContext(), notification, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -128,9 +115,6 @@ public class ClientLobby extends AppCompatActivity implements ClientLobbyInterfa
     @Override
     public void showAcceptingFailed(String endpointName) {
         Log.d(logTag, "should not happen");
-
-        String notification = "Verbindung zum Server konnte nicht hergestellt werden.";
-        Toast.makeText(getApplicationContext(), notification, Toast.LENGTH_LONG).show();
     }
 
     @Override
