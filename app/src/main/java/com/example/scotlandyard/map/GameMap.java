@@ -261,9 +261,8 @@ public class GameMap extends AppCompatActivity
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker field) {
-                //TODO: check if game has end
-                if (!ManageGameData.isPlayer(device.getGame(), field)) {
-                    if (!myPlayer.isMoved()) {
+                if (!ManageGameData.isPlayer(device.getGame(), field) && device.getGame().getRound() <= Game.getNumRounds()) {
+                    if (!myPlayer.isMoved() && !(!myPlayer.isMrX() && device.getGame().isRoundMrX()) && !(myPlayer.isMrX() && !device.getGame().isRoundMrX())) {
                         boolean isValid = isValidMove(field, myPlayer);
                         if (isValid) {
                             int r = (new Random()).nextInt(100) % 10;
@@ -271,12 +270,10 @@ public class GameMap extends AppCompatActivity
                             if (Device.isServer()) {
                                 Point point = Points.getPoints()[Points.getIndex(newLocation)];
                                 moveMarker(point, myPlayer, myPlayer.getIcon(), r);
-                                device.send(new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r));
                                 myPlayer.setMoved(true);
                                 tryNextRound();
-                            } else {
-                                device.send(new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r));
                             }
+                            device.send(new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r));
                         }
                         return isValid;
                     } else {
@@ -544,11 +541,6 @@ public class GameMap extends AppCompatActivity
         Point point = Points.getPoints()[field];
 
         moveMarker(point, player, player.getIcon(), move.getRandomEventTrigger());
-    }
-
-    @Override
-    public void removePlayer(Player player) {
-        player.getMarker().remove();
     }
 
     @Override

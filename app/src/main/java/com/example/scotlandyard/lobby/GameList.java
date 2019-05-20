@@ -182,7 +182,6 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
         Log.d(logTag, "Loading client lobby.");
         Intent intent = new Intent(GameList.this, ClientLobby.class);
         intent.putExtra("LOBBY", lobby);
-        intent.putExtra("PLAYER", player);
         startActivity(intent);
     }
 

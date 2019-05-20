@@ -148,7 +148,7 @@ public class Client extends Device implements ClientInterface {
         }
         if (txt.length == 3 && txt[0].equals("PLAYER") && txt[2].equals("QUITTED")){
             Player player = ManageGameData.findPlayer(game, txt[1]);
-            ManageGameData.deactivatePlayer(player);
+            ManageGameData.deactivatePlayer(game, player);
         }
         if (txt.length == 2 && txt[0].equals("END")) {
             //Toast.makeText(GameMap.this, txt[1] + " hat gewonnen", Snackbar.LENGTH_LONG).show();

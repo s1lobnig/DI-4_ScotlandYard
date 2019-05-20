@@ -7,6 +7,7 @@ import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.connection.ServerInterface;
 import com.example.scotlandyard.connection.ServerService;
 import com.example.scotlandyard.map.ManageGameData;
+import com.example.scotlandyard.map.MapNotification;
 import com.example.scotlandyard.map.motions.Move;
 import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.messenger.Message;
@@ -142,11 +143,11 @@ public class Server extends Device implements ServerInterface {
         player.setMoved(true);
         switch (ManageGameData.tryNextRound(game)) {
             case 1:
-                send(new Message("NEXT_ROUND"));
+                send(new MapNotification("NEXT_ROUND"));
                 //TODO: show next Round
                 break;
             case 0:
-                send(new Message("END MisterX")); //MisterX hat gewonnen
+                send(new MapNotification("END MisterX")); //MisterX hat gewonnen
                 //TODO: show next Round
                 break;
         }
@@ -166,9 +167,13 @@ public class Server extends Device implements ServerInterface {
     @Override
     public void onDisconnected(Endpoint endpoint) {
         Log.d(logTag, "endpoint disconnected");
-        //Player lostPlayer = ManageGameData.findPlayer(endpoint.getName());
-        //ManageGameData.deactivatePlayer(lostPlayer);
-        //send(new MapNotification("PLAYER " + lostPlayer.getNickname() + " QUITTED"));
+
+        //if game has started
+        if(game != null){
+            Player lostPlayer = ManageGameData.findPlayer(game, endpoint.getName());
+            ManageGameData.deactivatePlayer(game, lostPlayer);
+            send(new MapNotification("PLAYER " + lostPlayer.getNickname() + " QUITTED"));
+        }
 
         if (gameObserver != null) {
             gameObserver.showDisconnected(endpoint);

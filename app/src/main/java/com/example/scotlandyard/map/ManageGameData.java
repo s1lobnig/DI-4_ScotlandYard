@@ -2,6 +2,7 @@ package com.example.scotlandyard.map;
 
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
+import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.lobby.Game;
 import com.example.scotlandyard.lobby.Lobby;
 import com.google.android.gms.maps.model.LatLng;
@@ -34,9 +35,9 @@ public class ManageGameData {
         return null;
     }
 
-    public static void deactivatePlayer(Player player) {
-        player.setMoved(true); //so he does not have to move in this round
+    public static void deactivatePlayer(Game game, Player player) {
         player.setActive(false);
+        tryNextRound(game);
     }
 
     private static boolean isRoundFinished(Game game) {
@@ -49,10 +50,17 @@ public class ManageGameData {
     }
 
     public static int tryNextRound(Game game) {
+        if(game.isRoundMrX()){
+            if(game.getMrX().isMoved()){
+                game.setRoundMrX(false);
+                //return -1;
+            }
+        }
         if (isRoundFinished(game)) {
-            if (game.getRound() < 12) {
+            if (game.getRound() < Game.getNumRounds()) {
                 //Round finished
                 game.nextRound();
+                game.setRoundMrX(true);
                 for (Player p : game.getPlayers()) {
                     p.setMoved(false);
                 }
