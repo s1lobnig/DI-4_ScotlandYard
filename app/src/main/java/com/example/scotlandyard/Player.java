@@ -138,4 +138,20 @@ public class Player implements Serializable {
     public String toString() {
         return nickname;
     }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Player) {
+            Player p = (Player) o;
+            if (p.nickname.equals(nickname)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

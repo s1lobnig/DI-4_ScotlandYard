@@ -249,15 +249,16 @@ public class GameMap extends AppCompatActivity
                     if (!myPlayer.isMoved()) {
                         boolean isValid = isValidMove(field, myPlayer);
                         if (isValid) {
+                            int r = (new Random()).nextInt(100) % 10;
                             Point newLocation = new Point(field.getPosition().latitude, field.getPosition().longitude);
                             if (Device.isServer()) {
                                 Point point = Points.getPoints()[Points.getIndex(newLocation)];
-                                moveMarker(point, myPlayer, myPlayer.getIcon());
-                                device.send(new Move(myPlayer.getNickname(), Points.getIndex(newLocation)));
+                                moveMarker(point, myPlayer, myPlayer.getIcon(), r);
+                                device.send(new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r));
                                 myPlayer.setMoved(true);
                                 tryNextRound();
                             } else {
-                                device.send(new Move(myPlayer.getNickname(), Points.getIndex(newLocation)));
+                                device.send(new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r));
                             }
                         }
                         return isValid;
@@ -271,12 +272,11 @@ public class GameMap extends AppCompatActivity
         });
     }
 
-    private boolean moveMarker(Point p, Player player, int playerIcon) {
+    private boolean moveMarker(Point p, Player player, int playerIcon, int r) {
         if (randomEventsEnabled) {
-            int r = (new Random()).nextInt(100) % 10;
             if (r < 3) {
                 if (player.getPenalty() == 0) {
-                    return moveWithRandomEvent(player, p, playerIcon);
+                    return moveWithRandomEvent(player, p, playerIcon, r);
                 }
             }
         }
@@ -303,23 +303,32 @@ public class GameMap extends AppCompatActivity
         return false;
     }
 
-    public boolean moveWithRandomEvent(Player player, Point p, int playerIcon) {
+    public boolean moveWithRandomEvent(Player player, Point p, int playerIcon, int randomEvent) {
         RandomEvent r = new RandomEvent();
+        /*
+        The randomEvent-paramter is already random generated - use it as id - random event is displayed equally on every device
+         */
+        r.setID(randomEvent);
         boolean goBack = false;
         boolean doNotGo = false;
         boolean randomRoute = false;
+        boolean showMyToast = myPlayer.equals(player);
 
         if (r.getID() == 0) {
-            Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
+            if (showMyToast)
+                Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
             doNotGo = true;
         } else if (r.getID() == 1) {
-            Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
+            if (showMyToast)
+                Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
             goBack = true;
         } else if (r.getID() == 2) {
-            Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
+            if (showMyToast)
+                Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
             player.setPenalty(3);
         } else if (r.getID() == 3) {
-            Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
+            if (showMyToast)
+                Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
             randomRoute = true;
         }
         if (!doNotGo) {
@@ -498,7 +507,7 @@ public class GameMap extends AppCompatActivity
         int field = move.getField();
         Point point = Points.getPoints()[field];
 
-        moveMarker(point, player, player.getIcon());
+        moveMarker(point, player, player.getIcon(), move.getRandomEventTrigger());
     }
 
     @Override
