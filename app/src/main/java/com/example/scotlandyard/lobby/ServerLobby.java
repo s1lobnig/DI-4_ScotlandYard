@@ -85,16 +85,14 @@ public class ServerLobby extends AppCompatActivity implements ServerLobbyInterfa
     protected void onStop() {
         super.onStop();
         ((Server) Device.getInstance()).removeLobbyObserver();
+        ((Server) Device.getInstance()).stopAdvertising();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         ((Server) Device.getInstance()).removeLobbyObserver();
-
-        /*When closing activity: stop advertising and destroy the created server.*/
-        ((Server) Device.getInstance()).onStoppedAdvertising();
-        ((Server) Device.getInstance()).resetInstance();
+        ((Server) Device.getInstance()).stopAdvertising();
     }
 
     public void showFailedAdvertising() {
