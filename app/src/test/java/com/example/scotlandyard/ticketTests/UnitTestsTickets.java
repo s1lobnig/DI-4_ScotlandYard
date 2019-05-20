@@ -61,7 +61,7 @@ public class UnitTestsTickets {
     @Test
     public void testDetectiveTickets() {
         testPlayer.setMrX(false);
-        manageGameData.setTickets(testPlayer);
+        manageGameData.setTickets(game,testPlayer);
         Assert.assertEquals(5, tickets.get(R.string.PEDESTRIAN_TICKET_KEY).intValue());
         Assert.assertEquals(4, tickets.get(R.string.BICYCLE_TICKET_KEY).intValue());
         Assert.assertEquals(2, tickets.get(R.string.BUS_TICKET_KEY).intValue());
@@ -74,7 +74,7 @@ public class UnitTestsTickets {
     @Test
     public void testMrXTickets() {
         testPlayer.setMrX(true);
-        manageGameData.setTickets(testPlayer);
+        manageGameData.setTickets(game,testPlayer);
         Assert.assertEquals(Integer.MAX_VALUE, tickets.get(R.string.PEDESTRIAN_TICKET_KEY).intValue());
         Assert.assertEquals(Integer.MAX_VALUE, tickets.get(R.string.BICYCLE_TICKET_KEY).intValue());
         Assert.assertEquals(Integer.MAX_VALUE, tickets.get(R.string.BUS_TICKET_KEY).intValue());
