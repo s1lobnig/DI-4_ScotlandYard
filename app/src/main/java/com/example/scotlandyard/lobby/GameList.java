@@ -96,12 +96,6 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ((Client) Device.getInstance()).connectToEndpoint(position);
-
-                Log.d(logTag, "Loading client lobby.");
-                Intent intent = new Intent(GameList.this, ClientLobby.class);
-                intent.putExtra("PLAYER", player);
-                intent.putExtra("ENDPOINT_INDEX", position);
-                startActivity(intent);
             }
         });
 
