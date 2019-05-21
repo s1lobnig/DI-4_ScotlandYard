@@ -371,9 +371,6 @@ public class GameMap extends AppCompatActivity
         if (player.isMrX()) {
             int lastTurn = device.getRoadMap().getNumberOfEntries();
             Entry entry = MovingLogic.getRoadMapEntry(lastTurn, newLocation, ticket);
-            if (Device.isServer()) {
-                device.getRoadMap().addEntry(entry);
-            }
             device.send(entry);
         }
         if (!(player.getPenalty() > 0 && icon == R.drawable.bicycle)) {
