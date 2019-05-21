@@ -10,10 +10,13 @@ import java.util.Random;
 public class Game implements Serializable {
 
     private static final Random random = new Random();
+    private static final int numRounds = 12;
+
     private String gameName;
     private int maxMembers;
     private int currentMembers;
     private int round;
+    private boolean roundMrX;
     private boolean randomEventsEnabled;
     private ArrayList<Player> players = new ArrayList<>(); // Changed from List to ArrayList because of serialization.
 
@@ -29,8 +32,13 @@ public class Game implements Serializable {
         this.maxMembers = maxMembers;
         this.currentMembers = currentMembers;
         this.round = round;
+        this.roundMrX = true;
         this.randomEventsEnabled = randomEventsEnabled;
         this.players = players;
+    }
+
+    public static int getNumRounds() {
+        return numRounds;
     }
 
     public String getGameName() {
@@ -69,6 +77,14 @@ public class Game implements Serializable {
         this.round++;
     }
 
+    public boolean isRoundMrX() {
+        return roundMrX;
+    }
+
+    public void setRoundMrX(boolean roundMrX) {
+        this.roundMrX = roundMrX;
+    }
+
     public boolean isRandomEventsEnabled() {
         return randomEventsEnabled;
     }
@@ -85,4 +101,12 @@ public class Game implements Serializable {
         this.players = players;
     }
 
+    public Player getMrX(){
+        for (Player p : players) {
+            if(p.isMrX()){
+                return p;
+            }
+        }
+        return null;
+    }
 }
