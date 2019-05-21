@@ -1,7 +1,5 @@
 package com.example.scotlandyard.connection;
 
-import java.util.Map;
-
 /**
  * interface for server
  */

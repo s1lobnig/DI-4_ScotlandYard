@@ -2,13 +2,16 @@ package com.example.scotlandyard.map.motions;
 
 import java.io.Serializable;
 
-public class SendMove implements Serializable {
+public class Move implements Serializable {
+
     private String nickname;
     private int field;
+    private int randomEventTrigger;
 
-    public SendMove(String nickname, int field) {
+    public Move(String nickname, int field, int randomEventTrigger) {
         this.nickname = nickname;
         this.field = field;
+        this.randomEventTrigger = randomEventTrigger;
     }
 
     public String getNickname() {
@@ -25,6 +28,14 @@ public class SendMove implements Serializable {
 
     public void setField(int field) {
         this.field = field;
+    }
+
+    public void setRandomEventTrigger(int randomEventTrigger) {
+        this.randomEventTrigger = randomEventTrigger;
+    }
+
+    public int getRandomEventTrigger() {
+        return randomEventTrigger;
     }
 
     @Override

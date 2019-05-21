@@ -3,10 +3,6 @@ package com.example.scotlandyard.connection;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.example.scotlandyard.lobby.Game;
-import com.example.scotlandyard.map.roadmap.Entry;
-import com.example.scotlandyard.messenger.Message;
-import com.example.scotlandyard.map.motions.SendMove;
 import com.google.android.gms.nearby.connection.ConnectionInfo;
 import com.google.android.gms.nearby.connection.ConnectionLifecycleCallback;
 import com.google.android.gms.nearby.connection.ConnectionResolution;
@@ -37,7 +33,6 @@ public class ClientService extends ConnectionService {
     private Map<String, Endpoint> discoveredEndpoints;
     private Endpoint connection;
     private ClientInterface client;
-    private static ClientService singleton = null;
 
     /**
      * Constructor
@@ -46,58 +41,11 @@ public class ClientService extends ConnectionService {
      * @param endpointName      name of the device (nickname)
      * @param connectionsClient connectionsClient of google api of the activity
      */
-    private ClientService(@NonNull ClientInterface clientInterface, String endpointName, ConnectionsClient connectionsClient) {
+    public ClientService(@NonNull ClientInterface clientInterface, String endpointName, ConnectionsClient connectionsClient) {
         super(endpointName, connectionsClient);
         discoveredEndpoints = new HashMap<>();
         logTag = "ClientService";
         this.client = clientInterface;
-    }
-
-    /**
-     * function for retrieving singleton
-     *
-     * @return singleton of ClientService
-     * @throws IllegalStateException, if singleton is not set
-     */
-    public static ClientService getInstance() throws IllegalStateException {
-        if (singleton == null) {
-            throw new IllegalStateException("singleton not set");
-        }
-        return singleton;
-    }
-
-    /**
-     * function for setting singleton
-     *
-     * @param clientInterface   object implementing client interface
-     * @param endpointName      name of the device (nickname)
-     * @param connectionsClient connectionsClient of google api of the activity
-     * @return singleton of ClientInterface
-     * @throws IllegalStateException, if singleton is already set
-     */
-    public static ClientService setInstance(ClientInterface clientInterface, String endpointName, ConnectionsClient connectionsClient) throws IllegalStateException {
-        if (singleton != null) {
-            throw new IllegalStateException("singleton already set");
-        }
-        singleton = new ClientService(clientInterface, endpointName, connectionsClient);
-        return singleton;
-    }
-
-    /**
-     * function for resetting the singleton
-     */
-    public static void resetInstance() {
-        singleton.disconnect();
-        singleton = null;
-    }
-
-    /**
-     * function for retrieving singleton status
-     *
-     * @return true, if singlet is set
-     */
-    public static boolean isSingletonSet() {
-        return (singleton != null);
     }
 
     /**
@@ -183,9 +131,7 @@ public class ClientService extends ConnectionService {
      * @param endpoint endpoint to connect to
      */
     public void connectToEndpoint(@NonNull final Endpoint endpoint) {
-
-        /*Added true, to be able to connect. Possible problem: Invalid connection state.*/
-        if (connectionState == ConnectionState.DISCOVERING || true) {
+        if (connectionState == ConnectionState.DISCOVERING) {
             stopDiscovery();
             connectionState = ConnectionState.CONNECTING;
             Log.d(logTag, "sending a connection request to endpoint " + endpoint);
@@ -264,15 +210,7 @@ public class ClientService extends ConnectionService {
                         Log.d(logTag, "error in deserialization", ex);
                     }
                     if (object != null) {
-                        if (object instanceof Message) {
-                            client.onMessage((Message) object);
-                        } else if (object instanceof Game) {
-                            client.onGameData((Game) object);
-                        } else if (object instanceof SendMove) {
-                            client.onSendMove((SendMove) object);
-                        } else if (object instanceof Entry) {
-                            client.onRoadMapEntry((Entry) object);
-                        }
+                        client.onDataReceived(object, endpointId);
                     }
                 }
 
@@ -284,27 +222,25 @@ public class ClientService extends ConnectionService {
             };
 
     /**
-     * function for sending a chat message, game data or move
+     * function for sending an object over the connection
      *
-     * @param object object to send (game data, chat message or move)
+     * @param object object to send
      */
     public void send(Object object) {
-        if (object instanceof Message || object instanceof Game || object instanceof SendMove || object instanceof Entry) {
-            byte[] data = null;
-            try {
-                data = serialize(object);
-            } catch (IOException ex) {
-                Log.d(logTag, "error in serialization", ex);
-                client.onSendingFailed(object);
+        byte[] data = null;
+        try {
+            data = serialize(object);
+        } catch (IOException ex) {
+            Log.d(logTag, "error in serialization", ex);
+            client.onSendingFailed(object);
+        }
+        if (data != null) {
+            if (data.length > ConnectionsClient.MAX_BYTES_DATA_SIZE) {
+                Log.d(logTag, "byte array size > MAX_BYTES_DATA_SIZE");
+                // will this be a problem ?
             }
-            if (data != null) {
-                if (data.length > ConnectionsClient.MAX_BYTES_DATA_SIZE) {
-                    Log.d(logTag, "byte array size > MAX_BYTES_DATA_SIZE");
-                    // will this be a problem ?
-                }
-                Payload payload = Payload.fromBytes(data);
-                sendPayload(payload);
-            }
+            Payload payload = Payload.fromBytes(data);
+            sendPayload(payload);
         }
     }
 

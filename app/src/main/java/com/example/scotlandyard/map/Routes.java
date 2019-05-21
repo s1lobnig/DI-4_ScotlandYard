@@ -250,7 +250,6 @@ public class Routes {
             new Route(72, 74),
             new Route(72, 73)
     };
-    private static final int BY_FOOT_COLOR = Color.YELLOW;
 
     private static final Point[] INTERMEDIATES_BY_BICYCLE_1_4 = new Point[]{
             new Point(46.621189, 14.262312),
@@ -343,7 +342,6 @@ public class Routes {
             new Route(40, 42, INTERMEDIATES_BY_BICYCLE_40_42),
             new Route(39, 40)
     };
-    private static final int BICYCLE_COLOR = Color.rgb(255, 164, 17);
 
     private static final Point[] INTERMEDIATES_BY_BUS_4_16 = new Point[]{
             new Point(46.621232, 14.262722),
@@ -406,7 +404,6 @@ public class Routes {
             new Route(41, 59, INTERMEDIATES_BY_BUS_41_59),
             new Route(4, 41, INTERMEDIATES_BY_BUS_4_41)
     };
-    private static final int BUS_COLOR = Color.RED;
 
     private static final Point[] INTERMEDIATES_BY_TAXI_DRAGAN_32_43 = new Point[]{
             new Point(46.614486, 14.264978),
@@ -437,26 +434,9 @@ public class Routes {
             new Route(12, 32, INTERMEDIATES_BY_TAXI_DRAGAN_12_32),
             new Route(12, 34, INTERMEDIATES_BY_TAXI_DRAGAN_12_34)
     };
-    private static final int TAXI_DRAGAN_COLOR = Color.BLUE;
 
     public static Route[] getBicycleRoutes() {
         return BICYCLE;
-    }
-
-    public static int getBicycleColor() {
-        return BICYCLE_COLOR;
-    }
-
-    public static int getBusColor() {
-        return BUS_COLOR;
-    }
-
-    public static int getByFootColor() {
-        return BY_FOOT_COLOR;
-    }
-
-    public static int getTaxiDraganColor() {
-        return TAXI_DRAGAN_COLOR;
     }
 
     public static Route[] getBusRoutes() {
@@ -614,20 +594,10 @@ public class Routes {
 
 
     public static Object[] getRandomRoute(int current, int notNext) {
-        ArrayList<Route> foot = getAllByFoot(current + 1, notNext + 1);
-        ArrayList<Route> bicycle = getAllByBicycle(current + 1, notNext + 1);
-        ArrayList<Route> bus = getAllByBus(current + 1, notNext + 1);
-        ArrayList<Route> taxiDragan = getAllByTaxiDragan(current + 1, notNext + 1);
-        if (!foot.isEmpty()) {
-            return new Object[]{true, foot.get((new Random()).nextInt(foot.size())), 0};
-        } else if (!bicycle.isEmpty()) {
-            return new Object[]{true, bicycle.get((new Random()).nextInt(bicycle.size())), 1};
-        } else if (!bus.isEmpty()) {
-            return new Object[]{true, bus.get((new Random()).nextInt(bus.size())), 2};
-        } else if (!taxiDragan.isEmpty()) {
-            return new Object[]{true, taxiDragan.get((new Random()).nextInt(taxiDragan.size())), 3};
-        } else {
-            return new Object[]{false, null, -1};
-        }
+        getAllByFoot(current, notNext);
+        getAllByBicycle(current, notNext);
+        getAllByBus(current, notNext);
+        getAllByTaxiDragan(current, notNext);
+        return null;
     }
 }

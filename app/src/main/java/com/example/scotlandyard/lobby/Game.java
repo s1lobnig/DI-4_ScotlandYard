@@ -1,6 +1,7 @@
 package com.example.scotlandyard.lobby;
 
 import com.example.scotlandyard.Player;
+import com.example.scotlandyard.map.motions.Move;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -9,10 +10,13 @@ import java.util.Random;
 public class Game implements Serializable {
 
     private static final Random random = new Random();
+    private static final int numRounds = 12;
+
     private String gameName;
     private int maxMembers;
     private int currentMembers;
     private int round;
+    private boolean roundMrX;
     private boolean randomEventsEnabled;
     private ArrayList<Player> players = new ArrayList<>(); // Changed from List to ArrayList because of serialization.
 
@@ -21,6 +25,20 @@ public class Game implements Serializable {
         this.gameName = gameName;
         this.maxMembers = maxMembers;
         this.currentMembers = 1;
+    }
+
+    public Game(String gameName, int maxMembers, int currentMembers, int round, boolean randomEventsEnabled, ArrayList<Player> players) {
+        this.gameName = gameName;
+        this.maxMembers = maxMembers;
+        this.currentMembers = currentMembers;
+        this.round = round;
+        this.roundMrX = true;
+        this.randomEventsEnabled = randomEventsEnabled;
+        this.players = players;
+    }
+
+    public static int getNumRounds() {
+        return numRounds;
     }
 
     public String getGameName() {
@@ -55,8 +73,16 @@ public class Game implements Serializable {
         this.round = round;
     }
 
-    public void nextRound(){
+    public void nextRound() {
         this.round++;
+    }
+
+    public boolean isRoundMrX() {
+        return roundMrX;
+    }
+
+    public void setRoundMrX(boolean roundMrX) {
+        this.roundMrX = roundMrX;
     }
 
     public boolean isRandomEventsEnabled() {
@@ -71,32 +97,16 @@ public class Game implements Serializable {
         return players;
     }
 
-    public boolean nickAlreadyUsed(String nick) {
-        for (Player p : players) {
-            if (nick.equals(p.getNickname())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public void setPlayers(ArrayList<Player> players) {
         this.players = players;
     }
 
-    public void chooseMrX(boolean chooseMrXRandomly) {
-        if (chooseMrXRandomly) {
-            players.get(random.nextInt(players.size())).setMrX(true);
-        } else {
-            ArrayList<Integer> candidatesForMrX = new ArrayList<>();
-            for (int i = 0; i < players.size(); i++) {
-                if (players.get(i).wantsToBeMrX())
-                    candidatesForMrX.add(i);
+    public Player getMrX(){
+        for (Player p : players) {
+            if(p.isMrX()){
+                return p;
             }
-            if (candidatesForMrX.isEmpty())
-                players.get(0).setMrX(true);
-            else
-                players.get(candidatesForMrX.get(random.nextInt(candidatesForMrX.size()))).setMrX(true);
         }
+        return null;
     }
 }

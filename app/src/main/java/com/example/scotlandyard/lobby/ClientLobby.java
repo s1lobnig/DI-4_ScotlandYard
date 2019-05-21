@@ -4,202 +4,133 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.scotlandyard.control.Client;
+import com.example.scotlandyard.control.ClientLobbyInterface;
+import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.map.GameMap;
-import com.example.scotlandyard.map.roadmap.Entry;
-import com.example.scotlandyard.messenger.Message;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
-import com.example.scotlandyard.map.motions.SendMove;
-import com.example.scotlandyard.connection.ClientInterface;
-import com.example.scotlandyard.connection.ClientService;
 import com.example.scotlandyard.connection.Endpoint;
 
-import java.util.Map;
+import java.util.ArrayList;
 
-public class ClientLobby extends AppCompatActivity implements ClientInterface {
-
-    private ClientService clientService; /* ClientService - used for communication with server(s). */
+public class ClientLobby extends AppCompatActivity implements ClientLobbyInterface {
     private ListAdapter connectedPlayersListAdapter; /* Global variable because of updates. */
-    private Game game = new Game("NOT_INITIALZED", 0);
-    private String logTag = "CLIENT_LOBBY";
-    String username;
-
+    private String logTag = "ClientLobby";
+    ArrayList<Player> players;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client_lobby);
 
-        Log.d(logTag, "onCreate()");
-
-        clientService = ClientService.getInstance();
-        clientService.setClient(this);
-
         Intent intent = getIntent();
-
-        username = intent.getStringExtra("USERNAME");
-        String endpointName = intent.getStringExtra("ENDPOINT_NAME");
-        String endpointID = intent.getStringExtra("ENDPOINT_ID");
-
-        Endpoint serverEndpoint = new Endpoint(endpointID, endpointName);
-        clientService.connectToEndpoint(serverEndpoint);
-        Log.d(logTag, "Connecting with " + serverEndpoint.toString());
+        Lobby lobby = (Lobby)intent.getSerializableExtra("LOBBY");
+        players = new ArrayList<>();
 
         ListView connectedPlayersList = (ListView) findViewById(R.id.playersList);
 
-        game.getPlayers().add(new Player(username));
-
-        connectedPlayersListAdapter = new ArrayAdapter<Player>(this, android.R.layout.simple_list_item_1, game.getPlayers());
+        connectedPlayersListAdapter = new ArrayAdapter<Player>(this, android.R.layout.simple_list_item_1, players);
         connectedPlayersList.setAdapter(connectedPlayersListAdapter);
+
+        ((Client) Device.getInstance()).addLobbyObserver(this);
+        updateLobby(lobby);
     }
 
     @Override
-    /* When: server rejected connection, couldn't connect (for some reason), disconnected, client clicked back button. */
     protected void onDestroy() {
         super.onDestroy();
-
-        clientService.disconnect();
+        ((Client) Device.getInstance()).removeLobbyObserver();
     }
 
     @Override
-    public void onStartedDiscovery() {
-        Log.d(logTag, "onStartedDiscovery()");
+    protected void onStop() {
+        super.onStop();
+        ((Client) Device.getInstance()).removeLobbyObserver();
     }
 
     @Override
-    public void onFailedDiscovery() {
-        Log.d(logTag, "onFailedDiscovery()");
+    public void showStartedDiscovering() {
+        Log.d(logTag, "should not happen");
     }
 
     @Override
-    public void onEndpointFound(Map<String, Endpoint> discoveredEndpoints) {
-        Log.d(logTag, "onEndpointFound()");
+    public void showFailedDiscovering() {
+        Log.d(logTag, "should not happen");
     }
 
     @Override
-    public void onEndpointLost(Map<String, Endpoint> discoveredEndpoints) {
-        Log.d(logTag, "onEndpointLost()");
+    public void updateServerList(ArrayList<Endpoint> serverList) {
+        Log.d(logTag, "should not happen");
     }
 
     @Override
-    public void onStoppedDiscovery() {
-        Log.d(logTag, "onStoppedDiscovery()");
+    public void showStoppedDiscovery() {
+        Log.d(logTag, "should not happen");
     }
 
     @Override
-    public void onConnected(Endpoint endpoint) {
-        Log.d(logTag, "onConnected() : " + endpoint.toString());
-
-        ((TextView) findViewById(R.id.textConnectionInfo)).setText("Connection established");
-        ((ProgressBar) findViewById(R.id.progressBarConnection)).setProgress(60);
-
-        Log.d("CLIENT_LOBBY", "Requesting game data...");
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                /* For some reason the server doesn't detect the first message. TODO: Check why. */
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    Log.e("InterruptedExeption", e.getMessage(), e.getCause());
-                }
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ((TextView) findViewById(R.id.textConnectionInfo)).setText("Waiting for server to start the game");
-                        ((ProgressBar) findViewById(R.id.progressBarConnection)).setProgress(80);
-                    }
-                });
-
-                clientService.send(new Message("GET_GAME_DATA"));
-            }
-        }).start();
+    public void showConnected(String endpointName) {
+        Log.d(logTag, "should not happen");
     }
 
     @Override
-    public void onGameData(Game game) {
-        Log.d(logTag, "onGameData() : Name = " + game.getGameName() + "; #Players = " + game.getPlayers());
+    public void startGame(Game game) {
+        Log.d(logTag, "Game start initiated by server!");
 
-        Game gameReceived = (Game) game;
+        ((TextView) findViewById(R.id.textConnectionInfo)).setText("Das Spiel wird gestartet...");
+        ((ProgressBar) findViewById(R.id.progressBarConnection)).setProgress(100);
 
-        this.game.getPlayers().clear();
-
-        this.game.getPlayers().addAll(gameReceived.getPlayers());
-
-        ((ArrayAdapter) connectedPlayersListAdapter).notifyDataSetChanged();
+        Intent gameStartIntent = new Intent(ClientLobby.this, GameMap.class);
+        startActivity(gameStartIntent);
     }
 
     @Override
-    public void onMessage(Message message) {
-        Log.d(logTag, "onMessage() : Message = " + message.toString());
-
-        String receivedMessage = ((Message) message).getMessage();
-
-        if (receivedMessage.equals("START_GAME")) {
-            Log.d(logTag, "Game start initiated by server!");
-            ((ProgressBar) findViewById(R.id.progressBarConnection)).setProgress(100);
-
-            Intent gameStartIntent = new Intent(ClientLobby.this, GameMap.class);
-            gameStartIntent.putExtra("USERNAME", username);
-            gameStartIntent.putExtra("IS_SERVER", false);
-            startActivity(gameStartIntent);
-        }
+    public void showConnectionFailed(String endpointName) {
+        Log.d(logTag, "should not happen");
     }
 
     @Override
-    public void onSendMove(SendMove sendMove) {
-        Log.d(logTag, "onSendMove() : Message = " + sendMove.toString());
-
-    }
-
-    @Override
-    public void onRoadMapEntry(Entry entry) {
-
-    }
-
-    /* Not used. */
-    @Override
-    public void onFailedConnecting(Endpoint endpoint) {
-        Log.d(logTag, "onFailedConnecting() : " + endpoint.toString());
-
-        String notification = "Verbindung zum Server konnte nicht hergestellt werden.";
-        Toast.makeText(getApplicationContext(), notification, Toast.LENGTH_LONG).show();
-
-        finish();
-    }
-
-    @Override
-    public void onDisconnected(Endpoint endpoint) {
-        Log.d(logTag, "onDisconnected() : " + endpoint.toString());
+    public void showDisconnected(String endpointName) {
+        Log.d(logTag, "onDisconnected() : " + endpointName);
 
         String notification = "Verbindung zum Server verloren.";
         Toast.makeText(getApplicationContext(), notification, Toast.LENGTH_LONG).show();
 
-        finish();
     }
 
     @Override
-    public void onFailedAcceptConnection(Endpoint endpoint) {
-        Log.d(logTag, "onFailedAcceptConnection() : " + endpoint.toString());
-
-        String notification = "Verbindung zum Server konnte nicht hergestellt werden.";
-        Toast.makeText(getApplicationContext(), notification, Toast.LENGTH_LONG).show();
-
-        finish();
+    public void showAcceptingFailed(String endpointName) {
+        Log.d(logTag, "should not happen");
     }
 
     @Override
-    public void onSendingFailed(Object object) {
-        Log.d(logTag, "onSendingFailed()");
+    public void showSendingFailed(Object object) {
+        Log.d(logTag, "should not happen");
+    }
 
-        //TODO show user, that sending has failed
+    @Override
+    public void updateLobby(Lobby lobby) {
+        //TODO show lobby information in this activity (joined players, maxPlayers, randomMr.X, randomEvents)
+
+        ((CheckBox) findViewById(R.id.randomEvents)).setChecked(lobby.isRandomEvents());
+        ((CheckBox) findViewById(R.id.randomMrX)).setChecked(lobby.isRandomMrX());
+
+        ((CheckBox) findViewById(R.id.randomEvents)).setEnabled(false);
+        ((CheckBox) findViewById(R.id.randomMrX)).setEnabled(false);
+
+        players.clear();
+        players.addAll(lobby.getPlayerList());
+        ((ArrayAdapter) connectedPlayersListAdapter).notifyDataSetChanged();
+
     }
 }

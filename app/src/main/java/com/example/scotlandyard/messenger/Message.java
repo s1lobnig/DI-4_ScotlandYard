@@ -1,5 +1,7 @@
 package com.example.scotlandyard.messenger;
 
+import android.os.Parcelable;
+
 import java.io.Serializable;
 
 public class Message implements Serializable {
@@ -7,9 +9,6 @@ public class Message implements Serializable {
     private String message;
     private String nicknameSender;
     private boolean belongsToCurrentUser; // is this message sent by us?
-
-    private Message() {
-    }
 
     /**
      * Constructor for creating messages send in messenger

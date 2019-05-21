@@ -40,4 +40,22 @@ public class TicketEntry extends Entry {
         ((EditText) convertView.findViewById(R.id.turn)).setText(turnNumber + "");
         return convertView;
     }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Entry) {
+            if (o instanceof TicketEntry) {
+                TicketEntry ticketEntry = (TicketEntry) o;
+                if (ticketEntry.ticketUsed == ticketUsed && ticketEntry.turnNumber == turnNumber)
+                    return true;
+            }
+            return false;
+        }
+        return false;
+    }
 }
