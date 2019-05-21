@@ -124,7 +124,7 @@ public class ManageGameData {
 
     }
 
-   public static boolean checkForValidTicket(Player player, int vehicle) {
+    public static boolean checkForValidTicket(Player player, int vehicle) {
         boolean validTicket = false;
         HashMap<Integer, Integer> tickets = player.getTickets();
         switch (vehicle) {
@@ -149,7 +149,7 @@ public class ManageGameData {
             case 3:
                 if (tickets.get(R.string.BLACK_TICKET_KEY) > 0) {
                     validTicket = true;
-                    player.decreaseNumberOfTickets(R.string.BLACK_TICKET_KEY);
+                    player.decreaseNumberOfTickets(R.string.TAXI_TICKET_KEY);
                 }
                 break;
             default:
@@ -157,10 +157,10 @@ public class ManageGameData {
         }
         return validTicket;
     }
-  
+
     public static Game makeGame(Lobby lobby) {
+        lobby.chooseMrX(lobby.isRandomMrX());
         Game game = new Game(lobby.getLobbyName(), lobby.getMaxPlayers(), lobby.getPlayerCount(), 1, lobby.isRandomEvents(), lobby.getPlayerList());
-        game.chooseMrX(lobby.isRandomMrX());
         givePlayerPositionAndIcon(game);
         return game;
     }

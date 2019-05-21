@@ -156,7 +156,7 @@ public class MovingLogic {
     public static Entry getRoadMapEntry(int lastTurn, Point newLocation, int ticket) {
         Entry entry;
         if (lastTurn == 2 || lastTurn == 6 || lastTurn == 11) {
-            entry = new PositionEntry(lastTurn + 1, Points.getIndex(newLocation) + 1);
+            entry = new PositionEntry(lastTurn + 1, Points.getIndex(newLocation));
         } else {
             entry = new TicketEntry(lastTurn + 1, ticket);
         }

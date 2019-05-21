@@ -41,6 +41,10 @@ public class TicketEntry extends Entry {
         return convertView;
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 
     @Override
     public boolean equals(Object o) {

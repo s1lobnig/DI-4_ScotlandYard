@@ -73,7 +73,7 @@ public class GameMap extends AppCompatActivity
     private TextView taxiTickets;
     private TextView blackTickets;
     private TextView doubleTickets;
-    
+
     private static final String TAG = GameMap.class.getSimpleName();
     private GoogleMap mMap;
     private static Player myPlayer;
@@ -253,6 +253,7 @@ public class GameMap extends AppCompatActivity
         //if gmae has not started
         if (Device.isServer() && myPlayer == null) {
             device.setGame(ManageGameData.makeGame(Device.getLobby()));
+            randomEventsEnabled = Device.getLobby().isRandomEvents();
             device.sendGame();
         }
 
@@ -368,9 +369,12 @@ public class GameMap extends AppCompatActivity
         int icon = iconAndTicket[0];
         int ticket = iconAndTicket[1];
         visualizeTickets();
-        if (player.isMrX()) {
+        if (player.isMrX() && player.equals(myPlayer)) {
             int lastTurn = device.getRoadMap().getNumberOfEntries();
             Entry entry = MovingLogic.getRoadMapEntry(lastTurn, newLocation, ticket);
+            if (Device.isServer()) {
+                device.getRoadMap().addEntry(entry);
+            }
             device.send(entry);
         }
         if (!(player.getPenalty() > 0 && icon == R.drawable.bicycle)) {
@@ -406,15 +410,15 @@ public class GameMap extends AppCompatActivity
 
     }
 
-    public void visualizeTickets(){
-        if(myPlayer.isMrX()) {
+    public void visualizeTickets() {
+        if (myPlayer.isMrX()) {
             pedestrianTickets.setText("∞");
             bicycleTickets.setText("∞");
             busTickets.setText("∞");
             blackTickets.setText(myPlayer.getTickets().get(R.string.BLACK_TICKET_KEY).toString());
             taxiTickets.setText(myPlayer.getTickets().get(R.string.TAXI_TICKET_KEY).toString());
             doubleTickets.setText(myPlayer.getTickets().get(R.string.DOUBLE_TICKET_KEY).toString());
-        }else{
+        } else {
             pedestrianTickets.setText(myPlayer.getTickets().get(R.string.PEDESTRIAN_TICKET_KEY).toString());
             bicycleTickets.setText(myPlayer.getTickets().get(R.string.BICYCLE_TICKET_KEY).toString());
             busTickets.setText(myPlayer.getTickets().get(R.string.BUS_TICKET_KEY).toString());
