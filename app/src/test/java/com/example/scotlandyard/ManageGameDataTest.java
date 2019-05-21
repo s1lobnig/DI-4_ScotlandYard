@@ -31,6 +31,7 @@ public class ManageGameDataTest {
         playerlist.add(p3);
 
         game = new Game("Test", 4, 3, 5, false, playerlist);
+        game.getPlayers().get(0).setMrX(true);
     }
 
     @Test
@@ -49,7 +50,6 @@ public class ManageGameDataTest {
     public void testDeactivatePlayer(){
         p1.setMoved(false);
         ManageGameData.deactivatePlayer(game, p1);
-        assertTrue(p1.isMoved());
         assertFalse(p1.isActive());
     }
 
