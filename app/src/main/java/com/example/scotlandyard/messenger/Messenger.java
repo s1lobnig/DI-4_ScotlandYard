@@ -97,6 +97,7 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
         //TODO
         Log.d(logTag, "Chat message received!");
         /*check if message belongs to current user*/
+        message = messages.get(messages.size()-1);
         if(!(message.getNickname().equals(this.nickname))) {
             message.setBelongsToCurrentUser(false);
         }
@@ -125,13 +126,13 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
     @Override
     protected void onStop() {
         super.onStop();
-        ((Server) Device.getInstance()).removeMessengerObserver();
+        Device.getInstance().removeMessengerObserver();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ((Server) Device.getInstance()).removeMessengerObserver();
+        Device.getInstance().removeMessengerObserver();
     }
 
 
