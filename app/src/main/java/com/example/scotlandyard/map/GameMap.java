@@ -261,22 +261,22 @@ public class GameMap extends AppCompatActivity
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker field) {
-                //TODO: check if game has end
-                if (!ManageGameData.isPlayer(device.getGame(), field)) {
+                if (!ManageGameData.isPlayer(device.getGame(), field) && device.getGame().getRound() <= Game.getNumRounds()) {
                     if (!myPlayer.isMoved()) {
                         boolean isValid = isValidMove(field, myPlayer);
                         if (isValid) {
                             int r = (new Random()).nextInt(100) % 10;
                             Point newLocation = new Point(field.getPosition().latitude, field.getPosition().longitude);
                             if (Device.isServer()) {
+                                if ((!myPlayer.isMrX() && device.getGame().isRoundMrX())  || (myPlayer.isMrX() && !device.getGame().isRoundMrX())){
+                                    return false;
+                                }
                                 Point point = Points.getPoints()[Points.getIndex(newLocation)];
                                 moveMarker(point, myPlayer, myPlayer.getIcon(), r);
-                                device.send(new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r));
                                 myPlayer.setMoved(true);
                                 tryNextRound();
-                            } else {
-                                device.send(new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r));
                             }
+                            device.send(new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r));
                         }
                         return isValid;
                     } else {
@@ -541,11 +541,6 @@ public class GameMap extends AppCompatActivity
         Point point = Points.getPoints()[field];
 
         moveMarker(point, player, player.getIcon(), move.getRandomEventTrigger());
-    }
-
-    @Override
-    public void removePlayer(Player player) {
-        player.getMarker().remove();
     }
 
     @Override

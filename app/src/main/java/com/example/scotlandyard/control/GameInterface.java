@@ -15,11 +15,6 @@ public interface GameInterface {
     void updateMove(Move move);
 
     /**
-     * @param player    Player who has quitted and must be removed
-     */
-    void removePlayer(Player player);
-
-    /**
      * function is called, when an endpoint has disconnectd
      * @param endpoint          disconnected endpoint
      */

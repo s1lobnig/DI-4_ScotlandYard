@@ -26,7 +26,6 @@ import java.util.ArrayList;
 public class ClientLobby extends AppCompatActivity implements ClientLobbyInterface {
     private ListAdapter connectedPlayersListAdapter; /* Global variable because of updates. */
     private String logTag = "ClientLobby";
-    private Player player;
     ArrayList<Player> players;
 
     @Override
@@ -36,7 +35,6 @@ public class ClientLobby extends AppCompatActivity implements ClientLobbyInterfa
 
         Intent intent = getIntent();
         Lobby lobby = (Lobby)intent.getSerializableExtra("LOBBY");
-        player = (Player) intent.getSerializableExtra("PLAYER");
         players = new ArrayList<>();
 
         ListView connectedPlayersList = (ListView) findViewById(R.id.playersList);
@@ -93,8 +91,6 @@ public class ClientLobby extends AppCompatActivity implements ClientLobbyInterfa
         ((ProgressBar) findViewById(R.id.progressBarConnection)).setProgress(100);
 
         Intent gameStartIntent = new Intent(ClientLobby.this, GameMap.class);
-        gameStartIntent.putExtra("USERNAME", player.getNickname());
-        gameStartIntent.putExtra("IS_SERVER", false);
         startActivity(gameStartIntent);
     }
 

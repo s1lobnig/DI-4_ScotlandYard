@@ -48,7 +48,7 @@ public class ManageGameDataTest {
     @Test
     public void testDeactivatePlayer(){
         p1.setMoved(false);
-        ManageGameData.deactivatePlayer(p1);
+        ManageGameData.deactivatePlayer(game, p1);
         assertTrue(p1.isMoved());
         assertFalse(p1.isActive());
     }
