@@ -136,7 +136,8 @@ public class Server extends Device implements ServerInterface {
     private void manageMove(Move move) {
         Player player = ManageGameData.findPlayer(this.game, move.getNickname());
 
-        if (player.isMoved()) {
+        //wenn spieler nicht an der reihe -> ignoriere den Move
+        if (player.isMoved() || (player.isMrX() && !game.isRoundMrX()) || (!player.isMrX() && game.isRoundMrX())) {
             return;
         }
         send(move);

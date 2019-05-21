@@ -262,12 +262,16 @@ public class GameMap extends AppCompatActivity
             @Override
             public boolean onMarkerClick(final Marker field) {
                 if (!ManageGameData.isPlayer(device.getGame(), field) && device.getGame().getRound() <= Game.getNumRounds()) {
-                    if (!myPlayer.isMoved() && !(!myPlayer.isMrX() && device.getGame().isRoundMrX()) && !(myPlayer.isMrX() && !device.getGame().isRoundMrX())) {
+                    if (!myPlayer.isMoved()) {
                         boolean isValid = isValidMove(field, myPlayer);
                         if (isValid) {
                             int r = (new Random()).nextInt(100) % 10;
                             Point newLocation = new Point(field.getPosition().latitude, field.getPosition().longitude);
                             if (Device.isServer()) {
+                                Toast.makeText(GameMap.this, "MisterX: " + device.getGame().getMrX(), Snackbar.LENGTH_LONG).show();
+                                if ((!myPlayer.isMrX() && device.getGame().isRoundMrX())  || (myPlayer.isMrX() && !device.getGame().isRoundMrX())){
+                                    return false;
+                                }
                                 Point point = Points.getPoints()[Points.getIndex(newLocation)];
                                 moveMarker(point, myPlayer, myPlayer.getIcon(), r);
                                 myPlayer.setMoved(true);

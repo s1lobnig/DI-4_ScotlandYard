@@ -143,8 +143,8 @@ public class Client extends Device implements ClientInterface {
 
         if(txt[0].equals("NEXT_ROUND")){
            game.nextRound();
-            ManageGameData.findPlayer(game, nickname).setMoved(false);
-            //Toast.makeText(GameMap.this, "Runde " + game.getRound(), Snackbar.LENGTH_LONG).show();
+           ManageGameData.findPlayer(game, nickname).setMoved(false);
+           //Toast.makeText(GameMap.this, "Runde " + game.getRound(), Snackbar.LENGTH_LONG).show();
         }
         if (txt.length == 3 && txt[0].equals("PLAYER") && txt[2].equals("QUITTED")){
             Player player = ManageGameData.findPlayer(game, txt[1]);
