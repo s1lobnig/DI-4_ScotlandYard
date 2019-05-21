@@ -144,7 +144,7 @@ public class MovingLogic {
                 break;
             case 3:
                 icon = R.drawable.taxi;
-                ticket = R.drawable.ticket_black;
+                ticket = R.drawable.ticket_blue;
                 break;
             default:
                 icon = -1;
