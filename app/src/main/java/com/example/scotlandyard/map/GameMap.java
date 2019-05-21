@@ -268,7 +268,6 @@ public class GameMap extends AppCompatActivity
                             int r = (new Random()).nextInt(100) % 10;
                             Point newLocation = new Point(field.getPosition().latitude, field.getPosition().longitude);
                             if (Device.isServer()) {
-                                Toast.makeText(GameMap.this, "MisterX: " + device.getGame().getMrX(), Snackbar.LENGTH_LONG).show();
                                 if ((!myPlayer.isMrX() && device.getGame().isRoundMrX())  || (myPlayer.isMrX() && !device.getGame().isRoundMrX())){
                                     return false;
                                 }
