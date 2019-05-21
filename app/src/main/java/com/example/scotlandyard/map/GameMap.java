@@ -1,16 +1,22 @@
 package com.example.scotlandyard.map;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
+import com.example.scotlandyard.GameEnd_Activity;
 import com.example.scotlandyard.map.motions.LatLngInterpolator;
 import com.example.scotlandyard.map.motions.MarkerAnimation;
 import com.example.scotlandyard.map.motions.RandomEvent;
@@ -81,6 +87,7 @@ public class GameMap extends AppCompatActivity
     private RoadMap roadMap;
     private boolean randomEventsEnabled;
 
+    private SensorManager sm;
     /**
      * @param savedInstanceState
      */
@@ -107,6 +114,13 @@ public class GameMap extends AppCompatActivity
                 logTag = "CLIENT_SERVICE";
             }
             this.roadMap = new RoadMap();
+
+
+
+            //Set Proximitry listener
+            SensorManager sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+            sm.registerListener(sensorListenerProximity, sm.getDefaultSensor(Sensor.TYPE_PROXIMITY), SensorManager.SENSOR_DELAY_NORMAL);
+
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -418,6 +432,10 @@ public class GameMap extends AppCompatActivity
                 } else {
                     entry = new TicketEntry(lastTurn + 1, ticket);
                 }
+
+                if(lastTurn == 3 || lastTurn == 7 || lastTurn == 12)
+                    myPlayer.setHasCheated(false);
+
                 if (isServer) {
                     roadMap.addEntry(entry);
                     serverService.send(entry);
@@ -725,6 +743,8 @@ public class GameMap extends AppCompatActivity
             if(txt[0].equals("NEXT_ROUND")){
                 manageGame.game.nextRound();
                 myPlayer.setMoved(false);
+                if(myPlayer.isMrX())
+                    myPlayer.setHasCheatedThisRound(false);
                 Toast.makeText(GameMap.this, "Runde " + manageGame.game.getRound(), Snackbar.LENGTH_LONG).show();
             }
             if (txt.length == 3 && txt[0].equals("PLAYER") && txt[2].equals("QUITTED")){
@@ -776,12 +796,20 @@ public class GameMap extends AppCompatActivity
     }
 
     private void tryNextRound(){
+        Intent gameStartIntent = new Intent(GameMap.this, GameEnd_Activity.class);
         if(manageGame.tryNextRound() == 1){
             serverService.send(new Message("NEXT_ROUND"));
             Toast.makeText(GameMap.this, "Runde " + manageGame.game.getRound(), Snackbar.LENGTH_LONG).show();
         }else if(manageGame.tryNextRound() == 0){
             serverService.send(new Message("END MisterX")); //MisterX hat gewonnen
             Toast.makeText(GameMap.this, "MisterX hat gewonnen", Snackbar.LENGTH_LONG).show();
+            gameStartIntent.putExtra("Winner", true);
+            startActivity(gameStartIntent);
+        }else if(manageGame.tryNextRound()==2){
+            serverService.send(new Message("END Detective")); //MisterX hat gewonnen
+            Toast.makeText(GameMap.this, "Die Detektive haben gewonnen", Snackbar.LENGTH_LONG).show();
+            gameStartIntent.putExtra("Winner", false);
+            startActivity(gameStartIntent);
         }
     }
 
@@ -813,4 +841,26 @@ public class GameMap extends AppCompatActivity
         Log.e(logTag, "Sending failed");
         //TODO
     }
+
+    //If proximitry listener is activated, this methode is called
+    private final SensorEventListener sensorListenerProximity = new SensorEventListener() {
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            float distance = event.values[0];
+            if(distance < 5){
+                if(myPlayer.isMrX()){
+                    Toast.makeText(GameMap.this, "Weitere Bewegung ausführen", Snackbar.LENGTH_LONG).show();
+                    myPlayer.setMoved(false);
+                    myPlayer.setHasCheated(true);
+                    myPlayer.setHasCheatedThisRound(true);
+                }
+            }
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+        }
+    };
+
 }

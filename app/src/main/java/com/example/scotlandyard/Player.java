@@ -17,6 +17,9 @@ public class Player implements Serializable {
     private boolean isMrX;
     private boolean wantsToBeMrX;
     private HashMap<Integer, Integer> tickets; //Hashmap for storing tickets
+    private boolean hasCheated;
+    private boolean hasCheatedThisRound;
+
 
     public Player(String nickname) {
         this.nickname = nickname;
@@ -31,6 +34,9 @@ public class Player implements Serializable {
         this.tickets.put(R.string.BICYCLE_TICKET_KEY, 0);
         this.tickets.put(R.string.BUS_TICKET_KEY, 0);
         this.tickets.put(R.string.BLACK_TICKET_KEY, 0);
+
+        this.hasCheated = false;
+        this.hasCheatedThisRound = false;
     }
 
     public String getNickname() {
@@ -90,7 +96,8 @@ public class Player implements Serializable {
     }
 
     public void decreaseNumberOfTickets(Integer key){
-        tickets.put(key, tickets.get(key)-1);
+        if(!this.hasCheatedThisRound)
+            tickets.put(key, tickets.get(key)-1);
     }
 
     public void initializeNumberOfTickets(Object[][] initialTickets){
@@ -122,5 +129,22 @@ public class Player implements Serializable {
     @Override
     public String toString() {
         return nickname;
+    }
+
+
+    public boolean isHasCheated() {
+        return hasCheated;
+    }
+
+    public void setHasCheated(boolean hasCheated) {
+        this.hasCheated = hasCheated;
+    }
+
+    public boolean isHasCheatedThisRound() {
+        return hasCheatedThisRound;
+    }
+
+    public void setHasCheatedThisRound(boolean hasCheatedThisRound) {
+        this.hasCheatedThisRound = hasCheatedThisRound;
     }
 }

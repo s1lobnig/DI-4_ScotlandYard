@@ -48,8 +48,11 @@ public class ManageGameData {
     }
 
     int tryNextRound() {
+        if(this.isMrXFound()){
+            return 2;
+        }
         if (isRoundFinished()) {
-            if (game.getRound() < 12) {
+            if (game.getRound() < 5) {
                 //Round finished
                 game.nextRound();
                 for (Player p : game.getPlayers()) {
@@ -63,6 +66,25 @@ public class ManageGameData {
         //Round not finished yet
         return -1;
     }
+    private boolean isMrXFound(){
+        Player x = this.getMrX();
+        for(Player p : game.getPlayers()){
+            if (p.getPosition() == x.getPosition() && p.getNickname() != x.getNickname())
+                return true;
+        }
+        return false;
+    }
+
+    private Player getMrX(){
+        for(Player p : game.getPlayers()){
+            if(p.isMrX())
+                return p;
+        }
+        return null;
+    }
+
+
+
 
     boolean isPlayer(Marker field) {
         for (Player player : game.getPlayers()) {

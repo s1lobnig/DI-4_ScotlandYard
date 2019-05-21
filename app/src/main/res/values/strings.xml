@@ -43,4 +43,5 @@
     <string name="RODA_MAP_DIALOG_TITLE">MR.X\S MOMENTANER FAHRPLAN</string>
     <string name="SearchServer">Searching for servers...</string>
     <string name="establishConn">Establishing connection with the server...</string>
+    <string name="title_activity_game_end_">GameEnd_Activity</string>
 </resources>
