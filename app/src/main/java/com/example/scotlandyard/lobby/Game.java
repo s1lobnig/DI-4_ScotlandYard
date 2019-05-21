@@ -73,7 +73,7 @@ public class Game implements Serializable {
         this.round = round;
     }
 
-    public void nextRound(){
+    public void nextRound() {
         this.round++;
     }
 
@@ -99,23 +99,6 @@ public class Game implements Serializable {
 
     public void setPlayers(ArrayList<Player> players) {
         this.players = players;
-    }
-
-    // not working
-    public void chooseMrX(boolean chooseMrXRandomly) {
-        if (chooseMrXRandomly) {
-            players.get(random.nextInt(players.size())).setMrX(true);
-        } else {
-            ArrayList<Integer> candidatesForMrX = new ArrayList<>();
-            for (int i = 0; i < players.size(); i++) {
-                if (players.get(i).wantsToBeMrX())
-                    candidatesForMrX.add(i);
-            }
-            if (candidatesForMrX.isEmpty())
-                players.get(0).setMrX(true);
-            else
-                players.get(candidatesForMrX.get(random.nextInt(candidatesForMrX.size()))).setMrX(true);
-        }
     }
 
     public Player getMrX(){

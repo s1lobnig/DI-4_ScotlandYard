@@ -4,6 +4,7 @@ import com.example.scotlandyard.Player;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Lobby implements Serializable {
     private String lobbyName;
@@ -64,5 +65,24 @@ public class Lobby implements Serializable {
             }
         }
         return false;
+    }
+
+    public void chooseMrX(boolean chooseMrXRandomly) {
+        Random random = new Random();
+        if (chooseMrXRandomly) {
+            playerList.get(random.nextInt(playerList.size())).setMrX(true);
+            return;
+        } else {
+            ArrayList<Integer> candidatesForMrX = new ArrayList<>();
+            for (int i = 0; i < playerList.size(); i++) {
+                if (playerList.get(i).wantsToBeMrX())
+                    candidatesForMrX.add(i);
+            }
+            if (candidatesForMrX.isEmpty()) {
+                playerList.get(0).setMrX(true);
+                return;
+            } else
+                playerList.get(candidatesForMrX.get(random.nextInt(candidatesForMrX.size()))).setMrX(true);
+        }
     }
 }

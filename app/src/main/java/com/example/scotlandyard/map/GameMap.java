@@ -73,7 +73,7 @@ public class GameMap extends AppCompatActivity
     private TextView taxiTickets;
     private TextView blackTickets;
     private TextView doubleTickets;
-    
+
     private static final String TAG = GameMap.class.getSimpleName();
     private GoogleMap mMap;
     private static Player myPlayer;
@@ -253,6 +253,7 @@ public class GameMap extends AppCompatActivity
         //if gmae has not started
         if (Device.isServer() && myPlayer == null) {
             device.setGame(ManageGameData.makeGame(Device.getLobby()));
+            randomEventsEnabled = Device.getLobby().isRandomEvents();
             device.sendGame();
         }
 
@@ -268,7 +269,7 @@ public class GameMap extends AppCompatActivity
                             int r = (new Random()).nextInt(100) % 10;
                             Point newLocation = new Point(field.getPosition().latitude, field.getPosition().longitude);
                             if (Device.isServer()) {
-                                if ((!myPlayer.isMrX() && device.getGame().isRoundMrX())  || (myPlayer.isMrX() && !device.getGame().isRoundMrX())){
+                                if ((!myPlayer.isMrX() && device.getGame().isRoundMrX()) || (myPlayer.isMrX() && !device.getGame().isRoundMrX())) {
                                     return false;
                                 }
                                 Point point = Points.getPoints()[Points.getIndex(newLocation)];
@@ -359,6 +360,7 @@ public class GameMap extends AppCompatActivity
         LatLng current = player.getMarker().getPosition();
         Point currentPoint = new Point(current.latitude, current.longitude);
         Point newLocation = p;
+        LatLng finalPos;
         Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
         if (randomRoute) {
             Routes.getRandomRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
@@ -368,24 +370,30 @@ public class GameMap extends AppCompatActivity
         int icon = iconAndTicket[0];
         int ticket = iconAndTicket[1];
         visualizeTickets();
-        if (player.isMrX()) {
+        if (player.isMrX() && player.equals(myPlayer)) {
             int lastTurn = device.getRoadMap().getNumberOfEntries();
             Entry entry = MovingLogic.getRoadMapEntry(lastTurn, newLocation, ticket);
+            if (Device.isServer()) {
+                device.getRoadMap().addEntry(entry);
+            }
             device.send(entry);
         }
         if (!(player.getPenalty() > 0 && icon == R.drawable.bicycle)) {
-            if (player.getPenalty() > 0)
+            if (player.getPenalty() > 0) {
                 player.decreasePenalty();
+                newLocation = currentPoint;
+            }
             if (r.getIntermediates() != null) {
                 player.getMarker().setIcon(BitmapDescriptorFactory.fromResource(icon));
                 Object[] routeSliceTimings = MovingLogic.getRouteSlicesAndTimings(r, Points.getIndex(currentPoint) + 1);
                 ArrayList<LatLng> routePoints = (ArrayList) routeSliceTimings[0];
                 ArrayList<Float> timeSlices = (ArrayList) routeSliceTimings[1];
-                LatLng finalPos = p.getLatLng();
+                finalPos = p.getLatLng();
                 if (goBack) {
                     // if random event "Go Back" then...
                     MovingLogic.createGoBackRoute(timeSlices, routePoints, p);
                     finalPos = player.getMarker().getPosition();
+                    newLocation = currentPoint;
                 }
                 MovingLogic.runMarkerAnimation(player, routePoints, timeSlices, finalPos, icon, playerIcon);
             } else {
@@ -395,9 +403,11 @@ public class GameMap extends AppCompatActivity
                     ArrayList[] goBackRouteAndSlices = MovingLogic.createGoBackRoute(p.getLatLng());
                     ArrayList<Float> timeSlices = goBackRouteAndSlices[0];
                     ArrayList<LatLng> routePoints = goBackRouteAndSlices[1];
+                    newLocation = currentPoint;
                     MovingLogic.runMarkerAnimation(player, routePoints, timeSlices, player.getMarker().getPosition(), icon, playerIcon);
                 }
             }
+            player.setPosition(newLocation);
         } else {
             Toast.makeText(GameMap.this, "Das Fahrrad ist noch nicht verfügbar!", Snackbar.LENGTH_LONG).show();
             return false;
@@ -406,15 +416,15 @@ public class GameMap extends AppCompatActivity
 
     }
 
-    public void visualizeTickets(){
-        if(myPlayer.isMrX()) {
+    public void visualizeTickets() {
+        if (myPlayer.isMrX()) {
             pedestrianTickets.setText("∞");
             bicycleTickets.setText("∞");
             busTickets.setText("∞");
             blackTickets.setText(myPlayer.getTickets().get(R.string.BLACK_TICKET_KEY).toString());
             taxiTickets.setText(myPlayer.getTickets().get(R.string.TAXI_TICKET_KEY).toString());
             doubleTickets.setText(myPlayer.getTickets().get(R.string.DOUBLE_TICKET_KEY).toString());
-        }else{
+        } else {
             pedestrianTickets.setText(myPlayer.getTickets().get(R.string.PEDESTRIAN_TICKET_KEY).toString());
             bicycleTickets.setText(myPlayer.getTickets().get(R.string.BICYCLE_TICKET_KEY).toString());
             busTickets.setText(myPlayer.getTickets().get(R.string.BUS_TICKET_KEY).toString());
