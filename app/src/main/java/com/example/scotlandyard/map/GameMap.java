@@ -359,6 +359,7 @@ public class GameMap extends AppCompatActivity
     public boolean move(Player player, Point p, boolean goBack, boolean randomRoute, int playerIcon) {
         LatLng current = player.getMarker().getPosition();
         Point currentPoint = new Point(current.latitude, current.longitude);
+        Point playerLoc = player.getPosition();
         Point newLocation = p;
         LatLng finalPos;
         Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
@@ -381,7 +382,7 @@ public class GameMap extends AppCompatActivity
         if (!(player.getPenalty() > 0 && icon == R.drawable.bicycle)) {
             if (player.getPenalty() > 0) {
                 player.decreasePenalty();
-                newLocation = currentPoint;
+                newLocation = playerLoc;
             }
             if (r.getIntermediates() != null) {
                 player.getMarker().setIcon(BitmapDescriptorFactory.fromResource(icon));
@@ -393,21 +394,26 @@ public class GameMap extends AppCompatActivity
                     // if random event "Go Back" then...
                     MovingLogic.createGoBackRoute(timeSlices, routePoints, p);
                     finalPos = player.getMarker().getPosition();
-                    newLocation = currentPoint;
+                    newLocation = playerLoc;
+                } else {
+                    newLocation = p;
                 }
                 MovingLogic.runMarkerAnimation(player, routePoints, timeSlices, finalPos, icon, playerIcon);
+                player.setPosition(newLocation);
             } else {
                 if (!goBack) {
                     MovingLogic.runMarkerAnimation(player, null, null, p.getLatLng(), icon, playerIcon);
+                    newLocation = p;
+                    player.setPosition(newLocation);
                 } else {
                     ArrayList[] goBackRouteAndSlices = MovingLogic.createGoBackRoute(p.getLatLng());
                     ArrayList<Float> timeSlices = goBackRouteAndSlices[0];
                     ArrayList<LatLng> routePoints = goBackRouteAndSlices[1];
-                    newLocation = currentPoint;
+                    newLocation = playerLoc;
                     MovingLogic.runMarkerAnimation(player, routePoints, timeSlices, player.getMarker().getPosition(), icon, playerIcon);
+                    player.setPosition(newLocation);
                 }
             }
-            player.setPosition(newLocation);
         } else {
             Toast.makeText(GameMap.this, "Das Fahrrad ist noch nicht verfügbar!", Snackbar.LENGTH_LONG).show();
             return false;
