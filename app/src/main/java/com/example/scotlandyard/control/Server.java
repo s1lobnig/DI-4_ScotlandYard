@@ -111,9 +111,7 @@ public class Server extends Device implements ServerInterface {
         if (object instanceof Message) {
             Log.d(logTag, "message received");
             messageList.add((Message) object);
-            Set<String> connections = ((ServerService) connectionService).getEstablishedConnections().keySet();
-            connections.remove(endpointId);
-            ((ServerService) connectionService).send(object, connections);
+            connectionService.send(object);
             if (messengerObserver != null) {
                 messengerObserver.updateMessages(messageList);
             }

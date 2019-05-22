@@ -102,9 +102,11 @@ public class Client extends Device implements ClientInterface {
     public void onDataReceived(Object object, String endpointId) {
         if (object instanceof Message) {
             Log.d(logTag, "message received");
-            messageList.add((Message) object);
-            if (messengerObserver != null) {
-                messengerObserver.updateMessages(messageList);
+            if (!((Message)object).getNickname().equals(nickname)) {
+                messageList.add((Message) object);
+                if (messengerObserver != null) {
+                    messengerObserver.updateMessages(messageList);
+                }
             }
         }
         if (object instanceof Move) {
