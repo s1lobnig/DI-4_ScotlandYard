@@ -115,6 +115,9 @@ public class Server extends Device implements ServerInterface {
             if (messengerObserver != null) {
                 messengerObserver.updateMessages(messageList);
             }
+            if(gameObserver != null){
+                gameObserver.onMessage();
+            }
         }
         if (object instanceof Move) {
             Log.d(logTag, "move received");

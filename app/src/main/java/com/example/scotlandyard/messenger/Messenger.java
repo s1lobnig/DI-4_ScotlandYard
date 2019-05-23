@@ -28,11 +28,9 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
 
     private MessageAdapter mMessageAdapter;
     private Message message;
-    private static final String MYLISTKEY = "myMessageList";
-    Parcelable myListInstanceState;
-
     private String logTag = "Messanger";
     private String nickname;
+    private ArrayList<Message> messageArrayList = Device.getInstance().getMessageList();
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -45,33 +43,41 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messanger);
 
-        if(savedInstanceState!=null) {
-            myListInstanceState = savedInstanceState.getParcelable(MYLISTKEY);
-        }
-
         /* add Toolbar */
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Spieler Chat");
         setSupportActionBar(toolbar);
+
+        /*get data from Intent*/
+        Intent intent = getIntent();
+        nickname = intent.getStringExtra("USERNAME");
 
         /* find views */
         textMessage = findViewById(R.id.edittext_chatbox);
         Button btnSend = findViewById(R.id.button_chatbox_send);
         messageListView = findViewById(R.id.message_list);
 
-        /*get data from Intent*/
-        Intent intent = getIntent();
-        nickname = intent.getStringExtra("USERNAME");
+        /*set the Adapter to listView*/
+        mMessageAdapter = new MessageAdapter(this);
+
+
+        if(messageArrayList.size() != 0) {
+            for(Message message : messageArrayList){
+                if(message.getNickname().equals(this.nickname)){
+                    message.setBelongsToCurrentUser(true);
+                    mMessageAdapter.add(message);
+                }else{
+                    message.setBelongsToCurrentUser(false);
+                    mMessageAdapter.add(message);
+                }
+
+            }
+        }
+
+        messageListView.setAdapter(mMessageAdapter);
 
         /*add messenger observer*/
         Device.getInstance().addMessengerObserver(this);
-
-        /*set the Adapter to listView*/
-        mMessageAdapter = new MessageAdapter(this);
-        messageListView.setAdapter(mMessageAdapter);
-
-        /*restore old messages if they exist*/
-       // messageListView.onRestoreInstanceState(myListInstanceState);
 
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,6 +92,9 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
                 /*flush EditText and close keyboard after sending*/
                 textMessage.setText("");
                 textMessage.onEditorAction(EditorInfo.IME_ACTION_DONE);
+
+                /*scroll the ListView to the last added element*/
+                messageListView.setSelection(messageListView.getCount() - 1);
             }
         });
 
@@ -94,14 +103,12 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
 
     @Override
     public void updateMessages(ArrayList<Message> messages) {
-        //TODO
         Log.d(logTag, "Chat message received!");
         /*check if message belongs to current user*/
         message = messages.get(messages.size()-1);
         if(!(message.getNickname().equals(this.nickname))) {
             message.setBelongsToCurrentUser(false);
         }
-        messages.add(message);
 
         /*display message*/
         mMessageAdapter.add(message);
@@ -134,31 +141,5 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
         super.onDestroy();
         Device.getInstance().removeMessengerObserver();
     }
-
-
-    /*methods to restore message list*/
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        // Always call the superclass so it can save the view hierarchy state
-        super.onSaveInstanceState(savedInstanceState);
-
-        // Save the user's current game state
-        savedInstanceState.putParcelable(MYLISTKEY, messageListView.onSaveInstanceState());
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        myListInstanceState = messageListView.onSaveInstanceState();
-    }
-
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-        // Always call the superclass so it can restore the view hierarchy
-        super.onRestoreInstanceState(savedInstanceState);
-
-        // Restore state members from saved instance
-        savedInstanceState.putParcelable(MYLISTKEY, messageListView.onSaveInstanceState());
-    }
-
 
 }

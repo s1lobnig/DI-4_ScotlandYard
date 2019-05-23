@@ -157,7 +157,19 @@ public class ManageGameData {
             case 3:
                 if (tickets.get(R.string.BLACK_TICKET_KEY) > 0) {
                     validTicket = true;
+                    player.decreaseNumberOfTickets(R.string.BLACK_TICKET_KEY);
+                }
+                break;
+            case 4:
+                if(tickets.get(R.string.TAXI_TICKET_KEY) > 0){
+                    validTicket = true;
                     player.decreaseNumberOfTickets(R.string.TAXI_TICKET_KEY);
+                }
+                break;
+            case 5:
+                if(tickets.get(R.string.DOUBLE_TICKET_KEY) > 0){
+                    validTicket = true;
+                    player.decreaseNumberOfTickets(R.string.DOUBLE_TICKET_KEY);
                 }
                 break;
             default:

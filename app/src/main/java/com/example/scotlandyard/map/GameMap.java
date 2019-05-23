@@ -1,6 +1,7 @@
 package com.example.scotlandyard.map;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -62,6 +63,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static com.example.scotlandyard.R.color.colorPrimary;
+
 public class GameMap extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, GameInterface {
 
@@ -111,7 +114,6 @@ public class GameMap extends AppCompatActivity
         taxiTickets = findViewById(R.id.taxiTicket);
         doubleTickets = findViewById(R.id.doubleTicket);
 
-        //TODO: Set the fab to another color when message is received
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,8 +121,10 @@ public class GameMap extends AppCompatActivity
                 Intent mIntent = new Intent(GameMap.this, Messenger.class);
                 mIntent.putExtra("USERNAME", device.getNickname());
                 startActivity(mIntent);
+
             }
         });
+        fab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(colorPrimary)));
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
@@ -579,5 +583,18 @@ public class GameMap extends AppCompatActivity
         }
         Toast.makeText(GameMap.this, notification + "konnte nicht gesendet werden!", Toast.LENGTH_LONG).show();
         //TODO give possibility to sync the game again
+    }
+
+    @Override
+    public void onMessage() {
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(colorPrimary)));
     }
 }

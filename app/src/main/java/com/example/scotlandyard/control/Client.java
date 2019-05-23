@@ -108,6 +108,9 @@ public class Client extends Device implements ClientInterface {
                     messengerObserver.updateMessages(messageList);
                 }
             }
+            if(gameObserver != null){
+                gameObserver.onMessage();
+            }
         }
         if (object instanceof Move) {
             Move move = (Move) object;
