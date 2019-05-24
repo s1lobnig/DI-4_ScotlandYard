@@ -34,7 +34,11 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
 
     protected void onResume() {
         super.onResume();
-        Device.getInstance().addMessengerObserver(this);
+        try {
+            Device.getInstance().addMessengerObserver(this);
+        } catch (IllegalStateException ex) {
+            Log.d("Messenger", "messenger observer already added.");
+        }
     }
 
     @Override

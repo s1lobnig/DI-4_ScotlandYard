@@ -594,7 +594,11 @@ public class GameMap extends AppCompatActivity
     @Override
     public void onResume(){
         super.onResume();
-        Device.getInstance().addGameObserver(this);
+        try {
+            Device.getInstance().addGameObserver(this);
+        } catch (IllegalStateException ex) {
+            Log.d("GameMap", "gameObserver already added");
+        }
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(colorPrimary)));
     }
