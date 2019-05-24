@@ -32,6 +32,11 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
     private String nickname;
     private ArrayList<Message> messageArrayList = Device.getInstance().getMessageList();
 
+    protected void onResume() {
+        super.onResume();
+        Device.getInstance().addMessengerObserver(this);
+    }
+
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
