@@ -164,4 +164,19 @@ public class Player implements Serializable {
     public void setHasCheatedThisRound(boolean hasCheatedThisRound) {
         this.hasCheatedThisRound = hasCheatedThisRound;
     }
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Player) {
+            Player p = (Player) o;
+            if (p.nickname.equals(nickname)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
