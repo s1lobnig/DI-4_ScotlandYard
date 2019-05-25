@@ -50,8 +50,8 @@ public class ManageGameData {
     }
 
     public static int tryNextRound(Game game) {
-        if(game.isRoundMrX()){
-            if(game.getMrX().isMoved()){
+        if (game.isRoundMrX()) {
+            if (game.getMrX().isMoved()) {
                 game.setRoundMrX(false);
                 //return -1;
             }
@@ -155,21 +155,22 @@ public class ManageGameData {
                 }
                 break;
             case 3:
-                if (tickets.get(R.string.BLACK_TICKET_KEY) > 0) {
-                    validTicket = true;
-                    player.decreaseNumberOfTickets(R.string.BLACK_TICKET_KEY);
-                }
-                break;
-            case 4:
-                if(tickets.get(R.string.TAXI_TICKET_KEY) > 0){
+                if (tickets.get(R.string.TAXI_TICKET_KEY) > 0) {
                     validTicket = true;
                     player.decreaseNumberOfTickets(R.string.TAXI_TICKET_KEY);
                 }
                 break;
-            case 5:
-                if(tickets.get(R.string.DOUBLE_TICKET_KEY) > 0){
+            case 4:
+                if (tickets.get(R.string.DOUBLE_TICKET_KEY) > 0) {
                     validTicket = true;
                     player.decreaseNumberOfTickets(R.string.DOUBLE_TICKET_KEY);
+                }
+                break;
+
+            case 5:
+                if (tickets.get(R.string.BLACK_TICKET_KEY) > 0) {
+                    validTicket = true;
+                    player.decreaseNumberOfTickets(R.string.BLACK_TICKET_KEY);
                 }
                 break;
             default:

@@ -44,6 +44,10 @@
 
     <string name="RODA_MAP_DIALOG_TITLE">MR.X\S MOMENTANER FAHRPLAN</string>
 
+    <string name="TICKET_DIALOG_TITLE">Dieses Ticket wirklich einlösen?</string>
+    <string name="USE_TICKET">Einlösen</string>
+    <string name="NOT_USE_TICKET">Abbrechen</string>
+
     <string name="lobbyname">Lobbyname</string>
 
     <string name="SearchServer">Suche nach den Servern...</string>

@@ -13,19 +13,16 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
+import com.example.scotlandyard.Tickets.BlackTicketDialog;
 import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.control.GameInterface;
-import com.example.scotlandyard.map.motions.LatLngInterpolator;
-import com.example.scotlandyard.map.motions.MarkerAnimation;
 import com.example.scotlandyard.map.motions.MovingLogic;
 import com.example.scotlandyard.map.motions.RandomEvent;
 import com.example.scotlandyard.map.motions.Move;
+import com.example.scotlandyard.Tickets.DoubleTicketDialog;
 import com.example.scotlandyard.map.roadmap.Entry;
-import com.example.scotlandyard.map.roadmap.PositionEntry;
 import com.example.scotlandyard.map.roadmap.RoadMap;
 import com.example.scotlandyard.map.roadmap.RoadMapDialog;
-import com.example.scotlandyard.map.roadmap.TicketEntry;
-import com.example.scotlandyard.messenger.Message;
 import com.example.scotlandyard.messenger.Messenger;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.PlayersOverview;
@@ -111,8 +108,24 @@ public class GameMap extends AppCompatActivity
         bicycleTickets = findViewById(R.id.bicycleTicket);
         busTickets = findViewById(R.id.busTicket);
         blackTickets = findViewById(R.id.blackTicket);
+        blackTickets.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //open Dialog and ask for usage of this ticket
+                DialogFragment blackTicketDialog = new BlackTicketDialog();
+                blackTicketDialog.show(getSupportFragmentManager(), "BlackTicketDisplay");
+            }
+        });
         taxiTickets = findViewById(R.id.taxiTicket);
         doubleTickets = findViewById(R.id.doubleTicket);
+        doubleTickets.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //open Dialog and ask for usage of this ticket
+                DialogFragment doubleTicketDialog = new DoubleTicketDialog();
+                doubleTicketDialog.show(getSupportFragmentManager(), "DoubleTicketDisplay");
+            }
+        });
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
