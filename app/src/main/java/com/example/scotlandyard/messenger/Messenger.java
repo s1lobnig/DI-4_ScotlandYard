@@ -35,6 +35,8 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
     protected void onResume() {
         super.onResume();
         mMessageAdapter.setMessages(Device.getInstance().getMessageList());
+        /*scroll the ListView to the last added element*/
+        messageListView.setSelection(messageListView.getCount() - 1);
         try {
             Device.getInstance().addMessengerObserver(this);
         } catch (IllegalStateException ex) {
