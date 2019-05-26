@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class ManageGameData {
+    static Game game;
     private static final int[] PLAYER_ICONS = {
             R.drawable.player1,
             R.drawable.player2,
@@ -58,6 +59,9 @@ public class ManageGameData {
         }
         if (isRoundFinished(game)) {
             if (game.getRound() < Game.getNumRounds()) {
+                /*if(this.isMrXFound()){
+                    return 2;
+                }*/
                 //Round finished
                 game.nextRound();
                 game.setRoundMrX(true);
@@ -72,6 +76,25 @@ public class ManageGameData {
         //Round not finished yet
         return -1;
     }
+    /*private boolean isMrXFound(){
+        Player x = this.getMrX();
+        for(Player p : game.getPlayers()){
+            if (p.getPosition() == x.getPosition() && p.getNickname() != x.getNickname())
+                return true;
+        }
+        return false;
+    }*/
+
+    private Player getMrX(){
+        for(Player p : game.getPlayers()){
+            if(p.isMrX())
+                return p;
+        }
+        return null;
+    }
+
+
+
 
     static boolean isPlayer(Game game, Marker field) {
         for (Player player : game.getPlayers()) {

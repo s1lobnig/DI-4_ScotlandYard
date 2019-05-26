@@ -7,16 +7,17 @@ public class RandomEvent {
     private String[][] AllTexts;
     private String Text;
     private Random randomNumber;
+    private int secID;
 
     public RandomEvent() {
         randomNumber = new Random();
         this. AllTexts = new String[10][10];
         this.id = randomNumber.nextInt(100) %3;
         //this.id = 2;
-        int curID = randomNumber.nextInt(100) %4;
+        secID = randomNumber.nextInt(100) %4;
         fillText();
 
-        this.Text = AllTexts[id][curID];
+        this.Text = AllTexts[id][secID];
     }
 
 
@@ -28,6 +29,7 @@ public class RandomEvent {
     public String getText(){
         return this.Text;
     }
+    public int getSecID(){return this.secID;}
 
     private void fillText() {
         //Diese Runde aussetzen

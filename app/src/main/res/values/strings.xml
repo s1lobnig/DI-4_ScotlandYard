@@ -43,6 +43,7 @@
     <string name="DOUBLE_TICKET_KEY">double_tickets</string>
 
     <string name="RODA_MAP_DIALOG_TITLE">MR.X\S MOMENTANER FAHRPLAN</string>
+    <string name="title_activity_game_end_">GameEnd_Activity</string>
 
     <string name="TICKET_DIALOG_TITLE">Dieses Ticket wirklich einlösen?</string>
     <string name="USE_TICKET">Einlösen</string>

@@ -1,5 +1,6 @@
 package com.example.scotlandyard.map;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -7,6 +8,10 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,6 +19,7 @@ import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
 import com.example.scotlandyard.Tickets.BlackTicketDialog;
+import com.example.scotlandyard.GameEnd_Activity;
 import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.control.GameInterface;
 import com.example.scotlandyard.map.motions.MovingLogic;
@@ -85,6 +91,7 @@ public class GameMap extends AppCompatActivity
     private static final int TAXI_DRAGAN_COLOR = Color.BLUE;
 
 
+    private SensorManager sm;
     /**
      * @param savedInstanceState
      */
@@ -615,4 +622,25 @@ public class GameMap extends AppCompatActivity
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(colorPrimary)));
     }
+    //If proximitry listener is activated, this methode is called
+    private final SensorEventListener sensorListenerProximity = new SensorEventListener() {
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            float distance = event.values[0];
+            if(distance < 5){
+                if(myPlayer.isMrX()){
+                    Toast.makeText(GameMap.this, "Weitere Bewegung ausführen", Snackbar.LENGTH_LONG).show();
+                    myPlayer.setMoved(false);
+                    myPlayer.setHasCheated(true);
+                    myPlayer.setHasCheatedThisRound(true);
+                }
+            }
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+        }
+    };
+
 }
