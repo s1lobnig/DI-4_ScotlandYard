@@ -16,14 +16,21 @@ import java.util.List;
 public class MessageAdapter extends BaseAdapter {
     List<Message> messages = new ArrayList<>();
     Context context;
+    String nickname;
 
-    public MessageAdapter(Context context) {
+    public MessageAdapter(Context context, String nickname) {
         this.context = context;
+        this.nickname = nickname;
     }
 
     public void add(Message message) {
         this.messages.add(message);
         notifyDataSetChanged(); // to render the list we need to notify
+    }
+
+    public void setMessages(ArrayList<Message> messages) {
+        this.messages = messages;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -49,7 +56,7 @@ public class MessageAdapter extends BaseAdapter {
         Message message = messages.get(i);
 
         // this message was sent by us so let's create a basic chat bubble on the right
-        if (message.getBelongsToCurrentUser()) {
+        if (message.getNickname().equals(nickname)) {
             convertView = messageInflater.inflate(R.layout.sent_message, null);
             holder.messageBody = convertView.findViewById(R.id.message_body);
             convertView.setTag(holder);

@@ -34,6 +34,7 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
 
     protected void onResume() {
         super.onResume();
+        mMessageAdapter.setMessages(Device.getInstance().getMessageList());
         try {
             Device.getInstance().addMessengerObserver(this);
         } catch (IllegalStateException ex) {
@@ -67,21 +68,8 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
         messageListView = findViewById(R.id.message_list);
 
         /*set the Adapter to listView*/
-        mMessageAdapter = new MessageAdapter(this);
-
-
-        if(messageArrayList.size() != 0) {
-            for(Message message : messageArrayList){
-                if(message.getNickname().equals(this.nickname)){
-                    message.setBelongsToCurrentUser(true);
-                    mMessageAdapter.add(message);
-                }else{
-                    message.setBelongsToCurrentUser(false);
-                    mMessageAdapter.add(message);
-                }
-
-            }
-        }
+        mMessageAdapter = new MessageAdapter(this, nickname);
+        mMessageAdapter.setMessages(Device.getInstance().getMessageList());
 
         messageListView.setAdapter(mMessageAdapter);
 
@@ -92,11 +80,9 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
             @Override
             public void onClick(View view) {
                 message = new Message(textMessage.getText().toString(), nickname);
-                /*set message belong to current user*/
-                message.setBelongsToCurrentUser(true);
 
                 Device.getInstance().send(message);
-                mMessageAdapter.add(message);
+                Device.getInstance().addMessage(message);
 
                 /*flush EditText and close keyboard after sending*/
                 textMessage.setText("");
@@ -113,14 +99,9 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
     @Override
     public void updateMessages(ArrayList<Message> messages) {
         Log.d(logTag, "Chat message received!");
-        /*check if message belongs to current user*/
-        message = messages.get(messages.size()-1);
-        if(!(message.getNickname().equals(this.nickname))) {
-            message.setBelongsToCurrentUser(false);
-        }
 
         /*display message*/
-        mMessageAdapter.add(message);
+        mMessageAdapter.setMessages(messages);
 
         /*scroll the ListView to the last added element*/
         messageListView.setSelection(messageListView.getCount() - 1);
