@@ -1,4 +1,4 @@
-package com.example.scotlandyard.Tickets;
+package com.example.scotlandyard.tickets;
 
 import android.app.Dialog;
 import android.content.DialogInterface;

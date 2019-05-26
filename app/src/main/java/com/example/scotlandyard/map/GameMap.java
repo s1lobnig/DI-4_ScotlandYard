@@ -1,6 +1,5 @@
 package com.example.scotlandyard.map;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -18,14 +17,13 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
-import com.example.scotlandyard.Tickets.BlackTicketDialog;
-import com.example.scotlandyard.GameEnd_Activity;
+import com.example.scotlandyard.tickets.BlackTicketDialog;
 import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.control.GameInterface;
 import com.example.scotlandyard.map.motions.MovingLogic;
 import com.example.scotlandyard.map.motions.RandomEvent;
 import com.example.scotlandyard.map.motions.Move;
-import com.example.scotlandyard.Tickets.DoubleTicketDialog;
+import com.example.scotlandyard.tickets.DoubleTicketDialog;
 import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.map.roadmap.RoadMap;
 import com.example.scotlandyard.map.roadmap.RoadMapDialog;

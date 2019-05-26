@@ -1,4 +1,4 @@
-package com.example.scotlandyard.Moving;
+package com.example.scotlandyard.moving;
 
 import com.example.scotlandyard.map.Route;
 import com.example.scotlandyard.map.Routes;
