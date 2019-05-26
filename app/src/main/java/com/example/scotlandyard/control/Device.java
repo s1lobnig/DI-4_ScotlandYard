@@ -223,4 +223,8 @@ public class Device {
     public void setMessageList(ArrayList<Message> messageList) {
         this.messageList = messageList;
     }
+
+    public void addMessage(Message message) {
+        messageList.add(message);
+    }
 }
