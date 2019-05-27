@@ -2,7 +2,11 @@ package com.example.scotlandyard.map;
 
 import android.graphics.Color;
 
+import com.example.scotlandyard.Player;
+
+import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -592,12 +596,88 @@ public class Routes {
         return routes;
     }
 
+    public static Route getBotRoute(int current, List<Player> players) {
+        ArrayList[] routes = new ArrayList[4];
+        int notNext = -1;
+        routes[0] = getAllByFoot(current, notNext);
+        routes[1] = getAllByBicycle(current, notNext);
+        routes[2] = getAllByBus(current, notNext);
+        routes[3] = getAllByTaxiDragan(current, notNext);
+
+        ArrayList[] possible = new ArrayList[4];
+        possible[0] = new ArrayList<Player>();
+        possible[1] = new ArrayList<Player>();
+        possible[2] = new ArrayList<Player>();
+        possible[3] = new ArrayList<Player>();
+
+        for (int i = 0; i < routes.length; i++) {
+            ArrayList<Route> routesI = routes[i];
+            for (Route r : routesI) {
+                boolean isPossible = true;
+                for (Player p : players) {
+                    int playerLoc = Points.getIndex(p.getPosition()) + 1;
+                    if (playerLoc == r.getStartPoint() && playerLoc == r.getEndPoint()) {
+                        isPossible = false;
+                    }
+                }
+                if (isPossible) {
+                    int next;
+                    if (current == r.getStartPoint()) {
+                        next = r.getEndPoint();
+                    } else {
+                        next = r.getStartPoint();
+                    }
+                    ArrayList[] stillPossible = new ArrayList[4];
+                    stillPossible[0] = getAllByFoot(next, notNext);
+                    stillPossible[1] = getAllByBicycle(next, notNext);
+                    stillPossible[2] = getAllByBus(next, notNext);
+                    stillPossible[3] = getAllByTaxiDragan(next, notNext);
+                    boolean isStillPossible = true;
+                    for (int j = 0; j < stillPossible.length; j++) {
+                        ArrayList<Route> nextRoutes = stillPossible[i];
+                        for (Route r1 : nextRoutes) {
+                            for (Player p : players) {
+                                int playerLoc = Points.getIndex(p.getPosition()) + 1;
+                                if (playerLoc == r1.getStartPoint() && playerLoc == r1.getEndPoint()) {
+                                    isStillPossible = false;
+                                    break;
+                                }
+                            }
+                            if (!isStillPossible) {
+                                break;
+                            }
+                        }
+                        if (!isStillPossible)
+                            break;
+                    }
+                    if (isStillPossible) {
+                        possible[i].add(r);
+                    }
+                }
+            }
+        }
+        // TODO: logic - if empty, what then?
+        // TODO: refractor method - make it more easy
+        return null;
+    }
 
     public static Object[] getRandomRoute(int current, int notNext) {
-        getAllByFoot(current, notNext);
-        getAllByBicycle(current, notNext);
-        getAllByBus(current, notNext);
-        getAllByTaxiDragan(current, notNext);
-        return null;
+        ArrayList[] routes = new ArrayList[4];
+        routes[0] = getAllByFoot(current, notNext);
+        routes[1] = getAllByBicycle(current, notNext);
+        routes[2] = getAllByBus(current, notNext);
+        routes[3] = getAllByTaxiDragan(current, notNext);
+        ArrayList<Integer> possible = new ArrayList<>();
+        for (int i = 0; i < routes.length; i++) {
+            if (!routes[i].isEmpty()) {
+                possible.add(i);
+            }
+        }
+        SecureRandom secureRandom = new SecureRandom();
+        int route = possible.get(secureRandom.nextInt(possible.size()));
+        return new Object[]{
+                route,
+                routes[route].get(secureRandom.nextInt(routes[route].size()))
+        };
     }
 }

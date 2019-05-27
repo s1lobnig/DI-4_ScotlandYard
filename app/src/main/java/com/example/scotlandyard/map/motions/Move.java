@@ -7,11 +7,13 @@ public class Move implements Serializable {
     private String nickname;
     private int field;
     private int randomEventTrigger;
+    private Object[] randomRoute;
 
-    public Move(String nickname, int field, int randomEventTrigger) {
+    public Move(String nickname, int field, int randomEventTrigger, Object[] randomRoute) {
         this.nickname = nickname;
         this.field = field;
         this.randomEventTrigger = randomEventTrigger;
+        this.randomRoute = randomRoute;
     }
 
     public String getNickname() {
@@ -36,6 +38,10 @@ public class Move implements Serializable {
 
     public int getRandomEventTrigger() {
         return randomEventTrigger;
+    }
+
+    public Object[] getRandomRoute() {
+        return randomRoute;
     }
 
     @Override
