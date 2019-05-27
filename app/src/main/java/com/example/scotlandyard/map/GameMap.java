@@ -1,5 +1,7 @@
 package com.example.scotlandyard.map;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -17,6 +19,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
+import com.example.scotlandyard.messenger.Message;
 import com.example.scotlandyard.tickets.BlackTicketDialog;
 import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.control.GameInterface;
@@ -90,6 +93,7 @@ public class GameMap extends AppCompatActivity
 
 
     private SensorManager sm;
+
     /**
      * @param savedInstanceState
      */
@@ -228,6 +232,8 @@ public class GameMap extends AppCompatActivity
             args.putSerializable("ROAD_MAP", device.getRoadMap());
             roadMapDialog.setArguments(args);
             roadMapDialog.show(getSupportFragmentManager(), "RoadMapDisplay");
+        } else if (id == R.id.cheater_melden) {
+            showCheaterDialog();
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -607,10 +613,18 @@ public class GameMap extends AppCompatActivity
     public void onMessage() {
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
+
+        /* TODO: When message CHEATER_MELDEN is received show a PopUp message to user. */
+        Message receivedMessage = new Message("CHEATER_MELDEN", "Player XY");
+
+        if (receivedMessage.getMessage().equals("CHEATER_MELDEN")) {
+            if (!myPlayer.isMrX() && myPlayer.getNickname().equals(receivedMessage.getMessage()))
+                Toast.makeText(GameMap.this, receivedMessage.getNickname() + " hat den Cheater gemeldet.", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         try {
             Device.getInstance().addGameObserver(this);
@@ -620,17 +634,21 @@ public class GameMap extends AppCompatActivity
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(colorPrimary)));
     }
+
     //If proximitry listener is activated, this methode is called
     private final SensorEventListener sensorListenerProximity = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
             float distance = event.values[0];
-            if(distance < 5){
-                if(myPlayer.isMrX()){
+            if (distance < 5) {
+                if (myPlayer.isMrX()) {
                     Toast.makeText(GameMap.this, "Weitere Bewegung ausführen", Snackbar.LENGTH_LONG).show();
                     myPlayer.setMoved(false);
                     myPlayer.setHasCheated(true);
                     myPlayer.setHasCheatedThisRound(true);
+
+                    /* TODO: After sensor is working: */
+                    device.send(new Message());
                 }
             }
         }
@@ -640,5 +658,39 @@ public class GameMap extends AppCompatActivity
 
         }
     };
+
+    private void showCheaterDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(GameMap.this);
+
+        // Set a title for alert dialog
+        builder.setTitle("Bist du sicher dass du den Cheter melden willst?.");
+
+        // Ask the final question
+        // builder.setMessage("Are you sure to hide?");
+
+        // Set the alert dialog yes button click listener
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                Message message = new Message("CHEATER_MELDEN", myPlayer.getNickname());
+                device.send(message);
+
+                Toast.makeText(GameMap.this,
+                        "Die Meldung wurde gesendet.", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        // Set the alert dialog no button click listener
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        // Display the alert dialog on interface
+        dialog.show();
+    }
 
 }

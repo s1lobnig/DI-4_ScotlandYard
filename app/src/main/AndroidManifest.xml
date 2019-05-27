@@ -11,11 +11,14 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-feature android:required="true" android:name="android.hardware.sensor.accelerometer"/>
-    <uses-feature android:required="true" android:name="android.hardware.sensor.light"/>
 
+    <uses-feature
+        android:name="android.hardware.sensor.accelerometer"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.sensor.light"
+        android:required="true" />
     <uses-feature
         android:name="android.hardware.sensor.proximity"
         android:required="true" />
@@ -31,7 +34,7 @@
         <activity
             android:name=".GameEnd_Activity"
             android:label="@string/title_activity_game_end_"
-            android:theme="@style/AppTheme.NoActionBar.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar.NoActionBar" />
         <activity android:name=".lobby.ClientLobby" />
         <activity android:name=".lobby.GameCreate" />
         <activity
@@ -84,10 +87,10 @@
         </activity>
         <activity
             android:name=".lobby.GameJoin"
-            android:theme="@style/AppTheme.ActionBar"></activity>
+            android:theme="@style/AppTheme.ActionBar" />
         <activity
             android:name=".lobby.ServerLobby"
-            android:parentActivityName=".lobby.GameJoin"></activity>
+            android:parentActivityName=".lobby.GameJoin" />
     </application>
 
 </manifest>
