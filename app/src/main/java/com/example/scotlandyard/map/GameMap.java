@@ -147,6 +147,9 @@ public class GameMap extends AppCompatActivity
         }
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.map, fragment).commit();
+
+        sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sm.registerListener(sensorListenerProximity, sm.getDefaultSensor(Sensor.TYPE_PROXIMITY), SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
@@ -270,7 +273,27 @@ public class GameMap extends AppCompatActivity
             @Override
             public boolean onMarkerClick(final Marker field) {
                 if (!ManageGameData.isPlayer(device.getGame(), field) && device.getGame().getRound() <= Game.getNumRounds()) {
-                    if (!myPlayer.isMoved()) {
+                    System.out.println("---------------" + myPlayer.getCheatingMoves() + " " + device.getGame().getRound());
+                    if(myPlayer.getCheatingMoves() > 0){
+                        boolean isValid = isValidMove(field, myPlayer);
+                        if (isValid) {
+                            myPlayer.decCheatingMoves();
+                            int r = (new Random()).nextInt(100) % 10;
+                            Point newLocation = new Point(field.getPosition().latitude, field.getPosition().longitude);
+                            if (Device.isServer()) {
+                                if ((!myPlayer.isMrX() && device.getGame().isRoundMrX()) || (myPlayer.isMrX() && !device.getGame().isRoundMrX())) {
+                                    return false;
+                                }
+                                Point point = Points.getPoints()[Points.getIndex(newLocation)];
+                                moveMarker(point, myPlayer, myPlayer.getIcon(), r);
+                                //myPlayer.setMoved(true);
+                                //tryNextRound();
+                            }
+                            device.send(new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r));
+                        }
+                        return isValid;
+                    }
+                    else if (!myPlayer.isMoved()) {
                         boolean isValid = isValidMove(field, myPlayer);
                         if (isValid) {
                             int r = (new Random()).nextInt(100) % 10;
@@ -548,12 +571,24 @@ public class GameMap extends AppCompatActivity
 
     private void tryNextRound() {
         int result = ManageGameData.tryNextRound(device.getGame());
+        Intent i = new Intent(GameMap.this, GameEnd_Activity.class);
         if (result == 1) {
             device.send(new MapNotification("NEXT_ROUND"));
             Toast.makeText(GameMap.this, "Runde " + device.getGame().getRound(), Snackbar.LENGTH_LONG).show();
+
+            if(myPlayer.isMrX())
+                myPlayer.setHasCheatedThisRound(false);
+
         } else if (result == 0) {
             device.send(new MapNotification("END MisterX")); //MisterX hat gewonnen
             Toast.makeText(GameMap.this, "MisterX hat gewonnen", Snackbar.LENGTH_LONG).show();
+            i.putExtra("Winner", true);
+            startActivity(i);
+        } else if (result == 2){
+            device.send(new MapNotification("END Detective")); //MisterX hat gewonnen
+            Toast.makeText(GameMap.this, "Die Detektive haben gewonnen", Snackbar.LENGTH_LONG).show();
+            i.putExtra("Winner", false);
+            startActivity(i);
         }
     }
 
@@ -592,13 +627,14 @@ public class GameMap extends AppCompatActivity
     private final SensorEventListener sensorListenerProximity = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
+            Toast.makeText(GameMap.this, "Weitere Bewegung ausführen", Snackbar.LENGTH_LONG).show();
             float distance = event.values[0];
             if(distance < 5){
                 if(myPlayer.isMrX()){
                     Toast.makeText(GameMap.this, "Weitere Bewegung ausführen", Snackbar.LENGTH_LONG).show();
-                    myPlayer.setMoved(false);
                     myPlayer.setHasCheated(true);
                     myPlayer.setHasCheatedThisRound(true);
+                    myPlayer.incCheatingMoves();
                 }
             }
         }

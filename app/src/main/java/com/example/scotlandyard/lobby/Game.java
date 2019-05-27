@@ -10,7 +10,7 @@ import java.util.Random;
 public class Game implements Serializable {
 
     private static final Random random = new Random();
-    private static final int numRounds = 12;
+    private static final int numRounds = 3;
 
     private String gameName;
     private int maxMembers;
@@ -109,4 +109,6 @@ public class Game implements Serializable {
         }
         return null;
     }
+
+
 }

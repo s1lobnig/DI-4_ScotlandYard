@@ -19,6 +19,7 @@ public class Player implements Serializable {
     private HashMap<Integer, Integer> tickets; //Hashmap for storing tickets
     private boolean hasCheated;
     private boolean hasCheatedThisRound;
+    private int cheatingMoves;
 
     private int penalty;
 
@@ -42,6 +43,7 @@ public class Player implements Serializable {
         this.hasCheated = false;
         this.hasCheatedThisRound = false;
         this.penalty = 0;
+        this.cheatingMoves = 0;
     }
 
     public String getNickname() {
@@ -163,5 +165,17 @@ public class Player implements Serializable {
 
     public void setHasCheatedThisRound(boolean hasCheatedThisRound) {
         this.hasCheatedThisRound = hasCheatedThisRound;
+    }
+
+    public void incCheatingMoves() {
+        cheatingMoves++;
+    }
+
+    public void decCheatingMoves() {
+        cheatingMoves--;
+    }
+
+    public int getCheatingMoves() {
+        return cheatingMoves;
     }
 }

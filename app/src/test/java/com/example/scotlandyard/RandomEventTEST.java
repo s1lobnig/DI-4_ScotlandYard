@@ -11,9 +11,9 @@ public class RandomEventTEST {
     private int iterations;
 
 
-    public RandomEventTEST(int i){
+    public RandomEventTEST(){
         toTest = new RandomEvent();
-        this.iterations = i;
+        this.iterations = 100;
     }
 
 
