@@ -584,10 +584,10 @@ public class GameMap extends AppCompatActivity
     @Override
     public void showDisconnected(Endpoint endpoint) {
         if (Device.isServer()) {
-            Toast.makeText(GameMap.this, "Verbindung zu Server verlohren!", Toast.LENGTH_LONG).show();
-        } else {
             Toast.makeText(GameMap.this, "Verbindung zu Player " + endpoint.getName() + " verlohren!", Toast.LENGTH_LONG).show();
             //TODO: Server lost!
+        } else {
+            Toast.makeText(GameMap.this, "Verbindung zu Server verlohren!", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -607,6 +607,11 @@ public class GameMap extends AppCompatActivity
     public void onMessage() {
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
+    }
+
+    @Override
+    public void onReceivedToast(String toast) {
+        Toast.makeText(GameMap.this, toast, Toast.LENGTH_LONG).show();
     }
 
     @Override

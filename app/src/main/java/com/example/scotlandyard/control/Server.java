@@ -137,8 +137,9 @@ public class Server extends Device implements ServerInterface {
     private void manageMove(Move move) {
         Player player = ManageGameData.findPlayer(this.game, move.getNickname());
 
-        //wenn spieler nicht an der reihe -> ignoriere den Move
+        //if it is not players turn -> ignore move
         if (player.isMoved() || (player.isMrX() && !game.isRoundMrX()) || (!player.isMrX() && game.isRoundMrX())) {
+            send(new MapNotification("Ein anderer Spieler ist noch nicht gezogen. Du musst noch warten."));
             return;
         }
         send(move);
@@ -146,11 +147,11 @@ public class Server extends Device implements ServerInterface {
         switch (ManageGameData.tryNextRound(game)) {
             case 1:
                 send(new MapNotification("NEXT_ROUND"));
-                //TODO: show next Round
+                printNotification("Runde " + game.getRound());
                 break;
             case 0:
                 send(new MapNotification("END MisterX")); //MisterX hat gewonnen
-                //TODO: show next Round
+                printNotification("MisterX hat gewonnen");
                 break;
         }
         if (gameObserver != null) {
@@ -175,6 +176,7 @@ public class Server extends Device implements ServerInterface {
             Player lostPlayer = ManageGameData.findPlayer(game, endpoint.getName());
             ManageGameData.deactivatePlayer(game, lostPlayer);
             send(new MapNotification("PLAYER " + lostPlayer.getNickname() + " QUITTED"));
+            printNotification(lostPlayer.getNickname() + " hat das Spiel verlassen");
         }
 
         if (gameObserver != null) {

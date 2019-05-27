@@ -26,4 +26,9 @@ public interface MessengerInterface {
      * @param object        failed data object
      */
     void showSendingFailed(Object object);
+
+    /**
+     * function is called, when a toast should be printed
+     */
+    void onReceivedToast(String toast);
 }
