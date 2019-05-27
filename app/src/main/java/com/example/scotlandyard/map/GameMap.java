@@ -417,18 +417,18 @@ public class GameMap extends AppCompatActivity
             }
         }
         visualizeTickets();
-        if (player.isMrX() && player.equals(myPlayer)) {
-            int lastTurn = device.getRoadMap().getNumberOfEntries();
-            Entry entry = MovingLogic.getRoadMapEntry(lastTurn, newLocation, ticket);
-            if (Device.isServer()) {
-                device.getRoadMap().addEntry(entry);
-            }
-            device.send(entry);
-        }
-        if (!(player.getPenalty() > 0 && icon == R.drawable.bicycle)) {
+        if (!(player.getPenalty() > 0 && ticket == R.drawable.ticket_orange)) {
             if (player.getPenalty() > 0) {
                 player.decreasePenalty();
                 newLocation = playerLoc;
+            }
+            if (player.isMrX() && player.equals(myPlayer)) {
+                int lastTurn = device.getRoadMap().getNumberOfEntries();
+                Entry entry = MovingLogic.getRoadMapEntry(lastTurn, newLocation, ticket);
+                if (Device.isServer()) {
+                    device.getRoadMap().addEntry(entry);
+                }
+                device.send(entry);
             }
             if (r.getIntermediates() != null) {
                 player.getMarker().setIcon(BitmapDescriptorFactory.fromResource(icon));
@@ -461,7 +461,10 @@ public class GameMap extends AppCompatActivity
                 }
             }
         } else {
-            Toast.makeText(GameMap.this, "Das Fahrrad ist noch nicht verfügbar!", Snackbar.LENGTH_LONG).show();
+            if (myPlayer.equals(player))
+                Toast.makeText(GameMap.this, "Das Fahrrad ist noch nicht verfügbar!", Snackbar.LENGTH_LONG).show();
+            // player.setMoved(false);
+            // player.increaseTicketsAgain(R.string.BICYCLE_TICKET_KEY); --> no move occured...
             return false;
         }
         return true;

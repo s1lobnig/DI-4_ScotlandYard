@@ -179,4 +179,8 @@ public class Player implements Serializable {
         }
         return false;
     }
+
+    public void increaseTicketsAgain(int key) {
+        tickets.put(key, tickets.get(key)+1);
+    }
 }
