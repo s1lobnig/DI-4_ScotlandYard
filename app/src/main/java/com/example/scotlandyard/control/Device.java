@@ -16,10 +16,14 @@ import java.util.ArrayList;
 
 /**
  * class Device is representing a device in the game, it can be server or client
+ * singleton:               singleton of device (Server or Client)
  * messengerObserver:       class implementing MessengerInterface. is notified, if message receives
  * gameObserver:            class implementing GameInterface. is notified, if move receives
  * lobby:                   actual lobby
  * game:                    actual game
+ * roadMap:                 actual roadMap
+ * nickname:                nickname of local player
+ * messageList:             message history
  */
 public class Device {
     private String logTag = "Device";
@@ -147,7 +151,6 @@ public class Device {
      */
     public void send(Message message) {
         connectionService.send(message);
-        messageList.add(message);
     }
 
     /**
@@ -212,8 +215,6 @@ public class Device {
     public void setNickname(String nickname) {
         this.nickname = nickname;
     }
-
-
 
     public ArrayList<Message> getMessageList() {
         return messageList;

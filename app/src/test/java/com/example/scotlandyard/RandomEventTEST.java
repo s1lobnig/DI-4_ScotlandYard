@@ -8,19 +8,18 @@ import org.junit.Test;
 
 public class RandomEventTEST {
     private RandomEvent toTest;
-    private int iterations;
-
+    private static int iterations = 0;
 
     public RandomEventTEST(){
         toTest = new RandomEvent();
-        this.iterations = 100;
+        this.iterations++;
     }
 
 
 
     @Test
     public void testRandomEventsIDSuccess(){
-        int i = 0;
+        int i;
         boolean equal = false;
         for(i = 0; i<=this.iterations; i++){
             toTest = new RandomEvent();

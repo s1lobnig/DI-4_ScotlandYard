@@ -167,6 +167,7 @@ public class Player implements Serializable {
         this.hasCheatedThisRound = hasCheatedThisRound;
     }
 
+
     public void incCheatingMoves() {
         cheatingMoves++;
     }
@@ -177,5 +178,21 @@ public class Player implements Serializable {
 
     public int getCheatingMoves() {
         return cheatingMoves;
+    }
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Player) {
+            Player p = (Player) o;
+            if (p.nickname.equals(nickname)) {
+                return true;
+            }
+        }
+        return false;
+
     }
 }
