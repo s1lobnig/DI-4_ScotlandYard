@@ -624,7 +624,18 @@ public class GameMap extends AppCompatActivity
         }
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(colorPrimary)));
+        if(mMap != null){
+            deleteMarker();
+            setupGame();
+        }
     }
+
+    private void deleteMarker() {
+        for (Player player : Device.getInstance().getGame().getPlayers()) {
+            player.getMarker().remove();
+        }
+    }
+
     //If proximitry listener is activated, this methode is called
     private final SensorEventListener sensorListenerProximity = new SensorEventListener() {
         @Override
