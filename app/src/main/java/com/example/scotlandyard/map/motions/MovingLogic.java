@@ -126,25 +126,29 @@ public class MovingLogic {
         return new ArrayList[]{timeSlices, routePoints};
     }
 
-    public static int[] getIconAndTicket(int vehicle) {
+    public static int[] getIconAndTicket(Player player, int vehicle) {
         int icon;
         int ticket;
         switch (vehicle) {
             case 0:
                 icon = R.drawable.pedestrian;
                 ticket = R.drawable.ticket_yellow;
+                player.decreaseNumberOfTickets(R.string.PEDESTRIAN_TICKET_KEY);
                 break;
             case 1:
                 icon = R.drawable.bicycle;
                 ticket = R.drawable.ticket_orange;
+                player.decreaseNumberOfTickets(R.string.BICYCLE_TICKET_KEY);
                 break;
             case 2:
                 icon = R.drawable.bus;
                 ticket = R.drawable.ticket_red;
+                player.decreaseNumberOfTickets(R.string.BUS_TICKET_KEY);
                 break;
             case 3:
                 icon = R.drawable.taxi;
                 ticket = R.drawable.ticket_blue;
+                player.decreaseNumberOfTickets(R.string.TAXI_TICKET_KEY);
                 break;
             default:
                 icon = -1;
