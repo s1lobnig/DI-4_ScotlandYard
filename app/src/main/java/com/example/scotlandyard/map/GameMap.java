@@ -389,7 +389,7 @@ public class GameMap extends AppCompatActivity
             Routes.getRandomRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
         }
         Route r = (Route) routeToTake[1];
-        int[] iconAndTicket = MovingLogic.getIconAndTicket((int) routeToTake[2]);
+        int[] iconAndTicket = MovingLogic.getIconAndTicket(player, (int) routeToTake[2]);
         int icon = iconAndTicket[0];
         int ticket = iconAndTicket[1];
         visualizeTickets();

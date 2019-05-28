@@ -8,6 +8,8 @@ import com.example.scotlandyard.connection.ServerInterface;
 import com.example.scotlandyard.connection.ServerService;
 import com.example.scotlandyard.map.ManageGameData;
 import com.example.scotlandyard.map.MapNotification;
+import com.example.scotlandyard.map.Point;
+import com.example.scotlandyard.map.Points;
 import com.example.scotlandyard.map.motions.Move;
 import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.messenger.Message;
@@ -156,6 +158,8 @@ public class Server extends Device implements ServerInterface {
         }
         if (gameObserver != null) {
             gameObserver.updateMove(move);
+        }else{
+            player.setPosition(Points.POINTS[move.getField()]);
         }
     }
 
