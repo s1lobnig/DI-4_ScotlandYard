@@ -392,7 +392,7 @@ public class GameMap extends AppCompatActivity
             Routes.getRandomRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
         }
         Route r = (Route) routeToTake[1];
-        int[] iconAndTicket = MovingLogic.getIconAndTicket((int) routeToTake[2]);
+        int[] iconAndTicket = MovingLogic.getIconAndTicket(player, (int) routeToTake[2]);
         int icon = iconAndTicket[0];
         int ticket = iconAndTicket[1];
         visualizeTickets();
@@ -587,10 +587,10 @@ public class GameMap extends AppCompatActivity
     @Override
     public void showDisconnected(Endpoint endpoint) {
         if (Device.isServer()) {
-            Toast.makeText(GameMap.this, "Verbindung zu Server verlohren!", Toast.LENGTH_LONG).show();
-        } else {
             Toast.makeText(GameMap.this, "Verbindung zu Player " + endpoint.getName() + " verlohren!", Toast.LENGTH_LONG).show();
             //TODO: Server lost!
+        } else {
+            Toast.makeText(GameMap.this, "Verbindung zu Server verlohren!", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -613,6 +613,11 @@ public class GameMap extends AppCompatActivity
     }
 
     @Override
+    public void onReceivedToast(String toast) {
+        Toast.makeText(GameMap.this, toast, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
     public void onResume(){
         super.onResume();
         try {
@@ -622,7 +627,18 @@ public class GameMap extends AppCompatActivity
         }
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(colorLightGrey)));
+        if(mMap != null){
+            deleteMarker();
+            setupGame();
+        }
     }
+
+    private void deleteMarker() {
+        for (Player player : Device.getInstance().getGame().getPlayers()) {
+            player.getMarker().remove();
+        }
+    }
+
     //If proximitry listener is activated, this methode is called
     private final SensorEventListener sensorListenerProximity = new SensorEventListener() {
         @Override

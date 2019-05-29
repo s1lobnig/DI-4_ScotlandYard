@@ -166,38 +166,34 @@ public class ManageGameData {
             case 0:
                 if (tickets.get(R.string.PEDESTRIAN_TICKET_KEY) > 0) {
                     validTicket = true;
-                    player.decreaseNumberOfTickets(R.string.PEDESTRIAN_TICKET_KEY);
                 }
                 break;
             case 1:
                 if (tickets.get(R.string.BICYCLE_TICKET_KEY) > 0) {
                     validTicket = true;
-                    player.decreaseNumberOfTickets(R.string.BICYCLE_TICKET_KEY);
                 }
                 break;
             case 2:
                 if (tickets.get(R.string.BUS_TICKET_KEY) > 0) {
                     validTicket = true;
-                    player.decreaseNumberOfTickets(R.string.BUS_TICKET_KEY);
                 }
                 break;
             case 3:
                 if (tickets.get(R.string.TAXI_TICKET_KEY) > 0) {
                     validTicket = true;
-                    player.decreaseNumberOfTickets(R.string.TAXI_TICKET_KEY);
                 }
                 break;
             case 4:
                 if (tickets.get(R.string.DOUBLE_TICKET_KEY) > 0) {
                     validTicket = true;
-                    player.decreaseNumberOfTickets(R.string.DOUBLE_TICKET_KEY);
+                    //player.decreaseNumberOfTickets(R.string.DOUBLE_TICKET_KEY);
                 }
                 break;
 
             case 5:
                 if (tickets.get(R.string.BLACK_TICKET_KEY) > 0) {
                     validTicket = true;
-                    player.decreaseNumberOfTickets(R.string.BLACK_TICKET_KEY);
+                    //player.decreaseNumberOfTickets(R.string.BLACK_TICKET_KEY);
                 }
                 break;
             default:
