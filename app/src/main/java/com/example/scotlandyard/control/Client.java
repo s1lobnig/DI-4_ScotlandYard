@@ -10,6 +10,7 @@ import com.example.scotlandyard.lobby.Game;
 import com.example.scotlandyard.lobby.Lobby;
 import com.example.scotlandyard.map.ManageGameData;
 import com.example.scotlandyard.map.MapNotification;
+import com.example.scotlandyard.map.Points;
 import com.example.scotlandyard.map.motions.Move;
 import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.messenger.Message;
@@ -102,13 +103,13 @@ public class Client extends Device implements ClientInterface {
     public void onDataReceived(Object object, String endpointId) {
         if (object instanceof Message) {
             Log.d(logTag, "message received");
-            if (!((Message)object).getNickname().equals(nickname)) {
+            if (!((Message) object).getNickname().equals(nickname)) {
                 messageList.add((Message) object);
                 if (messengerObserver != null) {
                     messengerObserver.updateMessages(messageList);
                 }
             }
-            if(gameObserver != null){
+            if (gameObserver != null) {
                 gameObserver.onMessage();
             }
         }
@@ -120,6 +121,8 @@ public class Client extends Device implements ClientInterface {
 
             if (gameObserver != null) {
                 gameObserver.updateMove(move);
+            }else{
+                player.setPosition(Points.POINTS[move.getField()]);
             }
         }
         if (object instanceof Entry) {
@@ -149,18 +152,23 @@ public class Client extends Device implements ClientInterface {
     private void manageNotification(MapNotification notification) {
         String[] txt = notification.getNotification().split(" ");
 
-        if(txt[0].equals("NEXT_ROUND")){
-           game.nextRound();
-           ManageGameData.findPlayer(game, nickname).setMoved(false);
-           //Toast.makeText(GameMap.this, "Runde " + game.getRound(), Snackbar.LENGTH_LONG).show();
+        if (txt[0].equals("NEXT_ROUND")) {
+            game.nextRound();
+            ManageGameData.findPlayer(game, nickname).setMoved(false);
+            printNotification("Runde " + game.getRound());
+            return;
         }
         if (txt.length == 3 && txt[0].equals("PLAYER") && txt[2].equals("QUITTED")) {
             Player player = ManageGameData.findPlayer(game, txt[1]);
             ManageGameData.deactivatePlayer(game, player);
+            printNotification(txt[1] + " hat das Spiel verlassen");
+            return;
         }
         if (txt.length == 2 && txt[0].equals("END")) {
-            //Toast.makeText(GameMap.this, txt[1] + " hat gewonnen", Snackbar.LENGTH_LONG).show();
+            printNotification(txt[1] + " hat gewonnen");
+            return;
         }
+        printNotification(notification.getNotification());
     }
 
     @Override

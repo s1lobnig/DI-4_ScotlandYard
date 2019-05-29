@@ -2,10 +2,14 @@ package com.example.scotlandyard.control;
 
 import android.util.Log;
 
+import com.example.scotlandyard.Player;
 import com.example.scotlandyard.connection.ConnectionService;
 import com.example.scotlandyard.lobby.Game;
 import com.example.scotlandyard.lobby.Lobby;
+import com.example.scotlandyard.map.ManageGameData;
 import com.example.scotlandyard.map.MapNotification;
+import com.example.scotlandyard.map.Point;
+import com.example.scotlandyard.map.Points;
 import com.example.scotlandyard.map.motions.Move;
 import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.map.roadmap.RoadMap;
@@ -13,6 +17,7 @@ import com.example.scotlandyard.messenger.Message;
 import com.google.android.gms.nearby.connection.ConnectionsClient;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * class Device is representing a device in the game, it can be server or client
@@ -99,7 +104,7 @@ public class Device {
         return (singleton != null);
     }
 
-    public static boolean isServer(){
+    public static boolean isServer() {
         return (singleton instanceof Server);
     }
 
@@ -175,6 +180,20 @@ public class Device {
      */
     public void send(Entry entry) {
         connectionService.send(entry);
+    }
+
+    /**
+     * prints txt on display
+     *
+     * @param txt text which should be shown as a Toast
+     */
+    void printNotification(String txt) {
+        if (gameObserver != null) {
+            gameObserver.onReceivedToast(txt);
+        }
+        if (messengerObserver != null) {
+            messengerObserver.onReceivedToast(txt);
+        }
     }
 
     /**

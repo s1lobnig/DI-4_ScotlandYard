@@ -31,4 +31,9 @@ public interface GameInterface {
      * function is called, when chat message is received
      */
     void onMessage();
+
+    /**
+     * function is called, when a toast should be printed
+     */
+    void onReceivedToast(String toast);
 }

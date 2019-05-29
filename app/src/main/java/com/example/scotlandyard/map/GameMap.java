@@ -404,7 +404,8 @@ public class GameMap extends AppCompatActivity
                 p = Points.POINTS[r.getStartPoint() - 1];
             }
         }
-        int[] iconAndTicket = MovingLogic.getIconAndTicket((int) routeToTake[2]);
+        Route r = (Route) routeToTake[1];
+        int[] iconAndTicket = MovingLogic.getIconAndTicket(player, (int) routeToTake[2]);
         int icon = iconAndTicket[0];
         int ticket = iconAndTicket[1];
         if (player.getPenalty() > 0)
@@ -608,10 +609,10 @@ public class GameMap extends AppCompatActivity
     @Override
     public void showDisconnected(Endpoint endpoint) {
         if (Device.isServer()) {
-            Toast.makeText(GameMap.this, "Verbindung zu Server verlohren!", Toast.LENGTH_LONG).show();
-        } else {
             Toast.makeText(GameMap.this, "Verbindung zu Player " + endpoint.getName() + " verlohren!", Toast.LENGTH_LONG).show();
             //TODO: Server lost!
+        } else {
+            Toast.makeText(GameMap.this, "Verbindung zu Server verlohren!", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -634,7 +635,12 @@ public class GameMap extends AppCompatActivity
     }
 
     @Override
-    public void onResume() {
+    public void onReceivedToast(String toast) {
+        Toast.makeText(GameMap.this, toast, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onResume(){
         super.onResume();
         try {
             Device.getInstance().addGameObserver(this);
@@ -643,6 +649,16 @@ public class GameMap extends AppCompatActivity
         }
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(colorPrimary)));
+        if(mMap != null){
+            deleteMarker();
+            setupGame();
+        }
+    }
+
+    private void deleteMarker() {
+        for (Player player : Device.getInstance().getGame().getPlayers()) {
+            player.getMarker().remove();
+        }
     }
 
     //If proximitry listener is activated, this methode is called

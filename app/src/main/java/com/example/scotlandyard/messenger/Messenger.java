@@ -11,6 +11,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.scotlandyard.R;
 import com.example.scotlandyard.connection.Endpoint;
@@ -120,6 +121,11 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
     public void showSendingFailed(Object object) {
         //TODO
         Log.d(logTag, "sending has failed");
+    }
+
+    @Override
+    public void onReceivedToast(String toast) {
+        Toast.makeText(Messenger.this, toast, Toast.LENGTH_LONG).show();
     }
 
     @Override
