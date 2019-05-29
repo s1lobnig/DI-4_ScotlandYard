@@ -600,4 +600,10 @@ public class Routes {
         getAllByTaxiDragan(current, notNext);
         return null;
     }
+
+    public static boolean routesPossibleWithTickets(int current){
+
+
+        return false;
+    }
 }

@@ -36,11 +36,6 @@ public class ManageGameData {
         return null;
     }
 
-    public static void deactivatePlayer(Game game, Player player) {
-        player.setActive(false);
-        tryNextRound(game);
-    }
-
     private static boolean isRoundFinished(Game game) {
         for (Player p : game.getPlayers()) {
             if (p.isActive() && !p.isMoved()) {
@@ -63,6 +58,10 @@ public class ManageGameData {
                     return 2;
                 }*/
                 //Round finished
+                //check if all players have enough tickets
+                for(Player p : game.getPlayers()){
+                    p.checkAmountOfTickets();
+                }
                 game.nextRound();
                 game.setRoundMrX(true);
                 for (Player p : game.getPlayers()) {

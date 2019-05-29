@@ -64,6 +64,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static com.example.scotlandyard.R.color.colorLightGrey;
 import static com.example.scotlandyard.R.color.colorPrimary;
 
 public class GameMap extends AppCompatActivity
@@ -142,7 +143,7 @@ public class GameMap extends AppCompatActivity
 
             }
         });
-        fab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(colorPrimary)));
+        fab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(colorLightGrey)));
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
@@ -335,6 +336,8 @@ public class GameMap extends AppCompatActivity
                 Toast.makeText(GameMap.this, "Nicht genügend Tickets", Snackbar.LENGTH_LONG).show();
                 return false;
             }
+
+
             return true;
         }
         // Toast to indicate that the clicked location is not reachable from the current
@@ -606,7 +609,7 @@ public class GameMap extends AppCompatActivity
     @Override
     public void onMessage() {
         FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
+        fab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(colorPrimary)));
     }
 
     @Override
@@ -618,7 +621,7 @@ public class GameMap extends AppCompatActivity
             Log.d("GameMap", "gameObserver already added");
         }
         FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(colorPrimary)));
+        fab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(colorLightGrey)));
     }
     //If proximitry listener is activated, this methode is called
     private final SensorEventListener sensorListenerProximity = new SensorEventListener() {

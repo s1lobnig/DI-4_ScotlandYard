@@ -1,10 +1,15 @@
 package com.example.scotlandyard;
 
+import com.example.scotlandyard.lobby.Game;
 import com.example.scotlandyard.map.Point;
+import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.maps.model.Marker;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Player implements Serializable {
     private String nickname;
@@ -100,9 +105,9 @@ public class Player implements Serializable {
         this.marker = marker;
     }
 
-    public void decreaseNumberOfTickets(Integer key){
-        if(!this.hasCheatedThisRound)
-            tickets.put(key, tickets.get(key)-1);
+    public void decreaseNumberOfTickets(Integer key) {
+        if (!this.hasCheatedThisRound)
+            tickets.put(key, tickets.get(key) - 1);
     }
 
     public void initializeNumberOfTickets(Object[][] initialTickets) {
@@ -111,7 +116,36 @@ public class Player implements Serializable {
         }
     }
 
-    public boolean isMrX(){
+    public void checkAmountOfTickets() {
+        ArrayList<Integer> listOfTickets = new ArrayList<>();
+
+        for (Map.Entry<Integer, Integer> ticket : tickets.entrySet()) {
+            // Check if value matches with given value
+            if (!ticket.getValue().equals(0)) {
+                // Store the key from entry to the list
+                listOfTickets.add(ticket.getKey());
+            }
+        }
+
+        //if all ticket values are 0 set player inactive
+        if (listOfTickets.size() == 0) {
+            setActive(false);
+        }
+    }
+
+    public int[] getRemainingTickets(){
+        int[] remainingTickets = new int[tickets.size()];
+
+        for (Map.Entry<Integer, Integer> ticket : tickets.entrySet()) {
+            for(int i = 0; i < remainingTickets.length; i++){
+                remainingTickets[i] = ticket.getValue();
+            }
+        }
+
+        return remainingTickets;
+    }
+
+    public boolean isMrX() {
         return isMrX;
     }
 
@@ -164,6 +198,7 @@ public class Player implements Serializable {
     public void setHasCheatedThisRound(boolean hasCheatedThisRound) {
         this.hasCheatedThisRound = hasCheatedThisRound;
     }
+
     @Override
     public int hashCode() {
         return super.hashCode();
