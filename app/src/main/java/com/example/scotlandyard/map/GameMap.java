@@ -404,7 +404,6 @@ public class GameMap extends AppCompatActivity
                 p = Points.POINTS[r.getStartPoint() - 1];
             }
         }
-        Route r = (Route) routeToTake[1];
         int[] iconAndTicket = MovingLogic.getIconAndTicket(player, (int) routeToTake[2]);
         int icon = iconAndTicket[0];
         int ticket = iconAndTicket[1];
