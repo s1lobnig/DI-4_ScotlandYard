@@ -45,6 +45,11 @@ public class ManageGameData {
         return true;
     }
 
+    public static void deactivatePlayer(Game game, Player player){
+        player.setActive(false);
+        tryNextRound(game);
+    }
+
     public static int tryNextRound(Game game) {
         if (game.isRoundMrX()) {
             if (game.getMrX().isMoved()) {
