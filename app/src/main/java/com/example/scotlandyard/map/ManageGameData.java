@@ -85,15 +85,13 @@ public class ManageGameData {
         return false;
     }*/
 
-    private Player getMrX(){
-        for(Player p : game.getPlayers()){
-            if(p.isMrX())
+    private Player getMrX() {
+        for (Player p : game.getPlayers()) {
+            if (p.isMrX())
                 return p;
         }
         return null;
     }
-
-
 
 
     static boolean isPlayer(Game game, Marker field) {

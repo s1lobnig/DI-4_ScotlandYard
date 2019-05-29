@@ -14,7 +14,7 @@ public class PositionEntry extends Entry {
 
     public PositionEntry(int turnNumber, int position) {
         super(turnNumber);
-        this.position = position - 1;
+        this.position = position + 1;
     }
 
     public int getPosition() {
