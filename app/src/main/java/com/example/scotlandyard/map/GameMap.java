@@ -92,6 +92,7 @@ public class GameMap extends AppCompatActivity
 
 
     private SensorManager sm;
+
     /**
      * @param savedInstanceState
      */
@@ -292,16 +293,18 @@ public class GameMap extends AppCompatActivity
                         if (isValid) {
                             int r = (new Random()).nextInt(100) % 10;
                             Point newLocation = new Point(field.getPosition().latitude, field.getPosition().longitude);
+                            int idx = Points.getIndex(newLocation);
+                            Object[] randomRoute = Routes.getRandomRoute(Points.getIndex(myPlayer.getPosition()) + 1, idx + 1);
                             if (Device.isServer()) {
                                 if ((!myPlayer.isMrX() && device.getGame().isRoundMrX()) || (myPlayer.isMrX() && !device.getGame().isRoundMrX())) {
                                     return false;
                                 }
-                                Point point = Points.getPoints()[Points.getIndex(newLocation)];
-                                moveMarker(point, myPlayer, myPlayer.getIcon(), r);
+                                Point point = Points.getPoints()[idx];
+                                moveMarker(point, myPlayer, myPlayer.getIcon(), r, randomRoute);
                                 myPlayer.setMoved(true);
                                 tryNextRound();
                             }
-                            device.send(new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r));
+                            device.send(new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r, randomRoute));
                         }
                         return isValid;
                     } else {
@@ -314,15 +317,15 @@ public class GameMap extends AppCompatActivity
         });
     }
 
-    private boolean moveMarker(Point p, Player player, int playerIcon, int r) {
+    private boolean moveMarker(Point p, Player player, int playerIcon, int r, Object[] randomRoute) {
         if (randomEventsEnabled) {
-            if (r < 3) {
+            if (r <= 3) {
                 if (player.getPenalty() == 0) {
-                    return moveWithRandomEvent(player, p, playerIcon, r);
+                    return moveWithRandomEvent(player, p, playerIcon, r, randomRoute);
                 }
             }
         }
-        return move(player, p, false, false, playerIcon);
+        return move(player, p, false, false, playerIcon, randomRoute);
     }
 
     private boolean isValidMove(Marker destination, Player player) {
@@ -330,7 +333,14 @@ public class GameMap extends AppCompatActivity
         Point currentPoint = new Point(current.latitude, current.longitude);
         Point newLocation = new Point(destination.getPosition().latitude, destination.getPosition().longitude);
         Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
-        if ((Boolean) routeToTake[0]) {
+        // only do this, if player has not already moved...
+        if ((Boolean) routeToTake[0] && !player.isMoved()) {
+            // if player has penalty and wants to take the bicycle
+            if (player.getPenalty() > 0 && (int) (routeToTake[2]) == 1) {
+                if (myPlayer.equals(player))
+                    Toast.makeText(GameMap.this, "Das Fahrrad ist noch nicht verfügbar!", Snackbar.LENGTH_LONG).show();
+                return false;
+            }
             boolean enoughTickets = ManageGameData.checkForValidTicket(player, (int) routeToTake[2]);
             if (!enoughTickets) {
                 //Toast to indicate that player has not enough tickets for reachable field
@@ -347,7 +357,7 @@ public class GameMap extends AppCompatActivity
         return false;
     }
 
-    public boolean moveWithRandomEvent(Player player, Point p, int playerIcon, int randomEvent) {
+    public boolean moveWithRandomEvent(Player player, Point p, int playerIcon, int randomEvent, Object[] route) {
         RandomEvent r = new RandomEvent();
         /*
         The randomEvent-paramter is already random generated - use it as id - random event is displayed equally on every device
@@ -376,27 +386,51 @@ public class GameMap extends AppCompatActivity
             randomRoute = true;
         }
         if (!doNotGo) {
-            return move(player, p, goBack, randomRoute, playerIcon);
+            return move(player, p, goBack, randomRoute, playerIcon, route);
         }
         visualizeTickets();
         return false;
     }
 
-    public boolean move(Player player, Point p, boolean goBack, boolean randomRoute, int playerIcon) {
+    public boolean move(Player player, Point p, boolean goBack, boolean randomRoute, int playerIcon, Object[] randRoute) {
         LatLng current = player.getMarker().getPosition();
         Point currentPoint = new Point(current.latitude, current.longitude);
         Point playerLoc = player.getPosition();
         Point newLocation = p;
         LatLng finalPos;
         Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
-        if (randomRoute) {
-            Routes.getRandomRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
-        }
         Route r = (Route) routeToTake[1];
+        if (randomRoute) {
+            r = (Route) randRoute[1];
+            if (Points.getIndex(playerLoc) + 1 == r.getStartPoint()) {
+                p = Points.POINTS[r.getEndPoint() - 1];
+            } else {
+                p = Points.POINTS[r.getStartPoint() - 1];
+            }
+        }
         int[] iconAndTicket = MovingLogic.getIconAndTicket(player, (int) routeToTake[2]);
         int icon = iconAndTicket[0];
         int ticket = iconAndTicket[1];
+        if (player.getPenalty() > 0)
+            player.decreasePenalty();
+        if (randomRoute) {
+            switch ((int) randRoute[0]) {
+                case 0:
+                    icon = R.drawable.pedestrian;
+                    break;
+                case 1:
+                    icon = R.drawable.bicycle;
+                    break;
+                case 2:
+                    icon = R.drawable.bus;
+                    break;
+                case 3:
+                    icon = R.drawable.taxi;
+                    break;
+            }
+        }
         visualizeTickets();
+
         if (player.isMrX() && player.equals(myPlayer)) {
             int lastTurn = device.getRoadMap().getNumberOfEntries();
             Entry entry = MovingLogic.getRoadMapEntry(lastTurn, newLocation, ticket);
@@ -405,47 +439,37 @@ public class GameMap extends AppCompatActivity
             }
             device.send(entry);
         }
-        if (!(player.getPenalty() > 0 && icon == R.drawable.bicycle)) {
-            if (player.getPenalty() > 0) {
-                player.decreasePenalty();
+        if (r.getIntermediates() != null) {
+            player.getMarker().setIcon(BitmapDescriptorFactory.fromResource(icon));
+            Object[] routeSliceTimings = MovingLogic.getRouteSlicesAndTimings(r, Points.getIndex(currentPoint) + 1);
+            ArrayList<LatLng> routePoints = (ArrayList) routeSliceTimings[0];
+            ArrayList<Float> timeSlices = (ArrayList) routeSliceTimings[1];
+            finalPos = p.getLatLng();
+            if (goBack) {
+                // if random event "Go Back" then...
+                MovingLogic.createGoBackRoute(timeSlices, routePoints, p);
+                finalPos = player.getMarker().getPosition();
                 newLocation = playerLoc;
+            } else {
+                newLocation = p;
             }
-            if (r.getIntermediates() != null) {
-                player.getMarker().setIcon(BitmapDescriptorFactory.fromResource(icon));
-                Object[] routeSliceTimings = MovingLogic.getRouteSlicesAndTimings(r, Points.getIndex(currentPoint) + 1);
-                ArrayList<LatLng> routePoints = (ArrayList) routeSliceTimings[0];
-                ArrayList<Float> timeSlices = (ArrayList) routeSliceTimings[1];
-                finalPos = p.getLatLng();
-                if (goBack) {
-                    // if random event "Go Back" then...
-                    MovingLogic.createGoBackRoute(timeSlices, routePoints, p);
-                    finalPos = player.getMarker().getPosition();
-                    newLocation = playerLoc;
-                } else {
-                    newLocation = p;
-                }
-                MovingLogic.runMarkerAnimation(player, routePoints, timeSlices, finalPos, icon, playerIcon);
+            MovingLogic.runMarkerAnimation(player, routePoints, timeSlices, finalPos, icon, playerIcon);
+            player.setPosition(newLocation);
+        } else {
+            if (!goBack) {
+                MovingLogic.runMarkerAnimation(player, null, null, p.getLatLng(), icon, playerIcon);
+                newLocation = p;
                 player.setPosition(newLocation);
             } else {
-                if (!goBack) {
-                    MovingLogic.runMarkerAnimation(player, null, null, p.getLatLng(), icon, playerIcon);
-                    newLocation = p;
-                    player.setPosition(newLocation);
-                } else {
-                    ArrayList[] goBackRouteAndSlices = MovingLogic.createGoBackRoute(p.getLatLng());
-                    ArrayList<Float> timeSlices = goBackRouteAndSlices[0];
-                    ArrayList<LatLng> routePoints = goBackRouteAndSlices[1];
-                    newLocation = playerLoc;
-                    MovingLogic.runMarkerAnimation(player, routePoints, timeSlices, player.getMarker().getPosition(), icon, playerIcon);
-                    player.setPosition(newLocation);
-                }
+                ArrayList[] goBackRouteAndSlices = MovingLogic.createGoBackRoute(p.getLatLng());
+                ArrayList<Float> timeSlices = goBackRouteAndSlices[0];
+                ArrayList<LatLng> routePoints = goBackRouteAndSlices[1];
+                newLocation = playerLoc;
+                MovingLogic.runMarkerAnimation(player, routePoints, timeSlices, player.getMarker().getPosition(), icon, playerIcon);
+                player.setPosition(newLocation);
             }
-        } else {
-            Toast.makeText(GameMap.this, "Das Fahrrad ist noch nicht verfügbar!", Snackbar.LENGTH_LONG).show();
-            return false;
         }
         return true;
-
     }
 
     public void visualizeTickets() {
@@ -582,7 +606,7 @@ public class GameMap extends AppCompatActivity
         int field = move.getField();
         Point point = Points.getPoints()[field];
 
-        moveMarker(point, player, player.getIcon(), move.getRandomEventTrigger());
+        moveMarker(point, player, player.getIcon(), move.getRandomEventTrigger(), move.getRandomRoute());
     }
 
     @Override
@@ -603,7 +627,7 @@ public class GameMap extends AppCompatActivity
         } else if (object instanceof Move) {
             notification = "Zug";
         }
-        Toast.makeText(GameMap.this, notification + "konnte nicht gesendet werden!", Toast.LENGTH_LONG).show();
+        Toast.makeText(GameMap.this, notification + " konnte nicht gesendet werden!", Toast.LENGTH_LONG).show();
         //TODO give possibility to sync the game again
     }
 
@@ -645,8 +669,8 @@ public class GameMap extends AppCompatActivity
         @Override
         public void onSensorChanged(SensorEvent event) {
             float distance = event.values[0];
-            if(distance < 5){
-                if(myPlayer.isMrX()){
+            if (distance < 5) {
+                if (myPlayer.isMrX()) {
                     Toast.makeText(GameMap.this, "Weitere Bewegung ausführen", Snackbar.LENGTH_LONG).show();
                     myPlayer.setMoved(false);
                     myPlayer.setHasCheated(true);

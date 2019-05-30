@@ -2,7 +2,11 @@ package com.example.scotlandyard.map;
 
 import android.graphics.Color;
 
+import com.example.scotlandyard.Player;
+
+import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -592,13 +596,128 @@ public class Routes {
         return routes;
     }
 
+    private static ArrayList[] getAll(int current, int notNext) {
+        ArrayList[] routes = new ArrayList[4];
+        routes[0] = getAllByFoot(current, notNext);
+        routes[1] = getAllByBicycle(current, notNext);
+        routes[2] = getAllByBus(current, notNext);
+        routes[3] = getAllByTaxiDragan(current, notNext);
+        return routes;
+    }
+
+    public static Object[] getBotRoute(int current, List<Player> players) {
+        int notNext = -1;
+        ArrayList[] routes = getAll(current, notNext);
+
+        ArrayList[] routesNoDetectives2 = new ArrayList[4];
+        routesNoDetectives2[0] = new ArrayList<Player>();
+        routesNoDetectives2[1] = new ArrayList<Player>();
+        routesNoDetectives2[2] = new ArrayList<Player>();
+        routesNoDetectives2[3] = new ArrayList<Player>();
+
+        ArrayList[] routesNoDetectives1 = new ArrayList[4];
+        routesNoDetectives1[0] = new ArrayList<Player>();
+        routesNoDetectives1[1] = new ArrayList<Player>();
+        routesNoDetectives1[2] = new ArrayList<Player>();
+        routesNoDetectives1[3] = new ArrayList<Player>();
+
+        for (int i = 0; i < routes.length; i++) {
+            ArrayList<Route> routesI = routes[i];
+            for (Route r : routesI) {
+                if (noDetectiveOnTheRoute(r, players)) {
+                    int next;
+                    if (current == r.getStartPoint()) {
+                        next = r.getEndPoint();
+                    } else {
+                        next = r.getStartPoint();
+                    }
+                    ArrayList[] stillPossible = getAll(next, notNext);
+                    boolean isStillPossible = true;
+                    for (int j = 0; j < stillPossible.length; j++) {
+                        ArrayList<Route> nextRoutes = stillPossible[i];
+                        for (Route r1 : nextRoutes) {
+                            if (!noDetectiveOnTheRoute(r1, players)) {
+                                isStillPossible = false;
+                                break;
+                            }
+                        }
+                        if (!isStillPossible)
+                            break;
+                    }
+                    if (isStillPossible) {
+                        routesNoDetectives2[i].add(r);
+                    } else {
+                        routesNoDetectives1[i].add(r);
+                    }
+                }
+            }
+        }
+        return getResultingBotMove(routes, routesNoDetectives2, routesNoDetectives1);
+    }
+
+    private static Object[] getResultingBotMove(ArrayList[] routes, ArrayList[] noDetectivesIn1And2Moves, ArrayList[] noDetectivesIn1Move) {
+        ArrayList<Integer> possibleRoutes = new ArrayList<>();
+        SecureRandom secureRandom = new SecureRandom();
+        int routeType;
+        Route route;
+        savePossibleRoutes(noDetectivesIn1And2Moves, possibleRoutes);
+        if (!possibleRoutes.isEmpty()) {
+            routeType = possibleRoutes.get(secureRandom.nextInt(possibleRoutes.size()));
+            route = (Route) (noDetectivesIn1And2Moves[routeType]).get(secureRandom.nextInt(noDetectivesIn1And2Moves[routeType].size()));
+        } else {
+            savePossibleRoutes(noDetectivesIn1Move, possibleRoutes);
+            if (!possibleRoutes.isEmpty()) {
+                routeType = possibleRoutes.get(secureRandom.nextInt(possibleRoutes.size()));
+                route = (Route) (noDetectivesIn1Move[routeType]).get(secureRandom.nextInt(noDetectivesIn1Move[routeType].size()));
+            } else {
+                savePossibleRoutes(routes, possibleRoutes);
+                if (possibleRoutes.isEmpty()) {
+                    return null;
+                }
+                routeType = possibleRoutes.get(secureRandom.nextInt(possibleRoutes.size()));
+                route = (Route) (routes[routeType]).get(secureRandom.nextInt(routes[routeType].size()));
+            }
+        }
+        return new Object[]{
+                routeType,
+                route
+        };
+    }
+
+    private static boolean noDetectiveOnTheRoute(Route r, List<Player> players) {
+        for (Player p : players) {
+            if (!p.isMrX()) {
+                int playerLoc = Points.getIndex(p.getPosition()) + 1;
+                if (playerLoc == r.getStartPoint() || playerLoc == r.getEndPoint()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private static void savePossibleRoutes(ArrayList[] routes, ArrayList<Integer> possible) {
+        for (int i = 0; i < routes.length; i++) {
+            if (!routes[i].isEmpty()) {
+                possible.add(i);
+            }
+        }
+    }
 
     public static Object[] getRandomRoute(int current, int notNext) {
-        getAllByFoot(current, notNext);
-        getAllByBicycle(current, notNext);
-        getAllByBus(current, notNext);
-        getAllByTaxiDragan(current, notNext);
-        return null;
+        ArrayList[] routes = getAll(current, notNext);
+        ArrayList<Integer> possible = new ArrayList<>();
+        for (int i = 0; i < routes.length; i++) {
+            if (!routes[i].isEmpty()) {
+                possible.add(i);
+            }
+        }
+        SecureRandom secureRandom = new SecureRandom();
+        int route = possible.get(secureRandom.nextInt(possible.size()));
+        return new Object[]{
+                route,
+                routes[route].get(secureRandom.nextInt(routes[route].size()))
+        };
     }
 
     public static boolean routesPossibleWithTickets(int current){

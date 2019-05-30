@@ -1,6 +1,8 @@
 package com.example.scotlandyard.map;
 
-public class Route {
+import java.io.Serializable;
+
+public class Route implements Serializable {
     private int startPoint;
     private Point[] intermediates;
     private int endPoint;
