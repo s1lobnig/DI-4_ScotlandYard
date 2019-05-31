@@ -593,7 +593,7 @@ public class GameMap extends AppCompatActivity
         int result = ManageGameData.tryNextRound(device.getGame());
         if (result == 1) {
             device.send(new MapNotification("NEXT_ROUND"));
-            Toast.makeText(GameMap.this, "Runde " + device.getGame().getRound(), Snackbar.LENGTH_LONG).show();
+            ((TextView)findViewById(R.id.Round)).setText("Round " + device.getGame().getRound());
         } else if (result == 0) {
             device.send(new MapNotification("END MisterX")); //MisterX hat gewonnen
             Toast.makeText(GameMap.this, "MisterX hat gewonnen", Snackbar.LENGTH_LONG).show();
@@ -639,7 +639,11 @@ public class GameMap extends AppCompatActivity
 
     @Override
     public void onReceivedToast(String toast) {
-        Toast.makeText(GameMap.this, toast, Toast.LENGTH_LONG).show();
+        if(toast.contains("Runde")){
+            ((TextView)findViewById(R.id.Round)).setText(toast);
+        }else {
+            Toast.makeText(GameMap.this, toast, Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override

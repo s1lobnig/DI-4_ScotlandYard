@@ -1,5 +1,7 @@
 package com.example.scotlandyard.map;
 
+import android.widget.TextView;
+
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
 import com.example.scotlandyard.control.Device;

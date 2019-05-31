@@ -53,5 +53,6 @@
 
     <string name="SearchServer">Suche nach den Servern...</string>
     <string name="establishConn">Verbindung zum Server wird hergestellt...</string>
+    <string name="runde">Runde 1</string>
 
 </resources>
