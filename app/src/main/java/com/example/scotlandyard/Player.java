@@ -128,7 +128,7 @@ public class Player implements Serializable {
         }
 
         //if all ticket values are 0 set player inactive
-        if (listOfTickets.size() == 0) {
+        if (listOfTickets.isEmpty()) {
             setActive(false);
         }
     }
