@@ -37,7 +37,7 @@ import java.util.Set;
 
 public class GameList extends AppCompatActivity implements ClientLobbyInterface {
     private Player player;
-    private static ListView gameListView; /* ListView GUI Element */
+    private ListView gameListView; /* ListView GUI Element */
     private ArrayAdapter listAdapter; /* Adapter between ListView and  ArrayList<Game> */
 
     private String logTag = "GameList";
