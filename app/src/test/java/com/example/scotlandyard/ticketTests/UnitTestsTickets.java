@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class UnitTestsTickets {
 
@@ -130,6 +131,9 @@ public class UnitTestsTickets {
         Assert.assertEquals(true, manageGameData.checkForValidTicket(testPlayer, 0));
         Assert.assertEquals(true, manageGameData.checkForValidTicket(testPlayer, 1));
         Assert.assertEquals(true, manageGameData.checkForValidTicket(testPlayer, 2));
+        Assert.assertEquals(true, manageGameData.checkForValidTicket(testPlayer, 3));
+        Assert.assertEquals(true, manageGameData.checkForValidTicket(testPlayer, 4));
+        Assert.assertEquals(true, manageGameData.checkForValidTicket(testPlayer, 5));
 
         for(int i = 2; i > 0; i--){
             testPlayer.decreaseNumberOfTickets(R.string.TAXI_TICKET_KEY);
@@ -144,6 +148,37 @@ public class UnitTestsTickets {
             testPlayer.decreaseNumberOfTickets(R.string.BLACK_TICKET_KEY);
         }
         Assert.assertEquals(false, manageGameData.checkForValidTicket(testPlayer, 5));
+
+    }
+
+    @Test
+    public void testCheckAmountOfTickets(){
+        testPlayer.setMrX(false);
+        manageGameData.setTickets(game, testPlayer);
+        for(Map.Entry<Integer, Integer> ticket : testPlayer.getTickets().entrySet()){
+            while (ticket.getValue() != 0) {
+                testPlayer.decreaseNumberOfTickets(ticket.getKey());
+            }
+        }
+        testPlayer.checkAmountOfTickets();
+        Assert.assertEquals(false, testPlayer.isActive());
+    }
+
+    @Test
+    public void testGetRemainingTickets(){
+        testPlayer.setMrX(false);
+        manageGameData.setTickets(game, testPlayer);
+        testPlayer.decreaseNumberOfTickets(R.string.PEDESTRIAN_TICKET_KEY);
+        testPlayer.decreaseNumberOfTickets(R.string.BUS_TICKET_KEY);
+
+        int[] expectedTickets = {4,4,1,0,0,0};
+        int[] realTickets = new int[tickets.size()];
+        int i = 0;
+         for(Map.Entry<Integer, Integer> ticket : tickets.entrySet()){
+                realTickets[i] = ticket.getValue();
+                i++;
+        }
+        Assert.assertArrayEquals(expectedTickets,realTickets);
 
     }
 }
