@@ -172,14 +172,8 @@ public class UnitTestsTickets {
         testPlayer.decreaseNumberOfTickets(R.string.BUS_TICKET_KEY);
 
         int[] expectedTickets = {4, 4, 1, 0, 0, 0};
-        int[] realTickets = {tickets.get(R.string.PEDESTRIAN_TICKET_KEY).intValue(),
-                tickets.get(R.string.BICYCLE_TICKET_KEY).intValue(),
-                tickets.get(R.string.BUS_TICKET_KEY).intValue(),
-                tickets.get(R.string.TAXI_TICKET_KEY).intValue(),
-                tickets.get(R.string.DOUBLE_TICKET_KEY).intValue(),
-                tickets.get(R.string.BLACK_TICKET_KEY).intValue()};
 
-        Assert.assertArrayEquals(expectedTickets, realTickets);
+        Assert.assertArrayEquals(expectedTickets, testPlayer.getRemainingTickets());
 
     }
 }

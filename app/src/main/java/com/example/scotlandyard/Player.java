@@ -134,13 +134,13 @@ public class Player implements Serializable {
     }
 
     public int[] getRemainingTickets(){
-        int[] remainingTickets = new int[tickets.size()];
 
-        for (Map.Entry<Integer, Integer> ticket : tickets.entrySet()) {
-            for(int i = 0; i < remainingTickets.length; i++){
-                remainingTickets[i] = ticket.getValue();
-            }
-        }
+        int[] remainingTickets = {tickets.get(R.string.PEDESTRIAN_TICKET_KEY).intValue(),
+                tickets.get(R.string.BICYCLE_TICKET_KEY).intValue(),
+                tickets.get(R.string.BUS_TICKET_KEY).intValue(),
+                tickets.get(R.string.TAXI_TICKET_KEY).intValue(),
+                tickets.get(R.string.DOUBLE_TICKET_KEY).intValue(),
+                tickets.get(R.string.BLACK_TICKET_KEY).intValue()};
 
         return remainingTickets;
     }

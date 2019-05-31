@@ -722,14 +722,14 @@ public class Routes {
 
     public static boolean routesPossibleWithTickets(int current, Player player){
         ArrayList[] routes = getAll(current, -1);
-        /*int[] tickets = player.getRemeiningTickets();
+        int[] tickets = player.getRemainingTickets();
         for (int i = 0; i < tickets.length; i++) {
             if (tickets[i] > 0) {
                 if (i < routes.length && !routes[i].isEmpty()) {
                     return true;
                 }
             }
-        }*/
+        }
         return false;
     }
 }
