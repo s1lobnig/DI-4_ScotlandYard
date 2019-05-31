@@ -204,7 +204,7 @@ public class ManageGameData {
 
     public static Game makeGame(Lobby lobby) {
         lobby.chooseMrX(lobby.isRandomMrX());
-        Game game = new Game(lobby.getLobbyName(), lobby.getMaxPlayers(), lobby.getPlayerCount(), 1, lobby.isRandomEvents(), lobby.getPlayerList());
+        Game game = new Game(lobby.getLobbyName(), lobby.getMaxPlayers(), lobby.getPlayerCount(), 1, lobby.isRandomEvents(), lobby.isBotMrX(), lobby.getPlayerList());
         givePlayerPositionAndIcon(game);
         return game;
     }
