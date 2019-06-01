@@ -15,6 +15,7 @@ import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.messenger.Message;
 import com.google.android.gms.nearby.connection.ConnectionsClient;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 /**
@@ -24,9 +25,11 @@ import java.util.Set;
 public class Server extends Device implements ServerInterface {
     private String logTag = "Server";
     private ServerLobbyInterface lobbyObserver;
+    private ArrayList<Endpoint> lost;
 
     Server(String endpointName, ConnectionsClient connectionsClient) {
         connectionService = new ServerService(this, endpointName, connectionsClient);
+        lost = new ArrayList<>();
     }
 
     /**
@@ -62,6 +65,15 @@ public class Server extends Device implements ServerInterface {
         if (lobbyObserver != null) {
             lobbyObserver.showFailedAdvertising();
         }
+        if (!lost.isEmpty()) {
+            if (gameObserver != null) {
+                gameObserver.showReconnectFailed(lost.get(lost.size()-1).getName());
+            }
+            if (messengerObserver != null) {
+                messengerObserver.showReconnectFailed(lost.get(lost.size()-1).getName());
+            }
+            lost.remove(lost.get(lost.size()-1));
+        }
     }
 
     @Override
@@ -87,6 +99,13 @@ public class Server extends Device implements ServerInterface {
                 Log.d(logTag, "lobby full");
                 ((ServerService) connectionService).rejectConnection(endpoint);
                 ((ServerService) connectionService).stopAdvertising();
+            }
+        }
+        if (!lost.isEmpty()) {
+            if (lost.contains(endpoint)) {
+                ((ServerService)connectionService).acceptConnection(endpoint);
+            } else {
+                ((ServerService)connectionService).rejectConnection(endpoint);
             }
         }
     }
@@ -169,6 +188,15 @@ public class Server extends Device implements ServerInterface {
         if (lobbyObserver != null) {
             lobbyObserver.showConnectionFailed(endpoint.getName());
         }
+        if (!lost.isEmpty()) {
+            lost.remove(endpoint);
+            if (gameObserver != null) {
+                gameObserver.showReconnectFailed(endpoint.getName());
+            }
+            if (messengerObserver != null) {
+                messengerObserver.showReconnectFailed(endpoint.getName());
+            }
+        }
     }
 
     @Override
@@ -182,7 +210,6 @@ public class Server extends Device implements ServerInterface {
             send(new MapNotification("PLAYER " + lostPlayer.getNickname() + " QUITTED"));
             printNotification(lostPlayer.getNickname() + " hat das Spiel verlassen");
         }
-
         if (gameObserver != null) {
             gameObserver.showDisconnected(endpoint);
         }
@@ -193,6 +220,8 @@ public class Server extends Device implements ServerInterface {
             lobby.removePlayer(endpoint.getName());
             lobbyObserver.updateLobby(lobby);
         }
+        lost.add(endpoint);
+        ((ServerService)connectionService).startAdvertising();
     }
 
     @Override
@@ -200,6 +229,15 @@ public class Server extends Device implements ServerInterface {
         Log.d(logTag, "accepting failed");
         if (lobbyObserver != null) {
             lobbyObserver.showAcceptingFailed(endpoint.getName());
+        }
+        if (!lost.isEmpty()) {
+            lost.remove(endpoint);
+            if (gameObserver != null) {
+                gameObserver.showReconnectFailed(endpoint.getName());
+            }
+            if (messengerObserver != null) {
+                messengerObserver.showReconnectFailed(endpoint.getName());
+            }
         }
     }
 
@@ -225,6 +263,16 @@ public class Server extends Device implements ServerInterface {
         connectionService.send(lobby);
         if (lobbyObserver != null) {
             lobbyObserver.updateLobby(lobby);
+        }
+        if (!lost.isEmpty()) {
+            lost.remove(endpoint);
+            if (gameObserver != null) {
+                gameObserver.showReconnected(endpoint.getName());
+            }
+            if (messengerObserver != null) {
+                messengerObserver.showReconnected(endpoint.getName());
+            }
+            //TODO activate player in game (let him make moves again)
         }
     }
 

@@ -36,4 +36,14 @@ public interface GameInterface {
      * function is called, when a toast should be printed
      */
     void onReceivedToast(String toast);
+
+    /**
+     * function is called, when reconnected
+     */
+    void showReconnected(String endpointName);
+
+    /**
+     * function is called, when reconnecting failed
+     */
+    void showReconnectFailed(String endpointName);
 }

@@ -28,6 +28,7 @@ public class Client extends Device implements ClientInterface {
     private String logTag = "Client";
     private ClientLobbyInterface lobbyObserver;
     private ArrayList<Endpoint> serverList;
+    private Endpoint lost;
 
     Client(String endpointName, ConnectionsClient connectionsClient) {
         connectionService = new ClientService(this, endpointName, connectionsClient);
@@ -71,6 +72,15 @@ public class Client extends Device implements ClientInterface {
         if (lobbyObserver != null) {
             lobbyObserver.showFailedDiscovering();
         }
+        if (lost != null) {
+            if (gameObserver != null) {
+                gameObserver.showReconnectFailed(lost.getName());
+            }
+            if (messengerObserver != null) {
+                messengerObserver.showReconnectFailed(lost.getName());
+            }
+            lost = null;
+        }
     }
 
     @Override
@@ -79,6 +89,14 @@ public class Client extends Device implements ClientInterface {
         serverList = new ArrayList<>(discoveredEndpoints.values());
         if (lobbyObserver != null) {
             lobbyObserver.updateServerList(serverList);
+        }
+        if (lost != null) {
+            for (Endpoint e : discoveredEndpoints.values()) {
+                if (e.getId().equals(lost.getId())) {
+                    ((ClientService)connectionService).connectToEndpoint(e);
+                    break;
+                }
+            }
         }
     }
 
@@ -177,6 +195,15 @@ public class Client extends Device implements ClientInterface {
         if (lobbyObserver != null) {
             lobbyObserver.showConnectionFailed(endpoint.getName());
         }
+        if (lost != null) {
+            if (gameObserver != null) {
+                gameObserver.showReconnectFailed(endpoint.getName());
+            }
+            if (messengerObserver != null) {
+                messengerObserver.showReconnectFailed(endpoint.getName());
+            }
+            lost = null;
+        }
     }
 
     @Override
@@ -192,6 +219,8 @@ public class Client extends Device implements ClientInterface {
         if (lobbyObserver != null) {
             lobbyObserver.showDisconnected(endpoint.getName());
         }
+        lost = endpoint;
+        ((ClientService)connectionService).startDiscovery();
     }
 
     @Override
@@ -199,6 +228,15 @@ public class Client extends Device implements ClientInterface {
         Log.d(logTag, "accepting failed");
         if (lobbyObserver != null) {
             lobbyObserver.showAcceptingFailed(endpoint.getName());
+        }
+        if (lost != null) {
+            if (gameObserver != null) {
+                gameObserver.showReconnectFailed(endpoint.getName());
+            }
+            if (messengerObserver != null) {
+                messengerObserver.showReconnectFailed(endpoint.getName());
+            }
+            lost = null;
         }
     }
 
@@ -221,6 +259,15 @@ public class Client extends Device implements ClientInterface {
         Log.d(logTag, "connected");
         if (lobbyObserver != null) {
             lobbyObserver.showConnected(endpoint.getName());
+        }
+        if (lost != null) {
+            if (gameObserver != null) {
+                gameObserver.showReconnected(endpoint.getName());
+            }
+            if (messengerObserver != null) {
+                messengerObserver.showReconnected(endpoint.getName());
+            }
+            lost = null;
         }
     }
 

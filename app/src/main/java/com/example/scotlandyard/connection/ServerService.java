@@ -51,8 +51,12 @@ public class ServerService extends ConnectionService{
      * function starts advertising of server
      */
     public void startAdvertising() {
-        if (connectionState == ConnectionState.DISCONNECTED) {
-            connectionState = ConnectionState.ADVERTISING;
+        if (connectionState == ConnectionState.DISCONNECTED || connectionState == ConnectionState.CONNECTED) {
+            if (connectionState == ConnectionState.CONNECTED) {
+                connectionState = ConnectionState.ADVERTISING_CONNECTED;
+            } else {
+                connectionState = ConnectionState.ADVERTISING;
+            }
             AdvertisingOptions.Builder advertisingOptions = new AdvertisingOptions.Builder();
             advertisingOptions.setStrategy(strategy);
             connectionsClient
@@ -73,7 +77,11 @@ public class ServerService extends ConnectionService{
                             new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
-                                    connectionState = ConnectionState.DISCONNECTED;
+                                    if (connectionState == ConnectionState.ADVERTISING_CONNECTED) {
+                                        connectionState = ConnectionState.CONNECTED;
+                                    } else {
+                                        connectionState = ConnectionState.DISCONNECTED;
+                                    }
                                     Log.d(logTag, "startAdvertising failed", e);
                                     server.onFailedAdvertising();
                                 }

@@ -612,10 +612,10 @@ public class GameMap extends AppCompatActivity
     @Override
     public void showDisconnected(Endpoint endpoint) {
         if (Device.isServer()) {
-            Toast.makeText(GameMap.this, "Verbindung zu Player " + endpoint.getName() + " verlohren!", Toast.LENGTH_LONG).show();
+            Toast.makeText(GameMap.this, "Verbindung zu Player " + endpoint.getName() + " verloren!", Toast.LENGTH_LONG).show();
             //TODO: Server lost!
         } else {
-            Toast.makeText(GameMap.this, "Verbindung zu Server verlohren!", Toast.LENGTH_LONG).show();
+            Toast.makeText(GameMap.this, "Verbindung zu Server verloren!", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -640,6 +640,16 @@ public class GameMap extends AppCompatActivity
     @Override
     public void onReceivedToast(String toast) {
         Toast.makeText(GameMap.this, toast, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showReconnected(String endpointName) {
+        Toast.makeText(GameMap.this, "Verbindung zu " + endpointName + " wiederhergestellt!", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showReconnectFailed(String endpointName) {
+        Toast.makeText(GameMap.this, "Verbindung zu " + endpointName + " konnte nicht wiederhergestellt werden!", Toast.LENGTH_LONG).show();
     }
 
     @Override
