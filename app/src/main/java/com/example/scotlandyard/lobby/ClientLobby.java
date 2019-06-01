@@ -124,9 +124,12 @@ public class ClientLobby extends AppCompatActivity implements ClientLobbyInterfa
 
         ((CheckBox) findViewById(R.id.randomEvents)).setChecked(lobby.isRandomEvents());
         ((CheckBox) findViewById(R.id.randomMrX)).setChecked(lobby.isRandomMrX());
+        ((CheckBox) findViewById(R.id.BotMrX)).setChecked(lobby.isBotMrX());
 
         ((CheckBox) findViewById(R.id.randomEvents)).setEnabled(false);
         ((CheckBox) findViewById(R.id.randomMrX)).setEnabled(false);
+        ((CheckBox) findViewById(R.id.BotMrX)).setEnabled(false);
+
 
         players.clear();
         players.addAll(lobby.getPlayerList());

@@ -18,6 +18,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
+import com.example.scotlandyard.control.Server;
 import com.example.scotlandyard.tickets.BlackTicketDialog;
 import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.control.GameInterface;
@@ -280,10 +281,15 @@ public class GameMap extends AppCompatActivity
             device.setGame(ManageGameData.makeGame(Device.getLobby()));
             randomEventsEnabled = Device.getLobby().isRandomEvents();
             device.sendGame();
+            setupGame();
+            visualizeTickets();
+            ((Server) device).moveBot();
+
+        }else{
+            setupGame();
+            visualizeTickets();
         }
 
-        setupGame();
-        visualizeTickets();
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker field) {
@@ -594,6 +600,9 @@ public class GameMap extends AppCompatActivity
         if (result == 1) {
             device.send(new MapNotification("NEXT_ROUND"));
             ((TextView)findViewById(R.id.Round)).setText("Round " + device.getGame().getRound());
+            if(device.getGame().isBotMrX()){
+                ((Server)device).moveBot();
+            }
         } else if (result == 0) {
             device.send(new MapNotification("END MisterX")); //MisterX hat gewonnen
             Toast.makeText(GameMap.this, "MisterX hat gewonnen", Snackbar.LENGTH_LONG).show();

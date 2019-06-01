@@ -78,6 +78,14 @@ public class Lobby implements Serializable {
     }
 
     public void chooseMrX(boolean chooseMrXRandomly) {
+        if(botMrX){
+            for (Player player : playerList) {
+                if(player.getNickname().equals("Bot")){
+                    player.setMrX(true);
+                    return;
+                }
+            }
+        }
         Random random = new Random();
         if (chooseMrXRandomly) {
             playerList.get(random.nextInt(playerList.size())).setMrX(true);

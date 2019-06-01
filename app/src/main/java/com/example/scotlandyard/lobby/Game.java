@@ -119,4 +119,11 @@ public class Game implements Serializable {
         }
         return null;
     }
+
+    public Player getBotMrX() {
+        if(botMrX) {
+            return getMrX();
+        }
+        return null;
+    }
 }
