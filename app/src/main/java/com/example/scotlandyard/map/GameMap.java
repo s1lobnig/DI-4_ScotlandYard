@@ -74,6 +74,7 @@ public class GameMap extends AppCompatActivity
 
     private static Device device;
 
+    private TextView rounds;
     private TextView pedestrianTickets;
     private TextView bicycleTickets;
     private TextView busTickets;
@@ -112,6 +113,8 @@ public class GameMap extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(device.getNickname());
         setSupportActionBar(toolbar);
+
+        rounds = findViewById(R.id.Round);
 
         pedestrianTickets = findViewById(R.id.pedestrianTicket);
         bicycleTickets = findViewById(R.id.bicycleTicket);
@@ -649,7 +652,7 @@ public class GameMap extends AppCompatActivity
     @Override
     public void onReceivedToast(String toast) {
         if(toast.contains("Runde")){
-            ((TextView)findViewById(R.id.Round)).setText(toast);
+            rounds.setText(toast);
         }else {
             Toast.makeText(GameMap.this, toast, Toast.LENGTH_LONG).show();
         }
@@ -698,4 +701,10 @@ public class GameMap extends AppCompatActivity
         }
     };
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        myPlayer = null;
+        finish();
+    }
 }

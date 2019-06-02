@@ -147,4 +147,10 @@ public class ServerLobby extends AppCompatActivity implements ServerLobbyInterfa
     public void updateLobby(Lobby lobby) {
         ((ArrayAdapter) connectedPlayersListAdapter).notifyDataSetChanged();
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 }

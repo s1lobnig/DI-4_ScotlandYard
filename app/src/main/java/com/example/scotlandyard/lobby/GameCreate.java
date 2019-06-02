@@ -97,4 +97,10 @@ public class GameCreate extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 }
