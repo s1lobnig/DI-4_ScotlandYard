@@ -271,7 +271,12 @@ public class Server extends Device implements ServerInterface {
             if (messengerObserver != null) {
                 messengerObserver.showReconnected(endpoint.getName());
             }
-            //TODO activate player in game (let him make moves again)
+            //activate player in game (let him make moves again)
+            Player player = ManageGameData.findPlayer(game, endpoint.getName());
+            player.setActive(true);
+            if(player.isMrX()){
+                //ToDo: deactivate bot
+            }
         }
     }
 

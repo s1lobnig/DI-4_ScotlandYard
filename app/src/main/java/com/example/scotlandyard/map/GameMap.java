@@ -645,6 +645,12 @@ public class GameMap extends AppCompatActivity
     @Override
     public void showReconnected(String endpointName) {
         Toast.makeText(GameMap.this, "Verbindung zu " + endpointName + " wiederhergestellt!", Toast.LENGTH_LONG).show();
+        Player player = ManageGameData.findPlayer(device.getGame(), endpointName);
+        MarkerOptions markerOptions = new MarkerOptions()
+                .position(player.getPosition().getLatLng())
+                .icon(BitmapDescriptorFactory.fromResource(player.getIcon()));
+        player.setMarker(mMap.addMarker(markerOptions));
+        player.getMarker().setTitle(player.getNickname());
     }
 
     @Override
