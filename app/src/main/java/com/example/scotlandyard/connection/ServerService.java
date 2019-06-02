@@ -313,12 +313,10 @@ public class ServerService extends ConnectionService{
                 Log.d(logTag, "disconnecting from "+endpoint.getName());
                 connectionsClient.disconnectFromEndpoint(endpoint.getId());
                 establishedConnections.remove(endpoint.getId());
-                if (connectionState == ConnectionState.ADVERTISING_CONNECTED) {
-                    if (establishedConnections.isEmpty()) {
+                if (establishedConnections.isEmpty()) {
+                    if (connectionState == ConnectionState.ADVERTISING_CONNECTED) {
                         connectionState = ConnectionState.ADVERTISING;
-                    }
-                } else {
-                    if (establishedConnections.isEmpty()) {
+                    } else {
                         connectionState = ConnectionState.DISCONNECTED;
                     }
                 }

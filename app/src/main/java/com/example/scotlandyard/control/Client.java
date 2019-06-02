@@ -42,12 +42,11 @@ public class Client extends Device implements ClientInterface {
      * @param lobbyInterface lobby observer
      * @throws IllegalStateException if already set
      */
-    public void addLobbyObserver(ClientLobbyInterface lobbyInterface) throws IllegalStateException {
-        if (lobbyObserver != null) {
-            throw new IllegalStateException("server lobby observer already added");
+    public void addLobbyObserver(ClientLobbyInterface lobbyInterface) {
+        if (lobbyObserver == null) {
+            lobbyObserver = lobbyInterface;
+            Log.d(logTag, "added ClientLobbyInterface");
         }
-        lobbyObserver = lobbyInterface;
-        Log.d(logTag, "added ClientLobbyInterface");
     }
 
     /**
@@ -120,50 +119,68 @@ public class Client extends Device implements ClientInterface {
     @Override
     public void onDataReceived(Object object, String endpointId) {
         if (object instanceof Message) {
-            Log.d(logTag, "message received");
-            if (!((Message) object).getNickname().equals(nickname)) {
-                messageList.add((Message) object);
-                if (messengerObserver != null) {
-                    messengerObserver.updateMessages(messageList);
-                }
-            }
-            if (gameObserver != null) {
-                gameObserver.onMessage();
-            }
+            onMessage((Message) object);
         }
         if (object instanceof Move) {
-            Move move = (Move) object;
-            Log.d(logTag, "move received");
-            Player player = ManageGameData.findPlayer(game, move.getNickname());
-            player.setMoved(true);
-
-            if (gameObserver != null) {
-                gameObserver.updateMove(move);
-            }else{
-                player.setPosition(Points.POINTS[move.getField()]);
-            }
+            onMove((Move) object);
         }
         if (object instanceof Entry) {
-            Log.d(logTag, "Roadmap entry received");
-            if (!roadMap.getEntries().contains(object))
-                roadMap.addEntry((Entry) object);
+            onEntry((Entry) object);
         }
         if (object instanceof MapNotification) {
             Log.d(logTag, "map notification received");
             manageNotification((MapNotification) object);
         }
         if (object instanceof Lobby) {
-            Log.d(logTag, "lobby received");
-            if (lobbyObserver != null) {
-                lobbyObserver.updateLobby((Lobby) object);
-            }
+            onLobby((Lobby) object);
         }
         if (object instanceof Game) {
-            Log.d(logTag, "game received");
-            game = (Game) object;
-            if (lobbyObserver != null) {
-                lobbyObserver.startGame((Game) object);
+            onGame((Game) object);
+        }
+    }
+
+    private void onMessage(Message message) {
+        Log.d(logTag, "message received");
+        if (!message.getNickname().equals(nickname)) {
+            messageList.add(message);
+            if (messengerObserver != null) {
+                messengerObserver.updateMessages(messageList);
             }
+        }
+        if (gameObserver != null) {
+            gameObserver.onMessage();
+        }
+    }
+
+    private void onMove(Move move) {
+        Log.d(logTag, "move received");
+        Player player = ManageGameData.findPlayer(game, move.getNickname());
+        player.setMoved(true);
+        if (gameObserver != null) {
+            gameObserver.updateMove(move);
+        }else{
+            player.setPosition(Points.POINTS[move.getField()]);
+        }
+    }
+
+    private void onEntry(Entry entry) {
+        Log.d(logTag, "Roadmap entry received");
+        if (!roadMap.getEntries().contains(entry))
+            roadMap.addEntry(entry);
+    }
+
+    private void onLobby(Lobby lobby) {
+        Log.d(logTag, "lobby received");
+        if (lobbyObserver != null) {
+            lobbyObserver.updateLobby(lobby);
+        }
+    }
+
+    private void onGame(Game game) {
+        Log.d(logTag, "game received");
+        game = (Game) game;
+        if (lobbyObserver != null) {
+            lobbyObserver.startGame((Game) game);
         }
     }
 

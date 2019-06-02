@@ -8,7 +8,6 @@ import com.example.scotlandyard.connection.ServerInterface;
 import com.example.scotlandyard.connection.ServerService;
 import com.example.scotlandyard.map.ManageGameData;
 import com.example.scotlandyard.map.MapNotification;
-import com.example.scotlandyard.map.Point;
 import com.example.scotlandyard.map.Points;
 import com.example.scotlandyard.map.motions.Move;
 import com.example.scotlandyard.map.roadmap.Entry;
@@ -16,7 +15,6 @@ import com.example.scotlandyard.messenger.Message;
 import com.google.android.gms.nearby.connection.ConnectionsClient;
 
 import java.util.ArrayList;
-import java.util.Set;
 
 /**
  * class representing a server in the app
@@ -38,12 +36,11 @@ public class Server extends Device implements ServerInterface {
      * @param lobbyInterface lobby observer
      * @throws IllegalStateException if already set
      */
-    public void addLobbyObserver(ServerLobbyInterface lobbyInterface) throws IllegalStateException {
-        if (lobbyObserver != null) {
-            throw new IllegalStateException("server lobby observer already added");
+    public void addLobbyObserver(ServerLobbyInterface lobbyInterface) {
+        if (lobbyObserver == null) {
+            lobbyObserver = lobbyInterface;
+            Log.d(logTag, "added ServerLobbyInterface");
         }
-        lobbyObserver = lobbyInterface;
-        Log.d(logTag, "added ServerLobbyInterface");
     }
 
     /**
@@ -174,6 +171,8 @@ public class Server extends Device implements ServerInterface {
                 send(new MapNotification("END MisterX")); //MisterX hat gewonnen
                 printNotification("MisterX hat gewonnen");
                 break;
+            default:
+                Log.d(logTag, "switch default");
         }
         if (gameObserver != null) {
             gameObserver.updateMove(move);
