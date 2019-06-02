@@ -1,5 +1,8 @@
 package com.example.scotlandyard.map;
 
+import android.support.design.widget.Snackbar;
+import android.widget.Toast;
+
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
 import com.example.scotlandyard.control.Device;
@@ -63,10 +66,6 @@ public class ManageGameData {
                     return 2;
                 }*/
                 //Round finished
-                //check if all players have enough tickets
-                for(Player p : game.getPlayers()){
-                    p.checkAmountOfTickets();
-                }
                 game.nextRound();
                 game.setRoundMrX(true);
                 for (Player p : game.getPlayers()) {

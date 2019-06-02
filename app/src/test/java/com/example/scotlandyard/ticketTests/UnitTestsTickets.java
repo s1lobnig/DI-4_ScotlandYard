@@ -4,6 +4,7 @@ import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
 import com.example.scotlandyard.lobby.Game;
 import com.example.scotlandyard.map.ManageGameData;
+import com.example.scotlandyard.map.Routes;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -175,6 +176,17 @@ public class UnitTestsTickets {
 
         Assert.assertArrayEquals(expectedTickets, testPlayer.getRemainingTickets());
 
+    }
+
+    @Test
+    public void checkRoutesPossibleWithTickets(){
+        testPlayer.setMrX(false);
+        manageGameData.setTickets(game, testPlayer);
+        Assert.assertEquals(true, Routes.routesPossibleWithTickets(71, testPlayer));
+        for(int i = 4; i > 0; i--){
+            testPlayer.decreaseNumberOfTickets(R.string.PEDESTRIAN_TICKET_KEY);
+        }
+       // Assert.assertEquals(false, Routes.routesPossibleWithTickets(71, testPlayer));
     }
 }
 
