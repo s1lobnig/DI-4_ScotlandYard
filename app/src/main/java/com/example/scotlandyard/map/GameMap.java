@@ -277,8 +277,8 @@ public class GameMap extends AppCompatActivity
 
         //if gmae has not started
         if (Device.isServer() && myPlayer == null) {
-            device.setGame(ManageGameData.makeGame(Device.getLobby()));
-            randomEventsEnabled = Device.getLobby().isRandomEvents();
+            device.setGame(ManageGameData.makeGame(Device.getInstance().getLobby()));
+            randomEventsEnabled = Device.getInstance().getLobby().isRandomEvents();
             device.sendGame();
         }
 
