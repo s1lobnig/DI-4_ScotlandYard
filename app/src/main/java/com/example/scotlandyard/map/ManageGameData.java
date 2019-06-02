@@ -48,6 +48,9 @@ public class ManageGameData {
     }
 
     public static void deactivatePlayer(Game game, Player player){
+        if(player.isMrX()){
+            game.setBotMrX(true);
+        }
         player.setActive(false);
         tryNextRound(game);
     }
