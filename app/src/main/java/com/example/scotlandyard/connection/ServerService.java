@@ -231,11 +231,7 @@ public class ServerService extends ConnectionService{
                 }
             };
 
-    /**
-     * function for broadcasting data over the connection
-     * @param object       object to send
-     */
-    public void send(Object object) {
+    private Payload createPayload(Object object) {
         byte[] data = null;
         try {
             data = serialize(object);
@@ -243,12 +239,24 @@ public class ServerService extends ConnectionService{
             Log.d(logTag, "error in serialization", ex);
             server.onSendingFailed(object);
         }
+        Payload payload = null;
         if (data != null) {
             if (data.length > ConnectionsClient.MAX_BYTES_DATA_SIZE) {
                 Log.d(logTag, "byte array size > MAX_BYTES_DATA_SIZE");
                 // will this be a problem ?
             }
-            Payload payload = Payload.fromBytes(data);
+            payload = Payload.fromBytes(data);
+        }
+        return payload;
+    }
+
+    /**
+     * function for broadcasting data over the connection
+     * @param object       object to send
+     */
+    public void send(Object object) {
+        Payload payload = createPayload(object);
+        if (payload != null ) {
             sendPayload(payload, establishedConnections.keySet());
         }
     }
@@ -258,19 +266,8 @@ public class ServerService extends ConnectionService{
      * @param object       object to send
      */
     public void send(Object object, Set<String> connections) {
-        byte[] data = null;
-        try {
-            data = serialize(object);
-        } catch (IOException ex) {
-            Log.d(logTag, "error in serialization", ex);
-            server.onSendingFailed(object);
-        }
-        if (data != null) {
-            if (data.length > ConnectionsClient.MAX_BYTES_DATA_SIZE) {
-                Log.d(logTag, "byte array size > MAX_BYTES_DATA_SIZE");
-                // will this be a problem ?
-            }
-            Payload payload = Payload.fromBytes(data);
+        Payload payload = createPayload(object);
+        if (payload != null) {
             sendPayload(payload, connections);
         }
     }
