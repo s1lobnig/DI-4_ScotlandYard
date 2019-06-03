@@ -1,6 +1,5 @@
 package com.example.scotlandyard;
 
-import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.lobby.Game;
 import com.example.scotlandyard.lobby.Lobby;
 import com.example.scotlandyard.map.ManageGameData;
@@ -30,7 +29,7 @@ public class ManageGameDataTest {
         playerlist.add(p2);
         playerlist.add(p3);
 
-        game = new Game("Test", 4, 3, 5, false, playerlist);
+        game = new Game("Test", 4, 3, 5, false, false, playerlist);
         game.getPlayers().get(0).setMrX(true);
     }
 
@@ -101,7 +100,7 @@ public class ManageGameDataTest {
 
     @Test
     public void testmakeGame(){
-        Lobby lobby = new Lobby("Test", playerlist, false, false, 4);
+        Lobby lobby = new Lobby("Test", playerlist, false, false, false, 4);
         game = ManageGameData.makeGame(lobby);
 
         assertEquals(lobby.getLobbyName(), game.getGameName());

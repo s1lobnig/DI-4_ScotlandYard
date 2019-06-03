@@ -22,7 +22,7 @@ public class LobbyUnitTest {
         p1 = new Player("herbert");
         p2 = new Player("thomas");
         p3 = new Player("sarah");
-        lobby = new Lobby("testLobby", new ArrayList<Player>(), true, false, 5);
+        lobby = new Lobby("testLobby", new ArrayList<Player>(), true, false, false, 5);
     }
 
     @After

@@ -31,7 +31,7 @@ public class UnitTestsTickets {
         playerList.add(new Player("player2"));
         playerList.add(new Player("player3"));
         playerList.add(new Player("player4"));
-        game = new Game("Test", 4, 4, 5, false, playerList);
+        game = new Game("Test", 4, 4, 5, false, false, playerList);
     }
 
     //check if hashmap has the correct size
