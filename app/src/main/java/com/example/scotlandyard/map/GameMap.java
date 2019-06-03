@@ -68,6 +68,7 @@ import java.util.Random;
 
 import static com.example.scotlandyard.R.color.colorLightGrey;
 import static com.example.scotlandyard.R.color.colorPrimary;
+import static com.example.scotlandyard.map.Routes.routesPossibleWithTickets;
 
 public class GameMap extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, GameInterface {
@@ -316,6 +317,7 @@ public class GameMap extends AppCompatActivity
                             device.send(new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r, randomRoute));
                         }
                         return isValid;
+
                     } else {
                         // Toast to indicate that it is not your turn
                         Toast.makeText(GameMap.this, "Ein anderer Spieler ist noch nicht gezogen. Du musst noch warten.", Snackbar.LENGTH_LONG).show();
@@ -439,6 +441,14 @@ public class GameMap extends AppCompatActivity
             }
         }
         visualizeTickets();
+        player.checkAmountOfTickets();
+        if (player.isActive() == false) {
+            Toast.makeText(GameMap.this, "KEINE TICKETS MEHR. Du wurdest deaktiviert", Snackbar.LENGTH_LONG).show();
+        }
+        if (Routes.routesPossibleWithTickets(Points.getIndex(player.getPosition()) + 1, player) == false) {
+            player.setActive(false);
+            Toast.makeText(GameMap.this, "KEIN ZUG MEHR MÖGLICH. Du wurdest deaktiviert", Snackbar.LENGTH_LONG).show();
+        }
 
         if (player.isMrX() && (player.equals(myPlayer) || device.getGame().isBotMrX())) {
             int lastTurn = device.getRoadMap().getNumberOfEntries();
@@ -659,7 +669,7 @@ public class GameMap extends AppCompatActivity
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         try {
             Device.getInstance().addGameObserver(this);
@@ -668,7 +678,7 @@ public class GameMap extends AppCompatActivity
         }
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(colorLightGrey)));
-        if(mMap != null){
+        if (mMap != null) {
             deleteMarker();
             setupGame();
         }

@@ -1,7 +1,5 @@
 package com.example.scotlandyard.map;
 
-import android.widget.TextView;
-
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
 import com.example.scotlandyard.control.Device;
@@ -68,10 +66,6 @@ public class ManageGameData {
                     return 2;
                 }*/
                 //Round finished
-                //check if all players have enough tickets
-                for(Player p : game.getPlayers()){
-                    p.checkAmountOfTickets();
-                }
                 game.nextRound();
                 game.setRoundMrX(true);
                 for (Player p : game.getPlayers()) {
@@ -189,18 +183,17 @@ public class ManageGameData {
             case 4:
                 if (tickets.get(R.string.DOUBLE_TICKET_KEY) > 0) {
                     validTicket = true;
-                    //player.decreaseNumberOfTickets(R.string.DOUBLE_TICKET_KEY);
                 }
                 break;
 
             case 5:
                 if (tickets.get(R.string.BLACK_TICKET_KEY) > 0) {
                     validTicket = true;
-                    //player.decreaseNumberOfTickets(R.string.BLACK_TICKET_KEY);
+
                 }
                 break;
             default:
-                validTicket = false;
+
         }
         return validTicket;
     }
