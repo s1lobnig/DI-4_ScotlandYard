@@ -18,6 +18,7 @@ public class Game implements Serializable {
     private int round;
     private boolean roundMrX;
     private boolean randomEventsEnabled;
+    private boolean botMrX;
     private ArrayList<Player> players = new ArrayList<>(); // Changed from List to ArrayList because of serialization.
 
 
@@ -27,13 +28,14 @@ public class Game implements Serializable {
         this.currentMembers = 1;
     }
 
-    public Game(String gameName, int maxMembers, int currentMembers, int round, boolean randomEventsEnabled, ArrayList<Player> players) {
+    public Game(String gameName, int maxMembers, int currentMembers, int round, boolean randomEventsEnabled, boolean botMrX, ArrayList<Player> players) {
         this.gameName = gameName;
         this.maxMembers = maxMembers;
         this.currentMembers = currentMembers;
         this.round = round;
         this.roundMrX = true;
         this.randomEventsEnabled = randomEventsEnabled;
+        this.botMrX = botMrX;
         this.players = players;
     }
 
@@ -93,6 +95,14 @@ public class Game implements Serializable {
         this.randomEventsEnabled = randomEventsEnabled;
     }
 
+    public boolean isBotMrX() {
+        return botMrX;
+    }
+
+    public void setBotMrX(boolean botMrX) {
+        this.botMrX = botMrX;
+    }
+
     public ArrayList<Player> getPlayers() {
         return players;
     }
@@ -106,6 +116,13 @@ public class Game implements Serializable {
             if(p.isMrX()){
                 return p;
             }
+        }
+        return null;
+    }
+
+    public Player getBotMrX() {
+        if(botMrX) {
+            return getMrX();
         }
         return null;
     }

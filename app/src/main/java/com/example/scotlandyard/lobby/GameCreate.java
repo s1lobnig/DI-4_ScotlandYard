@@ -20,6 +20,7 @@ public class GameCreate extends AppCompatActivity {
     private static EditText maxPlayers; /* Maximum number of players input field. */
     private static CheckBox randomEvents;
     private static CheckBox chooseMrXRandomly;
+    private static CheckBox botMrX;
     private static EditText lobbyName;
 
     @Override
@@ -31,7 +32,26 @@ public class GameCreate extends AppCompatActivity {
         maxPlayers = findViewById(R.id.maxPlayers);
         randomEvents = findViewById(R.id.randomEvents);
         chooseMrXRandomly = findViewById(R.id.randomMrX);
+        botMrX = findViewById(R.id.BotMrX);
         lobbyName = findViewById(R.id.lobbyName);
+
+        botMrX.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(botMrX.isChecked()) {
+                    chooseMrXRandomly.setChecked(false);
+                }
+            }
+        });
+
+        chooseMrXRandomly.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(chooseMrXRandomly.isChecked()) {
+                    botMrX.setChecked(false);
+                }
+            }
+        });
 
         findViewById(R.id.createServerBtn).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,12 +89,18 @@ public class GameCreate extends AppCompatActivity {
                     player.setHost(true);
                     ArrayList<Player> playerlist = new ArrayList<>();
                     playerlist.add(player);
-                    Lobby lobby = new Lobby(lobbyname, playerlist, randomEvents.isChecked(), chooseMrXRandomly.isChecked(), Integer.parseInt(numPlayer));
+                    Lobby lobby = new Lobby(lobbyname, playerlist, randomEvents.isChecked(), chooseMrXRandomly.isChecked(), botMrX.isChecked(), Integer.parseInt(numPlayer));
                     gameStartIntent.putExtra("LOBBY", lobby);
                     Log.d(logTag, "starting ServerLobby");
                     startActivity(gameStartIntent);
                 }
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 }

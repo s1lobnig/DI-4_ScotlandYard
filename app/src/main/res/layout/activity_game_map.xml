@@ -91,4 +91,22 @@
             android:textSize="30sp"
             android:textStyle="bold" />
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/map"
+        android:layout_marginBottom="3dp">
+
+        <TextView
+            android:id="@+id/Round"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="50dp"
+            android:background="@color/colorLightGrey"
+            android:gravity="center"
+            android:text="@string/runde"
+            android:textColor="@color/colorText"
+            android:textSize="20sp" />
+    </LinearLayout>
 </RelativeLayout>

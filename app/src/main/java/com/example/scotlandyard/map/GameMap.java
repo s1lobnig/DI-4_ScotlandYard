@@ -18,6 +18,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
+import com.example.scotlandyard.control.Server;
 import com.example.scotlandyard.tickets.BlackTicketDialog;
 import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.control.GameInterface;
@@ -74,6 +75,7 @@ public class GameMap extends AppCompatActivity
 
     private static Device device;
 
+    private TextView rounds;
     private TextView pedestrianTickets;
     private TextView bicycleTickets;
     private TextView busTickets;
@@ -112,6 +114,8 @@ public class GameMap extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(device.getNickname());
         setSupportActionBar(toolbar);
+
+        rounds = findViewById(R.id.Round);
 
         pedestrianTickets = findViewById(R.id.pedestrianTicket);
         bicycleTickets = findViewById(R.id.bicycleTicket);
@@ -281,10 +285,15 @@ public class GameMap extends AppCompatActivity
             device.setGame(ManageGameData.makeGame(Device.getLobby()));
             randomEventsEnabled = Device.getLobby().isRandomEvents();
             device.sendGame();
+            setupGame();
+            visualizeTickets();
+            ((Server) device).moveBot();
+
+        }else{
+            setupGame();
+            visualizeTickets();
         }
 
-        setupGame();
-        visualizeTickets();
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker field) {
@@ -441,7 +450,7 @@ public class GameMap extends AppCompatActivity
             Toast.makeText(GameMap.this, "KEIN ZUG MEHR MÖGLICH. Du wurdest deaktiviert", Snackbar.LENGTH_LONG).show();
         }
 
-        if (player.isMrX() && player.equals(myPlayer)) {
+        if (player.isMrX() && (player.equals(myPlayer) || device.getGame().isBotMrX())) {
             int lastTurn = device.getRoadMap().getNumberOfEntries();
             Entry entry = MovingLogic.getRoadMapEntry(lastTurn, newLocation, ticket);
             if (Device.isServer()) {
@@ -603,7 +612,10 @@ public class GameMap extends AppCompatActivity
         int result = ManageGameData.tryNextRound(device.getGame());
         if (result == 1) {
             device.send(new MapNotification("NEXT_ROUND"));
-            Toast.makeText(GameMap.this, "Runde " + device.getGame().getRound(), Snackbar.LENGTH_LONG).show();
+            ((TextView)findViewById(R.id.Round)).setText("Round " + device.getGame().getRound());
+            if(device.getGame().isBotMrX()){
+                ((Server)device).moveBot();
+            }
         } else if (result == 0) {
             device.send(new MapNotification("END MisterX")); //MisterX hat gewonnen
             Toast.makeText(GameMap.this, "MisterX hat gewonnen", Snackbar.LENGTH_LONG).show();
@@ -649,7 +661,11 @@ public class GameMap extends AppCompatActivity
 
     @Override
     public void onReceivedToast(String toast) {
-        Toast.makeText(GameMap.this, toast, Toast.LENGTH_LONG).show();
+        if(toast.contains("Runde")){
+            rounds.setText(toast);
+        }else {
+            Toast.makeText(GameMap.this, toast, Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -695,4 +711,10 @@ public class GameMap extends AppCompatActivity
         }
     };
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        myPlayer = null;
+        finish();
+    }
 }

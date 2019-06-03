@@ -46,9 +46,11 @@ public class ServerLobby extends AppCompatActivity implements ServerLobbyInterfa
 
         ((CheckBox) findViewById(R.id.randomEvents)).setChecked(lobby.isRandomEvents());
         ((CheckBox) findViewById(R.id.randomMrX)).setChecked(lobby.isRandomMrX());
+        ((CheckBox) findViewById(R.id.BotMrX)).setChecked(lobby.isBotMrX());
 
         ((CheckBox) findViewById(R.id.randomEvents)).setEnabled(false);
         ((CheckBox) findViewById(R.id.randomMrX)).setEnabled(false);
+        ((CheckBox) findViewById(R.id.BotMrX)).setEnabled(false);
 
         if (Device.isSingletonSet()) {
             Device.resetInstance();
@@ -68,10 +70,11 @@ public class ServerLobby extends AppCompatActivity implements ServerLobbyInterfa
             @Override
             public void onClick(View v) {
                 Log.d(logTag, "Loading game map.");
+                Device.getLobby().addPlayer(new Player("Bot"));
 
                 Intent intent = new Intent(ServerLobby.this, GameMap.class);
-                Game game = new Game(((Server) Device.getInstance()).getLobby().getLobbyName(), ((Server) Device.getInstance()).getLobby().getMaxPlayers());
-                game.setPlayers(((Server) Device.getInstance()).getLobby().getPlayerList());
+                //Game game = new Game(((Server) Device.getInstance()).getLobby().getLobbyName(), ((Server) Device.getInstance()).getLobby().getMaxPlayers());
+                //game.setPlayers(((Server) Device.getInstance()).getLobby().getPlayerList());
                 //TODO write lobby information to the game
                 startActivity(intent);
             }
@@ -143,5 +146,11 @@ public class ServerLobby extends AppCompatActivity implements ServerLobbyInterfa
     @Override
     public void updateLobby(Lobby lobby) {
         ((ArrayAdapter) connectedPlayersListAdapter).notifyDataSetChanged();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 }

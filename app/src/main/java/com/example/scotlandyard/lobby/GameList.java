@@ -240,4 +240,10 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
         TextView gameName;
         Button playGame;
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 }

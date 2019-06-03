@@ -10,11 +10,14 @@ import com.example.scotlandyard.map.ManageGameData;
 import com.example.scotlandyard.map.MapNotification;
 import com.example.scotlandyard.map.Point;
 import com.example.scotlandyard.map.Points;
+import com.example.scotlandyard.map.Route;
+import com.example.scotlandyard.map.Routes;
 import com.example.scotlandyard.map.motions.Move;
 import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.messenger.Message;
 import com.google.android.gms.nearby.connection.ConnectionsClient;
 
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -150,6 +153,9 @@ public class Server extends Device implements ServerInterface {
             case 1:
                 send(new MapNotification("NEXT_ROUND"));
                 printNotification("Runde " + game.getRound());
+                if(game.isRoundMrX() && game.isBotMrX()){
+                    moveBot();
+                }
                 break;
             case 0:
                 send(new MapNotification("END MisterX")); //MisterX hat gewonnen
@@ -160,6 +166,30 @@ public class Server extends Device implements ServerInterface {
             gameObserver.updateMove(move);
         }else{
             player.setPosition(Points.POINTS[move.getField()]);
+        }
+    }
+
+    public void moveBot() {
+        Player bot = game.getBotMrX();
+        bot.setMoved(true);
+        int position = Points.getIndex(bot.getPosition())+1;
+        Route route = (Route) Routes.getBotRoute(position, game.getPlayers())[1];
+
+        int r = (new Random()).nextInt(100) % 10;
+        Object[] randomRoute = Routes.getRandomRoute(position, route.getEndPoint());
+        int newPosition;
+        if(route.getEndPoint() == position){
+            newPosition = route.getStartPoint();
+        }else{
+            newPosition = route.getEndPoint();
+        }
+        Move move = new Move(bot.getNickname(), newPosition-1, r, randomRoute);
+        send(move);
+        game.setRoundMrX(false);
+        if (gameObserver != null) {
+            gameObserver.updateMove(move);
+        }else{
+            bot.setPosition(Points.POINTS[position-1]);
         }
     }
 

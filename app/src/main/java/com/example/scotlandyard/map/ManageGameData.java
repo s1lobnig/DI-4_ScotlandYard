@@ -1,8 +1,5 @@
 package com.example.scotlandyard.map;
 
-import android.support.design.widget.Snackbar;
-import android.widget.Toast;
-
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
 import com.example.scotlandyard.control.Device;
@@ -49,6 +46,9 @@ public class ManageGameData {
     }
 
     public static void deactivatePlayer(Game game, Player player){
+        if(player.isMrX()){
+            game.setBotMrX(true);
+        }
         player.setActive(false);
         tryNextRound(game);
     }
@@ -200,7 +200,7 @@ public class ManageGameData {
 
     public static Game makeGame(Lobby lobby) {
         lobby.chooseMrX(lobby.isRandomMrX());
-        Game game = new Game(lobby.getLobbyName(), lobby.getMaxPlayers(), lobby.getPlayerCount(), 1, lobby.isRandomEvents(), lobby.getPlayerList());
+        Game game = new Game(lobby.getLobbyName(), lobby.getMaxPlayers(), lobby.getPlayerCount(), 1, lobby.isRandomEvents(), lobby.isBotMrX(), lobby.getPlayerList());
         givePlayerPositionAndIcon(game);
         return game;
     }
