@@ -1,5 +1,6 @@
 package com.example.scotlandyard.control;
 
+import android.util.ArraySet;
 import android.util.Log;
 
 import com.example.scotlandyard.Player;
@@ -15,6 +16,8 @@ import com.example.scotlandyard.messenger.Message;
 import com.google.android.gms.nearby.connection.ConnectionsClient;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * class representing a server in the app
@@ -274,7 +277,8 @@ public class Server extends Device implements ServerInterface {
             //activate player in game (let him make moves again)
             Player player = ManageGameData.findPlayer(game, endpoint.getName());
             player.setActive(true);
-            if(player.isMrX()){
+            ((ServerService)connectionService).send(this.game, endpoint);
+            if (player.isMrX()){
                 //ToDo: deactivate bot
             }
         }

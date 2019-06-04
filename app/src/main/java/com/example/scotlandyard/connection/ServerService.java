@@ -26,7 +26,6 @@ import java.util.Set;
  * pendingConnections:      current pending connections
  * establishedConnections:  current established connections
  * server:                  interface to server activity
- * singleton:               singleton of ServerService
  */
 public class ServerService extends ConnectionService{
     private String logTag = "ServerService";
@@ -270,6 +269,15 @@ public class ServerService extends ConnectionService{
         if (payload != null) {
             sendPayload(payload, connections);
         }
+    }
+
+    /**
+     * function for sending data over the connection
+     * @param object       object to send
+     * @param endpoint     endpoint to send to
+     */
+    public void send(Object object, Endpoint endpoint) {
+
     }
 
     /**
