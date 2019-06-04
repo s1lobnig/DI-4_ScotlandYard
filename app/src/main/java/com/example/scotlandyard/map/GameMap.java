@@ -13,6 +13,8 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
@@ -614,7 +616,21 @@ public class GameMap extends AppCompatActivity
             device.send(new MapNotification("NEXT_ROUND"));
             ((TextView)findViewById(R.id.round)).setText("Round " + device.getGame().getRound());
             if(device.getGame().isBotMrX()){
-                ((Server)device).moveBot();
+                final Handler handler = new Handler();
+                final long start = SystemClock.uptimeMillis();
+                final float d = 4000f;
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        long elapsed = SystemClock.uptimeMillis() - start;
+                        float t = elapsed/d;
+                        if(t < 1) {
+                            handler.postDelayed(this, 16);
+                        } else {
+                            ((Server)device).moveBot();
+                        }
+                    }
+                });
             }
         } else if (result == 0) {
             device.send(new MapNotification("END MisterX")); //MisterX hat gewonnen
