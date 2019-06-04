@@ -178,7 +178,7 @@ public class Client extends Device implements ClientInterface {
 
     private void onGame(Game game) {
         Log.d(logTag, "game received");
-        game = (Game) game;
+        this.game = game;
         if (lobbyObserver != null) {
             lobbyObserver.startGame((Game) game);
         }
