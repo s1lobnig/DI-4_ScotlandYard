@@ -1,6 +1,8 @@
 package com.example.scotlandyard.map;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -17,6 +19,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
+import com.example.scotlandyard.CheaterReport;
 import com.example.scotlandyard.GameEnd_Activity;
 import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.control.GameInterface;
@@ -90,6 +93,8 @@ public class GameMap extends AppCompatActivity
     private static final int BICYCLE_COLOR = Color.rgb(255, 164, 17);
     private static final int TAXI_DRAGAN_COLOR = Color.BLUE;
 
+    private int CHEAT_CAUGHT_COUNT = 0;
+
 
     private SensorManager sm;
     /**
@@ -150,6 +155,11 @@ public class GameMap extends AppCompatActivity
 
         sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         sm.registerListener(sensorListenerProximity, sm.getDefaultSensor(Sensor.TYPE_PROXIMITY), SensorManager.SENSOR_DELAY_NORMAL);
+
+        if (myPlayer.isMrX())
+            findViewById(R.id.cheater_melden).setVisibility(View.GONE);
+        else
+            findViewById(R.id.cheater_melden).setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -216,6 +226,8 @@ public class GameMap extends AppCompatActivity
             args.putSerializable("ROAD_MAP", device.getRoadMap());
             roadMapDialog.setArguments(args);
             roadMapDialog.show(getSupportFragmentManager(), "RoadMapDisplay");
+        } else if (id == R.id.cheater_melden) {
+            showCheaterDialog();
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -632,9 +644,11 @@ public class GameMap extends AppCompatActivity
             if(distance < 5){
                 if(myPlayer.isMrX()){
                     Toast.makeText(GameMap.this, "Weitere Bewegung ausführen", Snackbar.LENGTH_LONG).show();
-                    myPlayer.setHasCheated(true);
+                    myPlayer.setHasCheated(true); // "No need to implement discovery of cheating, it has already been done here.
                     myPlayer.setHasCheatedThisRound(true);
                     myPlayer.incCheatingMoves();
+
+                    CHEAT_CAUGHT_COUNT++;
                 }
             }
         }
@@ -644,5 +658,80 @@ public class GameMap extends AppCompatActivity
 
         }
     };
+
+    private void showCheaterDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(GameMap.this);
+
+        // Set a title for alert dialog
+        builder.setTitle("Bist du sicher dass du den Cheter melden willst?.");
+
+        // Ask the final question
+        // builder.setMessage("Are you sure to hide?");
+
+        // Set the alert dialog yes button click listener
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                CheaterReport report = new CheaterReport(myPlayer.getNickname());
+                device.send(report);
+
+                Toast.makeText(GameMap.this,
+                        "Die Meldung wurde gesendet.", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        // Set the alert dialog no button click listener
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        // Display the alert dialog on interface
+        dialog.show();
+    }
+
+    /* This method is being received by all other players. */
+    /* TODO: After onReceive() method is implemented/found and it received a CheaterReport -> redirect it to this method. */
+    public void onCheaterReport(CheaterReport report) {
+        /* If player is mrX. */
+        if (myPlayer.isMrX()) {
+
+            Toast.makeText(this, report.getReporter() + " hat dich als Cheater gemeldet.", Toast.LENGTH_LONG);
+
+            if (myPlayer.isHasCheated()) {
+                CHEAT_CAUGHT_COUNT++;
+                myPlayer.setHasCheated(false);
+
+                if (CHEAT_CAUGHT_COUNT >= 3) {
+                    /* TODO: MrX has been caught cheating 3 times, end the game - detectives won. */
+                    //How is game being finished?
+                }
+            } else {
+                /* TODO: Reporter made a fake report and is punished. Update his data if needed.*/
+                report.setFake(true);
+                device.send(report);
+            }
+        } else if (!myPlayer.isMrX()) {
+            /* If report is coming back from MrX. */
+            if (report.isFake()) {
+                if (report.getReporter().equals(myPlayer.getNickname())) {
+                    /* TODO: Punish the player for fake report. */
+                    //How to take away tickets form players?
+                    Toast.makeText(this, "Du hast den Cheater falsch gemeldet.", Toast.LENGTH_LONG);
+                } else {
+                    Toast.makeText(this, report.getReporter() + " hat den Cheater falsch gemeldet.", Toast.LENGTH_LONG);
+                    /* TODO: Reporter made a fake report and is punished. Update his data if needed.*/
+                }
+
+            }
+            /* If report is coming directly from the reporter. */
+            else {
+                Toast.makeText(this, report.getReporter() + " hat den Cheater gemeldet.", Toast.LENGTH_LONG);
+            }
+        }
+    }
 
 }

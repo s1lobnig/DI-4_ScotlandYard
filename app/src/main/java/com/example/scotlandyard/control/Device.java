@@ -2,6 +2,7 @@ package com.example.scotlandyard.control;
 
 import android.util.Log;
 
+import com.example.scotlandyard.CheaterReport;
 import com.example.scotlandyard.connection.ConnectionService;
 import com.example.scotlandyard.lobby.Game;
 import com.example.scotlandyard.lobby.Lobby;
@@ -151,6 +152,10 @@ public class Device {
      */
     public void send(Message message) {
         connectionService.send(message);
+    }
+
+    public void send(CheaterReport report) {
+        connectionService.send(report);
     }
 
     /**

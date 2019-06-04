@@ -23,6 +23,9 @@
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_menu_manage"
             android:title="Settings" />
+        <item
+            android:id="@+id/cheater_melden"
+            android:title="Cheater Melden" />
     </group>
 
 </menu>
