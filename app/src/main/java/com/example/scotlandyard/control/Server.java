@@ -140,7 +140,7 @@ public class Server extends Device implements ServerInterface {
     }
 
     private void manageMove(Move move) {
-        Player player = ManageGameData.findPlayer(this.game, move.getNickname());
+        Player player = game.findPlayer(move.getNickname());
 
         //if it is not players turn -> ignore move
         if (player.isMoved() || (player.isMrX() && !game.isRoundMrX()) || (!player.isMrX() && game.isRoundMrX())) {
@@ -149,7 +149,7 @@ public class Server extends Device implements ServerInterface {
         }
         send(move);
         player.setMoved(true);
-        switch (ManageGameData.tryNextRound(game)) {
+        switch (game.tryNextRound()) {
             case 1:
                 send(new MapNotification("NEXT_ROUND"));
                 printNotification("Runde " + game.getRound());
@@ -207,8 +207,8 @@ public class Server extends Device implements ServerInterface {
 
         //if game has started
         if(game != null){
-            Player lostPlayer = ManageGameData.findPlayer(game, endpoint.getName());
-            ManageGameData.deactivatePlayer(game, lostPlayer);
+            Player lostPlayer = game.findPlayer(endpoint.getName());
+            game.deactivatePlayer(lostPlayer);
             send(new MapNotification("PLAYER " + lostPlayer.getNickname() + " QUITTED"));
             printNotification(lostPlayer.getNickname() + " hat das Spiel verlassen");
         }

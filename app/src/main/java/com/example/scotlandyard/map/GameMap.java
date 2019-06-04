@@ -282,8 +282,7 @@ public class GameMap extends AppCompatActivity
         setFields();
         //if gmae has not started
         if (Device.isServer() && myPlayer == null) {
-            device.setGame(ManageGameData.makeGame(Device.getLobby()));
-            randomEventsEnabled = Device.getLobby().isRandomEvents();
+            device.getGame().givePlayerPositionAndIcon();
             device.sendGame();
             setupGame();
             visualizeTickets();
@@ -294,12 +293,13 @@ public class GameMap extends AppCompatActivity
         } else {
             setupGame();
             visualizeTickets();
+            randomEventsEnabled = device.getGame().isRandomEventsEnabled();
         }
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker field) {
-                if (!ManageGameData.isPlayer(device.getGame(), field) && device.getGame().getRound() <= Game.getNumRounds()) {
+                if (!device.getGame().isPlayer(field) && device.getGame().getRound() <= Game.getNumRounds()) {
                     if (!myPlayer.isMoved()) {
                         boolean isValid = isValidMove(field, myPlayer);
                         if (isValid) {
@@ -609,7 +609,7 @@ public class GameMap extends AppCompatActivity
     }
 
     private void tryNextRound() {
-        int result = ManageGameData.tryNextRound(device.getGame());
+        int result = device.getGame().tryNextRound();
         if (result == 1) {
             device.send(new MapNotification("NEXT_ROUND"));
             ((TextView) findViewById(R.id.round)).setText("Round " + device.getGame().getRound());
@@ -638,7 +638,7 @@ public class GameMap extends AppCompatActivity
 
     @Override
     public void updateMove(Move move) {
-        Player player = ManageGameData.findPlayer(device.getGame(), move.getNickname());
+        Player player = device.getGame().findPlayer(move.getNickname());
         int field = move.getField();
         Point point = Points.getPoints()[field];
 
@@ -730,7 +730,7 @@ public class GameMap extends AppCompatActivity
         super.onBackPressed();
         myPlayer = null;
         if(device.getGame().isBotMrX()){
-            Player bot = ManageGameData.findPlayer(device.getGame(), "Bot");
+            Player bot = device.getGame().findPlayer("Bot");
             Device.getLobby().getPlayerList().remove(bot);
         }
         finish();

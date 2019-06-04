@@ -73,9 +73,9 @@ public class ServerLobby extends AppCompatActivity implements ServerLobbyInterfa
                 }
 
                 Intent intent = new Intent(ServerLobby.this, GameMap.class);
-                //Game game = new Game(((Server) Device.getInstance()).getLobby().getLobbyName(), ((Server) Device.getInstance()).getLobby().getMaxPlayers());
-                //game.setPlayers(((Server) Device.getInstance()).getLobby().getPlayerList());
-                //TODO write lobby information to the game
+                Lobby lobby = Device.getLobby();
+                lobby.chooseMrX(lobby.isRandomMrX());
+                Device.getInstance().setGame(new Game(lobby.getLobbyName(), lobby.getMaxPlayers(), lobby.getPlayerCount(), 1, lobby.isRandomEvents(), lobby.isBotMrX(), lobby.getPlayerList()));
                 startActivity(intent);
             }
         });
