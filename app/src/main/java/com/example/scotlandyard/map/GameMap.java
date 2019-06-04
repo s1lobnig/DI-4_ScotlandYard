@@ -653,6 +653,15 @@ public class GameMap extends AppCompatActivity
     }
 
     @Override
+    public void showNewGame() {
+        if(mMap != null){
+            deleteMarker();
+            setupGame();
+            //ToDo: show current round
+        }
+    }
+
+    @Override
     public void onResume(){
         super.onResume();
         try {
