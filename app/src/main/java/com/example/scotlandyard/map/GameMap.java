@@ -612,7 +612,7 @@ public class GameMap extends AppCompatActivity
         int result = ManageGameData.tryNextRound(device.getGame());
         if (result == 1) {
             device.send(new MapNotification("NEXT_ROUND"));
-            ((TextView)findViewById(R.id.Round)).setText("Round " + device.getGame().getRound());
+            ((TextView)findViewById(R.id.round)).setText("Round " + device.getGame().getRound());
             if(device.getGame().isBotMrX()){
                 ((Server)device).moveBot();
             }

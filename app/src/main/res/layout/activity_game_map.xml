@@ -99,7 +99,7 @@
         android:layout_marginBottom="3dp">
 
         <TextView
-            android:id="@+id/Round"
+            android:id="@+id/round"
             android:layout_width="100dp"
             android:layout_height="30dp"
             android:layout_marginTop="50dp"
