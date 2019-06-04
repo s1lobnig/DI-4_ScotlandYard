@@ -354,7 +354,7 @@ public class GameMap extends AppCompatActivity
                     Toast.makeText(GameMap.this, "Das Fahrrad ist noch nicht verfügbar!", Snackbar.LENGTH_LONG).show();
                 return false;
             }
-            boolean enoughTickets = ManageGameData.checkForValidTicket(player, (int) routeToTake[2]);
+            boolean enoughTickets = player.checkForValidTicket(player, (int) routeToTake[2]);
             if (!enoughTickets) {
                 //Toast to indicate that player has not enough tickets for reachable field
                 Toast.makeText(GameMap.this, "Nicht genügend Tickets", Snackbar.LENGTH_LONG).show();

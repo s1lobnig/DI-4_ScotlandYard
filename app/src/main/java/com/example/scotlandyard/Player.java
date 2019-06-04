@@ -110,10 +110,25 @@ public class Player implements Serializable {
             tickets.put(key, tickets.get(key) - 1);
     }
 
-    public void initializeNumberOfTickets(Object[][] initialTickets) {
-        for (int i = 0; i < initialTickets.length; i++) {
-            tickets.put((Integer) initialTickets[i][0], (Integer) initialTickets[i][1]);
+    public static boolean checkForValidTicket(Player player, int vehicle) {
+        boolean validTicket;
+        HashMap<Integer, Integer> tickets = player.getTickets();
+        if (vehicle == 0 && tickets.get(R.string.PEDESTRIAN_TICKET_KEY) > 0) {
+            validTicket = true;
+        } else if (vehicle == 1 && tickets.get(R.string.BICYCLE_TICKET_KEY) > 0) {
+            validTicket = true;
+        } else if (vehicle == 2 && tickets.get(R.string.BUS_TICKET_KEY) > 0) {
+            validTicket = true;
+        } else if (vehicle == 3 && tickets.get(R.string.TAXI_TICKET_KEY) > 0) {
+            validTicket = true;
+        } else if (vehicle == 4 && tickets.get(R.string.DOUBLE_TICKET_KEY) > 0) {
+            validTicket = true;
+        } else if (vehicle == 5 && tickets.get(R.string.BLACK_TICKET_KEY) > 0) {
+            validTicket = true;
+        } else {
+            validTicket = false;
         }
+        return validTicket;
     }
 
     public void checkAmountOfTickets() {
@@ -133,7 +148,7 @@ public class Player implements Serializable {
         }
     }
 
-    public int[] getRemainingTickets(){
+    public int[] getRemainingTickets() {
 
         int[] remainingTickets = {tickets.get(R.string.PEDESTRIAN_TICKET_KEY).intValue(),
                 tickets.get(R.string.BICYCLE_TICKET_KEY).intValue(),
