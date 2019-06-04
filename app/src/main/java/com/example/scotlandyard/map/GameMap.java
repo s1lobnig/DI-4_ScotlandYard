@@ -115,7 +115,7 @@ public class GameMap extends AppCompatActivity
         toolbar.setTitle(device.getNickname());
         setSupportActionBar(toolbar);
 
-        rounds = findViewById(R.id.Round);
+        rounds = findViewById(R.id.round);
 
         pedestrianTickets = findViewById(R.id.pedestrianTicket);
         bicycleTickets = findViewById(R.id.bicycleTicket);
