@@ -44,12 +44,14 @@ public class Device {
 
     Device() {
         messageList = new ArrayList<>();
+        roadMap = new RoadMap();
     }
 
     /**
      * function for receiving singleton
-     * @return                          singleton of device
-     * @throws IllegalStateException    if singleton is not set
+     *
+     * @return singleton of device
+     * @throws IllegalStateException if singleton is not set
      */
     public static Device getInstance() throws IllegalStateException {
         if (!isSingletonSet()) {
@@ -60,10 +62,11 @@ public class Device {
 
     /**
      * function for setting device as a server
-     * @param endpointName              name of local endpoint
-     * @param connectionsClient         connectionsClient of current Activity
-     * @return                          singleton of device
-     * @throws IllegalStateException    if singleton is already set
+     *
+     * @param endpointName      name of local endpoint
+     * @param connectionsClient connectionsClient of current Activity
+     * @return singleton of device
+     * @throws IllegalStateException if singleton is already set
      */
     public static Device setServer(String endpointName, ConnectionsClient connectionsClient) throws IllegalStateException {
         if (singleton != null) {
@@ -75,10 +78,11 @@ public class Device {
 
     /**
      * function for setting device as a client
-     * @param endpointName              name of local endpoint
-     * @param connectionsClient         connectionsClient of current Activity
-     * @return                          singleton of device
-     * @throws IllegalStateException    if singleton is already set
+     *
+     * @param endpointName      name of local endpoint
+     * @param connectionsClient connectionsClient of current Activity
+     * @return singleton of device
+     * @throws IllegalStateException if singleton is already set
      */
     public static Device setClient(String endpointName, ConnectionsClient connectionsClient) throws IllegalStateException {
         if (singleton != null) {
@@ -110,8 +114,9 @@ public class Device {
 
     /**
      * function for adding a message observer
-     * @param messengerInterface        message observer
-     * @throws IllegalStateException    if already added
+     *
+     * @param messengerInterface message observer
+     * @throws IllegalStateException if already added
      */
     public void addMessengerObserver(MessengerInterface messengerInterface) throws IllegalStateException {
         if (messengerObserver != null) {
@@ -131,8 +136,9 @@ public class Device {
 
     /**
      * function for adding a game observer
-     * @param gameInterface             game observer
-     * @throws IllegalStateException    if already set
+     *
+     * @param gameInterface game observer
+     * @throws IllegalStateException if already set
      */
     public void addGameObserver(GameInterface gameInterface) throws IllegalStateException {
         if (gameObserver != null) {
@@ -152,7 +158,8 @@ public class Device {
 
     /**
      * function for sending a message
-     * @param message   message to send
+     *
+     * @param message message to send
      */
     public void send(Message message) {
         connectionService.send(message);
@@ -160,7 +167,8 @@ public class Device {
 
     /**
      * function for sending a message
-     * @param notification   map notification to send
+     *
+     * @param notification map notification to send
      */
     public void send(MapNotification notification) {
         connectionService.send(notification);
@@ -168,7 +176,8 @@ public class Device {
 
     /**
      * function for sending a move
-     * @param move      move to send
+     *
+     * @param move move to send
      */
     public void send(Move move) {
         connectionService.send(move);
@@ -176,7 +185,8 @@ public class Device {
 
     /**
      * function for sending a move
-     * @param entry      move to send
+     *
+     * @param entry move to send
      */
     public void send(Entry entry) {
         connectionService.send(entry);

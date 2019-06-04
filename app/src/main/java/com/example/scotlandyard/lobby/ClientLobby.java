@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListAdapter;
@@ -124,11 +123,11 @@ public class ClientLobby extends AppCompatActivity implements ClientLobbyInterfa
 
         ((CheckBox) findViewById(R.id.randomEvents)).setChecked(lobby.isRandomEvents());
         ((CheckBox) findViewById(R.id.randomMrX)).setChecked(lobby.isRandomMrX());
-        ((CheckBox) findViewById(R.id.BotMrX)).setChecked(lobby.isBotMrX());
+        ((CheckBox) findViewById(R.id.botMrX)).setChecked(lobby.isBotMrX());
 
         ((CheckBox) findViewById(R.id.randomEvents)).setEnabled(false);
         ((CheckBox) findViewById(R.id.randomMrX)).setEnabled(false);
-        ((CheckBox) findViewById(R.id.BotMrX)).setEnabled(false);
+        ((CheckBox) findViewById(R.id.botMrX)).setEnabled(false);
 
 
         players.clear();

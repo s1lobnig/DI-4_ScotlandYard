@@ -110,7 +110,6 @@ public class GameMap extends AppCompatActivity
         if (device == null) {
             device = Device.getInstance();
             device.addGameObserver(this);
-            device.setRoadMap(new RoadMap());
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -281,7 +280,6 @@ public class GameMap extends AppCompatActivity
         mMap.setLatLngBoundsForCameraTarget(mapBounds);
         mMap.setMinZoomPreference(mMap.getCameraPosition().zoom);
         setFields();
-
         //if gmae has not started
         if (Device.isServer() && myPlayer == null) {
             device.setGame(ManageGameData.makeGame(Device.getLobby()));
@@ -289,9 +287,11 @@ public class GameMap extends AppCompatActivity
             device.sendGame();
             setupGame();
             visualizeTickets();
-            ((Server) device).moveBot();
+            if (device.getGame().isBotMrX()) {
+                ((Server) device).moveBot();
+            }
 
-        }else{
+        } else {
             setupGame();
             visualizeTickets();
         }
@@ -595,13 +595,11 @@ public class GameMap extends AppCompatActivity
 
     private void setupGame() {
         for (Player p : device.getGame().getPlayers()) {
-            if (p.isActive()) {
-                MarkerOptions markerOptions = new MarkerOptions()
-                        .position(p.getPosition().getLatLng())
-                        .icon(BitmapDescriptorFactory.fromResource(p.getIcon()));
-                p.setMarker(mMap.addMarker(markerOptions));
-                p.getMarker().setTitle(p.getNickname());
-            }
+            MarkerOptions markerOptions = new MarkerOptions()
+                    .position(p.getPosition().getLatLng())
+                    .icon(BitmapDescriptorFactory.fromResource(p.getIcon()));
+            p.setMarker(mMap.addMarker(markerOptions));
+            p.getMarker().setTitle(p.getNickname());
             if (p.getNickname().equals(device.getNickname())) {
                 myPlayer = p;
             }
@@ -614,8 +612,8 @@ public class GameMap extends AppCompatActivity
         int result = ManageGameData.tryNextRound(device.getGame());
         if (result == 1) {
             device.send(new MapNotification("NEXT_ROUND"));
-            ((TextView)findViewById(R.id.round)).setText("Round " + device.getGame().getRound());
-            if(device.getGame().isBotMrX()){
+            ((TextView) findViewById(R.id.round)).setText("Round " + device.getGame().getRound());
+            if (device.getGame().isBotMrX()) {
                 final Handler handler = new Handler();
                 final long start = SystemClock.uptimeMillis();
                 final float d = 4000f;
@@ -623,11 +621,11 @@ public class GameMap extends AppCompatActivity
                     @Override
                     public void run() {
                         long elapsed = SystemClock.uptimeMillis() - start;
-                        float t = elapsed/d;
-                        if(t < 1) {
+                        float t = elapsed / d;
+                        if (t < 1) {
                             handler.postDelayed(this, 16);
                         } else {
-                            ((Server)device).moveBot();
+                            ((Server) device).moveBot();
                         }
                     }
                 });
@@ -677,9 +675,9 @@ public class GameMap extends AppCompatActivity
 
     @Override
     public void onReceivedToast(String toast) {
-        if(toast.contains("Runde")){
+        if (toast.contains("Runde")) {
             rounds.setText(toast);
-        }else {
+        } else {
             Toast.makeText(GameMap.this, toast, Toast.LENGTH_LONG).show();
         }
     }
@@ -731,6 +729,10 @@ public class GameMap extends AppCompatActivity
     public void onBackPressed() {
         super.onBackPressed();
         myPlayer = null;
+        if(device.getGame().isBotMrX()){
+            Player bot = ManageGameData.findPlayer(device.getGame(), "Bot");
+            Device.getLobby().getPlayerList().remove(bot);
+        }
         finish();
     }
 }

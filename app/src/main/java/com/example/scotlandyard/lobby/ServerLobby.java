@@ -12,9 +12,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.scotlandyard.connection.ServerService;
 import com.example.scotlandyard.control.Device;
-import com.example.scotlandyard.control.ClientLobbyInterface;
 import com.example.scotlandyard.control.Server;
 import com.example.scotlandyard.control.ServerLobbyInterface;
 import com.example.scotlandyard.map.GameMap;
@@ -46,11 +44,11 @@ public class ServerLobby extends AppCompatActivity implements ServerLobbyInterfa
 
         ((CheckBox) findViewById(R.id.randomEvents)).setChecked(lobby.isRandomEvents());
         ((CheckBox) findViewById(R.id.randomMrX)).setChecked(lobby.isRandomMrX());
-        ((CheckBox) findViewById(R.id.BotMrX)).setChecked(lobby.isBotMrX());
+        ((CheckBox) findViewById(R.id.botMrX)).setChecked(lobby.isBotMrX());
 
         ((CheckBox) findViewById(R.id.randomEvents)).setEnabled(false);
         ((CheckBox) findViewById(R.id.randomMrX)).setEnabled(false);
-        ((CheckBox) findViewById(R.id.BotMrX)).setEnabled(false);
+        ((CheckBox) findViewById(R.id.botMrX)).setEnabled(false);
 
         if (Device.isSingletonSet()) {
             Device.resetInstance();
@@ -70,7 +68,9 @@ public class ServerLobby extends AppCompatActivity implements ServerLobbyInterfa
             @Override
             public void onClick(View v) {
                 Log.d(logTag, "Loading game map.");
-                Device.getLobby().addPlayer(new Player("Bot"));
+                if(Device.getLobby().isBotMrX()) {
+                    Device.getLobby().addPlayer(new Player("Bot"));
+                }
 
                 Intent intent = new Intent(ServerLobby.this, GameMap.class);
                 //Game game = new Game(((Server) Device.getInstance()).getLobby().getLobbyName(), ((Server) Device.getInstance()).getLobby().getMaxPlayers());

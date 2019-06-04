@@ -32,7 +32,7 @@ public class GameCreate extends AppCompatActivity {
         maxPlayers = findViewById(R.id.maxPlayers);
         randomEvents = findViewById(R.id.randomEvents);
         chooseMrXRandomly = findViewById(R.id.randomMrX);
-        botMrX = findViewById(R.id.BotMrX);
+        botMrX = findViewById(R.id.botMrX);
         lobbyName = findViewById(R.id.lobbyName);
 
         botMrX.setOnClickListener(new View.OnClickListener() {
