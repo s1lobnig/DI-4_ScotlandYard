@@ -18,12 +18,19 @@ public class UnitTestsTickets {
     private Player testPlayer;
     private Game game;
     private HashMap<Integer, Integer> tickets;
-    private ArrayList<Player> playerList;
+    private ArrayList<Player> playerList = new ArrayList<>();
 
     @Before
     public void setup() {
         testPlayer = new Player("testPlayer");
         tickets = testPlayer.getTickets();
+        Player player1 = new Player("player1");
+        Player player2 = new Player("player2");
+        Player player3 = new Player("player3");
+        playerList.add(testPlayer);
+        playerList.add(player1);
+        playerList.add(player2);
+        playerList.add(player3);
         game = new Game("Test", 4, 4, 5, false, false, playerList);
     }
 
@@ -56,7 +63,7 @@ public class UnitTestsTickets {
     @Test
     public void testDetectiveTickets() {
         testPlayer.setMrX(false);
-        game.setTickets(game, testPlayer);
+        testPlayer.setTickets(game, testPlayer);
         Assert.assertEquals(5, tickets.get(R.string.PEDESTRIAN_TICKET_KEY).intValue());
         Assert.assertEquals(4, tickets.get(R.string.BICYCLE_TICKET_KEY).intValue());
         Assert.assertEquals(2, tickets.get(R.string.BUS_TICKET_KEY).intValue());
@@ -69,19 +76,19 @@ public class UnitTestsTickets {
     @Test
     public void testMrXTickets() {
         testPlayer.setMrX(true);
-        game.setTickets(game, testPlayer);
+        testPlayer.setTickets(game, testPlayer);
         Assert.assertEquals(Integer.MAX_VALUE, tickets.get(R.string.PEDESTRIAN_TICKET_KEY).intValue());
         Assert.assertEquals(Integer.MAX_VALUE, tickets.get(R.string.BICYCLE_TICKET_KEY).intValue());
         Assert.assertEquals(Integer.MAX_VALUE, tickets.get(R.string.BUS_TICKET_KEY).intValue());
         Assert.assertEquals(2, tickets.get(R.string.TAXI_TICKET_KEY).intValue());
         Assert.assertEquals(1, tickets.get(R.string.DOUBLE_TICKET_KEY).intValue());
-        Assert.assertEquals(game.getCurrentMembers(), tickets.get(R.string.BLACK_TICKET_KEY).intValue());
+        Assert.assertEquals(3, tickets.get(R.string.BLACK_TICKET_KEY).intValue());
     }
 
     //check if tickets get reduced after making a move
     @Test
     public void testReducingTickets() {
-        game.setTickets(game, testPlayer);
+        testPlayer.setTickets(game, testPlayer);
         testPlayer.setMrX(false);
         testPlayer.decreaseNumberOfTickets(R.string.PEDESTRIAN_TICKET_KEY);
         testPlayer.decreaseNumberOfTickets(R.string.PEDESTRIAN_TICKET_KEY);
@@ -91,7 +98,7 @@ public class UnitTestsTickets {
     //check validity of tickets
     @Test
     public void testCheckForValidTicketDetectives() {
-        game.setTickets(game, testPlayer);
+        testPlayer.setTickets(game, testPlayer);
         Assert.assertEquals(true, testPlayer.checkForValidTicket(testPlayer, 0));
         Assert.assertEquals(true, testPlayer.checkForValidTicket(testPlayer, 1));
         Assert.assertEquals(true, testPlayer.checkForValidTicket(testPlayer, 2));
@@ -119,7 +126,7 @@ public class UnitTestsTickets {
     @Test
     public void checkForValidTicketMrX() {
         testPlayer.setMrX(true);
-        game.setTickets(game, testPlayer);
+        testPlayer.setTickets(game, testPlayer);
         Assert.assertEquals(true, testPlayer.checkForValidTicket(testPlayer, 0));
         Assert.assertEquals(true, testPlayer.checkForValidTicket(testPlayer, 1));
         Assert.assertEquals(true, testPlayer.checkForValidTicket(testPlayer, 2));
@@ -146,7 +153,7 @@ public class UnitTestsTickets {
     @Test
     public void testCheckAmountOfTickets() {
         testPlayer.setMrX(false);
-        game.setTickets(game, testPlayer);
+        testPlayer.setTickets(game, testPlayer);
         for (Map.Entry<Integer, Integer> ticket : testPlayer.getTickets().entrySet()) {
             while (ticket.getValue() != 0) {
                 testPlayer.decreaseNumberOfTickets(ticket.getKey());
@@ -159,7 +166,7 @@ public class UnitTestsTickets {
     @Test
     public void testGetRemainingTickets() {
         testPlayer.setMrX(false);
-        game.setTickets(game, testPlayer);
+        testPlayer.setTickets(game, testPlayer);
         testPlayer.decreaseNumberOfTickets(R.string.PEDESTRIAN_TICKET_KEY);
         testPlayer.decreaseNumberOfTickets(R.string.BUS_TICKET_KEY);
 
@@ -170,14 +177,14 @@ public class UnitTestsTickets {
     }
 
     @Test
-    public void checkRoutesPossibleWithTickets(){
+    public void checkRoutesPossibleWithTickets() {
         testPlayer.setMrX(false);
-        game.setTickets(game, testPlayer);
+        testPlayer.setTickets(game, testPlayer);
         Assert.assertEquals(true, Routes.routesPossibleWithTickets(71, testPlayer));
-        for(int i = 5; i > 0; i--){
+        for (int i = 5; i > 0; i--) {
             testPlayer.decreaseNumberOfTickets(R.string.PEDESTRIAN_TICKET_KEY);
         }
-       Assert.assertEquals(false, Routes.routesPossibleWithTickets(71, testPlayer));
+        Assert.assertEquals(false, Routes.routesPossibleWithTickets(71, testPlayer));
     }
 }
 

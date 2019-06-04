@@ -107,31 +107,6 @@ public class Game implements Serializable {
         this.roundMrX = roundMrX;
     }
 
-    public static void setTickets(Game game, Player player) {
-        HashMap<Integer, Integer> tickets;
-        //set Ticket for Mr. X
-        if (player.isMrX()) {
-            tickets = player.getTickets();
-            tickets.put(R.string.PEDESTRIAN_TICKET_KEY, Integer.MAX_VALUE);
-            tickets.put(R.string.BICYCLE_TICKET_KEY, Integer.MAX_VALUE);
-            tickets.put(R.string.BUS_TICKET_KEY, Integer.MAX_VALUE);
-            tickets.put(R.string.TAXI_TICKET_KEY, 2);
-            tickets.put(R.string.DOUBLE_TICKET_KEY, 1);
-            tickets.put(R.string.BLACK_TICKET_KEY, game.getPlayers().size() - 1);
-
-        } else {
-            //set Tickets for all other players
-            tickets = player.getTickets();
-            tickets.put(R.string.PEDESTRIAN_TICKET_KEY, 5);
-            tickets.put(R.string.BICYCLE_TICKET_KEY, 4);
-            tickets.put(R.string.BUS_TICKET_KEY, 2);
-            tickets.put(R.string.TAXI_TICKET_KEY, 0);
-            tickets.put(R.string.DOUBLE_TICKET_KEY, 0);
-            tickets.put(R.string.BLACK_TICKET_KEY, 0);
-        }
-
-    }
-
     public boolean isRandomEventsEnabled() {
         return randomEventsEnabled;
     }

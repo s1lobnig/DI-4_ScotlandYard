@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import static org.junit.Assert.*;
 
 public class ManageGameDataTest {
+    /*
     Game game;
     ArrayList<Player> playerlist;
     Player p1;
@@ -134,4 +135,5 @@ public class ManageGameDataTest {
     public void tearDown(){
         game = null;
     }
+    */
 }
