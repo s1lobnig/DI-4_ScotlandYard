@@ -35,6 +35,7 @@ public class TicketEntry extends Entry {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             ticketImage.setImageIcon(Icon.createWithResource(context, ticketUsed.getSign()));
         } else {
+
             ticketImage.setImageResource(ticketUsed.getSign());
         }
         ((EditText) convertView.findViewById(R.id.turn)).setText(turnNumber + "");

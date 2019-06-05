@@ -117,11 +117,12 @@ public class Client extends Device implements ClientInterface {
             Move move = (Move) object;
             Log.d(logTag, "move received");
             Player player = ManageGameData.findPlayer(game, move.getNickname());
-            player.setMoved(true);
+            if (!player.getSpecialMrXMoves()[1])
+                player.setMoved(true);
 
             if (gameObserver != null) {
                 gameObserver.updateMove(move);
-            }else{
+            } else {
                 player.setPosition(Points.POINTS[move.getField()]);
             }
         }
