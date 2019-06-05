@@ -128,6 +128,7 @@ public class Server extends Device implements ServerInterface {
             manageMove((Move) object);
         }
         if (object instanceof Entry) {
+            Log.d(logTag, "roadmap entry received");
             Entry entry = (Entry) object;
             roadMap.addEntry(entry);
             if (!game.getPlayers().get(0).isMrX()) {
@@ -135,22 +136,21 @@ public class Server extends Device implements ServerInterface {
                 send(entry);
             }
         }
+        if(object instanceof MapNotification){
+            onMapNotification((MapNotification) object);
+        }
+    }
 
+    private void onMapNotification(MapNotification notification) {
+        Log.d(logTag, "map notification received");
+        String[] txt = notification.getNotification().split(" ");
+        if(txt.length == 2 && txt[1].equals("DEACTIVATED")){
+            game.deactivatePlayer(game.findPlayer(txt[0]));
+        }
     }
 
     private void manageMove(Move move) {
         Player player = game.findPlayer(move.getNickname());
-
-        player.checkAmountOfTickets();
-        if (!player.isActive()) {
-            printNotification(player.getNickname() + " wurde deaktiviert. (KEINE TICKETS MEHR)");
-            return;
-        }
-        if (!Routes.routesPossibleWithTickets(Points.getIndex(player.getPosition()) + 1, player)) {
-            player.setActive(false);
-            printNotification(player.getNickname() + " wurde deaktiviert. (KEIN ZUG MEHR MÖGLICH)");
-            return;
-        }
 
         send(move);
         player.setMoved(true);

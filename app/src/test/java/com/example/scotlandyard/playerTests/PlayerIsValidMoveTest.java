@@ -2,6 +2,7 @@ package com.example.scotlandyard.playerTests;
 
 import com.example.scotlandyard.Game;
 import com.example.scotlandyard.Player;
+import com.example.scotlandyard.R;
 import com.example.scotlandyard.map.Point;
 import com.example.scotlandyard.map.Points;
 
@@ -24,9 +25,9 @@ public class PlayerIsValidMoveTest {
     @Before
     public void setup(){
         player = new Player("Sophie");
-        player.setPosition(Points.getPoints()[30]);
+        player.setPosition(Points.getPoints()[29]);
         player2 = new Player("Tim");
-        player2.setPosition(Points.getPoints()[30]);
+        player2.setPosition(Points.getPoints()[65]);
         Player.setTickets(game, player);
 
         ArrayList<Player> players = new ArrayList<>();
@@ -36,7 +37,7 @@ public class PlayerIsValidMoveTest {
         game = new Game("Game", 3, 3, false, false, players);
         game.setRoundMrX(false);
 
-        reachable = Points.getPoints()[31];
+        reachable = Points.getPoints()[30];
     }
 
     @Test
@@ -100,8 +101,23 @@ public class PlayerIsValidMoveTest {
 
     @Test
     public void testIsValidMoveNotEnoughTickets(){
-        int result = player2.isValidMove(game, reachable);
+        player.getTickets().put(R.string.BICYCLE_TICKET_KEY, 0);
+        int result = player.isValidMove(game, reachable);
         assertEquals(6, result);
+    }
+
+    @Test
+    public void testIsValidMoveNoTickets(){
+        int result = player2.isValidMove(game, reachable);
+        assertEquals(7, result);
+    }
+
+    @Test
+    public void testIsValidMoveNoMovePossibleWithTickets(){
+        player.getTickets().put(R.string.PEDESTRIAN_TICKET_KEY, 0);
+        player.getTickets().put(R.string.BICYCLE_TICKET_KEY, 0);
+        int result = player2.isValidMove(game, reachable);
+        assertEquals(7, result);
     }
 
     @After

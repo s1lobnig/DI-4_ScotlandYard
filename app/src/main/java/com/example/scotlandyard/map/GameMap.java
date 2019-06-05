@@ -339,6 +339,18 @@ public class GameMap extends AppCompatActivity
                 //Toast to indicate that player has not enough tickets for reachable field
                 Toast.makeText(GameMap.this, "Nicht genügend Tickets", Snackbar.LENGTH_LONG).show();
                 return false;
+            case 7:
+                Toast.makeText(GameMap.this, "KEINE TICKETS MEHR. Du wurde deaktiviert", Snackbar.LENGTH_LONG).show();
+                if(!Device.isServer()){
+                    device.send(new MapNotification(myPlayer.getNickname() + " DEACTIVATED"));
+                }
+                return false;
+            case 8:
+                Toast.makeText(GameMap.this, "KEIN ZUG MEHR MÖGLICH. Du wurde deaktiviert.", Snackbar.LENGTH_LONG).show();
+                if(!Device.isServer()){
+                    device.send(new MapNotification(myPlayer.getNickname() + " DEACTIVATED"));
+                }
+                return false;
             default:
                 return false;
         }
@@ -585,34 +597,6 @@ public class GameMap extends AppCompatActivity
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myPlayer.getPosition().getLatLng(), 16f), 3000, null);
     }
 
-    private void tryNextRound() {
-        int result = device.getGame().tryNextRound();
-        if (result == 1) {
-            device.send(new MapNotification("NEXT_ROUND"));
-            ((TextView) findViewById(R.id.round)).setText("Round " + device.getGame().getRound());
-            if (device.getGame().isBotMrX()) {
-                final Handler handler = new Handler();
-                final long start = SystemClock.uptimeMillis();
-                final float d = 4000f;
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        long elapsed = SystemClock.uptimeMillis() - start;
-                        float t = elapsed / d;
-                        if (t < 1) {
-                            handler.postDelayed(this, 16);
-                        } else {
-                            ((Server) device).moveBot();
-                        }
-                    }
-                });
-            }
-        } else if (result == 0) {
-            device.send(new MapNotification("END MisterX")); //MisterX hat gewonnen
-            Toast.makeText(GameMap.this, "MisterX hat gewonnen", Snackbar.LENGTH_LONG).show();
-        }
-    }
-
     @Override
     public void updateMove(Move move) {
         Player player = device.getGame().findPlayer(move.getNickname());
@@ -653,6 +637,8 @@ public class GameMap extends AppCompatActivity
     @Override
     public void onReceivedToast(String toast) {
         if (toast.contains("Runde")) {
+            rounds.setText(toast);
+        } else if(toast.contains("gewonnen")){
             rounds.setText(toast);
         } else {
             Toast.makeText(GameMap.this, toast, Toast.LENGTH_LONG).show();

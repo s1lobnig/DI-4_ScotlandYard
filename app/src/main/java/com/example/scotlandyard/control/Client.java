@@ -171,9 +171,6 @@ public class Client extends Device implements ClientInterface {
             printNotification(txt[1] + " hat gewonnen");
             return;
         }
-        if(txt.length > 3 && txt[2].equals("deaktiviert")){
-            game.findPlayer(txt[0]).setActive(false);
-        }
         printNotification(notification.getNotification());
     }
 

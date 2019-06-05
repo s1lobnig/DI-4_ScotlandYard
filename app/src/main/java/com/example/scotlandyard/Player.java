@@ -282,6 +282,14 @@ public class Player implements Serializable {
         }
         boolean enoughTickets = checkForValidTicket(this, (int) routeToTake[2]);
         if (!enoughTickets) {
+            checkAmountOfTickets();
+            if (!isActive) {
+                return 7;
+            }
+            if (!Routes.routesPossibleWithTickets(Points.getIndex(position) + 1, this)) {
+                setActive(false);
+                return 8;
+            }
             return 6;
         }
 
