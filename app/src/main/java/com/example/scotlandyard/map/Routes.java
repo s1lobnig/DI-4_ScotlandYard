@@ -730,6 +730,7 @@ public class Routes {
                 }
             }
         }
+        player.setActive(false);
         return false;
     }
 }

@@ -24,6 +24,7 @@ public class Player implements Serializable {
     private HashMap<Integer, Integer> tickets; //Hashmap for storing tickets
     private boolean hasCheated;
     private boolean hasCheatedThisRound;
+    private boolean[] specialMrXMoves;
 
     private int penalty;
 
@@ -47,6 +48,23 @@ public class Player implements Serializable {
         this.hasCheated = false;
         this.hasCheatedThisRound = false;
         this.penalty = 0;
+        this.specialMrXMoves = new boolean[]{false,false};
+    }
+
+    public void setSpecialMrXMoves(boolean[] specialMrXMoves) {
+        if(isMrX) {
+            this.specialMrXMoves = specialMrXMoves;
+        }
+    }
+    public void setSpecialMrXMoves(boolean specialMrXMove, int i) {
+        if(isMrX) {
+            this.specialMrXMoves[i] = specialMrXMove;
+        }
+    }
+
+
+    public boolean[] getSpecialMrXMoves() {
+        return specialMrXMoves;
     }
 
     public String getNickname() {
@@ -106,7 +124,7 @@ public class Player implements Serializable {
     }
 
     public void decreaseNumberOfTickets(Integer key) {
-        if (!this.hasCheatedThisRound)
+        if (!this.hasCheatedThisRound && tickets.get(key) > 0)
             tickets.put(key, tickets.get(key) - 1);
     }
 
@@ -116,7 +134,7 @@ public class Player implements Serializable {
         }
     }
 
-    public void checkAmountOfTickets() {
+    public boolean checkAmountOfTickets() {
         ArrayList<Integer> listOfTickets = new ArrayList<>();
 
         for (Map.Entry<Integer, Integer> ticket : tickets.entrySet()) {
@@ -130,7 +148,9 @@ public class Player implements Serializable {
         //if all ticket values are 0 set player inactive
         if (listOfTickets.isEmpty()) {
             setActive(false);
+            return false;
         }
+        return true;
     }
 
     public int[] getRemainingTickets(){

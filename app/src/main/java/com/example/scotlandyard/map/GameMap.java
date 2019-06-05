@@ -1,6 +1,7 @@
 package com.example.scotlandyard.map;
 
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -21,13 +22,11 @@ import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
 import com.example.scotlandyard.control.Server;
-import com.example.scotlandyard.tickets.BlackTicketDialog;
 import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.control.GameInterface;
 import com.example.scotlandyard.map.motions.MovingLogic;
 import com.example.scotlandyard.map.motions.RandomEvent;
 import com.example.scotlandyard.map.motions.Move;
-import com.example.scotlandyard.tickets.DoubleTicketDialog;
 import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.map.roadmap.RoadMap;
 import com.example.scotlandyard.map.roadmap.RoadMapDialog;
@@ -62,6 +61,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -125,9 +126,31 @@ public class GameMap extends AppCompatActivity
         blackTickets.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //open Dialog and ask for usage of this ticket
-                DialogFragment blackTicketDialog = new BlackTicketDialog();
-                blackTicketDialog.show(getSupportFragmentManager(), "BlackTicketDisplay");
+                final Dialog dialog = createDialog();
+                dialog.setContentView(R.layout.black_ticket_dialog);
+                Button useTicket = (Button) dialog.findViewById(R.id.btnUseTicket);
+                Button cancel = (Button) dialog.findViewById(R.id.btnCancel);
+
+                // if button is clicked, close the custom dialog
+                useTicket.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (myPlayer.getSpecialMrXMoves()[0] && myPlayer.getTickets().get(R.string.BLACK_TICKET_KEY).intValue() == 0) {
+                            Toast.makeText(GameMap.this, "Nicht genügend Tickets", Snackbar.LENGTH_LONG).show();
+                        }else{
+                            myPlayer.setSpecialMrXMoves(true, 0);
+                        }
+                        dialog.dismiss();
+                    }
+                });
+
+                cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.cancel();
+                    }
+                });
+                dialog.show();
             }
         });
         taxiTickets = findViewById(R.id.taxiTicket);
@@ -135,9 +158,31 @@ public class GameMap extends AppCompatActivity
         doubleTickets.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //open Dialog and ask for usage of this ticket
-                DialogFragment doubleTicketDialog = new DoubleTicketDialog();
-                doubleTicketDialog.show(getSupportFragmentManager(), "DoubleTicketDisplay");
+                final Dialog dialog = createDialog();
+                dialog.setContentView(R.layout.double_ticket_dialog);
+                Button useTicket = (Button) dialog.findViewById(R.id.btnUseTicket);
+                Button cancel = (Button) dialog.findViewById(R.id.btnCancel);
+
+                // if button is clicked, close the custom dialog
+                useTicket.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (myPlayer.getSpecialMrXMoves()[1] && myPlayer.getTickets().get(R.string.DOUBLE_TICKET_KEY).intValue() == 0) {
+                            Toast.makeText(GameMap.this, "Nicht genügend Tickets", Snackbar.LENGTH_LONG).show();
+                        }else {
+                            myPlayer.setSpecialMrXMoves(true, 1);
+                        }
+                        dialog.dismiss();
+                    }
+                });
+
+                cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.cancel();
+                    }
+                });
+                dialog.show();
             }
         });
 
@@ -171,6 +216,14 @@ public class GameMap extends AppCompatActivity
         }
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.map, fragment).commit();
+    }
+
+    private Dialog createDialog() {
+        //open Dialog and ask for usage of this ticket
+        final Dialog dialog = new Dialog(GameMap.this);
+        TextView title = dialog.findViewById(R.id.txtTitle);
+
+        return dialog;
     }
 
     @Override
@@ -313,7 +366,11 @@ public class GameMap extends AppCompatActivity
                                 }
                                 Point point = Points.getPoints()[idx];
                                 moveMarker(point, myPlayer, myPlayer.getIcon(), r, randomRoute);
-                                myPlayer.setMoved(true);
+                                if (myPlayer.isMrX() && myPlayer.getSpecialMrXMoves()[1]) {
+                                    myPlayer.setSpecialMrXMoves(false, 1);
+                                } else {
+                                    myPlayer.setMoved(true);
+                                }
                                 tryNextRound();
                             }
                             device.send(new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r, randomRoute));
@@ -423,7 +480,15 @@ public class GameMap extends AppCompatActivity
         }
         int[] iconAndTicket = MovingLogic.getIconAndTicket(player, (int) routeToTake[2]);
         int icon = iconAndTicket[0];
-        int ticket = iconAndTicket[1];
+        int ticket = -1;
+        if (player.getSpecialMrXMoves()[0] && player.getTickets().get(R.string.BLACK_TICKET_KEY).intValue() > 0) {
+            ticket = R.drawable.ticket_black;
+            player.setSpecialMrXMoves(false, 0);
+            player.decreaseNumberOfTickets(R.string.BLACK_TICKET_KEY);
+        } else {
+            ticket = iconAndTicket[1];
+        }
+
         if (player.getPenalty() > 0)
             player.decreasePenalty();
         if (randomRoute) {
@@ -443,12 +508,11 @@ public class GameMap extends AppCompatActivity
             }
         }
         visualizeTickets();
-        player.checkAmountOfTickets();
-        if (player.isActive() == false) {
+
+        if (player.checkAmountOfTickets() == false) {
             Toast.makeText(GameMap.this, "KEINE TICKETS MEHR. Du wurdest deaktiviert", Snackbar.LENGTH_LONG).show();
         }
         if (Routes.routesPossibleWithTickets(Points.getIndex(player.getPosition()) + 1, player) == false) {
-            player.setActive(false);
             Toast.makeText(GameMap.this, "KEIN ZUG MEHR MÖGLICH. Du wurdest deaktiviert", Snackbar.LENGTH_LONG).show();
         }
 
@@ -729,7 +793,7 @@ public class GameMap extends AppCompatActivity
     public void onBackPressed() {
         super.onBackPressed();
         myPlayer = null;
-        if(device.getGame().isBotMrX()){
+        if (device.getGame().isBotMrX()) {
             Player bot = ManageGameData.findPlayer(device.getGame(), "Bot");
             Device.getLobby().getPlayerList().remove(bot);
         }
