@@ -76,8 +76,8 @@ public class LobbyUnitTest {
         lobby.addPlayer(p2);
         lobby.addPlayer(p3);
         lobby.removePlayer("thomas");
+        lobby.removePlayer("herbert");
         ArrayList<Player> arrList = new ArrayList<>();
-        arrList.add(p1);
         arrList.add(p3);
         Assert.assertEquals(arrList, lobby.getPlayerList());
     }
@@ -96,5 +96,30 @@ public class LobbyUnitTest {
         lobby.addPlayer(p2);
         lobby.addPlayer(p3);
         Assert.assertFalse(lobby.nickAlreadyUsed("stefan"));
+    }
+
+    @Test
+    public void testChooseMrXRandom() {
+        lobby.addPlayer(p1);
+        lobby.addPlayer(p2);
+        lobby.addPlayer(p3);
+        lobby.chooseMrX(true);
+        int countMrX = 0;
+        for (Player p : lobby.getPlayerList()) {
+            if (p.isMrX()) {
+                countMrX++;
+            }
+        }
+        Assert.assertEquals(1, countMrX);
+    }
+
+    @Test
+    public void testChooseMrXNormal() {
+        p2.setWantsToBeMrX(true);
+        lobby.addPlayer(p1);
+        lobby.addPlayer(p2);
+        lobby.addPlayer(p3);
+        lobby.chooseMrX(true);
+        Assert.assertTrue(lobby.getPlayerList().get(1).isMrX());
     }
 }
