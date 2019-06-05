@@ -260,10 +260,10 @@ public class Server extends Device implements ServerInterface {
     @Override
     public void onConnected(Endpoint endpoint) {
         Log.d(logTag, "Connection with a new endpoint established.");
-        Player newPlayer = new Player(endpoint.getName());
-        lobby.addPlayer(newPlayer);
-        connectionService.send(lobby);
         if (lobbyObserver != null) {
+            Player newPlayer = new Player(endpoint.getName());
+            lobby.addPlayer(newPlayer);
+            connectionService.send(lobby);
             lobbyObserver.updateLobby(lobby);
         }
         if (!lost.isEmpty()) {
