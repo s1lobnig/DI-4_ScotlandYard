@@ -18,6 +18,7 @@
             android:text="@string/TICKET_DIALOG_TITLE"
             android:textAlignment="center"
             android:textAllCaps="true"
+            android:textColor="@color/colorText"
             android:textSize="30sp"
             android:textStyle="bold"
             android:typeface="normal"

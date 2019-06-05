@@ -10,17 +10,17 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
         android:text="@string/RODA_MAP_DIALOG_TITLE"
         android:textAlignment="center"
         android:textAllCaps="true"
+        android:textColor="@color/colorText"
         android:textSize="30sp"
         android:textStyle="bold"
-        android:typeface="normal"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
-        />
+        android:typeface="normal" />
 
     <ScrollView
         android:layout_width="match_parent"

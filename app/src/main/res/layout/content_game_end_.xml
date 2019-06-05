@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".GameEnd_Activity"
+    android:background="@drawable/hintergrund"
     tools:showIn="@layout/activity_game_end_">
 
     <TextView
@@ -24,13 +25,14 @@
 
     <Button
         android:id="@+id/button"
-        android:layout_width="wrap_content"
+        android:layout_width="140dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
+        android:background="@drawable/buttons"
         android:onClick="openStart"
         android:text="Restart"
         app:layout_constraintEnd_toEndOf="parent"

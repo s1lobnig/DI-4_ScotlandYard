@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/hintergrund"
     tools:context=".lobby.ClientLobby">
 
     <TextView
@@ -18,7 +19,7 @@
         android:gravity="center"
         android:text="@string/liste_der_aktiven_spieler"
         android:textAllCaps="false"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@color/colorText"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"

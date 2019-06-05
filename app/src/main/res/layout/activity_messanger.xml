@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".messenger.Messenger"
-    android:background="@color/background"
+    android:background="@drawable/hintergrund"
 
     android:theme="@style/AppTheme.ActionBar">
 
@@ -18,7 +18,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="@color/colorPrimaryDark"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     </android.support.design.widget.AppBarLayout>
@@ -89,10 +89,10 @@
             android:layout_width="64dp"
             android:layout_height="48dp"
             android:layout_gravity="bottom"
-            android:background="@drawable/ic_menu_send"
+            android:background="@drawable/icon_send"
             android:clickable="true"
             android:gravity="center"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@color/colorText"
             android:textSize="14dp" />
 
     </LinearLayout>

@@ -70,6 +70,7 @@ import java.util.Random;
 
 import static com.example.scotlandyard.R.color.colorLightGrey;
 import static com.example.scotlandyard.R.color.colorPrimary;
+import static com.example.scotlandyard.R.color.colorPrimaryDark;
 import static com.example.scotlandyard.map.Routes.routesPossibleWithTickets;
 
 public class GameMap extends AppCompatActivity
@@ -151,7 +152,7 @@ public class GameMap extends AppCompatActivity
 
             }
         });
-        fab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(colorLightGrey)));
+        fab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(colorPrimaryDark)));
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
@@ -691,7 +692,7 @@ public class GameMap extends AppCompatActivity
             Log.d("GameMap", "gameObserver already added");
         }
         FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(colorLightGrey)));
+        fab.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(colorPrimaryDark)));
         if (mMap != null) {
             deleteMarker();
             setupGame();
