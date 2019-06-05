@@ -102,7 +102,7 @@
             android:layout_width="100dp"
             android:layout_height="30dp"
             android:layout_marginTop="50dp"
-            android:background="@color/colorLightGrey"
+            android:background="@color/colorPrimaryDark"
             android:gravity="center"
             android:text="@string/runde"
             android:textColor="@color/colorText"
