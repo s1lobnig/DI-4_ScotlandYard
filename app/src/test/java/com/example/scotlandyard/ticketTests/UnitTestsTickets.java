@@ -2,7 +2,7 @@ package com.example.scotlandyard.ticketTests;
 
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
-import com.example.scotlandyard.lobby.Game;
+import com.example.scotlandyard.Game;
 import com.example.scotlandyard.map.Routes;
 
 import org.junit.Assert;
@@ -31,7 +31,7 @@ public class UnitTestsTickets {
         playerList.add(player1);
         playerList.add(player2);
         playerList.add(player3);
-        game = new Game("Test", 4, 4, 5, false, false, playerList);
+        game = new Game("Test", 4, 5, false, false, playerList);
     }
 
     //check if hashmap has the correct size

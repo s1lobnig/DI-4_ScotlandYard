@@ -17,23 +17,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.scotlandyard.Game;
 import com.example.scotlandyard.control.Client;
 import com.example.scotlandyard.control.ClientLobbyInterface;
 import com.example.scotlandyard.control.Device;
-import com.example.scotlandyard.map.roadmap.Entry;
-import com.example.scotlandyard.messenger.Message;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
-import com.example.scotlandyard.map.motions.Move;
-import com.example.scotlandyard.connection.ClientInterface;
-import com.example.scotlandyard.connection.ClientService;
 import com.example.scotlandyard.connection.Endpoint;
 import com.google.android.gms.nearby.Nearby;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
 
 public class GameList extends AppCompatActivity implements ClientLobbyInterface {
     private Player player;

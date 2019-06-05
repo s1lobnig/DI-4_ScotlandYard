@@ -1,18 +1,15 @@
 package com.example.scotlandyard;
 
 import com.example.scotlandyard.control.Device;
-import com.example.scotlandyard.lobby.Game;
 import com.example.scotlandyard.map.Point;
 import com.example.scotlandyard.map.Points;
 import com.example.scotlandyard.map.Routes;
-import com.google.android.gms.common.util.CollectionUtils;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Player implements Serializable {
@@ -22,7 +19,6 @@ public class Player implements Serializable {
     private int icon;
     private Point position;
     private transient Marker marker;
-    private boolean isHost;      //variable for checking if sender is Host
     private boolean isMrX;
     private boolean wantsToBeMrX;
     private HashMap<Integer, Integer> tickets; //Hashmap for storing tickets
@@ -33,10 +29,8 @@ public class Player implements Serializable {
 
     public Player(String nickname) {
         this.nickname = nickname;
-        isActive = true;
-        moved = false;
-        this.nickname = nickname;
-        this.isHost = false;
+        this.isActive = true;
+        this.moved = false;
         this.isMrX = false;
         this.wantsToBeMrX = false;
         //initialise ticket hashmap for a player with empty tickets
@@ -75,14 +69,6 @@ public class Player implements Serializable {
 
     public void setMoved(boolean moved) {
         this.moved = moved;
-    }
-
-    public void setHost(boolean isHost) {
-        this.isHost = isHost;
-    }
-
-    public boolean isHost() {
-        return isHost;
     }
 
     public int getIcon() {
@@ -262,43 +248,43 @@ public class Player implements Serializable {
     /**
      * checks if a chosen route is valid for the player
      *
-     * @param destination position, where player wants to go
+     * @param newLocation position, where player wants to go
      * @return 0 if valid
-     * 1 if no move or game has end (invalid)
+     * 1 if game has end (invalid)
      * 2 if player is not active (invalid)
      * 3 if not players turn (invalid)
-     * 4 if bicicle not availabe (invalid)
-     * 5 if not enought tickets (invalid)
-     * 6 if position not reachable (invalid)
+     * 4 if newLocation not reachable from current position (invalid)
+     * 5 if bicycle not available (invalid)
+     * 6 if not enough tickets (invalid)
      */
-    public int isValidMove(Marker destination) {
-        if (Device.getInstance().getGame().isPlayer(destination) || Device.getInstance().getGame().getRound() > Game.getNumRounds()) {
+    public int isValidMove(Game game, Point newLocation) {
+        if (game.getRound() > Game.getNumRounds()) {
             return 1;
         }
         if(!isActive){
             return 2;
         }
         //if it is not players turn -> ignore move
-        if (moved || (isMrX && !Device.getInstance().getGame().isRoundMrX()) || (!isMrX && Device.getInstance().getGame().isRoundMrX())) {
+        if (moved || (isMrX && !game.isRoundMrX()) || (!isMrX && game.isRoundMrX())) {
             return 3;
         }
-        LatLng current = marker.getPosition();
+        LatLng current = position.getLatLng();
         Point currentPoint = new Point(current.latitude, current.longitude);
-        Point newLocation = new Point(destination.getPosition().latitude, destination.getPosition().longitude);
         Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
 
-        if ((Boolean) routeToTake[0]) {
-            // if player has penalty and wants to take the bicycle
-            if (penalty > 0 && (int) (routeToTake[2]) == 1) {
-                return 4;
-            }
-            boolean enoughTickets = checkForValidTicket(this, (int) routeToTake[2]);
-            if (!enoughTickets) {
-                return 5;
-            }
-
-            return 0;
+        //if no valid route from current position to newLocation
+        if (!(Boolean) routeToTake[0]) {
+            return 4;
         }
-        return 6;
+        // if player has penalty and wants to take the bicycle
+        if (penalty > 0 && (int) (routeToTake[2]) == 1) {
+            return 5;
+        }
+        boolean enoughTickets = checkForValidTicket(this, (int) routeToTake[2]);
+        if (!enoughTickets) {
+            return 6;
+        }
+
+        return 0;
     }
 }

@@ -12,6 +12,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.scotlandyard.Game;
 import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.control.Server;
 import com.example.scotlandyard.control.ServerLobbyInterface;
@@ -75,7 +76,7 @@ public class ServerLobby extends AppCompatActivity implements ServerLobbyInterfa
                 Intent intent = new Intent(ServerLobby.this, GameMap.class);
                 Lobby lobby = Device.getLobby();
                 lobby.chooseMrX(lobby.isRandomMrX());
-                Device.getInstance().setGame(new Game(lobby.getLobbyName(), lobby.getMaxPlayers(), lobby.getPlayerCount(), 1, lobby.isRandomEvents(), lobby.isBotMrX(), lobby.getPlayerList()));
+                Device.getInstance().setGame(new Game(lobby.getLobbyName(), lobby.getMaxPlayers(), 1, lobby.isRandomEvents(), lobby.isBotMrX(), lobby.getPlayerList()));
                 startActivity(intent);
             }
         });

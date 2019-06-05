@@ -29,7 +29,6 @@ import com.example.scotlandyard.map.motions.RandomEvent;
 import com.example.scotlandyard.map.motions.Move;
 import com.example.scotlandyard.tickets.DoubleTicketDialog;
 import com.example.scotlandyard.map.roadmap.Entry;
-import com.example.scotlandyard.map.roadmap.RoadMap;
 import com.example.scotlandyard.map.roadmap.RoadMapDialog;
 import com.example.scotlandyard.messenger.Messenger;
 import com.example.scotlandyard.Player;
@@ -37,7 +36,7 @@ import com.example.scotlandyard.PlayersOverview;
 import com.example.scotlandyard.R;
 import com.example.scotlandyard.Settings;
 import com.example.scotlandyard.connection.Endpoint;
-import com.example.scotlandyard.lobby.Game;
+import com.example.scotlandyard.Game;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -70,7 +69,6 @@ import java.util.Random;
 
 import static com.example.scotlandyard.R.color.colorLightGrey;
 import static com.example.scotlandyard.R.color.colorPrimary;
-import static com.example.scotlandyard.map.Routes.routesPossibleWithTickets;
 
 public class GameMap extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, GameInterface {
@@ -299,9 +297,9 @@ public class GameMap extends AppCompatActivity
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker field) {
-                if (isValidMove(field)) {
+                Point newLocation = new Point(field.getPosition().latitude, field.getPosition().longitude);
+                if (!Device.getInstance().getGame().isPlayer(field) && isValidMove(newLocation)) {
                     int r = (new Random()).nextInt(100) % 10;
-                    Point newLocation = new Point(field.getPosition().latitude, field.getPosition().longitude);
                     int idx = Points.getIndex(newLocation);
                     Object[] randomRoute = Routes.getRandomRoute(Points.getIndex(myPlayer.getPosition()) + 1, idx + 1);
                     Move move = new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r, randomRoute);
@@ -318,8 +316,8 @@ public class GameMap extends AppCompatActivity
         });
     }
 
-    private boolean isValidMove(Marker field) {
-        switch (myPlayer.isValidMove(field)) {
+    private boolean isValidMove(Point newLocation) {
+        switch (myPlayer.isValidMove(Device.getInstance().getGame(), newLocation)) {
             case 0:
                 return true;
             case 2:
@@ -330,16 +328,16 @@ public class GameMap extends AppCompatActivity
                 Toast.makeText(GameMap.this, "Ein anderer Spieler ist noch nicht gezogen. Du musst noch warten.", Snackbar.LENGTH_LONG).show();
                 return false;
             case 4:
-                Toast.makeText(GameMap.this, "Das Fahrrad ist noch nicht verfügbar!", Snackbar.LENGTH_LONG).show();
-                return false;
-            case 5:
-                //Toast to indicate that player has not enough tickets for reachable field
-                Toast.makeText(GameMap.this, "Nicht genügend Tickets", Snackbar.LENGTH_LONG).show();
-                return false;
-            case 6:
                 // Toast to indicate that the clicked location is not reachable from the current
                 // location
                 Toast.makeText(GameMap.this, "Feld nicht erreichbar", Snackbar.LENGTH_LONG).show();
+                return false;
+            case 5:
+                Toast.makeText(GameMap.this, "Das Fahrrad ist noch nicht verfügbar!", Snackbar.LENGTH_LONG).show();
+                return false;
+            case 6:
+                //Toast to indicate that player has not enough tickets for reachable field
+                Toast.makeText(GameMap.this, "Nicht genügend Tickets", Snackbar.LENGTH_LONG).show();
                 return false;
             default:
                 return false;

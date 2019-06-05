@@ -8,9 +8,7 @@ import com.example.scotlandyard.Player;
 import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.connection.ServerInterface;
 import com.example.scotlandyard.connection.ServerService;
-import com.example.scotlandyard.map.ManageGameData;
 import com.example.scotlandyard.map.MapNotification;
-import com.example.scotlandyard.map.Point;
 import com.example.scotlandyard.map.Points;
 import com.example.scotlandyard.map.Route;
 import com.example.scotlandyard.map.Routes;
@@ -20,7 +18,6 @@ import com.example.scotlandyard.messenger.Message;
 import com.google.android.gms.nearby.connection.ConnectionsClient;
 
 import java.util.Random;
-import java.util.Set;
 
 /**
  * class representing a server in the app

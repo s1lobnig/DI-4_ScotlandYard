@@ -1,18 +1,14 @@
-package com.example.scotlandyard.lobby;
+package com.example.scotlandyard;
 
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
-import com.example.scotlandyard.control.Device;
-import com.example.scotlandyard.map.ManageGameData;
 import com.example.scotlandyard.map.Point;
 import com.example.scotlandyard.map.Points;
-import com.example.scotlandyard.map.motions.Move;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
 
 public class Game implements Serializable {
@@ -35,7 +31,6 @@ public class Game implements Serializable {
 
     private String gameName;
     private int maxMembers;
-    private int currentMembers;
     private int round;
     private boolean roundMrX;
     private boolean randomEventsEnabled;
@@ -46,13 +41,10 @@ public class Game implements Serializable {
     public Game(String gameName, int maxMembers) {
         this.gameName = gameName;
         this.maxMembers = maxMembers;
-        this.currentMembers = 1;
     }
 
-    public Game(String gameName, int maxMembers, int currentMembers, int round, boolean randomEventsEnabled, boolean botMrX, ArrayList<Player> players) {
-        this.gameName = gameName;
-        this.maxMembers = maxMembers;
-        this.currentMembers = currentMembers;
+    public Game(String gameName, int maxMembers, int round, boolean randomEventsEnabled, boolean botMrX, ArrayList<Player> players) {
+        this(gameName, maxMembers);
         this.round = round;
         this.roundMrX = true;
         this.randomEventsEnabled = randomEventsEnabled;
@@ -78,14 +70,6 @@ public class Game implements Serializable {
 
     public void setMaxMembers(int maxMembers) {
         this.maxMembers = maxMembers;
-    }
-
-    public int getCurrentMembers() {
-        return currentMembers;
-    }
-
-    public void setCurrentMembers(int currentMembers) {
-        this.currentMembers = currentMembers;
     }
 
     public int getRound() {
@@ -174,6 +158,13 @@ public class Game implements Serializable {
         return  tryNextRound();
     }
 
+    /**
+     * trys if possible to start a new round
+     *
+     * @return -1 if round has not finished
+     * 1 if round has finished
+     * 0 if game ends because last round was reached
+     */
     public int tryNextRound() {
         if (isRoundMrX()) {
             if (getMrX().isMoved()) {
@@ -202,9 +193,15 @@ public class Game implements Serializable {
         return -1;
     }
 
-    public boolean isPlayer(Marker field) {
+    /**
+     * checks if a giver marker belongs to a Player of this game
+     *
+     * @param marker marker to check
+     * @return true if this marker belongs to a Player, false if not
+     */
+    public boolean isPlayer(Marker marker) {
         for (Player player : players) {
-            if (player.getMarker().equals(field)) {
+            if (player.getMarker().equals(marker)) {
                 return true;
             }
         }
@@ -218,7 +215,6 @@ public class Game implements Serializable {
             player.setIcon(PLAYER_ICONS[i]);
             LatLng position = getNewPlayerPosition();
             player.setPosition(new Point(position.latitude, position.longitude));
-            player.setMoved(false);
 
             //setTickets for every player
             player.setTickets(this, player);
@@ -230,7 +226,7 @@ public class Game implements Serializable {
         int position = (new Random()).nextInt(Points.getPoints().length);
         Point point = Points.POINTS[position];
         for (Player p : players) {
-            if (p.getPosition() == point) {
+            if (point.equals(p.getPosition())) {
                 return getNewPlayerPosition();
             }
         }
