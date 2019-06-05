@@ -1,5 +1,7 @@
 package com.example.scotlandyard.control;
 
+import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.example.scotlandyard.Player;
@@ -142,11 +144,17 @@ public class Server extends Device implements ServerInterface {
     private void manageMove(Move move) {
         Player player = game.findPlayer(move.getNickname());
 
-        //if it is not players turn -> ignore move
-        if (player.isMoved() || (player.isMrX() && !game.isRoundMrX()) || (!player.isMrX() && game.isRoundMrX())) {
-            send(new MapNotification("Ein anderer Spieler ist noch nicht gezogen. Du musst noch warten."));
+        player.checkAmountOfTickets();
+        if (!player.isActive()) {
+            printNotification(player.getNickname() + " wurde deaktiviert. (KEINE TICKETS MEHR)");
             return;
         }
+        if (!Routes.routesPossibleWithTickets(Points.getIndex(player.getPosition()) + 1, player)) {
+            player.setActive(false);
+            printNotification(player.getNickname() + " wurde deaktiviert. (KEIN ZUG MEHR MÖGLICH)");
+            return;
+        }
+
         send(move);
         player.setMoved(true);
         switch (game.tryNextRound()) {
@@ -154,7 +162,21 @@ public class Server extends Device implements ServerInterface {
                 send(new MapNotification("NEXT_ROUND"));
                 printNotification("Runde " + game.getRound());
                 if(game.isRoundMrX() && game.isBotMrX()){
-                    moveBot();
+                    final Handler handler = new Handler();
+                    final long start = SystemClock.uptimeMillis();
+                    final float d = 4000f;
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            long elapsed = SystemClock.uptimeMillis() - start;
+                            float t = elapsed / d;
+                            if (t < 1) {
+                                handler.postDelayed(this, 16);
+                            } else {
+                                moveBot();
+                            }
+                        }
+                    });
                 }
                 break;
             case 0:

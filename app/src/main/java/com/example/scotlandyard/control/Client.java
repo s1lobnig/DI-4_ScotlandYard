@@ -118,6 +118,9 @@ public class Client extends Device implements ClientInterface {
             Log.d(logTag, "move received");
             Player player = game.findPlayer(move.getNickname());
             player.setMoved(true);
+            if(player.isMrX()){
+                game.setRoundMrX(false);
+            }
 
             if (gameObserver != null) {
                 gameObserver.updateMove(move);
@@ -155,6 +158,7 @@ public class Client extends Device implements ClientInterface {
         if (txt[0].equals("NEXT_ROUND")) {
             game.nextRound();
             game.findPlayer(nickname).setMoved(false);
+            game.setRoundMrX(true);
             printNotification("Runde " + game.getRound());
             return;
         }
@@ -167,6 +171,9 @@ public class Client extends Device implements ClientInterface {
         if (txt.length == 2 && txt[0].equals("END")) {
             printNotification(txt[1] + " hat gewonnen");
             return;
+        }
+        if(txt.length > 3 && txt[2].equals("deaktiviert")){
+            game.findPlayer(txt[0]).setActive(false);
         }
         printNotification(notification.getNotification());
     }

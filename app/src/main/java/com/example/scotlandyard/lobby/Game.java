@@ -2,6 +2,7 @@ package com.example.scotlandyard.lobby;
 
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
+import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.map.ManageGameData;
 import com.example.scotlandyard.map.Point;
 import com.example.scotlandyard.map.Points;
@@ -165,12 +166,12 @@ public class Game implements Serializable {
         return true;
     }
 
-    public void deactivatePlayer(Player player){
+    public int deactivatePlayer(Player player){
         if(player.isMrX()){
             setBotMrX(true);
         }
         player.setActive(false);
-        tryNextRound();
+        return  tryNextRound();
     }
 
     public int tryNextRound() {
@@ -194,6 +195,7 @@ public class Game implements Serializable {
                 return 1;
             }
             //Game finished
+            round++;
             return 0;
         }
         //Round not finished yet
@@ -219,7 +221,7 @@ public class Game implements Serializable {
             player.setMoved(false);
 
             //setTickets for every player
-            //TODO: player.setTickets();
+            player.setTickets(this, player);
         }
     }
 

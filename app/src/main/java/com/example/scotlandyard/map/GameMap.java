@@ -299,35 +299,51 @@ public class GameMap extends AppCompatActivity
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker field) {
-                if (!device.getGame().isPlayer(field) && device.getGame().getRound() <= Game.getNumRounds()) {
-                    if (!myPlayer.isMoved()) {
-                        boolean isValid = isValidMove(field, myPlayer);
-                        if (isValid) {
-                            int r = (new Random()).nextInt(100) % 10;
-                            Point newLocation = new Point(field.getPosition().latitude, field.getPosition().longitude);
-                            int idx = Points.getIndex(newLocation);
-                            Object[] randomRoute = Routes.getRandomRoute(Points.getIndex(myPlayer.getPosition()) + 1, idx + 1);
-                            if (Device.isServer()) {
-                                if ((!myPlayer.isMrX() && device.getGame().isRoundMrX()) || (myPlayer.isMrX() && !device.getGame().isRoundMrX())) {
-                                    return false;
-                                }
-                                Point point = Points.getPoints()[idx];
-                                moveMarker(point, myPlayer, myPlayer.getIcon(), r, randomRoute);
-                                myPlayer.setMoved(true);
-                                tryNextRound();
-                            }
-                            device.send(new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r, randomRoute));
-                        }
-                        return isValid;
+                if (isValidMove(field)) {
+                    int r = (new Random()).nextInt(100) % 10;
+                    Point newLocation = new Point(field.getPosition().latitude, field.getPosition().longitude);
+                    int idx = Points.getIndex(newLocation);
+                    Object[] randomRoute = Routes.getRandomRoute(Points.getIndex(myPlayer.getPosition()) + 1, idx + 1);
+                    Move move = new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r, randomRoute);
 
+                    if (Device.isServer()) {
+                        ((Server) device).onDataReceived(move, myPlayer.getNickname());
                     } else {
-                        // Toast to indicate that it is not your turn
-                        Toast.makeText(GameMap.this, "Ein anderer Spieler ist noch nicht gezogen. Du musst noch warten.", Snackbar.LENGTH_LONG).show();
+                        device.send(move);
                     }
+                    return true;
                 }
                 return false;
             }
         });
+    }
+
+    private boolean isValidMove(Marker field) {
+        switch (myPlayer.isValidMove(field)) {
+            case 0:
+                return true;
+            case 2:
+                // Toast to indicate that it is not your turn
+                Toast.makeText(GameMap.this, "Du kannst nicht mehr ziehen und bist daher deaktiviert.", Snackbar.LENGTH_LONG).show();
+                return false;
+            case 3:
+                Toast.makeText(GameMap.this, "Ein anderer Spieler ist noch nicht gezogen. Du musst noch warten.", Snackbar.LENGTH_LONG).show();
+                return false;
+            case 4:
+                Toast.makeText(GameMap.this, "Das Fahrrad ist noch nicht verfügbar!", Snackbar.LENGTH_LONG).show();
+                return false;
+            case 5:
+                //Toast to indicate that player has not enough tickets for reachable field
+                Toast.makeText(GameMap.this, "Nicht genügend Tickets", Snackbar.LENGTH_LONG).show();
+                return false;
+            case 6:
+                // Toast to indicate that the clicked location is not reachable from the current
+                // location
+                Toast.makeText(GameMap.this, "Feld nicht erreichbar", Snackbar.LENGTH_LONG).show();
+                return false;
+            default:
+                return false;
+        }
     }
 
     private boolean moveMarker(Point p, Player player, int playerIcon, int r, Object[] randomRoute) {
@@ -339,35 +355,6 @@ public class GameMap extends AppCompatActivity
             }
         }
         return move(player, p, false, false, playerIcon, randomRoute);
-    }
-
-    private boolean isValidMove(Marker destination, Player player) {
-        LatLng current = player.getMarker().getPosition();
-        Point currentPoint = new Point(current.latitude, current.longitude);
-        Point newLocation = new Point(destination.getPosition().latitude, destination.getPosition().longitude);
-        Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
-        // only do this, if player has not already moved...
-        if ((Boolean) routeToTake[0] && !player.isMoved()) {
-            // if player has penalty and wants to take the bicycle
-            if (player.getPenalty() > 0 && (int) (routeToTake[2]) == 1) {
-                if (myPlayer.equals(player))
-                    Toast.makeText(GameMap.this, "Das Fahrrad ist noch nicht verfügbar!", Snackbar.LENGTH_LONG).show();
-                return false;
-            }
-            boolean enoughTickets = player.checkForValidTicket(player, (int) routeToTake[2]);
-            if (!enoughTickets) {
-                //Toast to indicate that player has not enough tickets for reachable field
-                Toast.makeText(GameMap.this, "Nicht genügend Tickets", Snackbar.LENGTH_LONG).show();
-                return false;
-            }
-
-
-            return true;
-        }
-        // Toast to indicate that the clicked location is not reachable from the current
-        // location
-        Toast.makeText(GameMap.this, "Feld nicht erreichbar", Snackbar.LENGTH_LONG).show();
-        return false;
     }
 
     public boolean moveWithRandomEvent(Player player, Point p, int playerIcon, int randomEvent, Object[] route) {
@@ -443,14 +430,6 @@ public class GameMap extends AppCompatActivity
             }
         }
         visualizeTickets();
-        player.checkAmountOfTickets();
-        if (player.isActive() == false) {
-            Toast.makeText(GameMap.this, "KEINE TICKETS MEHR. Du wurdest deaktiviert", Snackbar.LENGTH_LONG).show();
-        }
-        if (Routes.routesPossibleWithTickets(Points.getIndex(player.getPosition()) + 1, player) == false) {
-            player.setActive(false);
-            Toast.makeText(GameMap.this, "KEIN ZUG MEHR MÖGLICH. Du wurdest deaktiviert", Snackbar.LENGTH_LONG).show();
-        }
 
         if (player.isMrX() && (player.equals(myPlayer) || device.getGame().isBotMrX())) {
             int lastTurn = device.getRoadMap().getNumberOfEntries();
@@ -729,7 +708,7 @@ public class GameMap extends AppCompatActivity
     public void onBackPressed() {
         super.onBackPressed();
         myPlayer = null;
-        if(device.getGame().isBotMrX()){
+        if (device.getGame().isBotMrX()) {
             Player bot = device.getGame().findPlayer("Bot");
             Device.getLobby().getPlayerList().remove(bot);
         }

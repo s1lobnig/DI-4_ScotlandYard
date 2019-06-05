@@ -1,8 +1,12 @@
 package com.example.scotlandyard;
 
+import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.lobby.Game;
 import com.example.scotlandyard.map.Point;
+import com.example.scotlandyard.map.Points;
+import com.example.scotlandyard.map.Routes;
 import com.google.android.gms.common.util.CollectionUtils;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
 import java.io.Serializable;
@@ -255,4 +259,46 @@ public class Player implements Serializable {
         return false;
     }
 
+    /**
+     * checks if a chosen route is valid for the player
+     *
+     * @param destination position, where player wants to go
+     * @return 0 if valid
+     * 1 if no move or game has end (invalid)
+     * 2 if player is not active (invalid)
+     * 3 if not players turn (invalid)
+     * 4 if bicicle not availabe (invalid)
+     * 5 if not enought tickets (invalid)
+     * 6 if position not reachable (invalid)
+     */
+    public int isValidMove(Marker destination) {
+        if (Device.getInstance().getGame().isPlayer(destination) || Device.getInstance().getGame().getRound() > Game.getNumRounds()) {
+            return 1;
+        }
+        if(!isActive){
+            return 2;
+        }
+        //if it is not players turn -> ignore move
+        if (moved || (isMrX && !Device.getInstance().getGame().isRoundMrX()) || (!isMrX && Device.getInstance().getGame().isRoundMrX())) {
+            return 3;
+        }
+        LatLng current = marker.getPosition();
+        Point currentPoint = new Point(current.latitude, current.longitude);
+        Point newLocation = new Point(destination.getPosition().latitude, destination.getPosition().longitude);
+        Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
+
+        if ((Boolean) routeToTake[0]) {
+            // if player has penalty and wants to take the bicycle
+            if (penalty > 0 && (int) (routeToTake[2]) == 1) {
+                return 4;
+            }
+            boolean enoughTickets = checkForValidTicket(this, (int) routeToTake[2]);
+            if (!enoughTickets) {
+                return 5;
+            }
+
+            return 0;
+        }
+        return 6;
+    }
 }
