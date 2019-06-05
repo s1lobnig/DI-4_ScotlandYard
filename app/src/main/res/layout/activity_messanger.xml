@@ -89,10 +89,10 @@
             android:layout_width="64dp"
             android:layout_height="48dp"
             android:layout_gravity="bottom"
-            android:background="@drawable/ic_menu_send"
+            android:background="@drawable/icon_send"
             android:clickable="true"
             android:gravity="center"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@color/colorText"
             android:textSize="14dp" />
 
     </LinearLayout>
