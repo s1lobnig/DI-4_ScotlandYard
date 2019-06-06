@@ -79,7 +79,7 @@ public class GameCreate extends AppCompatActivity {
                     maxPlayers.setError("Sie müssen eine Maximalanzahl an Spielern eingeben!");
                     enable = false;
                 }else if (Integer.parseInt(numPlayer) < 2 || Integer.parseInt(numPlayer) > 6) {
-                    maxPlayers.setError("Sie müssen eine gültige Maximalanzahl an Spielern eingeben!");
+                    maxPlayers.setError("Sie müssen eine gültige Maximalanzahl an Spielern eingeben! (2-6 Spieler möglich)");
                     enable = false;
                 }
 

@@ -17,6 +17,7 @@ import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.messenger.Message;
 import com.google.android.gms.nearby.connection.ConnectionsClient;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 /**
@@ -119,7 +120,7 @@ public class Server extends Device implements ServerInterface {
             if (messengerObserver != null) {
                 messengerObserver.updateMessages(messageList);
             }
-            if(gameObserver != null){
+            if (gameObserver != null) {
                 gameObserver.onMessage();
             }
         }
@@ -136,7 +137,7 @@ public class Server extends Device implements ServerInterface {
                 send(entry);
             }
         }
-        if(object instanceof MapNotification){
+        if (object instanceof MapNotification) {
             onMapNotification((MapNotification) object);
         }
     }
@@ -144,7 +145,7 @@ public class Server extends Device implements ServerInterface {
     private void onMapNotification(MapNotification notification) {
         Log.d(logTag, "map notification received");
         String[] txt = notification.getNotification().split(" ");
-        if(txt.length == 2 && txt[1].equals("DEACTIVATED")){
+        if (txt.length == 2 && txt[1].equals("DEACTIVATED")) {
             game.deactivatePlayer(game.findPlayer(txt[0]));
         }
     }
@@ -154,36 +155,34 @@ public class Server extends Device implements ServerInterface {
 
         send(move);
         player.setMoved(true);
-        switch (game.tryNextRound()) {
-            case 1:
-                send(new MapNotification("NEXT_ROUND"));
-                printNotification("Runde " + game.getRound());
-                if(game.isRoundMrX() && game.isBotMrX()){
-                    final Handler handler = new Handler();
-                    final long start = SystemClock.uptimeMillis();
-                    final float d = 4000f;
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            long elapsed = SystemClock.uptimeMillis() - start;
-                            float t = elapsed / d;
-                            if (t < 1) {
-                                handler.postDelayed(this, 16);
-                            } else {
-                                moveBot();
-                            }
+        int result = game.tryNextRound();
+        if (result == 1) {
+            send(new MapNotification("NEXT_ROUND"));
+            printNotification("Runde " + game.getRound());
+            if (game.isRoundMrX() && game.isBotMrX()) {
+                final Handler handler = new Handler();
+                final long start = SystemClock.uptimeMillis();
+                final float d = 4000f;
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        long elapsed = SystemClock.uptimeMillis() - start;
+                        float t = elapsed / d;
+                        if (t < 1) {
+                            handler.postDelayed(this, 16);
+                        } else {
+                            moveBot();
                         }
-                    });
-                }
-                break;
-            case 0:
-                send(new MapNotification("END MisterX")); //MisterX hat gewonnen
-                printNotification("MisterX hat gewonnen");
-                break;
+                    }
+                });
+            }
+        } else if (result == 0) {
+            send(new MapNotification("END MisterX")); //MisterX hat gewonnen
+            printNotification("MisterX hat gewonnen");
         }
         if (gameObserver != null) {
             gameObserver.updateMove(move);
-        }else{
+        } else {
             player.setPosition(Points.POINTS[move.getField()]);
         }
     }
@@ -191,24 +190,24 @@ public class Server extends Device implements ServerInterface {
     public void moveBot() {
         Player bot = game.getBotMrX();
         bot.setMoved(true);
-        int position = Points.getIndex(bot.getPosition())+1;
+        int position = Points.getIndex(bot.getPosition()) + 1;
         Route route = (Route) Routes.getBotRoute(position, game.getPlayers())[1];
 
-        int r = (new Random()).nextInt(100) % 10;
+        int r = (new SecureRandom()).nextInt(100) % 10;
         Object[] randomRoute = Routes.getRandomRoute(position, route.getEndPoint());
         int newPosition;
-        if(route.getEndPoint() == position){
+        if (route.getEndPoint() == position) {
             newPosition = route.getStartPoint();
-        }else{
+        } else {
             newPosition = route.getEndPoint();
         }
-        Move move = new Move(bot.getNickname(), newPosition-1, r, randomRoute);
+        Move move = new Move(bot.getNickname(), newPosition - 1, r, randomRoute);
         send(move);
         game.setRoundMrX(false);
         if (gameObserver != null) {
             gameObserver.updateMove(move);
-        }else{
-            bot.setPosition(Points.POINTS[position-1]);
+        } else {
+            bot.setPosition(Points.POINTS[position - 1]);
         }
     }
 
@@ -225,7 +224,7 @@ public class Server extends Device implements ServerInterface {
         Log.d(logTag, "endpoint disconnected");
 
         //if game has started
-        if(game != null){
+        if (game != null) {
             Player lostPlayer = game.findPlayer(endpoint.getName());
             game.deactivatePlayer(lostPlayer);
             send(new MapNotification("PLAYER " + lostPlayer.getNickname() + " QUITTED"));

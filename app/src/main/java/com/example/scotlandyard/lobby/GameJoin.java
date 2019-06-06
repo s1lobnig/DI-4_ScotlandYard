@@ -39,6 +39,10 @@ public class GameJoin extends AppCompatActivity {
                     inputField.setError("Spielername darf keine Leerzeichen enthalten!");
                     enable = false;
                 }
+                if(nickname == "Bot"){
+                    inputField.setError("Spielername darf nicht Bot lauten!");
+                    enable = false;
+                }
                 if (enable) {
                     Intent intent = new Intent(GameJoin.this, GameList.class);
                     Player player = new Player(nickname);

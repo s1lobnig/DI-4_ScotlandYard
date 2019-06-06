@@ -1,20 +1,19 @@
 package com.example.scotlandyard;
 
-import com.example.scotlandyard.Player;
-import com.example.scotlandyard.R;
 import com.example.scotlandyard.map.Point;
 import com.example.scotlandyard.map.Points;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
 import java.io.Serializable;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class Game implements Serializable {
 
-    private static final Random random = new Random();
-    private static final int numRounds = 12;
+    private static final Random RANDOM = new SecureRandom();
+    private static final int NUM_ROUNDS = 12;
     private static final int[] PLAYER_ICONS = {
             R.drawable.player1,
             R.drawable.player2,
@@ -53,7 +52,7 @@ public class Game implements Serializable {
     }
 
     public static int getNumRounds() {
-        return numRounds;
+        return NUM_ROUNDS;
     }
 
     public String getGameName() {
@@ -116,6 +115,10 @@ public class Game implements Serializable {
         this.players = players;
     }
 
+    /**
+     * @return Player who is MrX
+     * returns null, if no MrX in the Game
+     */
     public Player getMrX(){
         for (Player p : players) {
             if(p.isMrX()){
@@ -125,6 +128,9 @@ public class Game implements Serializable {
         return null;
     }
 
+    /**
+     * @return Bot if bot is anabled an exists, if not then null will be returned
+     */
     public Player getBotMrX() {
         if(botMrX) {
             return getMrX();
@@ -132,6 +138,11 @@ public class Game implements Serializable {
         return null;
     }
 
+    /**
+     * Finds Player with given name in the game
+     * @param nickname name of player
+     * @return Player if one with this name exists, otherwise returns null
+     */
     public Player findPlayer(String nickname) {
         for (Player p : players) {
             if (p.getNickname().equals(nickname)) {
@@ -141,6 +152,10 @@ public class Game implements Serializable {
         return null;
     }
 
+    /**
+     * checks if a round is finished
+     * @return true if round has end and next round can start
+     */
     private boolean isRoundFinished() {
         for (Player p : players) {
             if (p.isActive() && !p.isMoved()) {
@@ -150,6 +165,13 @@ public class Game implements Serializable {
         return true;
     }
 
+    /**
+     * deactivates the given player and returns a value to check if next round can be started
+     * @param player
+     * @return -1 if round has not finished
+     * 1 if round has finished
+     * 0 if game ends because last round was reached
+     */
     public int deactivatePlayer(Player player){
         if(player.isMrX()){
             setBotMrX(true);
@@ -173,7 +195,7 @@ public class Game implements Serializable {
             }
         }
         if (isRoundFinished()) {
-            if (round < numRounds) {
+            if (round < NUM_ROUNDS) {
                 /*if(this.isMrXFound()){
                     return 2;
                 }*/
@@ -208,6 +230,9 @@ public class Game implements Serializable {
         return false;
     }
 
+    /**
+     * gives all player of the game icon, position and tickets
+     */
     public void givePlayerPositionAndIcon() {
         Player player;
         for (int i = 0; i < players.size(); i++) {
@@ -223,7 +248,7 @@ public class Game implements Serializable {
 
     //returns a free position
     private LatLng getNewPlayerPosition() {
-        int position = (new Random()).nextInt(Points.getPoints().length);
+        int position = RANDOM.nextInt(Points.getPoints().length);
         Point point = Points.POINTS[position];
         for (Player p : players) {
             if (point.equals(p.getPosition())) {
