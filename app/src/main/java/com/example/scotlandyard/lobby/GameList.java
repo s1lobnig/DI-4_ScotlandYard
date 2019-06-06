@@ -194,7 +194,7 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
         @NonNull
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-            ViewHolder mainViewHolder = new ViewHolder();
+            GameListViewHolder mainViewHolder = new GameListViewHolder();
             final Endpoint game = getItem(position);
 
 
@@ -219,18 +219,12 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
             }
 
             //set Text from stored variables to views
-            mainViewHolder = (ViewHolder) convertView.getTag();
+            mainViewHolder = (GameListViewHolder) convertView.getTag();
             mainViewHolder.gameName.setText(game.getName());
 
             //returns finished view
             return convertView;
 
         }
-    }
-
-    //what i need in my view
-    public class ViewHolder {
-        TextView gameName;
-        Button playGame;
     }
 }
