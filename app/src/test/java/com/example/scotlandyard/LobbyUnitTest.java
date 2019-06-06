@@ -119,7 +119,7 @@ public class LobbyUnitTest {
         lobby.addPlayer(p1);
         lobby.addPlayer(p2);
         lobby.addPlayer(p3);
-        lobby.chooseMrX(true);
+        lobby.chooseMrX(false);
         Assert.assertTrue(lobby.getPlayerList().get(1).isMrX());
     }
 }
