@@ -441,7 +441,7 @@ public class GameMap extends AppCompatActivity
         }
         visualizeTickets();
 
-        if (player.isMrX() && (player.equals(myPlayer) || device.getGame().isBotMrX())) {
+        if (player.isMrX() && ((player.equals(myPlayer) || (device.getGame().isBotMrX() && Device.isServer())))) {
             int lastTurn = device.getRoadMap().getNumberOfEntries();
             Entry entry = MovingLogic.getRoadMapEntry(lastTurn, newLocation, ticket);
             if (Device.isServer()) {
