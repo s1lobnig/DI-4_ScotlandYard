@@ -582,10 +582,10 @@ public class GameMap extends AppCompatActivity
     private void setFields() {
         for (Point p : Points.getPoints()) {
             LatLng p_LatLng = p.getLatLng();
-            Drawable myDrawable = getResources().getDrawable(p.getIcon());
-            Bitmap bmp = ((BitmapDrawable) myDrawable).getBitmap();
-            BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(bmp);
-            mMap.addMarker(new MarkerOptions().position(p_LatLng).icon(icon).anchor(0.5f, 0.5f));
+            MarkerOptions markerOptions = new MarkerOptions()
+                    .position(p_LatLng)
+                    .icon(BitmapDescriptorFactory.fromResource(p.getIcon()));
+            mMap.addMarker(markerOptions.anchor(0.5f, 0.5f));
         }
         drawRoutes();
     }
