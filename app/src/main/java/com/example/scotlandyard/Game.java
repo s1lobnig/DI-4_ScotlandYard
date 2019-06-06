@@ -217,7 +217,7 @@ public class Game implements Serializable {
             player.setPosition(new Point(position.latitude, position.longitude));
 
             //setTickets for every player
-            player.setTickets(this, player);
+            player.setTickets(this);
         }
     }
 

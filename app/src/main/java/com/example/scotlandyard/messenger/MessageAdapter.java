@@ -78,8 +78,3 @@ public class MessageAdapter extends BaseAdapter {
 
 }
 
-class MessageViewHolder {
-    protected TextView name;
-    protected TextView messageBody;
-}
-

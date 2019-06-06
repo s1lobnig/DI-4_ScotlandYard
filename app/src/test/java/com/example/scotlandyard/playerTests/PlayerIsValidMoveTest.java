@@ -28,7 +28,7 @@ public class PlayerIsValidMoveTest {
         player.setPosition(Points.getPoints()[29]);
         player2 = new Player("Tim");
         player2.setPosition(Points.getPoints()[65]);
-        Player.setTickets(game, player);
+        player.setTickets(game);
 
         ArrayList<Player> players = new ArrayList<>();
         players.add(player);

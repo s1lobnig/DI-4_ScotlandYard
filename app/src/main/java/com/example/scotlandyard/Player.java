@@ -94,11 +94,9 @@ public class Player implements Serializable {
         this.marker = marker;
     }
 
-    public static void setTickets(Game game, Player player) {
-        HashMap<Integer, Integer> tickets;
+    public void setTickets(Game game) {
         //set Ticket for Mr. X
-        if (player.isMrX()) {
-            tickets = player.getTickets();
+        if (isMrX) {
             tickets.put(R.string.PEDESTRIAN_TICKET_KEY, Integer.MAX_VALUE);
             tickets.put(R.string.BICYCLE_TICKET_KEY, Integer.MAX_VALUE);
             tickets.put(R.string.BUS_TICKET_KEY, Integer.MAX_VALUE);
@@ -107,8 +105,7 @@ public class Player implements Serializable {
             tickets.put(R.string.BLACK_TICKET_KEY, game.getPlayers().size() - 1);
 
         } else {
-            //set Tickets for all other players
-            tickets = player.getTickets();
+            //set Tickets for detectives
             tickets.put(R.string.PEDESTRIAN_TICKET_KEY, 5);
             tickets.put(R.string.BICYCLE_TICKET_KEY, 4);
             tickets.put(R.string.BUS_TICKET_KEY, 2);
@@ -124,9 +121,8 @@ public class Player implements Serializable {
             tickets.put(key, tickets.get(key) - 1);
     }
 
-    public static boolean checkForValidTicket(Player player, int vehicle) {
+    public boolean checkForValidTicket(int vehicle) {
         boolean validTicket;
-        HashMap<Integer, Integer> tickets = player.getTickets();
         if (vehicle == 0 && tickets.get(R.string.PEDESTRIAN_TICKET_KEY) > 0) {
             validTicket = true;
         } else if (vehicle == 1 && tickets.get(R.string.BICYCLE_TICKET_KEY) > 0) {
@@ -279,7 +275,7 @@ public class Player implements Serializable {
         if (penalty > 0 && (int) (routeToTake[2]) == 1) {
             return 5;
         }
-        boolean enoughTickets = checkForValidTicket(this, (int) routeToTake[2]);
+        boolean enoughTickets = checkForValidTicket((int) routeToTake[2]);
         if (!enoughTickets) {
             checkAmountOfTickets();
             if (!isActive) {
