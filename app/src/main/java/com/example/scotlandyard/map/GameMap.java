@@ -175,7 +175,7 @@ public class GameMap extends AppCompatActivity
     protected void onStop() {
         super.onStop();
 
-        device.removeGameObserver();
+        Device.getInstance().removeGameObserver();
     }
 
     /**
@@ -340,13 +340,13 @@ public class GameMap extends AppCompatActivity
                 Toast.makeText(GameMap.this, "Nicht genügend Tickets", Snackbar.LENGTH_LONG).show();
                 return false;
             case 7:
-                Toast.makeText(GameMap.this, "KEINE TICKETS MEHR. Du wurde deaktiviert", Snackbar.LENGTH_LONG).show();
+                Toast.makeText(GameMap.this, "KEINE TICKETS MEHR. Du wurdest deaktiviert", Snackbar.LENGTH_LONG).show();
                 if(!Device.isServer()){
                     device.send(new MapNotification(myPlayer.getNickname() + " DEACTIVATED"));
                 }
                 return false;
             case 8:
-                Toast.makeText(GameMap.this, "KEIN ZUG MEHR MÖGLICH. Du wurde deaktiviert.", Snackbar.LENGTH_LONG).show();
+                Toast.makeText(GameMap.this, "KEIN ZUG MEHR MÖGLICH. Du wurdest deaktiviert.", Snackbar.LENGTH_LONG).show();
                 if(!Device.isServer()){
                     device.send(new MapNotification(myPlayer.getNickname() + " DEACTIVATED"));
                 }
@@ -691,11 +691,15 @@ public class GameMap extends AppCompatActivity
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        myPlayer = null;
+
         if (device.getGame().isBotMrX()) {
             Player bot = device.getGame().findPlayer("Bot");
             Device.getLobby().getPlayerList().remove(bot);
         }
-        finish();
+        for (Player player : device.getGame().getPlayers()) {
+            player.resetPlayer();
+        }
+        device = null;
+        myPlayer = null;
     }
 }

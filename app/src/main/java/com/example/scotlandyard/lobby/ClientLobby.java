@@ -136,10 +136,4 @@ public class ClientLobby extends AppCompatActivity implements ClientLobbyInterfa
         ((ArrayAdapter) connectedPlayersListAdapter).notifyDataSetChanged();
 
     }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
-    }
 }

@@ -24,7 +24,6 @@ public class Player implements Serializable {
     private HashMap<Integer, Integer> tickets; //Hashmap for storing tickets
     private boolean hasCheated;
     private boolean hasCheatedThisRound;
-
     private int penalty;
 
     public Player(String nickname) {
@@ -294,5 +293,19 @@ public class Player implements Serializable {
         }
 
         return 0;
+    }
+
+    public void resetPlayer() {
+        isActive = true;
+        moved = false;
+        icon = 0;
+        position = null;
+        marker = null;
+        isMrX = false;
+        wantsToBeMrX = false;
+        tickets = new HashMap<>();
+        hasCheated = false;
+        hasCheatedThisRound = false;
+        penalty = 0;
     }
 }
