@@ -50,6 +50,7 @@ public interface GameInterface {
 
     /**
      * function is called when a game is received
+     *
      */
-    void showNewGame();
+    void showNewGame(Game game);
 }

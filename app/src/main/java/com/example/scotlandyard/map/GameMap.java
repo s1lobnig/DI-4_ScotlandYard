@@ -653,9 +653,10 @@ public class GameMap extends AppCompatActivity
     }
 
     @Override
-    public void showNewGame() {
+    public void showNewGame(Game game) {
         if(mMap != null){
             deleteMarker();
+            Device.getInstance().setGame(game);
             setupGame();
             //ToDo: show current round
         }

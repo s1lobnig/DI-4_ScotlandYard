@@ -17,6 +17,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -277,7 +278,9 @@ public class ServerService extends ConnectionService{
      * @param endpoint     endpoint to send to
      */
     public void send(Object object, Endpoint endpoint) {
-
+        Set<String> set = new HashSet<>();
+        set.add(endpoint.getId());
+        send(object, set);
     }
 
     /**

@@ -178,10 +178,11 @@ public class Client extends Device implements ClientInterface {
 
     private void onGame(Game game) {
         Log.d(logTag, "game received");
-        this.game = game;
+
         if (gameObserver != null) {
-            gameObserver.showNewGame();
+            gameObserver.showNewGame(game);
         }
+        this.game = game;
         if (lobbyObserver != null) {
             lobbyObserver.startGame(game);
         }
