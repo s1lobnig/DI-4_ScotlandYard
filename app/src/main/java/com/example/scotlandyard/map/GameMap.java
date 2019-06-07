@@ -816,7 +816,7 @@ public class GameMap extends AppCompatActivity
         myPlayer = null;
         if (device.getGame().isBotMrX()) {
             Player bot = ManageGameData.findPlayer(device.getGame(), "Bot");
-            Device.getLobby().getPlayerList().remove(bot);
+            Device.getInstance().getLobby().getPlayerList().remove(bot);
         }
         finish();
     }
