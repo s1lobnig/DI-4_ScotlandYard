@@ -13,6 +13,7 @@ public class Lobby implements Serializable {
     private boolean randomMrX;
     private boolean botMrX;
     private int maxPlayers;
+    private Random random;
 
     public Lobby(String lobbyName, ArrayList<Player> playerList, boolean randomEvents, boolean randomMrX, boolean botMrX, int maxPlayers) {
         this.lobbyName = lobbyName;
@@ -21,6 +22,7 @@ public class Lobby implements Serializable {
         this.randomMrX = randomMrX;
         this.maxPlayers = maxPlayers;
         this.botMrX = botMrX;
+        random = new Random();
     }
 
     public ArrayList<Player> getPlayerList() {
@@ -89,7 +91,6 @@ public class Lobby implements Serializable {
         Random random = new Random();
         if (chooseMrXRandomly) {
             playerList.get(random.nextInt(playerList.size())).setMrX(true);
-            return;
         } else {
             ArrayList<Integer> candidatesForMrX = new ArrayList<>();
             for (int i = 0; i < playerList.size(); i++) {
@@ -98,7 +99,6 @@ public class Lobby implements Serializable {
             }
             if (candidatesForMrX.isEmpty()) {
                 playerList.get(0).setMrX(true);
-                return;
             } else
                 playerList.get(candidatesForMrX.get(random.nextInt(candidatesForMrX.size()))).setMrX(true);
         }

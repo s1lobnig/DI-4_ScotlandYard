@@ -2,14 +2,10 @@ package com.example.scotlandyard.control;
 
 import android.util.Log;
 
-import com.example.scotlandyard.Player;
 import com.example.scotlandyard.connection.ConnectionService;
 import com.example.scotlandyard.lobby.Game;
 import com.example.scotlandyard.lobby.Lobby;
-import com.example.scotlandyard.map.ManageGameData;
 import com.example.scotlandyard.map.MapNotification;
-import com.example.scotlandyard.map.Point;
-import com.example.scotlandyard.map.Points;
 import com.example.scotlandyard.map.motions.Move;
 import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.map.roadmap.RoadMap;
@@ -17,7 +13,6 @@ import com.example.scotlandyard.messenger.Message;
 import com.google.android.gms.nearby.connection.ConnectionsClient;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 /**
  * class Device is representing a device in the game, it can be server or client
@@ -36,7 +31,7 @@ public class Device {
     MessengerInterface messengerObserver;
     GameInterface gameObserver;
     ConnectionService connectionService;
-    static Lobby lobby;
+    Lobby lobby;
     Game game;
     RoadMap roadMap;
     String nickname;
@@ -53,7 +48,7 @@ public class Device {
      * @return singleton of device
      * @throws IllegalStateException if singleton is not set
      */
-    public static Device getInstance() throws IllegalStateException {
+    public static Device getInstance() {
         if (!isSingletonSet()) {
             throw new IllegalStateException("singleton not set");
         }
@@ -68,7 +63,7 @@ public class Device {
      * @return singleton of device
      * @throws IllegalStateException if singleton is already set
      */
-    public static Device setServer(String endpointName, ConnectionsClient connectionsClient) throws IllegalStateException {
+    public static Device setServer(String endpointName, ConnectionsClient connectionsClient) {
         if (singleton != null) {
             throw new IllegalStateException("singleton already set");
         }
@@ -84,7 +79,7 @@ public class Device {
      * @return singleton of device
      * @throws IllegalStateException if singleton is already set
      */
-    public static Device setClient(String endpointName, ConnectionsClient connectionsClient) throws IllegalStateException {
+    public static Device setClient(String endpointName, ConnectionsClient connectionsClient) {
         if (singleton != null) {
             throw new IllegalStateException("singleton already set");
         }
@@ -114,16 +109,13 @@ public class Device {
 
     /**
      * function for adding a message observer
-     *
-     * @param messengerInterface message observer
-     * @throws IllegalStateException if already added
+     * @param messengerInterface        message observer
      */
-    public void addMessengerObserver(MessengerInterface messengerInterface) throws IllegalStateException {
-        if (messengerObserver != null) {
-            throw new IllegalStateException("messenger observer already added");
+    public void addMessengerObserver(MessengerInterface messengerInterface) {
+        if (messengerObserver == null) {
+            messengerObserver = messengerInterface;
+            Log.d(logTag, "added MessengerInterface");
         }
-        messengerObserver = messengerInterface;
-        Log.d(logTag, "added MessengerInterface");
     }
 
     /**
@@ -136,16 +128,13 @@ public class Device {
 
     /**
      * function for adding a game observer
-     *
-     * @param gameInterface game observer
-     * @throws IllegalStateException if already set
+     * @param gameInterface             game observer
      */
-    public void addGameObserver(GameInterface gameInterface) throws IllegalStateException {
-        if (gameObserver != null) {
-            throw new IllegalStateException("game observer already added");
+    public void addGameObserver(GameInterface gameInterface) {
+        if (gameObserver == null) {
+            gameObserver = gameInterface;
+            Log.d(logTag, "added GameInterface");
         }
-        gameObserver = gameInterface;
-        Log.d(logTag, "added GameInterface");
     }
 
     /**
@@ -217,7 +206,7 @@ public class Device {
         this.lobby = lobby;
     }
 
-    public static Lobby getLobby() {
+    public Lobby getLobby() {
         return lobby;
     }
 

@@ -336,8 +336,8 @@ public class GameMap extends AppCompatActivity
         setFields();
         //if gmae has not started
         if (Device.isServer() && myPlayer == null) {
-            device.setGame(ManageGameData.makeGame(Device.getLobby()));
-            randomEventsEnabled = Device.getLobby().isRandomEvents();
+            device.setGame(ManageGameData.makeGame(Device.getInstance().getLobby()));
+            randomEventsEnabled = Device.getInstance().getLobby().isRandomEvents();
             device.sendGame();
             setupGame();
             visualizeTickets();
@@ -713,10 +713,10 @@ public class GameMap extends AppCompatActivity
     @Override
     public void showDisconnected(Endpoint endpoint) {
         if (Device.isServer()) {
-            Toast.makeText(GameMap.this, "Verbindung zu Player " + endpoint.getName() + " verlohren!", Toast.LENGTH_LONG).show();
+            Toast.makeText(GameMap.this, "Verbindung zu Player " + endpoint.getName() + " verloren!", Toast.LENGTH_LONG).show();
             //TODO: Server lost!
         } else {
-            Toast.makeText(GameMap.this, "Verbindung zu Server verlohren!", Toast.LENGTH_LONG).show();
+            Toast.makeText(GameMap.this, "Verbindung zu Server verloren!", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -748,7 +748,27 @@ public class GameMap extends AppCompatActivity
     }
 
     @Override
-    public void onResume() {
+    public void showReconnected(String endpointName) {
+        Toast.makeText(GameMap.this, "Verbindung zu " + endpointName + " wiederhergestellt!", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showReconnectFailed(String endpointName) {
+        Toast.makeText(GameMap.this, "Verbindung zu " + endpointName + " konnte nicht wiederhergestellt werden!", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showNewGame(Game game) {
+        if(mMap != null){
+            deleteMarker();
+            Device.getInstance().setGame(game);
+            setupGame();
+            //ToDo: show current round
+        }
+    }
+
+    @Override
+    public void onResume(){
         super.onResume();
         try {
             Device.getInstance().addGameObserver(this);

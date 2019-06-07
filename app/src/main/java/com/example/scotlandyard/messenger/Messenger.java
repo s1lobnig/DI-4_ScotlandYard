@@ -113,19 +113,30 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
 
     @Override
     public void showDisconnected(Endpoint endpoint) {
-        //TODO
+        Toast.makeText(Messenger.this, "Verbindung zu " + endpoint.getName() + " verloren!", Toast.LENGTH_LONG).show();
         Log.d(logTag, "should not be called");
     }
 
     @Override
     public void showSendingFailed(Object object) {
-        //TODO
+        Toast.makeText(Messenger.this, message + " konnte nicht gesendet werden!", Toast.LENGTH_LONG).show();
+        //TODO give possibility to sync the chat again
         Log.d(logTag, "sending has failed");
     }
 
     @Override
     public void onReceivedToast(String toast) {
         Toast.makeText(Messenger.this, toast, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showReconnected(String endpointName) {
+        Toast.makeText(Messenger.this, "Verbindung zu " + endpointName + " wiederhergestellt!", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showReconnectFailed(String endpointName) {
+        Toast.makeText(Messenger.this, "Verbindung zu " + endpointName + " konnte nicht wiederhergestellt werden!", Toast.LENGTH_LONG).show();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.example.scotlandyard.control;
 
+import android.util.ArraySet;
 import android.util.Log;
 
 import com.example.scotlandyard.Player;
@@ -8,7 +9,6 @@ import com.example.scotlandyard.connection.ServerInterface;
 import com.example.scotlandyard.connection.ServerService;
 import com.example.scotlandyard.map.ManageGameData;
 import com.example.scotlandyard.map.MapNotification;
-import com.example.scotlandyard.map.Point;
 import com.example.scotlandyard.map.Points;
 import com.example.scotlandyard.map.Route;
 import com.example.scotlandyard.map.Routes;
@@ -18,6 +18,8 @@ import com.example.scotlandyard.messenger.Message;
 import com.google.android.gms.nearby.connection.ConnectionsClient;
 
 import java.util.Random;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -27,9 +29,11 @@ import java.util.Set;
 public class Server extends Device implements ServerInterface {
     private String logTag = "Server";
     private ServerLobbyInterface lobbyObserver;
+    private ArrayList<Endpoint> lost;
 
     Server(String endpointName, ConnectionsClient connectionsClient) {
         connectionService = new ServerService(this, endpointName, connectionsClient);
+        lost = new ArrayList<>();
     }
 
     /**
@@ -38,12 +42,11 @@ public class Server extends Device implements ServerInterface {
      * @param lobbyInterface lobby observer
      * @throws IllegalStateException if already set
      */
-    public void addLobbyObserver(ServerLobbyInterface lobbyInterface) throws IllegalStateException {
-        if (lobbyObserver != null) {
-            throw new IllegalStateException("server lobby observer already added");
+    public void addLobbyObserver(ServerLobbyInterface lobbyInterface) {
+        if (lobbyObserver == null) {
+            lobbyObserver = lobbyInterface;
+            Log.d(logTag, "added ServerLobbyInterface");
         }
-        lobbyObserver = lobbyInterface;
-        Log.d(logTag, "added ServerLobbyInterface");
     }
 
     /**
@@ -64,6 +67,15 @@ public class Server extends Device implements ServerInterface {
         Log.d(logTag, "failed advertising");
         if (lobbyObserver != null) {
             lobbyObserver.showFailedAdvertising();
+        }
+        if (!lost.isEmpty()) {
+            if (gameObserver != null) {
+                gameObserver.showReconnectFailed(lost.get(lost.size()-1).getName());
+            }
+            if (messengerObserver != null) {
+                messengerObserver.showReconnectFailed(lost.get(lost.size()-1).getName());
+            }
+            lost.remove(lost.get(lost.size()-1));
         }
     }
 
@@ -90,6 +102,13 @@ public class Server extends Device implements ServerInterface {
                 Log.d(logTag, "lobby full");
                 ((ServerService) connectionService).rejectConnection(endpoint);
                 ((ServerService) connectionService).stopAdvertising();
+            }
+        }
+        if (!lost.isEmpty()) {
+            if (lost.contains(endpoint)) {
+                ((ServerService)connectionService).acceptConnection(endpoint);
+            } else {
+                ((ServerService)connectionService).rejectConnection(endpoint);
             }
         }
     }
@@ -161,6 +180,8 @@ public class Server extends Device implements ServerInterface {
                 send(new MapNotification("END MisterX")); //MisterX hat gewonnen
                 printNotification("MisterX hat gewonnen");
                 break;
+            default:
+                Log.d(logTag, "switch default");
         }
         if (gameObserver != null) {
             gameObserver.updateMove(move);
@@ -199,6 +220,15 @@ public class Server extends Device implements ServerInterface {
         if (lobbyObserver != null) {
             lobbyObserver.showConnectionFailed(endpoint.getName());
         }
+        if (!lost.isEmpty()) {
+            lost.remove(endpoint);
+            if (gameObserver != null) {
+                gameObserver.showReconnectFailed(endpoint.getName());
+            }
+            if (messengerObserver != null) {
+                messengerObserver.showReconnectFailed(endpoint.getName());
+            }
+        }
     }
 
     @Override
@@ -212,7 +242,6 @@ public class Server extends Device implements ServerInterface {
             send(new MapNotification("PLAYER " + lostPlayer.getNickname() + " QUITTED"));
             printNotification(lostPlayer.getNickname() + " hat das Spiel verlassen");
         }
-
         if (gameObserver != null) {
             gameObserver.showDisconnected(endpoint);
         }
@@ -223,6 +252,8 @@ public class Server extends Device implements ServerInterface {
             lobby.removePlayer(endpoint.getName());
             lobbyObserver.updateLobby(lobby);
         }
+        lost.add(endpoint);
+        ((ServerService)connectionService).startAdvertising();
     }
 
     @Override
@@ -230,6 +261,15 @@ public class Server extends Device implements ServerInterface {
         Log.d(logTag, "accepting failed");
         if (lobbyObserver != null) {
             lobbyObserver.showAcceptingFailed(endpoint.getName());
+        }
+        if (!lost.isEmpty()) {
+            lost.remove(endpoint);
+            if (gameObserver != null) {
+                gameObserver.showReconnectFailed(endpoint.getName());
+            }
+            if (messengerObserver != null) {
+                messengerObserver.showReconnectFailed(endpoint.getName());
+            }
         }
     }
 
@@ -250,11 +290,27 @@ public class Server extends Device implements ServerInterface {
     @Override
     public void onConnected(Endpoint endpoint) {
         Log.d(logTag, "Connection with a new endpoint established.");
-        Player newPlayer = new Player(endpoint.getName());
-        lobby.addPlayer(newPlayer);
-        connectionService.send(lobby);
         if (lobbyObserver != null) {
+            Player newPlayer = new Player(endpoint.getName());
+            lobby.addPlayer(newPlayer);
+            connectionService.send(lobby);
             lobbyObserver.updateLobby(lobby);
+        }
+        if (!lost.isEmpty()) {
+            lost.remove(endpoint);
+            if (gameObserver != null) {
+                gameObserver.showReconnected(endpoint.getName());
+            }
+            if (messengerObserver != null) {
+                messengerObserver.showReconnected(endpoint.getName());
+            }
+            //activate player in game (let him make moves again)
+            Player player = ManageGameData.findPlayer(game, endpoint.getName());
+            player.setActive(true);
+            ((ServerService)connectionService).send(this.game, endpoint);
+            if (player.isMrX()){
+                //ToDo: deactivate bot
+            }
         }
     }
 
