@@ -22,6 +22,7 @@ import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
 import com.example.scotlandyard.MainActivity;
+import com.example.scotlandyard.control.Client;
 import com.example.scotlandyard.control.Server;
 import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.control.GameInterface;
@@ -284,7 +285,7 @@ public class GameMap extends AppCompatActivity
             roadMapDialog.show(getSupportFragmentManager(), "RoadMapDisplay");
         }else if(id == R.id.nav_logout){
             if(!device.isServer()){
-                //TODO: disconnect device
+                ((Client) Device.getInstance()).disconnect();
                 Toast.makeText(this, myPlayer.getNickname() + " hat das Spiel erlassen", Snackbar.LENGTH_LONG).show();
                 myPlayer.setActive(false);
                 intent = new Intent(this, MainActivity.class);
