@@ -21,6 +21,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
+import com.example.scotlandyard.MainActivity;
 import com.example.scotlandyard.control.Server;
 import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.control.GameInterface;
@@ -127,7 +128,7 @@ public class GameMap extends AppCompatActivity
         blackTickets.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final Dialog dialog = createDialog();
+                final Dialog dialog = new Dialog(GameMap.this);
                 dialog.setContentView(R.layout.black_ticket_dialog);
                 Button useTicket = (Button) dialog.findViewById(R.id.btnUseTicket);
                 Button cancel = (Button) dialog.findViewById(R.id.btnCancel);
@@ -159,7 +160,7 @@ public class GameMap extends AppCompatActivity
         doubleTickets.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final Dialog dialog = createDialog();
+                final Dialog dialog = new Dialog(GameMap.this);
                 dialog.setContentView(R.layout.double_ticket_dialog);
                 Button useTicket = (Button) dialog.findViewById(R.id.btnUseTicket);
                 Button cancel = (Button) dialog.findViewById(R.id.btnCancel);
@@ -219,14 +220,6 @@ public class GameMap extends AppCompatActivity
         fragmentManager.beginTransaction().replace(R.id.map, fragment).commit();
     }
 
-    private Dialog createDialog() {
-        //open Dialog and ask for usage of this ticket
-        final Dialog dialog = new Dialog(GameMap.this);
-        TextView title = dialog.findViewById(R.id.txtTitle);
-
-        return dialog;
-    }
-
     @Override
     protected void onStop() {
         super.onStop();
@@ -283,14 +276,22 @@ public class GameMap extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.map, fragment).commit();
         } else if (id == R.id.nav_overview) {
             intent = new Intent(this, PlayersOverview.class);
-        } else if (id == R.id.nav_settings) {
-            intent = new Intent(this, Settings.class);
         } else if (id == R.id.nav_road_map) {
             DialogFragment roadMapDialog = new RoadMapDialog();
             Bundle args = new Bundle();
             args.putSerializable("ROAD_MAP", device.getRoadMap());
             roadMapDialog.setArguments(args);
             roadMapDialog.show(getSupportFragmentManager(), "RoadMapDisplay");
+        }else if(id == R.id.nav_logout){
+            if(!device.isServer()){
+                //TODO: disconnect device
+                Toast.makeText(this, myPlayer.getNickname() + " hat das Spiel erlassen", Snackbar.LENGTH_LONG).show();
+                myPlayer.setActive(false);
+                intent = new Intent(this, MainActivity.class);
+            }else{
+                //Wäre ein Problem xD
+            }
+
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -486,7 +487,9 @@ public class GameMap extends AppCompatActivity
             ticket = R.drawable.ticket_black;
             player.setSpecialMrXMoves(false, 0);
             player.decreaseNumberOfTickets(R.string.BLACK_TICKET_KEY);
-        } else {
+        } else if(player.getSpecialMrXMoves()[0] && player.getTickets().get(R.string.DOUBLE_TICKET_KEY).intValue() > 0){
+            player.decreaseNumberOfTickets(R.string.DOUBLE_TICKET_KEY);
+        } else{
             ticket = iconAndTicket[1];
         }
 

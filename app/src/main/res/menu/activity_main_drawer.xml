@@ -10,19 +10,19 @@
         <item
             android:id="@+id/nav_game"
             android:icon="@android:drawable/ic_menu_mapmode"
-            android:title="Game" />
+            android:title="Karte" />
         <item
             android:id="@+id/nav_overview"
             android:icon="@android:drawable/ic_menu_info_details"
-            android:title="Player Overview" />
+            android:title="Spielerübersicht" />
         <item
             android:id="@+id/nav_road_map"
             android:icon="@android:drawable/ic_dialog_map"
             android:title="Mr.X's Fahrplan" />
         <item
-            android:id="@+id/nav_settings"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Settings" />
+            android:id="@+id/nav_logout"
+            android:icon="@android:drawable/ic_lock_power_off"
+            android:title="Spiel verlassen" />
     </group>
 
 </menu>

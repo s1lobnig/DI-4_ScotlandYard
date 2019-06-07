@@ -3,6 +3,7 @@ package com.example.scotlandyard.control;
 import android.util.Log;
 
 import com.example.scotlandyard.Player;
+import com.example.scotlandyard.R;
 import com.example.scotlandyard.connection.ClientInterface;
 import com.example.scotlandyard.connection.ClientService;
 import com.example.scotlandyard.connection.Endpoint;
