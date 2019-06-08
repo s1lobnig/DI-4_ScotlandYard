@@ -68,8 +68,8 @@ public class ServerLobby extends AppCompatActivity implements ServerLobbyInterfa
             @Override
             public void onClick(View v) {
                 Log.d(logTag, "Loading game map.");
-                if(Device.getLobby().isBotMrX()) {
-                    Device.getLobby().addPlayer(new Player("Bot"));
+                if(Device.getInstance().getLobby().isBotMrX()) {
+                    Device.getInstance().getLobby().addPlayer(new Player("Bot"));
                 }
 
                 Intent intent = new Intent(ServerLobby.this, GameMap.class);

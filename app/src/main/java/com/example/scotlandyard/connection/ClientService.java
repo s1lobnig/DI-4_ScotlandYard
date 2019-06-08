@@ -26,7 +26,6 @@ import java.util.Map;
  * discoveredEndpoints      list of current discovered endpoints
  * connection               current active connection
  * client                   interface to client activity
- * singleton                Singleton of ClientService
  */
 public class ClientService extends ConnectionService {
     private String logTag;
