@@ -12,6 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.scotlandyard.Game;
 import com.example.scotlandyard.control.Client;
 import com.example.scotlandyard.control.ClientLobbyInterface;
 import com.example.scotlandyard.control.Device;
@@ -134,11 +135,5 @@ public class ClientLobby extends AppCompatActivity implements ClientLobbyInterfa
         players.addAll(lobby.getPlayerList());
         ((ArrayAdapter) connectedPlayersListAdapter).notifyDataSetChanged();
 
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
     }
 }

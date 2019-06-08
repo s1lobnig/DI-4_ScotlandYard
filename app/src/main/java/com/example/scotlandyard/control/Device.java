@@ -3,7 +3,7 @@ package com.example.scotlandyard.control;
 import android.util.Log;
 
 import com.example.scotlandyard.connection.ConnectionService;
-import com.example.scotlandyard.lobby.Game;
+import com.example.scotlandyard.Game;
 import com.example.scotlandyard.lobby.Lobby;
 import com.example.scotlandyard.map.MapNotification;
 import com.example.scotlandyard.map.motions.Move;

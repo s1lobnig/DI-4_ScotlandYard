@@ -1,13 +1,13 @@
 package com.example.scotlandyard.control;
 
-import android.util.ArraySet;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.connection.ServerInterface;
 import com.example.scotlandyard.connection.ServerService;
-import com.example.scotlandyard.map.ManageGameData;
 import com.example.scotlandyard.map.MapNotification;
 import com.example.scotlandyard.map.Points;
 import com.example.scotlandyard.map.Route;
@@ -17,10 +17,8 @@ import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.messenger.Message;
 import com.google.android.gms.nearby.connection.ConnectionsClient;
 
+import java.security.SecureRandom;
 import java.util.Random;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * class representing a server in the app
@@ -139,7 +137,7 @@ public class Server extends Device implements ServerInterface {
             if (messengerObserver != null) {
                 messengerObserver.updateMessages(messageList);
             }
-            if(gameObserver != null){
+            if (gameObserver != null) {
                 gameObserver.onMessage();
             }
         }
@@ -148,6 +146,7 @@ public class Server extends Device implements ServerInterface {
             manageMove((Move) object);
         }
         if (object instanceof Entry) {
+            Log.d(logTag, "roadmap entry received");
             Entry entry = (Entry) object;
             roadMap.addEntry(entry);
             if (!game.getPlayers().get(0).isMrX()) {
@@ -155,37 +154,52 @@ public class Server extends Device implements ServerInterface {
                 send(entry);
             }
         }
+        if (object instanceof MapNotification) {
+            onMapNotification((MapNotification) object);
+        }
+    }
 
+    private void onMapNotification(MapNotification notification) {
+        Log.d(logTag, "map notification received");
+        String[] txt = notification.getNotification().split(" ");
+        if (txt.length == 2 && txt[1].equals("DEACTIVATED")) {
+            game.deactivatePlayer(game.findPlayer(txt[0]));
+        }
     }
 
     private void manageMove(Move move) {
-        Player player = ManageGameData.findPlayer(this.game, move.getNickname());
+        Player player = game.findPlayer(move.getNickname());
 
-        //if it is not players turn -> ignore move
-        if (player.isMoved() || (player.isMrX() && !game.isRoundMrX()) || (!player.isMrX() && game.isRoundMrX())) {
-            send(new MapNotification("Ein anderer Spieler ist noch nicht gezogen. Du musst noch warten."));
-            return;
-        }
         send(move);
         player.setMoved(true);
-        switch (ManageGameData.tryNextRound(game)) {
-            case 1:
-                send(new MapNotification("NEXT_ROUND"));
-                printNotification("Runde " + game.getRound());
-                if(game.isRoundMrX() && game.isBotMrX()){
-                    moveBot();
-                }
-                break;
-            case 0:
-                send(new MapNotification("END MisterX")); //MisterX hat gewonnen
-                printNotification("MisterX hat gewonnen");
-                break;
-            default:
-                Log.d(logTag, "switch default");
+        int result = game.tryNextRound();
+        if (result == 1) {
+            send(new MapNotification("NEXT_ROUND"));
+            printNotification("Runde " + game.getRound());
+            if (game.isRoundMrX() && game.isBotMrX()) {
+                final Handler handler = new Handler();
+                final long start = SystemClock.uptimeMillis();
+                final float d = 4000f;
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        long elapsed = SystemClock.uptimeMillis() - start;
+                        float t = elapsed / d;
+                        if (t < 1) {
+                            handler.postDelayed(this, 16);
+                        } else {
+                            moveBot();
+                        }
+                    }
+                });
+            }
+        } else if (result == 0) {
+            send(new MapNotification("END MisterX")); //MisterX hat gewonnen
+            printNotification("MisterX hat gewonnen");
         }
         if (gameObserver != null) {
             gameObserver.updateMove(move);
-        }else{
+        } else {
             player.setPosition(Points.POINTS[move.getField()]);
         }
     }
@@ -193,24 +207,24 @@ public class Server extends Device implements ServerInterface {
     public void moveBot() {
         Player bot = game.getBotMrX();
         bot.setMoved(true);
-        int position = Points.getIndex(bot.getPosition())+1;
+        int position = Points.getIndex(bot.getPosition()) + 1;
         Route route = (Route) Routes.getBotRoute(position, game.getPlayers())[1];
 
-        int r = (new Random()).nextInt(100) % 10;
+        int r = (new SecureRandom()).nextInt(100) % 10;
         Object[] randomRoute = Routes.getRandomRoute(position, route.getEndPoint());
         int newPosition;
-        if(route.getEndPoint() == position){
+        if (route.getEndPoint() == position) {
             newPosition = route.getStartPoint();
-        }else{
+        } else {
             newPosition = route.getEndPoint();
         }
-        Move move = new Move(bot.getNickname(), newPosition-1, r, randomRoute);
+        Move move = new Move(bot.getNickname(), newPosition - 1, r, randomRoute);
         send(move);
         game.setRoundMrX(false);
         if (gameObserver != null) {
             gameObserver.updateMove(move);
-        }else{
-            bot.setPosition(Points.POINTS[position-1]);
+        } else {
+            bot.setPosition(Points.POINTS[position - 1]);
         }
     }
 
@@ -236,9 +250,9 @@ public class Server extends Device implements ServerInterface {
         Log.d(logTag, "endpoint disconnected");
 
         //if game has started
-        if(game != null){
-            Player lostPlayer = ManageGameData.findPlayer(game, endpoint.getName());
-            ManageGameData.deactivatePlayer(game, lostPlayer);
+        if (game != null) {
+            Player lostPlayer = game.findPlayer(endpoint.getName());
+            game.deactivatePlayer(lostPlayer);
             send(new MapNotification("PLAYER " + lostPlayer.getNickname() + " QUITTED"));
             printNotification(lostPlayer.getNickname() + " hat das Spiel verlassen");
         }

@@ -1,5 +1,6 @@
 package com.example.scotlandyard.map.motions;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 public class RandomEvent {
@@ -10,7 +11,7 @@ public class RandomEvent {
     private int secID;
 
     public RandomEvent() {
-        randomNumber = new Random();
+        randomNumber = new SecureRandom();
         this. AllTexts = new String[10][10];
         this.id = randomNumber.nextInt(100) %3;
         //this.id = 2;
