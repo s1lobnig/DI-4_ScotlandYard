@@ -138,7 +138,7 @@ public class GameMap extends AppCompatActivity
                     public void onClick(View v) {
                         if (myPlayer.getSpecialMrXMoves()[0] && myPlayer.getTickets().get(R.string.BLACK_TICKET_KEY).intValue() == 0) {
                             Toast.makeText(GameMap.this, "Nicht genügend Tickets", Snackbar.LENGTH_LONG).show();
-                        }else{
+                        } else {
                             myPlayer.setSpecialMrXMoves(true, 0);
                         }
                         dialog.dismiss();
@@ -170,7 +170,7 @@ public class GameMap extends AppCompatActivity
                     public void onClick(View v) {
                         if (myPlayer.getSpecialMrXMoves()[1] && myPlayer.getTickets().get(R.string.DOUBLE_TICKET_KEY).intValue() == 0) {
                             Toast.makeText(GameMap.this, "Nicht genügend Tickets", Snackbar.LENGTH_LONG).show();
-                        }else {
+                        } else {
                             myPlayer.setSpecialMrXMoves(true, 1);
                         }
                         dialog.dismiss();
@@ -397,13 +397,13 @@ public class GameMap extends AppCompatActivity
                 return false;
             case 7:
                 Toast.makeText(GameMap.this, "KEINE TICKETS MEHR. Du wurdest deaktiviert", Snackbar.LENGTH_LONG).show();
-                if(!Device.isServer()){
+                if (!Device.isServer()) {
                     device.send(new MapNotification(myPlayer.getNickname() + " DEACTIVATED"));
                 }
                 return false;
             case 8:
                 Toast.makeText(GameMap.this, "KEIN ZUG MEHR MÖGLICH. Du wurdest deaktiviert.", Snackbar.LENGTH_LONG).show();
-                if(!Device.isServer()){
+                if (!Device.isServer()) {
                     device.send(new MapNotification(myPlayer.getNickname() + " DEACTIVATED"));
                 }
                 return false;
@@ -702,7 +702,7 @@ public class GameMap extends AppCompatActivity
     public void onReceivedToast(String toast) {
         if (toast.contains("Runde")) {
             rounds.setText(toast);
-        } else if(toast.contains("gewonnen")){
+        } else if (toast.contains("gewonnen")) {
             rounds.setText(toast);
         } else {
             Toast.makeText(GameMap.this, toast, Toast.LENGTH_LONG).show();
@@ -721,7 +721,7 @@ public class GameMap extends AppCompatActivity
 
     @Override
     public void showNewGame(Game game) {
-        if(mMap != null){
+        if (mMap != null) {
             deleteMarker();
             Device.getInstance().setGame(game);
             setupGame();
@@ -729,8 +729,9 @@ public class GameMap extends AppCompatActivity
         }
     }
 
+
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         try {
             Device.getInstance().addGameObserver(this);
@@ -778,7 +779,7 @@ public class GameMap extends AppCompatActivity
 
         if (device.getGame().isBotMrX()) {
             Player bot = device.getGame().findPlayer("Bot");
-            Device.getLobby().getPlayerList().remove(bot);
+            Device.getInstance().getLobby().getPlayerList().remove(bot);
         }
         for (Player player : device.getGame().getPlayers()) {
             player.resetPlayer();

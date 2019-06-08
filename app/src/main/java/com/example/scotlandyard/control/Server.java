@@ -18,6 +18,7 @@ import com.example.scotlandyard.messenger.Message;
 import com.google.android.gms.nearby.connection.ConnectionsClient;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -319,7 +320,7 @@ public class Server extends Device implements ServerInterface {
                 messengerObserver.showReconnected(endpoint.getName());
             }
             //activate player in game (let him make moves again)
-            Player player = ManageGameData.findPlayer(game, endpoint.getName());
+            Player player = game.findPlayer(endpoint.getName());
             player.setActive(true);
             ((ServerService)connectionService).send(this.game, endpoint);
             if (player.isMrX()){
