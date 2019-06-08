@@ -254,4 +254,9 @@ public class Client extends Device implements ClientInterface {
     public void connectToEndpoint(int position) {
         ((ClientService) connectionService).connectToEndpoint(serverList.get(position));
     }
+
+    public void disconnect() {
+        ((ClientService)connectionService).disconnect();
+        quit = true;
+    }
 }

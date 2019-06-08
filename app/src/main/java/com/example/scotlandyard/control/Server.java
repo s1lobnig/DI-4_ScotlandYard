@@ -268,4 +268,9 @@ public class Server extends Device implements ServerInterface {
         ((ServerService) connectionService).stopAdvertising();
     }
 
+    public void disconnect() {
+        ((ServerService)connectionService).disconnectFromAll();
+        quit = true;
+    }
+
 }

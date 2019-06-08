@@ -291,6 +291,7 @@ public class GameMap extends AppCompatActivity
                 intent = new Intent(this, MainActivity.class);
             }else{
                 //Wäre ein Problem xD
+                // hier eine Nachricht an Clients schicken, dass Spiel vom Server beendet wurde
             }
 
         }

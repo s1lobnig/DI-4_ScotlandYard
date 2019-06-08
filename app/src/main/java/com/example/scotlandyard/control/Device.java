@@ -41,10 +41,12 @@ public class Device {
     RoadMap roadMap;
     String nickname;
     ArrayList<Message> messageList;
+    boolean quit;
 
     Device() {
         messageList = new ArrayList<>();
         roadMap = new RoadMap();
+        quit = false;
     }
 
     /**
