@@ -278,7 +278,7 @@ public class Routes {
         return true;
     }
 
-    public static ArrayList<Integer> savePossibleRoutes(ArrayList[] routes, ArrayList<Integer> possible) {
+    public static List<Integer> savePossibleRoutes(ArrayList[] routes, List<Integer> possible) {
         for (int i = 0; i < routes.length; i++) {
             if (!routes[i].isEmpty()) {
                 possible.add(i);

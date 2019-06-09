@@ -37,6 +37,7 @@ public class BotMoveTest {
                 {32, new int[]{12, 43, 66}, Arrays.asList(new Route[]{BICYCLE[15], BICYCLE[17], BICYCLE[18],})},
                 {32, new int[]{31, 66, 67, 70}, Arrays.asList(new Route[]{TAXI_DRAGAN[1], TAXI_DRAGAN[2]})},
                 {4, new int[]{1, 2, 6, 19}, Arrays.asList(new Route[]{BUS[0], BUS[7], BUS[10]})},
+                {1, new int[]{2, 4}, Arrays.asList(new Route[]{BY_FOOT[0], BICYCLE[0]})},
 
         });
     }
