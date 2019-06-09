@@ -357,7 +357,7 @@ public class GameMap extends AppCompatActivity
                 if (!Device.getInstance().getGame().isPlayer(field) && isValidMove(newLocation)) {
                     int r = RANDOM.nextInt(100) % 10;
                     int idx = Points.getIndex(newLocation);
-                    Object[] randomRoute = Routes.getRandomRoute(Points.getIndex(myPlayer.getPosition()) + 1, idx + 1);
+                    ValidatedRoute randomRoute = Routes.getRandomRoute(Points.getIndex(myPlayer.getPosition()) + 1, idx + 1);
                     Move move = new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r, randomRoute);
 
                     if (Device.isServer()) {
@@ -412,7 +412,7 @@ public class GameMap extends AppCompatActivity
         }
     }
 
-    private boolean moveMarker(Point p, Player player, int playerIcon, int r, Object[] randomRoute) {
+    private boolean moveMarker(Point p, Player player, int playerIcon, int r, ValidatedRoute randomRoute) {
         if (randomEventsEnabled) {
             if (r <= 3) {
                 if (player.getPenalty() == 0) {
@@ -423,7 +423,7 @@ public class GameMap extends AppCompatActivity
         return move(player, p, false, false, playerIcon, randomRoute);
     }
 
-    public boolean moveWithRandomEvent(Player player, Point p, int playerIcon, int randomEvent, Object[] route) {
+    public boolean moveWithRandomEvent(Player player, Point p, int playerIcon, int randomEvent, ValidatedRoute route) {
         RandomEvent r = new RandomEvent();
         /*
         The randomEvent-paramter is already random generated - use it as id - random event is displayed equally on every device
@@ -458,23 +458,23 @@ public class GameMap extends AppCompatActivity
         return false;
     }
 
-    public boolean move(Player player, Point p, boolean goBack, boolean randomRoute, int playerIcon, Object[] randRoute) {
+    public boolean move(Player player, Point p, boolean goBack, boolean randomRoute, int playerIcon, ValidatedRoute randRoute) {
         LatLng current = player.getMarker().getPosition();
         Point currentPoint = new Point(current.latitude, current.longitude);
         Point playerLoc = player.getPosition();
         Point newLocation = p;
         LatLng finalPos;
-        Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
-        Route r = (Route) routeToTake[1];
+        ValidatedRoute routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
+        Route r = routeToTake.getRoute();
         if (randomRoute) {
-            r = (Route) randRoute[1];
+            r = randRoute.getRoute();
             if (Points.getIndex(playerLoc) + 1 == r.getStartPoint()) {
                 p = Points.POINTS[r.getEndPoint() - 1];
             } else {
                 p = Points.POINTS[r.getStartPoint() - 1];
             }
         }
-        int[] iconAndTicket = MovingLogic.getIconAndTicket(player, (int) routeToTake[2]);
+        int[] iconAndTicket = MovingLogic.getIconAndTicket(player, routeToTake.getRouteType());
         int icon = iconAndTicket[0];
         int ticket = -1;
         if (player.getSpecialMrXMoves()[0] && player.getTickets().get(R.string.BLACK_TICKET_KEY).intValue() > 0) {
@@ -488,7 +488,7 @@ public class GameMap extends AppCompatActivity
         if (player.getPenalty() > 0)
             player.decreasePenalty();
         if (randomRoute) {
-            switch ((int) randRoute[0]) {
+            switch ((int) randRoute.getRouteType()) {
                 case 0:
                     icon = R.drawable.pedestrian;
                     break;

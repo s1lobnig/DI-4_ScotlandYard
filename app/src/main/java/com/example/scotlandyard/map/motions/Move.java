@@ -1,5 +1,7 @@
 package com.example.scotlandyard.map.motions;
 
+import com.example.scotlandyard.map.ValidatedRoute;
+
 import java.io.Serializable;
 
 public class Move implements Serializable {
@@ -7,9 +9,9 @@ public class Move implements Serializable {
     private String nickname;
     private int field;
     private int randomEventTrigger;
-    private Object[] randomRoute;
+    private ValidatedRoute randomRoute;
 
-    public Move(String nickname, int field, int randomEventTrigger, Object[] randomRoute) {
+    public Move(String nickname, int field, int randomEventTrigger, ValidatedRoute randomRoute) {
         this.nickname = nickname;
         this.field = field;
         this.randomEventTrigger = randomEventTrigger;
@@ -40,7 +42,7 @@ public class Move implements Serializable {
         return randomEventTrigger;
     }
 
-    public Object[] getRandomRoute() {
+    public ValidatedRoute getRandomRoute() {
         return randomRoute;
     }
 

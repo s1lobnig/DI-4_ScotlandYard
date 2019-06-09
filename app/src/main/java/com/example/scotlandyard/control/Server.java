@@ -12,6 +12,7 @@ import com.example.scotlandyard.map.MapNotification;
 import com.example.scotlandyard.map.Points;
 import com.example.scotlandyard.map.Route;
 import com.example.scotlandyard.map.Routes;
+import com.example.scotlandyard.map.ValidatedRoute;
 import com.example.scotlandyard.map.motions.Move;
 import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.messenger.Message;
@@ -209,10 +210,10 @@ public class Server extends Device implements ServerInterface {
         Player bot = game.getBotMrX();
         bot.setMoved(true);
         int position = Points.getIndex(bot.getPosition()) + 1;
-        Route route = (Route) Routes.getBotRoute(position, game.getPlayers())[1];
+        Route route = Routes.getBotRoute(position, game.getPlayers()).getRoute();
 
         int r = (new SecureRandom()).nextInt(100) % 10;
-        Object[] randomRoute = Routes.getRandomRoute(position, route.getEndPoint());
+        ValidatedRoute randomRoute = Routes.getRandomRoute(position, route.getEndPoint());
         int newPosition;
         if (route.getEndPoint() == position) {
             newPosition = route.getStartPoint();

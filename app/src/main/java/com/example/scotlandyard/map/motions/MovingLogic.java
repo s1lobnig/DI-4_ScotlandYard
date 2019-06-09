@@ -16,7 +16,7 @@ public class MovingLogic {
 
     public static final int ANIMATION_DURATION = 3000;
 
-    private MovingLogic(){
+    private MovingLogic() {
 
     }
 
@@ -28,7 +28,7 @@ public class MovingLogic {
      * contains the animation-duration-slices according to the
      * route-part-length }
      */
-    public static Object[] getRouteSlicesAndTimings(Route r, int startPos) {
+    public static ArrayList[] getRouteSlicesAndTimings(Route r, int startPos) {
         if (startPos == r.getStartPoint()) {
             return regularOrder(r);
         } else {
@@ -36,7 +36,7 @@ public class MovingLogic {
         }
     }
 
-    private static Object[] reverseOrder(Route r) {
+    private static ArrayList[] reverseOrder(Route r) {
         float duration;
         ArrayList<Float> timeSlices = new ArrayList<>();
         ArrayList<LatLng> routePoints = new ArrayList<>();
@@ -67,10 +67,10 @@ public class MovingLogic {
                 routePoints.add(intermediate);
             }
         }
-        return new Object[]{routePoints, timeSlices};
+        return new ArrayList[]{routePoints, timeSlices};
     }
 
-    private static Object[] regularOrder(Route r) {
+    private static ArrayList[] regularOrder(Route r) {
         float duration;
         ArrayList<Float> timeSlices = new ArrayList<>();
         ArrayList<LatLng> routePoints = new ArrayList<>();
@@ -101,7 +101,7 @@ public class MovingLogic {
                 routePoints.add(intermediate);
             }
         }
-        return new Object[]{routePoints, timeSlices};
+        return new ArrayList[]{routePoints, timeSlices};
     }
 
     public static ArrayList[] createGoBackRoute(LatLng latLng) {

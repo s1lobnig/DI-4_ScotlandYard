@@ -4,6 +4,7 @@ import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.map.Point;
 import com.example.scotlandyard.map.Points;
 import com.example.scotlandyard.map.Routes;
+import com.example.scotlandyard.map.ValidatedRoute;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
@@ -286,17 +287,17 @@ public class Player implements Serializable {
         }
         LatLng current = position.getLatLng();
         Point currentPoint = new Point(current.latitude, current.longitude);
-        Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
+        ValidatedRoute routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
 
         //if no valid route from current position to newLocation
-        if (!(Boolean) routeToTake[0]) {
+        if (!routeToTake.isValid()) {
             return 4;
         }
         // if player has penalty and wants to take the bicycle
-        if (penalty > 0 && (int) (routeToTake[2]) == 1) {
+        if (penalty > 0 && routeToTake.getRouteType() == 1) {
             return 5;
         }
-        boolean enoughTickets = checkForValidTicket((int) routeToTake[2]);
+        boolean enoughTickets = checkForValidTicket(routeToTake.getRouteType());
         if (!enoughTickets) {
             checkAmountOfTickets();
             if (!isActive) {
