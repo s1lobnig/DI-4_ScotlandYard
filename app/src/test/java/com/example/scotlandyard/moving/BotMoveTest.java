@@ -1,6 +1,7 @@
 package com.example.scotlandyard.moving;
 
 import com.example.scotlandyard.Player;
+import com.example.scotlandyard.map.Point;
 import com.example.scotlandyard.map.Points;
 import com.example.scotlandyard.map.Route;
 import com.example.scotlandyard.map.Routes;
@@ -23,7 +24,7 @@ import static com.example.scotlandyard.map.routefactories.TaxiRoutes.TAXI_DRAGAN
 
 @RunWith(Parameterized.class)
 public class BotMoveTest {
-    @Parameterized.Parameters(name = "{index}: Route from {0} to {1} is type {2}, valid - {3}")
+    @Parameterized.Parameters(name = "{index}: Bot at {0}, other players at {1}")
     public static Iterable data() {
         return Arrays.asList(new Object[][]{
                 /*
@@ -31,32 +32,12 @@ public class BotMoveTest {
                 player positions
                 possible resulting routes
                 */
-                {1,     new int[]{4, 5},            Arrays.asList(new Route[]{BY_FOOT[0]})},
-                {24,    new int[]{25, 22, 21, 17},  Arrays.asList(new Route[]{BY_FOOT[25], BY_FOOT[26], BY_FOOT[27]})},
-                {
-                        1, new int[]{4, 5},
-                        Arrays.asList(new Route[]{
-                                BY_FOOT[0]
-                        })
-                },
-                {
-                        1, new int[]{4, 5},
-                        Arrays.asList(new Route[]{
-                                BY_FOOT[0]
-                        })
-                },
-                {
-                        1, new int[]{4, 5},
-                        Arrays.asList(new Route[]{
-                                BY_FOOT[0]
-                        })
-                },
-                {
-                        1, new int[]{4, 5},
-                        Arrays.asList(new Route[]{
-                                BY_FOOT[0]
-                        })
-                }
+                {1, new int[]{4, 5}, Arrays.asList(new Route[]{BY_FOOT[0]})},
+                {24, new int[]{25, 22, 21, 17}, Arrays.asList(new Route[]{BY_FOOT[25], BY_FOOT[26], BY_FOOT[27]})},
+                {32, new int[]{12, 43, 66}, Arrays.asList(new Route[]{BICYCLE[15], BICYCLE[17], BICYCLE[18],})},
+                {32, new int[]{31, 66, 67, 70}, Arrays.asList(new Route[]{TAXI_DRAGAN[1], TAXI_DRAGAN[2]})},
+                {4, new int[]{1, 2, 6, 19}, Arrays.asList(new Route[]{BUS[0], BUS[7], BUS[10]})},
+
         });
     }
 
@@ -72,11 +53,14 @@ public class BotMoveTest {
     }
 
     private List<Player> createPlayers(int[] playerPositions) {
-        Player[] players = new Player[playerPositions.length];
+        Player[] players = new Player[playerPositions.length + 1];
         for (int i = 0; i < playerPositions.length; i++) {
             players[i] = new Player("" + i);
             players[i].setPosition(Points.POINTS[playerPositions[i] - 1]);
         }
+        players[players.length - 1] = new Player("BOT");
+        players[players.length - 1].setPosition(Points.POINTS[currentPosition - 1]);
+        players[players.length - 1].setMrX(true);
         return Arrays.asList(players);
     }
 
