@@ -5,6 +5,8 @@ import com.example.scotlandyard.R;
 import com.example.scotlandyard.map.Point;
 import com.example.scotlandyard.map.Points;
 import com.example.scotlandyard.map.Route;
+import com.example.scotlandyard.map.Routes;
+import com.example.scotlandyard.map.ValidatedRoute;
 import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.map.roadmap.PositionEntry;
 import com.example.scotlandyard.map.roadmap.TicketEntry;
@@ -37,68 +39,76 @@ public class MovingLogic {
     }
 
     private static ArrayList[] reverseOrder(Route r) {
-        float duration;
         ArrayList<Float> timeSlices = new ArrayList<>();
         ArrayList<LatLng> routePoints = new ArrayList<>();
-        for (int i = r.getIntermediates().length; i >= 0; i--) {
-            double x1;
-            double y1;
-            double x2;
-            double y2;
-            if (i == r.getIntermediates().length) {
-                x1 = Points.POINTS[r.getEndPoint() - 1].getLatitude();
-                y1 = Points.POINTS[r.getEndPoint() - 1].getLongitude();
-            } else {
-                x1 = r.getIntermediates()[i].getLatitude();
-                y1 = r.getIntermediates()[i].getLongitude();
-            }
-            if (i == 0) {
-                x2 = Points.POINTS[r.getStartPoint() - 1].getLatitude();
-                y2 = Points.POINTS[r.getStartPoint() - 1].getLongitude();
-            } else {
-                x2 = r.getIntermediates()[i - 1].getLatitude();
-                y2 = r.getIntermediates()[i - 1].getLongitude();
-            }
-            LatLng intermediate = new LatLng(x2, y2);
-            duration = (float) (ANIMATION_DURATION
-                    * ((Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) / r.getLength()));
-            timeSlices.add(duration);
-            if (i != 0) {
-                routePoints.add(intermediate);
+        if (r.getIntermediates() == null) {
+            timeSlices.add((float) ANIMATION_DURATION);
+        } else {
+            float duration;
+            for (int i = r.getIntermediates().length; i >= 0; i--) {
+                double x1;
+                double y1;
+                double x2;
+                double y2;
+                if (i == r.getIntermediates().length) {
+                    x1 = Points.POINTS[r.getEndPoint() - 1].getLatitude();
+                    y1 = Points.POINTS[r.getEndPoint() - 1].getLongitude();
+                } else {
+                    x1 = r.getIntermediates()[i].getLatitude();
+                    y1 = r.getIntermediates()[i].getLongitude();
+                }
+                if (i == 0) {
+                    x2 = Points.POINTS[r.getStartPoint() - 1].getLatitude();
+                    y2 = Points.POINTS[r.getStartPoint() - 1].getLongitude();
+                } else {
+                    x2 = r.getIntermediates()[i - 1].getLatitude();
+                    y2 = r.getIntermediates()[i - 1].getLongitude();
+                }
+                LatLng intermediate = new LatLng(x2, y2);
+                duration = (float) (ANIMATION_DURATION
+                        * ((Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) / r.getLength()));
+                timeSlices.add(duration);
+                if (i != 0) {
+                    routePoints.add(intermediate);
+                }
             }
         }
         return new ArrayList[]{routePoints, timeSlices};
     }
 
     private static ArrayList[] regularOrder(Route r) {
-        float duration;
         ArrayList<Float> timeSlices = new ArrayList<>();
         ArrayList<LatLng> routePoints = new ArrayList<>();
-        for (int i = 0; i <= r.getIntermediates().length; i++) {
-            double x1;
-            double y1;
-            double x2;
-            double y2;
-            if (i == 0) {
-                x1 = Points.POINTS[r.getStartPoint() - 1].getLatitude();
-                y1 = Points.POINTS[r.getStartPoint() - 1].getLongitude();
-            } else {
-                x1 = r.getIntermediates()[i - 1].getLatitude();
-                y1 = r.getIntermediates()[i - 1].getLongitude();
-            }
-            if (i == r.getIntermediates().length) {
-                x2 = Points.POINTS[r.getEndPoint() - 1].getLatitude();
-                y2 = Points.POINTS[r.getEndPoint() - 1].getLongitude();
-            } else {
-                x2 = r.getIntermediates()[i].getLatitude();
-                y2 = r.getIntermediates()[i].getLongitude();
-            }
-            LatLng intermediate = new LatLng(x2, y2);
-            duration = (float) (ANIMATION_DURATION
-                    * ((Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) / r.getLength()));
-            timeSlices.add(duration);
-            if (i != r.getIntermediates().length) {
-                routePoints.add(intermediate);
+        if (r.getIntermediates() == null) {
+            timeSlices.add((float) ANIMATION_DURATION);
+        } else {
+            float duration;
+            for (int i = 0; i <= r.getIntermediates().length; i++) {
+                double x1;
+                double y1;
+                double x2;
+                double y2;
+                if (i == 0) {
+                    x1 = Points.POINTS[r.getStartPoint() - 1].getLatitude();
+                    y1 = Points.POINTS[r.getStartPoint() - 1].getLongitude();
+                } else {
+                    x1 = r.getIntermediates()[i - 1].getLatitude();
+                    y1 = r.getIntermediates()[i - 1].getLongitude();
+                }
+                if (i == r.getIntermediates().length) {
+                    x2 = Points.POINTS[r.getEndPoint() - 1].getLatitude();
+                    y2 = Points.POINTS[r.getEndPoint() - 1].getLongitude();
+                } else {
+                    x2 = r.getIntermediates()[i].getLatitude();
+                    y2 = r.getIntermediates()[i].getLongitude();
+                }
+                LatLng intermediate = new LatLng(x2, y2);
+                duration = (float) (ANIMATION_DURATION
+                        * ((Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))) / r.getLength()));
+                timeSlices.add(duration);
+                if (i != r.getIntermediates().length) {
+                    routePoints.add(intermediate);
+                }
             }
         }
         return new ArrayList[]{routePoints, timeSlices};
@@ -167,12 +177,71 @@ public class MovingLogic {
         return entry;
     }
 
-    public static void runMarkerAnimation(Player player, ArrayList<LatLng> intermediatePoints, ArrayList<Float> timeSlices, LatLng finalPosition, int icon, int finalIcon) {
-        if (intermediatePoints == null || intermediatePoints.isEmpty()) {
-            MarkerAnimation.moveMarkerToTarget(player.getMarker(), finalPosition, new LatLngInterpolator.Linear(), ANIMATION_DURATION, icon, finalIcon);
+
+    public static int getSpecialMrXMoveTicket(Player player, int ticket) {
+        if (player.getSpecialMrXMoves()[0] && player.getTickets().get(R.string.BLACK_TICKET_KEY).intValue() > 0) {
+            player.setSpecialMrXMoves(false, 0);
+            player.decreaseNumberOfTickets(R.string.BLACK_TICKET_KEY);
+            return R.drawable.ticket_black;
         } else {
-            MarkerAnimation.moveMarkerToTarget(player.getMarker(), intermediatePoints, timeSlices, finalPosition, new LatLngInterpolator.Linear(), icon, finalIcon);
+            return ticket;
         }
     }
 
+    public static MarkerMovingRoute prepareMove(Player player, boolean randomRoute, ValidatedRoute randRoute, Point p) {
+        LatLng current = player.getMarker().getPosition();
+        Point currentPoint = new Point(current.latitude, current.longitude);
+        Point playerLoc = player.getPosition();
+        Point newLocation = p;
+        LatLng finalPos;
+        ValidatedRoute routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
+        Route r = routeToTake.getRoute();
+        if (randomRoute) {
+            r = randRoute.getRoute();
+            if (Points.getIndex(playerLoc) + 1 == r.getStartPoint()) {
+                p = Points.POINTS[r.getEndPoint() - 1];
+            } else {
+                p = Points.POINTS[r.getStartPoint() - 1];
+            }
+        }
+        int[] iconAndTicket = MovingLogic.getIconAndTicket(player, routeToTake.getRouteType());
+        int icon = iconAndTicket[0];
+        int ticket = MovingLogic.getSpecialMrXMoveTicket(player, iconAndTicket[1]);
+        if (player.getPenalty() > 0)
+            player.decreasePenalty();
+        if (randomRoute) {
+            switch (randRoute.getRouteType()) {
+                case 0:
+                    icon = R.drawable.pedestrian;
+                    break;
+                case 1:
+                    icon = R.drawable.bicycle;
+                    break;
+                case 2:
+                    icon = R.drawable.bus;
+                    break;
+                case 3:
+                    icon = R.drawable.taxi;
+                    break;
+            }
+        }
+        return new MarkerMovingRoute(icon, ticket, currentPoint, newLocation, r);
+    }
+
+    public static MarkerMovingRoute createMove(MarkerMovingRoute markerMove, boolean goBack, Player player) {
+        ArrayList[] routeSliceTimings = getRouteSlicesAndTimings(markerMove.getRoute(), Points.getIndex(markerMove.getCurrentPosition()) + 1);
+        ArrayList<LatLng> routePoints = (ArrayList) routeSliceTimings[0];
+        ArrayList<Float> timeSlices = (ArrayList) routeSliceTimings[1];
+        if (goBack) {
+            createGoBackRoute(timeSlices, routePoints, markerMove.getNewLocation());
+            markerMove.setFinalPosition(player.getMarker().getPosition());
+            markerMove.setNewLocation(player.getPosition());
+        } else {
+            markerMove.setFinalPosition(markerMove.getNewLocation().getLatLng());
+        }
+        markerMove.setIntermediates(routePoints);
+        markerMove.setTimeSlices(timeSlices);
+        player.setPosition(markerMove.getNewLocation());
+        return markerMove;
+    }
 }

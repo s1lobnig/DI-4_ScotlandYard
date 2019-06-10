@@ -5,17 +5,12 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
@@ -24,6 +19,9 @@ import android.util.Log;
 import com.example.scotlandyard.control.Server;
 import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.control.GameInterface;
+import com.example.scotlandyard.map.motions.LatLngInterpolator;
+import com.example.scotlandyard.map.motions.MarkerAnimation;
+import com.example.scotlandyard.map.motions.MarkerMovingRoute;
 import com.example.scotlandyard.map.motions.MovingLogic;
 import com.example.scotlandyard.map.motions.RandomEvent;
 import com.example.scotlandyard.map.motions.Move;
@@ -40,7 +38,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -61,7 +58,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -69,7 +65,6 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Random;
 
-import static com.example.scotlandyard.R.color.colorLightGrey;
 import static com.example.scotlandyard.R.color.colorPrimary;
 import static com.example.scotlandyard.R.color.colorPrimaryDark;
 
@@ -459,91 +454,28 @@ public class GameMap extends AppCompatActivity
     }
 
     public boolean move(Player player, Point p, boolean goBack, boolean randomRoute, int playerIcon, ValidatedRoute randRoute) {
-        LatLng current = player.getMarker().getPosition();
-        Point currentPoint = new Point(current.latitude, current.longitude);
-        Point playerLoc = player.getPosition();
-        Point newLocation = p;
-        LatLng finalPos;
-        ValidatedRoute routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
-        Route r = routeToTake.getRoute();
-        if (randomRoute) {
-            r = randRoute.getRoute();
-            if (Points.getIndex(playerLoc) + 1 == r.getStartPoint()) {
-                p = Points.POINTS[r.getEndPoint() - 1];
-            } else {
-                p = Points.POINTS[r.getStartPoint() - 1];
-            }
-        }
-        int[] iconAndTicket = MovingLogic.getIconAndTicket(player, routeToTake.getRouteType());
-        int icon = iconAndTicket[0];
-        int ticket = -1;
-        if (player.getSpecialMrXMoves()[0] && player.getTickets().get(R.string.BLACK_TICKET_KEY).intValue() > 0) {
-            ticket = R.drawable.ticket_black;
-            player.setSpecialMrXMoves(false, 0);
-            player.decreaseNumberOfTickets(R.string.BLACK_TICKET_KEY);
-        } else {
-            ticket = iconAndTicket[1];
-        }
-
-        if (player.getPenalty() > 0)
-            player.decreasePenalty();
-        if (randomRoute) {
-            switch ((int) randRoute.getRouteType()) {
-                case 0:
-                    icon = R.drawable.pedestrian;
-                    break;
-                case 1:
-                    icon = R.drawable.bicycle;
-                    break;
-                case 2:
-                    icon = R.drawable.bus;
-                    break;
-                case 3:
-                    icon = R.drawable.taxi;
-                    break;
-            }
-        }
+        MarkerMovingRoute markerMove = MovingLogic.prepareMove(player, randomRoute, randRoute, p);
         visualizeTickets();
-
         if (player.isMrX() && ((player.equals(myPlayer) || (device.getGame().isBotMrX() && Device.isServer())))) {
             int lastTurn = device.getRoadMap().getNumberOfEntries();
-            Entry entry = MovingLogic.getRoadMapEntry(lastTurn, newLocation, ticket);
+            Entry entry = MovingLogic.getRoadMapEntry(lastTurn, markerMove.getNewLocation(), markerMove.getTicket());
             if (Device.isServer()) {
                 device.getRoadMap().addEntry(entry);
             }
             device.send(entry);
         }
-        if (r.getIntermediates() != null) {
-            player.getMarker().setIcon(BitmapDescriptorFactory.fromResource(icon));
-            Object[] routeSliceTimings = MovingLogic.getRouteSlicesAndTimings(r, Points.getIndex(currentPoint) + 1);
-            ArrayList<LatLng> routePoints = (ArrayList) routeSliceTimings[0];
-            ArrayList<Float> timeSlices = (ArrayList) routeSliceTimings[1];
-            finalPos = p.getLatLng();
-            if (goBack) {
-                // if random event "Go Back" then...
-                MovingLogic.createGoBackRoute(timeSlices, routePoints, p);
-                finalPos = player.getMarker().getPosition();
-                newLocation = playerLoc;
-            } else {
-                newLocation = p;
-            }
-            MovingLogic.runMarkerAnimation(player, routePoints, timeSlices, finalPos, icon, playerIcon);
-            player.setPosition(newLocation);
-        } else {
-            if (!goBack) {
-                MovingLogic.runMarkerAnimation(player, null, null, p.getLatLng(), icon, playerIcon);
-                newLocation = p;
-                player.setPosition(newLocation);
-            } else {
-                ArrayList[] goBackRouteAndSlices = MovingLogic.createGoBackRoute(p.getLatLng());
-                ArrayList<Float> timeSlices = goBackRouteAndSlices[0];
-                ArrayList<LatLng> routePoints = goBackRouteAndSlices[1];
-                newLocation = playerLoc;
-                MovingLogic.runMarkerAnimation(player, routePoints, timeSlices, player.getMarker().getPosition(), icon, playerIcon);
-                player.setPosition(newLocation);
-            }
-        }
+        player.getMarker().setIcon(BitmapDescriptorFactory.fromResource(markerMove.getIcon()));
+        markerMove = MovingLogic.createMove(markerMove, goBack, player);
+        runMarkerAnimation(player, markerMove, playerIcon);
         return true;
+    }
+
+    public static void runMarkerAnimation(Player player, MarkerMovingRoute movingRoute, int finalIcon) {
+        if (movingRoute.getIntermediates() == null || movingRoute.getIntermediates().isEmpty()) {
+            MarkerAnimation.moveMarkerToTarget(player.getMarker(), movingRoute.getFinalPosition(), new LatLngInterpolator.Linear(), MovingLogic.ANIMATION_DURATION, movingRoute.getIcon(), finalIcon);
+        } else {
+            MarkerAnimation.moveMarkerToTarget(player.getMarker(), movingRoute.getIntermediates(), movingRoute.getTimeSlices(), movingRoute.getFinalPosition(), new LatLngInterpolator.Linear(), movingRoute.getIcon(), finalIcon);
+        }
     }
 
     public void visualizeTickets() {

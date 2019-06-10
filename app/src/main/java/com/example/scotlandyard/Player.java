@@ -297,14 +297,12 @@ public class Player implements Serializable {
         if (penalty > 0 && routeToTake.getRouteType() == 1) {
             return 5;
         }
-        boolean enoughTickets = checkForValidTicket(routeToTake.getRouteType());
-        if (!enoughTickets) {
+        if (!checkForValidTicket(routeToTake.getRouteType())) {
             checkAmountOfTickets();
             if (!isActive) {
                 return 7;
             }
             if (!Routes.routesPossibleWithTickets(Points.getIndex(position) + 1, this)) {
-                setActive(false);
                 return 8;
             }
             return 6;

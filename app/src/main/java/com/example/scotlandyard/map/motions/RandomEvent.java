@@ -13,7 +13,7 @@ public class RandomEvent {
     public RandomEvent() {
         randomNumber = new SecureRandom();
         this. AllTexts = new String[10][10];
-        this.id = randomNumber.nextInt(100) %3;
+        this.id = randomNumber.nextInt(100) %4;
         //this.id = 2;
         secID = randomNumber.nextInt(100) %4;
         fillText();
