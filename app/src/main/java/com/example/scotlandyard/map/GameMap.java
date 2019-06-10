@@ -2,6 +2,7 @@ package com.example.scotlandyard.map;
 
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -21,6 +22,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
+import com.example.scotlandyard.EndGame.EndGame;
+import com.example.scotlandyard.GameEnd_Activity;
 import com.example.scotlandyard.control.Server;
 import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.control.GameInterface;
@@ -28,7 +31,6 @@ import com.example.scotlandyard.map.motions.MovingLogic;
 import com.example.scotlandyard.map.motions.RandomEvent;
 import com.example.scotlandyard.map.motions.Move;
 import com.example.scotlandyard.map.roadmap.Entry;
-import com.example.scotlandyard.map.roadmap.RoadMap;
 import com.example.scotlandyard.map.roadmap.RoadMapDialog;
 import com.example.scotlandyard.messenger.Messenger;
 import com.example.scotlandyard.Player;
@@ -62,17 +64,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-import static com.example.scotlandyard.R.color.colorLightGrey;
 import static com.example.scotlandyard.R.color.colorPrimary;
 import static com.example.scotlandyard.R.color.colorPrimaryDark;
-import static com.example.scotlandyard.map.Routes.routesPossibleWithTickets;
 
 public class GameMap extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, GameInterface {
@@ -108,11 +107,15 @@ public class GameMap extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_navigation);
 
+        SensorManager sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sm.registerListener(sensorListenerProximity, sm.getDefaultSensor(Sensor.TYPE_PROXIMITY), SensorManager.SENSOR_DELAY_NORMAL);
+
         //if game has not started yet
         if (device == null) {
             device = Device.getInstance();
             device.addGameObserver(this);
         }
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(device.getNickname());
@@ -217,6 +220,10 @@ public class GameMap extends AppCompatActivity
         }
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.map, fragment).commit();
+
+
+
+
     }
 
     private Dialog createDialog() {
@@ -353,15 +360,19 @@ public class GameMap extends AppCompatActivity
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker field) {
+                boolean retvalue = false;
                 if (!ManageGameData.isPlayer(device.getGame(), field) && device.getGame().getRound() <= Game.getNumRounds()) {
                     if (!myPlayer.isMoved()) {
                         boolean isValid = isValidMove(field, myPlayer);
                         if (isValid) {
+                            //device.getGame().getMrX().getMarker().setVisible(false);
                             int r = (new Random()).nextInt(100) % 10;
                             Point newLocation = new Point(field.getPosition().latitude, field.getPosition().longitude);
                             int idx = Points.getIndex(newLocation);
                             Object[] randomRoute = Routes.getRandomRoute(Points.getIndex(myPlayer.getPosition()) + 1, idx + 1);
                             if (Device.isServer()) {
+                                checkIfMrXhaslost();
+
                                 if ((!myPlayer.isMrX() && device.getGame().isRoundMrX()) || (myPlayer.isMrX() && !device.getGame().isRoundMrX())) {
                                     return false;
                                 }
@@ -370,11 +381,23 @@ public class GameMap extends AppCompatActivity
                                 if (myPlayer.isMrX() && myPlayer.getSpecialMrXMoves()[1]) {
                                     myPlayer.setSpecialMrXMoves(false, 1);
                                 } else {
-                                    myPlayer.setMoved(true);
+                                    if(myPlayer.getCountCheatingmoves() == 0)
+                                        myPlayer.setMoved(true);
                                 }
+                                checkIfMrXhaslost();
+
                                 tryNextRound();
                             }
-                            device.send(new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r, randomRoute));
+                            if (myPlayer.getCountCheatingmoves() == 0)
+                                device.send(new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r, randomRoute));
+                            else {
+                                System.out.println("...............");
+                                myPlayer.decCountCheatingmoves();
+                                device.send(new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r, randomRoute, true));
+                            }
+                           /* if(device.getGame().getRound() == 3 && myPlayer.isMrX() == false)
+                                device.getGame().getMrX().getMarker().setVisible(true);*/
+
                         }
                         return isValid;
 
@@ -387,6 +410,7 @@ public class GameMap extends AppCompatActivity
             }
         });
     }
+
 
     private boolean moveMarker(Point p, Player player, int playerIcon, int r, Object[] randomRoute) {
         if (randomEventsEnabled) {
@@ -520,10 +544,13 @@ public class GameMap extends AppCompatActivity
         if (player.isMrX() && (player.equals(myPlayer) || device.getGame().isBotMrX())) {
             int lastTurn = device.getRoadMap().getNumberOfEntries();
             Entry entry = MovingLogic.getRoadMapEntry(lastTurn, newLocation, ticket);
-            if (Device.isServer()) {
-                device.getRoadMap().addEntry(entry);
+
+            if(myPlayer.getCountCheatingmoves() == 0) {
+                if (Device.isServer()) {
+                    device.getRoadMap().addEntry(entry);
+                }
+                device.send(entry);
             }
-            device.send(entry);
         }
         if (r.getIntermediates() != null) {
             player.getMarker().setIcon(BitmapDescriptorFactory.fromResource(icon));
@@ -668,6 +695,8 @@ public class GameMap extends AppCompatActivity
             if (p.getNickname().equals(device.getNickname())) {
                 myPlayer = p;
             }
+            /*if(myPlayer.isMrX() == false)
+                device.getGame().getMrX().getMarker().setVisible(false);*/
         }
         randomEventsEnabled = device.getGame().isRandomEventsEnabled();
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myPlayer.getPosition().getLatLng(), 16f), 3000, null);
@@ -695,9 +724,10 @@ public class GameMap extends AppCompatActivity
                     }
                 });
             }
-        } else if (result == 0) {
-            device.send(new MapNotification("END MisterX")); //MisterX hat gewonnen
-            Toast.makeText(GameMap.this, "MisterX hat gewonnen", Snackbar.LENGTH_LONG).show();
+        }else if (result == 0) {
+            device.send(new EndGame(true)); //MisterX hat gewonnen
+        }else if(result == 2){
+            device.send(new EndGame(false)); //Detective haben gewonnen
         }
     }
 
@@ -748,6 +778,22 @@ public class GameMap extends AppCompatActivity
     }
 
     @Override
+    public void onRecievedEndOfGame(boolean hasMrXWon) {
+        Intent i = new Intent(GameMap.this, GameEnd_Activity.class);
+        i.putExtra("Winner", hasMrXWon);
+        startActivity(i);
+    }
+
+    @Override
+    public void checkIfMrXhaslost() {
+        if(ManageGameData.isMRXFound(device.getGame())) {
+            System.out.println("Same Place");
+            device.send(new EndGame(false));
+            onRecievedEndOfGame(false);
+        };
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         try {
@@ -777,9 +823,9 @@ public class GameMap extends AppCompatActivity
             if (distance < 5) {
                 if (myPlayer.isMrX()) {
                     Toast.makeText(GameMap.this, "Weitere Bewegung ausführen", Snackbar.LENGTH_LONG).show();
-                    myPlayer.setMoved(false);
-                    myPlayer.setHasCheated(true);
-                    myPlayer.setHasCheatedThisRound(true);
+
+                    myPlayer.incCountCheatingmoves();
+                    myPlayer.setHascheated(true);
                 }
             }
         }

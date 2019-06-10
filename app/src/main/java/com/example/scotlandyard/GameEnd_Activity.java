@@ -80,7 +80,7 @@ public class GameEnd_Activity extends AppCompatActivity {
             shake = shake + delta;
             //System.out.println(shake);
             if(shake > 7){
-                Toast toast = Toast.makeText(getApplicationContext(), "Shake it baby", Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(getApplicationContext(), "Oh i am turned on <3", Toast.LENGTH_LONG);
                 toast.show();
             }
         }
@@ -97,7 +97,7 @@ public class GameEnd_Activity extends AppCompatActivity {
             float curlight = event.values[0];
             //System.out.println(curlight);
             if(curlight < 100){
-                Toast toast = Toast.makeText(getApplicationContext(), "Ligths Out", Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(getApplicationContext(), "Afraid of the darf ?", Toast.LENGTH_LONG);
                 toast.show();
             }
         }
@@ -113,7 +113,7 @@ public class GameEnd_Activity extends AppCompatActivity {
         public void onSensorChanged(SensorEvent event) {
             float distance = event.values[0];
             if(distance < 5){
-                Toast toast = Toast.makeText(getApplicationContext(), "Cant Touch this", Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(getApplicationContext(), "#metoo", Toast.LENGTH_LONG);
                 toast.show();
             }
         }

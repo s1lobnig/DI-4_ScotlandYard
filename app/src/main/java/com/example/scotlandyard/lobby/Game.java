@@ -126,4 +126,12 @@ public class Game implements Serializable {
         }
         return null;
     }
+
+    public boolean mrXfound() {
+        for(Player p : players){
+            if(p.getNickname() != getMrX().getNickname() && p.getPosition().equals(getBotMrX().getPosition()))
+                return true;
+        }
+        return false;
+    }
 }

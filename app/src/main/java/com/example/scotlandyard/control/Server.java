@@ -2,6 +2,7 @@ package com.example.scotlandyard.control;
 
 import android.util.Log;
 
+import com.example.scotlandyard.EndGame.EndGame;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.connection.ServerInterface;
@@ -136,6 +137,11 @@ public class Server extends Device implements ServerInterface {
                 send(entry);
             }
         }
+        if(object instanceof EndGame){
+            gameObserver.checkIfMrXhaslost();
+        }
+
+
 
     }
 
@@ -148,24 +154,31 @@ public class Server extends Device implements ServerInterface {
             return;
         }
         send(move);
-        player.setMoved(true);
-        switch (ManageGameData.tryNextRound(game)) {
-            case 1:
-                send(new MapNotification("NEXT_ROUND"));
-                printNotification("Runde " + game.getRound());
-                if(game.isRoundMrX() && game.isBotMrX()){
-                    moveBot();
-                }
-                break;
-            case 0:
-                send(new MapNotification("END MisterX")); //MisterX hat gewonnen
-                printNotification("MisterX hat gewonnen");
-                break;
-        }
-        if (gameObserver != null) {
-            gameObserver.updateMove(move);
-        }else{
-            player.setPosition(Points.POINTS[move.getField()]);
+        if(!move.Ischeatingmove()) {
+            player.setMoved(true);
+
+            switch (ManageGameData.tryNextRound(game)) {
+                case 1:
+                    send(new MapNotification("NEXT_ROUND"));
+                    printNotification("Runde " + game.getRound());
+                    if (game.isRoundMrX() && game.isBotMrX()) {
+                        moveBot();
+                    }
+                    break;
+                case 0:
+                    send(new EndGame(true)); //MisterX hat gewonnen
+                    gameObserver.onRecievedEndOfGame(true);
+                    break;
+                case 2:
+                    send(new EndGame(false));
+                    gameObserver.onRecievedEndOfGame(false);
+                    break;
+            }
+            if (gameObserver != null) {
+                gameObserver.updateMove(move);
+            } else {
+                player.setPosition(Points.POINTS[move.getField()]);
+            }
         }
     }
 

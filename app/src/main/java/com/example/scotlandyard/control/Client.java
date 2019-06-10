@@ -2,6 +2,7 @@ package com.example.scotlandyard.control;
 
 import android.util.Log;
 
+import com.example.scotlandyard.EndGame.EndGame;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.connection.ClientInterface;
 import com.example.scotlandyard.connection.ClientService;
@@ -18,6 +19,7 @@ import com.google.android.gms.nearby.connection.ConnectionsClient;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * class representing a client in app
@@ -117,11 +119,20 @@ public class Client extends Device implements ClientInterface {
             Move move = (Move) object;
             Log.d(logTag, "move received");
             Player player = ManageGameData.findPlayer(game, move.getNickname());
+            System.out.println("-----------"+move.Ischeatingmove());
             if (!player.getSpecialMrXMoves()[1])
-                player.setMoved(true);
+                if(!move.Ischeatingmove())
+                    player.setMoved(true);
 
             if (gameObserver != null) {
                 gameObserver.updateMove(move);
+
+                Random randomNumber = new Random();
+                int i = randomNumber.nextInt(100) %20;
+
+                if(i > 15)
+                    printNotification("MrX schummelt");
+
             } else {
                 player.setPosition(Points.POINTS[move.getField()]);
             }
@@ -148,6 +159,9 @@ public class Client extends Device implements ClientInterface {
                 lobbyObserver.startGame((Game) object);
             }
         }
+        if(object instanceof EndGame){
+            gameObserver.onRecievedEndOfGame(((EndGame) object).isHasMrxwon());
+        }
     }
 
     private void manageNotification(MapNotification notification) {
@@ -166,11 +180,12 @@ public class Client extends Device implements ClientInterface {
             return;
         }
         if (txt.length == 2 && txt[0].equals("END")) {
-            printNotification(txt[1] + " hat gewonnen");
+            printNotification(txt[1] + " hat gewonnen mit einen Penis");
             return;
         }
         printNotification(notification.getNotification());
     }
+
 
     @Override
     public void onFailedConnecting(Endpoint endpoint) {

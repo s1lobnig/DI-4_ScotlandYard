@@ -2,6 +2,7 @@ package com.example.scotlandyard.control;
 
 import android.util.Log;
 
+import com.example.scotlandyard.EndGame.EndGame;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.connection.ConnectionService;
 import com.example.scotlandyard.lobby.Game;
@@ -192,6 +193,7 @@ public class Device {
         connectionService.send(entry);
     }
 
+    public void send(EndGame hasmrxwon){connectionService.send(hasmrxwon);}
     /**
      * prints txt on display
      *

@@ -25,7 +25,8 @@ public class Player implements Serializable {
     private boolean hasCheated;
     private boolean hasCheatedThisRound;
     private boolean[] specialMrXMoves;
-
+    private boolean hascheated;
+    private int countCheatingmoves;
     private int penalty;
 
     public Player(String nickname) {
@@ -36,6 +37,8 @@ public class Player implements Serializable {
         this.isHost = false;
         this.isMrX = false;
         this.wantsToBeMrX = false;
+        this.hasCheated = false;
+        this.countCheatingmoves = 0;
         //initialise ticket hashmap for a player with empty tickets
         this.tickets = new HashMap<>();
         this.tickets.put(R.string.PEDESTRIAN_TICKET_KEY, 0);
@@ -202,23 +205,6 @@ public class Player implements Serializable {
         return nickname;
     }
 
-
-    public boolean isHasCheated() {
-        return hasCheated;
-    }
-
-    public void setHasCheated(boolean hasCheated) {
-        this.hasCheated = hasCheated;
-    }
-
-    public boolean isHasCheatedThisRound() {
-        return hasCheatedThisRound;
-    }
-
-    public void setHasCheatedThisRound(boolean hasCheatedThisRound) {
-        this.hasCheatedThisRound = hasCheatedThisRound;
-    }
-
     @Override
     public int hashCode() {
         return super.hashCode();
@@ -235,4 +221,23 @@ public class Player implements Serializable {
         return false;
     }
 
+    public boolean getHascheated() {
+        return hascheated;
+    }
+
+    public void setHascheated(boolean hascheated) {
+        this.hascheated = hascheated;
+    }
+
+    public void incCountCheatingmoves() {
+        this.countCheatingmoves++;
+    }
+
+    public void decCountCheatingmoves() {
+        this.countCheatingmoves--;
+    }
+
+    public int getCountCheatingmoves(){
+        return this.countCheatingmoves;
+    }
 }

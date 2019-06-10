@@ -1,9 +1,7 @@
 package com.example.scotlandyard.control;
 
-import com.example.scotlandyard.Player;
 import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.map.motions.Move;
-import com.example.scotlandyard.messenger.Message;
 
 /**
  * interface for the game
@@ -36,4 +34,8 @@ public interface GameInterface {
      * function is called, when a toast should be printed
      */
     void onReceivedToast(String toast);
+
+    void onRecievedEndOfGame(boolean hasMrXWon);
+
+    void checkIfMrXhaslost();
 }

@@ -53,6 +53,15 @@ public class ManageGameData {
         tryNextRound(game);
     }
 
+    public static boolean isMRXFound(Game game){
+        for (Player p : game.getPlayers()){
+            if(game.getMrX().getNickname()!= p.getNickname() && game.getMrX().getPosition().equals(p.getPosition())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static int tryNextRound(Game game) {
         if (game.isRoundMrX()) {
             if (game.getMrX().isMoved()) {
@@ -61,16 +70,21 @@ public class ManageGameData {
             }
         }
         if (isRoundFinished(game)) {
-            if (game.getRound() < Game.getNumRounds()) {
-                /*if(this.isMrXFound()){
+            int retval;
+            for (Player p : game.getPlayers()){
+                if(game.getMrX().getNickname()!= p.getNickname() && game.getMrX().getPosition().equals(p.getPosition())) {
                     return 2;
-                }*/
+                }
+            }
+
+            if (game.getRound() < Game.getNumRounds()) {
                 //Round finished
                 game.nextRound();
                 game.setRoundMrX(true);
                 for (Player p : game.getPlayers()) {
                     p.setMoved(false);
                 }
+
                 return 1;
             }
             //Game finished
@@ -79,21 +93,9 @@ public class ManageGameData {
         //Round not finished yet
         return -1;
     }
-    /*private boolean isMrXFound(){
-        Player x = this.getMrX();
-        for(Player p : game.getPlayers()){
-            if (p.getPosition() == x.getPosition() && p.getNickname() != x.getNickname())
-                return true;
-        }
-        return false;
-    }*/
 
-    private Player getMrX() {
-        for (Player p : game.getPlayers()) {
-            if (p.isMrX())
-                return p;
-        }
-        return null;
+    private static boolean isMrXFound() {
+        return true;
     }
 
 
