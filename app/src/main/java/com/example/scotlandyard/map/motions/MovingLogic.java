@@ -114,15 +114,6 @@ public class MovingLogic {
         return new ArrayList[]{routePoints, timeSlices};
     }
 
-    public static ArrayList[] createGoBackRoute(LatLng latLng) {
-        ArrayList<Float> timeSlices = new ArrayList<>();
-        timeSlices.add((float) ANIMATION_DURATION);
-        timeSlices.add((float) ANIMATION_DURATION);
-        ArrayList<LatLng> routePoints = new ArrayList<>();
-        routePoints.add(latLng);
-        return new ArrayList[]{timeSlices, routePoints};
-    }
-
     public static ArrayList[] createGoBackRoute(ArrayList<Float> timeSlices, ArrayList<LatLng> routePoints, Point p) {
         int size = timeSlices.size();
         for (int i = size - 1; i >= 0; i--) {
@@ -177,7 +168,6 @@ public class MovingLogic {
         return entry;
     }
 
-
     public static int getSpecialMrXMoveTicket(Player player, int ticket) {
         if (player.getSpecialMrXMoves()[0] && player.getTickets().get(R.string.BLACK_TICKET_KEY).intValue() > 0) {
             player.setSpecialMrXMoves(false, 0);
@@ -188,20 +178,19 @@ public class MovingLogic {
         }
     }
 
-    public static MarkerMovingRoute prepareMove(Player player, boolean randomRoute, ValidatedRoute randRoute, Point p) {
-        LatLng current = player.getMarker().getPosition();
+    public static MarkerMovingRoute prepareMove(Player player, boolean randomRoute, ValidatedRoute randRoute, Point nextLocation) {
+        LatLng current = player.getPosition().getLatLng();
         Point currentPoint = new Point(current.latitude, current.longitude);
         Point playerLoc = player.getPosition();
-        Point newLocation = p;
-        LatLng finalPos;
+        Point newLocation = nextLocation;
         ValidatedRoute routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
         Route r = routeToTake.getRoute();
         if (randomRoute) {
             r = randRoute.getRoute();
             if (Points.getIndex(playerLoc) + 1 == r.getStartPoint()) {
-                p = Points.POINTS[r.getEndPoint() - 1];
+                newLocation = Points.POINTS[r.getEndPoint() - 1];
             } else {
-                p = Points.POINTS[r.getStartPoint() - 1];
+                newLocation = Points.POINTS[r.getStartPoint() - 1];
             }
         }
         int[] iconAndTicket = MovingLogic.getIconAndTicket(player, routeToTake.getRouteType());
@@ -223,6 +212,8 @@ public class MovingLogic {
                 case 3:
                     icon = R.drawable.taxi;
                     break;
+                default:
+                    icon = -1;
             }
         }
         return new MarkerMovingRoute(icon, ticket, currentPoint, newLocation, r);
@@ -234,7 +225,7 @@ public class MovingLogic {
         ArrayList<Float> timeSlices = (ArrayList) routeSliceTimings[1];
         if (goBack) {
             createGoBackRoute(timeSlices, routePoints, markerMove.getNewLocation());
-            markerMove.setFinalPosition(player.getMarker().getPosition());
+            markerMove.setFinalPosition(player.getPosition().getLatLng());
             markerMove.setNewLocation(player.getPosition());
         } else {
             markerMove.setFinalPosition(markerMove.getNewLocation().getLatLng());
