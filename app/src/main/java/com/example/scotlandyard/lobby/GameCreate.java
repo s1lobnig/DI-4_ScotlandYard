@@ -79,14 +79,13 @@ public class GameCreate extends AppCompatActivity {
                     maxPlayers.setError("Sie müssen eine Maximalanzahl an Spielern eingeben!");
                     enable = false;
                 }else if (Integer.parseInt(numPlayer) < 2 || Integer.parseInt(numPlayer) > 6) {
-                    maxPlayers.setError("Sie müssen eine gültige Maximalanzahl an Spielern eingeben!");
+                    maxPlayers.setError("Sie müssen eine gültige Maximalanzahl an Spielern eingeben! (2-6 Spieler möglich)");
                     enable = false;
                 }
 
                 if(enable) {
                     Intent gameStartIntent = new Intent(GameCreate.this, ServerLobby.class);
                     Player player = new Player(nickname);
-                    player.setHost(true);
                     ArrayList<Player> playerlist = new ArrayList<>();
                     playerlist.add(player);
                     Lobby lobby = new Lobby(lobbyname, playerlist, randomEvents.isChecked(), chooseMrXRandomly.isChecked(), botMrX.isChecked(), Integer.parseInt(numPlayer));
@@ -96,11 +95,5 @@ public class GameCreate extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
     }
 }

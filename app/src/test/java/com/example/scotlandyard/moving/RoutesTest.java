@@ -2,6 +2,7 @@ package com.example.scotlandyard.moving;
 
 import com.example.scotlandyard.map.Route;
 import com.example.scotlandyard.map.Routes;
+import com.example.scotlandyard.map.ValidatedRoute;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -144,6 +145,7 @@ public class RoutesTest {
                 {42, 43, 1, true, Routes.getBicycleRoutes()[29]},
                 {40, 42, 1, true, Routes.getBicycleRoutes()[30]},
                 {39, 40, 1, true, Routes.getBicycleRoutes()[31]},
+                {40, 39, 1, true, Routes.getBicycleRoutes()[31]},
                 /* Bus */
                 {4, 16, 2, true, Routes.getBusRoutes()[0]},
                 {12, 16, 2, true, Routes.getBusRoutes()[1]},
@@ -156,11 +158,13 @@ public class RoutesTest {
                 {59, 74, 2, true, Routes.getBusRoutes()[8]},
                 {41, 59, 2, true, Routes.getBusRoutes()[9]},
                 {4, 41, 2, true, Routes.getBusRoutes()[10]},
+                {41, 4, 2, true, Routes.getBusRoutes()[10]},
                 /* Taxi */
                 {10, 40, 3, true, Routes.getTaxiDraganRoutes()[0]},
                 {32, 43, 3, true, Routes.getTaxiDraganRoutes()[1]},
                 {12, 32, 3, true, Routes.getTaxiDraganRoutes()[2]},
                 {12, 34, 3, true, Routes.getTaxiDraganRoutes()[3]},
+                {34, 12, 3, true, Routes.getTaxiDraganRoutes()[3]},
                 /* some invalid routes */
                 /* 1 - 2 & 4 */
                 {1, 3, -1, false, null},
@@ -462,7 +466,7 @@ public class RoutesTest {
     private int icon;
     private boolean isValid;
     private Route route;
-    private Object[] routeAndValidity;
+    private ValidatedRoute routeAndValidity;
 
     public RoutesTest(int from, int to, int icon, boolean expectedValidity, Route route) {
         this.from = from - 1;
@@ -479,17 +483,17 @@ public class RoutesTest {
 
     @Test
     public void routeIsValid() {
-        Assert.assertEquals(isValid, routeAndValidity[0]);
+        Assert.assertEquals(isValid, routeAndValidity.isValid());
     }
 
     @Test
     public void isCorrectRoute() {
-        Assert.assertEquals(route, routeAndValidity[1]);
+        Assert.assertEquals(route, routeAndValidity.getRoute());
     }
 
     @Test
     public void isCorrectRouteType() {
-        Assert.assertEquals(icon, routeAndValidity[2]);
+        Assert.assertEquals(icon, routeAndValidity.getRouteType());
     }
 
     @After

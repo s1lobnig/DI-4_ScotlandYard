@@ -1,6 +1,5 @@
 package com.example.scotlandyard.messenger;
 
-import android.os.Parcelable;
 
 import java.io.Serializable;
 

@@ -49,4 +49,9 @@ public class Point implements Serializable {
     public int hashCode() {
         return super.hashCode();
     }
+
+    @Override
+    public String toString() {
+        return latitude + " / " + longitude;
+    }
 }

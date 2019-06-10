@@ -54,5 +54,8 @@
     <string name="SearchServer">Suche nach den Servern...</string>
     <string name="establishConn">Verbindung zum Server wird hergestellt...</string>
     <string name="runde">Runde 1</string>
+    <string name="shouldNotHappen">should not happen</string>
+    <string name="notEnoughTickets">Nicht genügend Tickets</string>
+    <string name="lostConnection">Verbindung zu</string>
 
 </resources>

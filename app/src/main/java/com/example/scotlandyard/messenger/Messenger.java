@@ -1,7 +1,6 @@
 package com.example.scotlandyard.messenger;
 
 import android.content.Intent;
-import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -17,7 +16,6 @@ import com.example.scotlandyard.R;
 import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.control.MessengerInterface;
-import com.example.scotlandyard.control.Server;
 
 import java.util.ArrayList;
 
@@ -113,19 +111,30 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
 
     @Override
     public void showDisconnected(Endpoint endpoint) {
-        //TODO
+        Toast.makeText(Messenger.this, getString(R.string.lostConnection) + " " + endpoint.getName() + " verloren!", Toast.LENGTH_LONG).show();
         Log.d(logTag, "should not be called");
     }
 
     @Override
     public void showSendingFailed(Object object) {
-        //TODO
+        Toast.makeText(Messenger.this, message + " konnte nicht gesendet werden!", Toast.LENGTH_LONG).show();
+        //TODO give possibility to sync the chat again
         Log.d(logTag, "sending has failed");
     }
 
     @Override
     public void onReceivedToast(String toast) {
         Toast.makeText(Messenger.this, toast, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showReconnected(String endpointName) {
+        Toast.makeText(Messenger.this, getString(R.string.lostConnection) + " " + endpointName + " wiederhergestellt!", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showReconnectFailed(String endpointName) {
+        Toast.makeText(Messenger.this, getString(R.string.lostConnection) + " " + endpointName + " konnte nicht wiederhergestellt werden!", Toast.LENGTH_LONG).show();
     }
 
     @Override

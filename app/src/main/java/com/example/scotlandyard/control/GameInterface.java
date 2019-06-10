@@ -1,6 +1,7 @@
 package com.example.scotlandyard.control;
 
 import com.example.scotlandyard.connection.Endpoint;
+import com.example.scotlandyard.Game;
 import com.example.scotlandyard.map.motions.Move;
 
 /**
@@ -38,4 +39,19 @@ public interface GameInterface {
     void onReceivedEndOfGame(boolean hasMrXWon);
 
     void checkIfMrXHasLost();
+    /**
+     * function is called, when reconnected
+     */
+    void showReconnected(String endpointName);
+
+    /**
+     * function is called, when reconnecting failed
+     */
+    void showReconnectFailed(String endpointName);
+
+    /**
+     * function is called when a game is received
+     *
+     */
+    void showNewGame(Game game);
 }

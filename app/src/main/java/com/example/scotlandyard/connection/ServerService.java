@@ -17,6 +17,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,7 +27,6 @@ import java.util.Set;
  * pendingConnections:      current pending connections
  * establishedConnections:  current established connections
  * server:                  interface to server activity
- * singleton:               singleton of ServerService
  */
 public class ServerService extends ConnectionService{
     private String logTag = "ServerService";
@@ -51,8 +51,12 @@ public class ServerService extends ConnectionService{
      * function starts advertising of server
      */
     public void startAdvertising() {
-        if (connectionState == ConnectionState.DISCONNECTED) {
-            connectionState = ConnectionState.ADVERTISING;
+        if (connectionState == ConnectionState.DISCONNECTED || connectionState == ConnectionState.CONNECTED) {
+            if (connectionState == ConnectionState.CONNECTED) {
+                connectionState = ConnectionState.ADVERTISING_CONNECTED;
+            } else {
+                connectionState = ConnectionState.ADVERTISING;
+            }
             AdvertisingOptions.Builder advertisingOptions = new AdvertisingOptions.Builder();
             advertisingOptions.setStrategy(strategy);
             connectionsClient
@@ -73,7 +77,11 @@ public class ServerService extends ConnectionService{
                             new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
-                                    connectionState = ConnectionState.DISCONNECTED;
+                                    if (connectionState == ConnectionState.ADVERTISING_CONNECTED) {
+                                        connectionState = ConnectionState.CONNECTED;
+                                    } else {
+                                        connectionState = ConnectionState.DISCONNECTED;
+                                    }
                                     Log.d(logTag, "startAdvertising failed", e);
                                     server.onFailedAdvertising();
                                 }
@@ -223,11 +231,7 @@ public class ServerService extends ConnectionService{
                 }
             };
 
-    /**
-     * function for broadcasting data over the connection
-     * @param object       object to send
-     */
-    public void send(Object object) {
+    private Payload createPayload(Object object) {
         byte[] data = null;
         try {
             data = serialize(object);
@@ -235,12 +239,24 @@ public class ServerService extends ConnectionService{
             Log.d(logTag, "error in serialization", ex);
             server.onSendingFailed(object);
         }
+        Payload payload = null;
         if (data != null) {
             if (data.length > ConnectionsClient.MAX_BYTES_DATA_SIZE) {
                 Log.d(logTag, "byte array size > MAX_BYTES_DATA_SIZE");
                 // will this be a problem ?
             }
-            Payload payload = Payload.fromBytes(data);
+            payload = Payload.fromBytes(data);
+        }
+        return payload;
+    }
+
+    /**
+     * function for broadcasting data over the connection
+     * @param object       object to send
+     */
+    public void send(Object object) {
+        Payload payload = createPayload(object);
+        if (payload != null ) {
             sendPayload(payload, establishedConnections.keySet());
         }
     }
@@ -250,21 +266,21 @@ public class ServerService extends ConnectionService{
      * @param object       object to send
      */
     public void send(Object object, Set<String> connections) {
-        byte[] data = null;
-        try {
-            data = serialize(object);
-        } catch (IOException ex) {
-            Log.d(logTag, "error in serialization", ex);
-            server.onSendingFailed(object);
-        }
-        if (data != null) {
-            if (data.length > ConnectionsClient.MAX_BYTES_DATA_SIZE) {
-                Log.d(logTag, "byte array size > MAX_BYTES_DATA_SIZE");
-                // will this be a problem ?
-            }
-            Payload payload = Payload.fromBytes(data);
+        Payload payload = createPayload(object);
+        if (payload != null) {
             sendPayload(payload, connections);
         }
+    }
+
+    /**
+     * function for sending data over the connection
+     * @param object       object to send
+     * @param endpoint     endpoint to send to
+     */
+    public void send(Object object, Endpoint endpoint) {
+        Set<String> set = new HashSet<>();
+        set.add(endpoint.getId());
+        send(object, set);
     }
 
     /**
@@ -305,12 +321,10 @@ public class ServerService extends ConnectionService{
                 Log.d(logTag, "disconnecting from "+endpoint.getName());
                 connectionsClient.disconnectFromEndpoint(endpoint.getId());
                 establishedConnections.remove(endpoint.getId());
-                if (connectionState == ConnectionState.ADVERTISING_CONNECTED) {
-                    if (establishedConnections.isEmpty()) {
+                if (establishedConnections.isEmpty()) {
+                    if (connectionState == ConnectionState.ADVERTISING_CONNECTED) {
                         connectionState = ConnectionState.ADVERTISING;
-                    }
-                } else {
-                    if (establishedConnections.isEmpty()) {
+                    } else {
                         connectionState = ConnectionState.DISCONNECTED;
                     }
                 }

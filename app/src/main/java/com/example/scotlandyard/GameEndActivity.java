@@ -7,17 +7,13 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.scotlandyard.map.GameMap;
-
-public class GameEnd_Activity extends AppCompatActivity {
+public class GameEndActivity extends AppCompatActivity {
     private TextView txtWinners;
 
     //Variables for shaking
@@ -51,7 +47,7 @@ public class GameEnd_Activity extends AppCompatActivity {
     }
 
     public void openStart(View view) {
-        startActivity(new Intent(GameEnd_Activity.this, MainActivity.class));
+        startActivity(new Intent(GameEndActivity.this, MainActivity.class));
     }
 
     private void sensors() {
