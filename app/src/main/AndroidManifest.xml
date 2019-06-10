@@ -30,7 +30,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
         <activity
-            android:name=".GameEnd_Activity"
+            android:name=".GameEndActivity"
             android:label="@string/title_activity_game_end_"
             android:theme="@style/AppTheme.NoActionBar.NoActionBar"></activity>
         <activity android:name=".lobby.ClientLobby" />

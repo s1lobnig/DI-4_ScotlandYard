@@ -62,7 +62,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.security.SecureRandom;
-import java.util.ArrayList;
 import java.util.Random;
 
 import static com.example.scotlandyard.R.color.colorPrimary;
@@ -132,7 +131,7 @@ public class GameMap extends AppCompatActivity
                     @Override
                     public void onClick(View v) {
                         if (myPlayer.getSpecialMrXMoves()[0] && myPlayer.getTickets().get(R.string.BLACK_TICKET_KEY).intValue() == 0) {
-                            Toast.makeText(GameMap.this, "Nicht genügend Tickets", Snackbar.LENGTH_LONG).show();
+                            Toast.makeText(GameMap.this, R.string.notEnoughTickets, Snackbar.LENGTH_LONG).show();
                         } else {
                             myPlayer.setSpecialMrXMoves(true, 0);
                         }
@@ -164,7 +163,7 @@ public class GameMap extends AppCompatActivity
                     @Override
                     public void onClick(View v) {
                         if (myPlayer.getSpecialMrXMoves()[1] && myPlayer.getTickets().get(R.string.DOUBLE_TICKET_KEY).intValue() == 0) {
-                            Toast.makeText(GameMap.this, "Nicht genügend Tickets", Snackbar.LENGTH_LONG).show();
+                            Toast.makeText(GameMap.this, R.string.notEnoughTickets, Snackbar.LENGTH_LONG).show();
                         } else {
                             myPlayer.setSpecialMrXMoves(true, 1);
                         }
@@ -217,8 +216,6 @@ public class GameMap extends AppCompatActivity
     private Dialog createDialog() {
         //open Dialog and ask for usage of this ticket
         final Dialog dialog = new Dialog(GameMap.this);
-        TextView title = dialog.findViewById(R.id.txtTitle);
-
         return dialog;
     }
 
@@ -388,7 +385,7 @@ public class GameMap extends AppCompatActivity
                 return false;
             case 6:
                 //Toast to indicate that player has not enough tickets for reachable field
-                Toast.makeText(GameMap.this, "Nicht genügend Tickets", Snackbar.LENGTH_LONG).show();
+                Toast.makeText(GameMap.this, R.string.notEnoughTickets, Snackbar.LENGTH_LONG).show();
                 return false;
             case 7:
                 Toast.makeText(GameMap.this, "KEINE TICKETS MEHR. Du wurdest deaktiviert", Snackbar.LENGTH_LONG).show();
@@ -408,12 +405,8 @@ public class GameMap extends AppCompatActivity
     }
 
     private boolean moveMarker(Point p, Player player, int playerIcon, int r, ValidatedRoute randomRoute) {
-        if (randomEventsEnabled) {
-            if (r <= 3) {
-                if (player.getPenalty() == 0) {
-                    return moveWithRandomEvent(player, p, playerIcon, r, randomRoute);
-                }
-            }
+        if (randomEventsEnabled && r <= 3 && player.getPenalty() == 0) {
+            return moveWithRandomEvent(player, p, playerIcon, r, randomRoute);
         }
         return move(player, p, false, false, playerIcon, randomRoute);
     }
@@ -689,13 +682,11 @@ public class GameMap extends AppCompatActivity
         @Override
         public void onSensorChanged(SensorEvent event) {
             float distance = event.values[0];
-            if (distance < 5) {
-                if (myPlayer.isMrX()) {
-                    Toast.makeText(GameMap.this, "Weitere Bewegung ausführen", Snackbar.LENGTH_LONG).show();
-                    myPlayer.setMoved(false);
-                    myPlayer.setHasCheated(true);
-                    myPlayer.setHasCheatedThisRound(true);
-                }
+            if (distance < 5 && myPlayer.isMrX()) {
+                Toast.makeText(GameMap.this, "Weitere Bewegung ausführen", Snackbar.LENGTH_LONG).show();
+                myPlayer.setMoved(false);
+                myPlayer.setHasCheated(true);
+                myPlayer.setHasCheatedThisRound(true);
             }
         }
 

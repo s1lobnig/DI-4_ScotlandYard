@@ -12,7 +12,6 @@ import com.example.scotlandyard.map.motions.MovingLogic;
 import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.map.roadmap.PositionEntry;
 import com.example.scotlandyard.map.roadmap.TicketEntry;
-import com.google.android.gms.maps.model.Marker;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -48,6 +47,11 @@ public class MovingLogicTest {
                 {"test", true, TAXI_DRAGAN[0], Points.POINTS[9], 11, "TEST", 4, false, false, 3, R.drawable.ticket_blue, 0, 1, 1, 2, new PositionEntry(12, 39), R.drawable.taxi, R.drawable.ticket_blue, R.drawable.ticket_black, false, false, Points.POINTS[39], null, R.drawable.taxi, R.drawable.ticket_black, Points.POINTS[9], Points.POINTS[39], TAXI_DRAGAN[0], R.drawable.taxi, R.drawable.ticket_black, Points.POINTS[9], Points.POINTS[39], TAXI_DRAGAN[0], 0, 1},
                 // tests for goBack and randomRoute
                 {"test", false, BY_FOOT[0], Points.POINTS[0], 1, "TEST", 4, false, false, 0, R.drawable.ticket_yellow, 0, 1, 1, 2, null, R.drawable.pedestrian, R.drawable.ticket_yellow, R.drawable.ticket_yellow, true, false, Points.POINTS[1], new ValidatedRoute(BICYCLE[0], true, 1), R.drawable.bicycle, R.drawable.ticket_yellow, Points.POINTS[0], Points.POINTS[3], BICYCLE[0], R.drawable.bicycle, R.drawable.ticket_yellow, Points.POINTS[0], Points.POINTS[3], BICYCLE[0], 3, 4},
+                {"test", false, BY_FOOT[1], Points.POINTS[3], 1, "TEST", 4, false, false, 0, R.drawable.ticket_yellow, 0, 1, 1, 2, null, R.drawable.pedestrian, R.drawable.ticket_yellow, R.drawable.ticket_yellow, true, false, Points.POINTS[1], new ValidatedRoute(BICYCLE[0], true, 1), R.drawable.bicycle, R.drawable.ticket_yellow, Points.POINTS[3], Points.POINTS[0], BICYCLE[0], R.drawable.bicycle, R.drawable.ticket_yellow, Points.POINTS[3], Points.POINTS[0], BICYCLE[0], 3, 4},
+                {"test", false, BY_FOOT[1], Points.POINTS[3], 1, "TEST", 4, false, false, 0, R.drawable.ticket_yellow, 0, 1, 1, 2, null, R.drawable.pedestrian, R.drawable.ticket_yellow, R.drawable.ticket_yellow, true, false, Points.POINTS[1], new ValidatedRoute(BUS[0], true, 2), R.drawable.bus, R.drawable.ticket_yellow, Points.POINTS[3], Points.POINTS[15], BUS[0], R.drawable.bus, R.drawable.ticket_yellow, Points.POINTS[3], Points.POINTS[15], BUS[0], 2, 3},
+                {"test", false, BICYCLE[0], Points.POINTS[0], 1, "TEST", 4, false, false, 1, R.drawable.ticket_orange, 3, 4, 7, 8, null, R.drawable.bicycle, R.drawable.ticket_orange, R.drawable.ticket_orange, true, false, Points.POINTS[3], new ValidatedRoute(BY_FOOT[0], true, 0), R.drawable.pedestrian, R.drawable.ticket_orange, Points.POINTS[0], Points.POINTS[1], BY_FOOT[0], R.drawable.pedestrian, R.drawable.ticket_orange, Points.POINTS[0], Points.POINTS[1], BY_FOOT[0], 0, 1},
+                {"test", true, BY_FOOT[9], Points.POINTS[9], 1, "TEST", 4, false, false, 0, R.drawable.ticket_yellow, 0, 1, 1, 2, new TicketEntry(2, R.drawable.ticket_yellow), R.drawable.pedestrian, R.drawable.ticket_yellow, R.drawable.ticket_black, true, false, Points.POINTS[8], new ValidatedRoute(TAXI_DRAGAN[0], true, 3), R.drawable.taxi, R.drawable.ticket_black, Points.POINTS[9], Points.POINTS[39], TAXI_DRAGAN[0], R.drawable.taxi, R.drawable.ticket_black, Points.POINTS[9], Points.POINTS[39], TAXI_DRAGAN[0], 0, 1},
+
                 {"test", false, BY_FOOT[0], Points.POINTS[0], 1, "TEST", 4, false, false, 0, R.drawable.ticket_yellow, 0, 1, 1, 2, null, R.drawable.pedestrian, R.drawable.ticket_yellow, R.drawable.ticket_yellow, false, true, Points.POINTS[1], null, R.drawable.pedestrian, R.drawable.ticket_yellow, Points.POINTS[0], Points.POINTS[1], BY_FOOT[0], R.drawable.pedestrian, R.drawable.ticket_yellow, Points.POINTS[0], Points.POINTS[0], BY_FOOT[0], 1, 2},
         });
     }

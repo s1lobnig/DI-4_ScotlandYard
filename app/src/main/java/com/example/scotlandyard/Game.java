@@ -119,9 +119,9 @@ public class Game implements Serializable {
      * @return Player who is MrX
      * returns null, if no MrX in the Game
      */
-    public Player getMrX(){
+    public Player getMrX() {
         for (Player p : players) {
-            if(p.isMrX()){
+            if (p.isMrX()) {
                 return p;
             }
         }
@@ -132,7 +132,7 @@ public class Game implements Serializable {
      * @return Bot if bot is anabled an exists, if not then null will be returned
      */
     public Player getBotMrX() {
-        if(botMrX) {
+        if (botMrX) {
             return getMrX();
         }
         return null;
@@ -140,6 +140,7 @@ public class Game implements Serializable {
 
     /**
      * Finds Player with given name in the game
+     *
      * @param nickname name of player
      * @return Player if one with this name exists, otherwise returns null
      */
@@ -154,6 +155,7 @@ public class Game implements Serializable {
 
     /**
      * checks if a round is finished
+     *
      * @return true if round has end and next round can start
      */
     private boolean isRoundFinished() {
@@ -167,17 +169,18 @@ public class Game implements Serializable {
 
     /**
      * deactivates the given player and returns a value to check if next round can be started
+     *
      * @param player
      * @return -1 if round has not finished
      * 1 if round has finished
      * 0 if game ends because last round was reached
      */
-    public int deactivatePlayer(Player player){
-        if(player.isMrX()){
+    public int deactivatePlayer(Player player) {
+        if (player.isMrX()) {
             setBotMrX(true);
         }
         player.setActive(false);
-        return  tryNextRound();
+        return tryNextRound();
     }
 
     /**
@@ -188,11 +191,9 @@ public class Game implements Serializable {
      * 0 if game ends because last round was reached
      */
     public int tryNextRound() {
-        if (isRoundMrX()) {
-            if (getMrX().isMoved()) {
-                setRoundMrX(false);
-                //return -1;
-            }
+        if (isRoundMrX() && getMrX().isMoved()) {
+            setRoundMrX(false);
+            //return -1;
         }
         if (isRoundFinished()) {
             if (round < NUM_ROUNDS) {

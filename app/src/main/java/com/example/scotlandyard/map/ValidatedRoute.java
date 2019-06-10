@@ -1,6 +1,8 @@
 package com.example.scotlandyard.map;
 
-public class ValidatedRoute {
+import java.io.Serializable;
+
+public class ValidatedRoute implements Serializable {
     private Route route;
     private boolean valid;
     private int routeType;

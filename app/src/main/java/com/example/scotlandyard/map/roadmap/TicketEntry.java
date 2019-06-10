@@ -12,18 +12,18 @@ import android.widget.ImageView;
 import com.example.scotlandyard.R;
 
 public class TicketEntry extends Entry {
-    private Ticket ticketUsed;
+    private int ticketUsed;
 
     public TicketEntry(int turnNumber, int ticket) {
         super(turnNumber);
-        this.ticketUsed = Ticket.get(ticket);
+        this.ticketUsed = ticket;
     }
 
     public void setTicketUsed(int ticket) {
-        this.ticketUsed = Ticket.get(ticket);
+        this.ticketUsed = ticket;
     }
 
-    public Ticket getTicketUsed() {
+    public int getTicketUsed() {
         return ticketUsed;
     }
 
@@ -33,10 +33,10 @@ public class TicketEntry extends Entry {
         View convertView = viewInflater.inflate(R.layout.layout_road_map_entry_ticket, null);
         ImageView ticketImage = (ImageView) convertView.findViewById(R.id.vehicleImg);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            ticketImage.setImageIcon(Icon.createWithResource(context, ticketUsed.getSign()));
+            ticketImage.setImageIcon(Icon.createWithResource(context, ticketUsed));
         } else {
 
-            ticketImage.setImageResource(ticketUsed.getSign());
+            ticketImage.setImageResource(ticketUsed);
         }
         ((EditText) convertView.findViewById(R.id.turn)).setText(turnNumber + "");
         return convertView;

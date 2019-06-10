@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".GameEnd_Activity"
+    tools:context=".GameEndActivity"
     android:background="@drawable/hintergrund"
     tools:showIn="@layout/activity_game_end_">
 

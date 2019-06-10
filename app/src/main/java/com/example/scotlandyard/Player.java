@@ -1,6 +1,5 @@
 package com.example.scotlandyard;
 
-import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.map.Point;
 import com.example.scotlandyard.map.Points;
 import com.example.scotlandyard.map.Routes;
@@ -47,16 +46,17 @@ public class Player implements Serializable {
         this.hasCheated = false;
         this.hasCheatedThisRound = false;
         this.penalty = 0;
-        this.specialMrXMoves = new boolean[]{false,false};
+        this.specialMrXMoves = new boolean[]{false, false};
     }
 
     public void setSpecialMrXMoves(boolean[] specialMrXMoves) {
-        if(isMrX) {
+        if (isMrX) {
             this.specialMrXMoves = specialMrXMoves;
         }
     }
+
     public void setSpecialMrXMoves(boolean specialMrXMove, int i) {
-        if(isMrX) {
+        if (isMrX) {
             this.specialMrXMoves[i] = specialMrXMove;
         }
     }
@@ -182,14 +182,12 @@ public class Player implements Serializable {
 
     public int[] getRemainingTickets() {
 
-        int[] remainingTickets = {tickets.get(R.string.PEDESTRIAN_TICKET_KEY).intValue(),
+        return new int[]{tickets.get(R.string.PEDESTRIAN_TICKET_KEY).intValue(),
                 tickets.get(R.string.BICYCLE_TICKET_KEY).intValue(),
                 tickets.get(R.string.BUS_TICKET_KEY).intValue(),
                 tickets.get(R.string.TAXI_TICKET_KEY).intValue(),
                 tickets.get(R.string.DOUBLE_TICKET_KEY).intValue(),
                 tickets.get(R.string.BLACK_TICKET_KEY).intValue()};
-
-        return remainingTickets;
     }
 
     public boolean isMrX() {
@@ -278,7 +276,7 @@ public class Player implements Serializable {
         if (game.getRound() > Game.getNumRounds()) {
             return 1;
         }
-        if(!isActive){
+        if (!isActive) {
             return 2;
         }
         //if it is not players turn -> ignore move

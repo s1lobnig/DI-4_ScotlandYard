@@ -118,7 +118,6 @@ public class ServerLobby extends AppCompatActivity implements ServerLobbyInterfa
     @Override
     public void showConnectionFailed(String endpointName) {
         //TODO show user that connection to endpoint has failed
-
         String notification = "Verbindung zum Server konnte nicht hergestellt werden.";
         Toast.makeText(getApplicationContext(), notification, Toast.LENGTH_LONG).show();
     }

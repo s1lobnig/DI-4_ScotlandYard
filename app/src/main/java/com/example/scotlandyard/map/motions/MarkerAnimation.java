@@ -5,14 +5,11 @@ Licensed under Apache 2.0: http://www.apache.org/licenses/LICENSE-2.0.html
 
 package com.example.scotlandyard.map.motions;
 
-import android.content.Context;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
-import android.widget.Toast;
 
-import com.example.scotlandyard.R;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -40,7 +37,7 @@ public class MarkerAnimation {
      * @param duration           .............time the animation should last
      * @param icon               .................marker icon during the animation
      */
-   public static void moveMarkerToTarget(final Marker marker, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, float duration, int icon, final int finalIcon) {
+    public static void moveMarkerToTarget(final Marker marker, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, float duration, int icon, final int finalIcon) {
         final LatLng startPosition = marker.getPosition();
         final Handler handler = new Handler();
         final long start = SystemClock.uptimeMillis();
@@ -79,7 +76,7 @@ public class MarkerAnimation {
      * @param route              ................intermediate points between current position and final position
      * @param finalPosition      ........position to be reached at the end of the animation
      * @param latLngInterpolator ...an Interpolator to calculate the values during the animation
-     * @param timeSlices           .............time the animation should last
+     * @param timeSlices         .............time the animation should last
      * @param icon               .................marker icon during the animation
      */
     public static void moveMarkerToTarget(final Marker marker, final ArrayList<LatLng> route, final ArrayList<Float> timeSlices, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, int icon, int finalIcon) {

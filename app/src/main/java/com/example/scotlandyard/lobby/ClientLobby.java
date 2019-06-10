@@ -60,27 +60,27 @@ public class ClientLobby extends AppCompatActivity implements ClientLobbyInterfa
 
     @Override
     public void showStartedDiscovering() {
-        Log.d(logTag, "should not happen");
+        Log.d(logTag, getString(R.string.shouldNotHappen));
     }
 
     @Override
     public void showFailedDiscovering() {
-        Log.d(logTag, "should not happen");
+        Log.d(logTag, getString(R.string.shouldNotHappen));
     }
 
     @Override
     public void updateServerList(ArrayList<Endpoint> serverList) {
-        Log.d(logTag, "should not happen");
+        Log.d(logTag, getString(R.string.shouldNotHappen));
     }
 
     @Override
     public void showStoppedDiscovery() {
-        Log.d(logTag, "should not happen");
+        Log.d(logTag, getString(R.string.shouldNotHappen));
     }
 
     @Override
     public void showConnected(String endpointName) {
-        Log.d(logTag, "should not happen");
+        Log.d(logTag, getString(R.string.shouldNotHappen));
     }
 
     @Override
@@ -96,7 +96,7 @@ public class ClientLobby extends AppCompatActivity implements ClientLobbyInterfa
 
     @Override
     public void showConnectionFailed(String endpointName) {
-        Log.d(logTag, "should not happen");
+        Log.d(logTag, getString(R.string.shouldNotHappen));
     }
 
     @Override
@@ -110,12 +110,12 @@ public class ClientLobby extends AppCompatActivity implements ClientLobbyInterfa
 
     @Override
     public void showAcceptingFailed(String endpointName) {
-        Log.d(logTag, "should not happen");
+        Log.d(logTag, getString(R.string.shouldNotHappen));
     }
 
     @Override
     public void showSendingFailed(Object object) {
-        Log.d(logTag, "should not happen");
+        Log.d(logTag, getString(R.string.shouldNotHappen));
     }
 
     @Override

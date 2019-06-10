@@ -20,7 +20,6 @@ import com.google.android.gms.nearby.connection.ConnectionsClient;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Random;
 
 /**
  * class representing a server in the app
@@ -325,7 +324,7 @@ public class Server extends Device implements ServerInterface {
             player.setActive(true);
             ((ServerService)connectionService).send(this.game, endpoint);
             if (player.isMrX()){
-                //ToDo: deactivate bot
+                // TODO: deactivate bot
             }
         }
     }
