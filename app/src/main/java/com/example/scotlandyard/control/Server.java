@@ -5,6 +5,7 @@ import android.os.SystemClock;
 import android.util.Log;
 
 import com.example.scotlandyard.Player;
+import com.example.scotlandyard.R;
 import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.connection.ServerInterface;
 import com.example.scotlandyard.connection.ServerService;
@@ -172,7 +173,12 @@ public class Server extends Device implements ServerInterface {
         Player player = game.findPlayer(move.getNickname());
 
         send(move);
-        player.setMoved(true);
+        if(!player.getSpecialMrXMoves()[1]){
+            player.setMoved(true);
+        }else{
+            player.decreaseNumberOfTickets(R.string.DOUBLE_TICKET_KEY);
+            player.setSpecialMrXMoves(false, 1);
+        }
         int result = game.tryNextRound();
         if (result == 1) {
             send(new MapNotification("NEXT_ROUND"));

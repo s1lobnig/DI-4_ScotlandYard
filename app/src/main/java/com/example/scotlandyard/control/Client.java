@@ -3,6 +3,7 @@ package com.example.scotlandyard.control;
 import android.util.Log;
 
 import com.example.scotlandyard.Player;
+import com.example.scotlandyard.R;
 import com.example.scotlandyard.connection.ClientInterface;
 import com.example.scotlandyard.connection.ClientService;
 import com.example.scotlandyard.connection.Endpoint;
@@ -159,6 +160,9 @@ public class Client extends Device implements ClientInterface {
                 if(player.isMrX()){
                     game.setRoundMrX(false);
                 }
+        }else{
+            player.setSpecialMrXMoves(false, 1);
+            player.decreaseNumberOfTickets(R.string.DOUBLE_TICKET_KEY);
         }
         if (gameObserver != null) {
             gameObserver.updateMove(move);
