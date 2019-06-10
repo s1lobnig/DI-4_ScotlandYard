@@ -3,6 +3,7 @@ package com.example.scotlandyard.control;
 import android.util.Log;
 
 import com.example.scotlandyard.Player;
+import com.example.scotlandyard.QuitNotification;
 import com.example.scotlandyard.R;
 import com.example.scotlandyard.connection.ClientInterface;
 import com.example.scotlandyard.connection.ClientService;
@@ -138,6 +139,19 @@ public class Client extends Device implements ClientInterface {
         if (object instanceof Game) {
             onGame((Game) object);
         }
+        if (object instanceof QuitNotification) {
+            onQuit((QuitNotification) object);
+        }
+    }
+
+    private void onQuit(QuitNotification quitNotification) {
+        Log.d(logTag, "quit received");
+        if (messengerObserver != null) {
+            messengerObserver.onQuit(quitNotification.getPlayerName(), quitNotification.isServerQuit());
+        }
+        if (gameObserver != null) {
+            gameObserver.onQuit(quitNotification.getPlayerName(), quitNotification.isServerQuit());
+        }
     }
 
     private void onMessage(Message message) {
@@ -249,11 +263,7 @@ public class Client extends Device implements ClientInterface {
         if (lobbyObserver != null) {
             lobbyObserver.showDisconnected(endpoint.getName());
         }
-        if(quit){
-            send(new MapNotification("PLAYER_QUITTED"));
-        }
         if (!quit) {
-            send(new MapNotification("PLAYER_LOST"));
             lost = endpoint;
             ((ClientService) connectionService).startDiscovery();
         }

@@ -4,6 +4,7 @@ import android.util.ArraySet;
 import android.util.Log;
 
 import com.example.scotlandyard.Player;
+import com.example.scotlandyard.QuitNotification;
 import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.connection.ServerInterface;
 import com.example.scotlandyard.connection.ServerService;
@@ -155,7 +156,18 @@ public class Server extends Device implements ServerInterface {
                 send(entry);
             }
         }
-
+        if (object instanceof QuitNotification) {
+            QuitNotification quitNotification = (QuitNotification) object;
+            Log.d(logTag, "quit received");
+            if (messengerObserver != null) {
+                messengerObserver.onQuit(quitNotification.getPlayerName(), quitNotification.isServerQuit());
+            }
+            if (gameObserver != null) {
+                gameObserver.onQuit(quitNotification.getPlayerName(), quitNotification.isServerQuit());
+            }
+            send(quitNotification);
+            //TODO make quited player inactive or whatever
+        }
     }
 
     private void manageMove(Move move) {
@@ -241,12 +253,6 @@ public class Server extends Device implements ServerInterface {
             ManageGameData.deactivatePlayer(game, lostPlayer);
             send(new MapNotification("PLAYER " + lostPlayer.getNickname() + " LOST"));
             printNotification("Verbindung zu " + lostPlayer.getNickname() + " verloren");
-        }
-        if(game != null && quit){
-            Player quittedPlayer = ManageGameData.findPlayer(game, endpoint.getName());
-            ManageGameData.deactivatePlayer(game, quittedPlayer);
-            send(new MapNotification("PLAYER " + quittedPlayer.getNickname() + " QUITTED"));
-            printNotification(quittedPlayer.getNickname() + " hat das Spiel beendet");
         }
         if (gameObserver != null) {
             gameObserver.showDisconnected(endpoint);

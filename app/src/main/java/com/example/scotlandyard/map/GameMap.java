@@ -22,6 +22,7 @@ import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
 import com.example.scotlandyard.MainActivity;
+import com.example.scotlandyard.QuitNotification;
 import com.example.scotlandyard.control.Client;
 import com.example.scotlandyard.control.Server;
 import com.example.scotlandyard.control.Device;
@@ -285,15 +286,12 @@ public class GameMap extends AppCompatActivity
             roadMapDialog.show(getSupportFragmentManager(), "RoadMapDisplay");
         }else if(id == R.id.nav_logout){
             if(!device.isServer()){
-                device.send(new MapNotification("PLAYER QUITTED"));
+                device.send(new QuitNotification(device.getNickname(), false));
                 ((Client) Device.getInstance()).disconnect();
                 intent = new Intent(this, MainActivity.class);
             }else{
-                device.send(new MapNotification("PLAYER QUITTED"));
-                for(Player p : device.getGame().getPlayers()){
-                    p.setActive(false);
-                    intent = new Intent(this, MainActivity.class);
-                }
+                device.send(new QuitNotification(device.getNickname(), true));
+                intent = new Intent(this, MainActivity.class);
                 ((Server) Device.getInstance()).disconnect();
             }
 
@@ -772,6 +770,15 @@ public class GameMap extends AppCompatActivity
             Device.getInstance().setGame(game);
             setupGame();
             //ToDo: show current round
+        }
+    }
+
+    @Override
+    public void onQuit(String playerName, boolean serverQuit) {
+        if (serverQuit) {
+            //TODO start new intent main activity, server has quited
+        } else {
+            //TODO show that playerName has quited
         }
     }
 

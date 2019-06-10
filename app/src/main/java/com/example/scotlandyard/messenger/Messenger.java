@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.example.scotlandyard.R;
 import com.example.scotlandyard.connection.Endpoint;
+import com.example.scotlandyard.control.Client;
 import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.control.MessengerInterface;
 import com.example.scotlandyard.control.Server;
@@ -137,6 +138,15 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
     @Override
     public void showReconnectFailed(String endpointName) {
         Toast.makeText(Messenger.this, "Verbindung zu " + endpointName + " konnte nicht wiederhergestellt werden!", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onQuit(String playerName, boolean serverQuit) {
+        if (serverQuit) {
+            //TODO start new intent main activity, server has quited
+        } else {
+            //TODO show that playerName has quited
+        }
     }
 
     @Override

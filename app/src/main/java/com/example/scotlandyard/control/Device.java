@@ -2,6 +2,7 @@ package com.example.scotlandyard.control;
 
 import android.util.Log;
 
+import com.example.scotlandyard.QuitNotification;
 import com.example.scotlandyard.connection.ConnectionService;
 import com.example.scotlandyard.lobby.Game;
 import com.example.scotlandyard.lobby.Lobby;
@@ -181,6 +182,10 @@ public class Device {
      */
     public void send(Entry entry) {
         connectionService.send(entry);
+    }
+
+    public void send(QuitNotification quitNotification) {
+        connectionService.send(quitNotification);
     }
 
     /**
