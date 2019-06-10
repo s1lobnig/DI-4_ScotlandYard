@@ -20,6 +20,7 @@ import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.view.menu.ShowableListMenu;
 import android.util.Log;
 
 import com.example.scotlandyard.EndGame.EndGame;
@@ -391,7 +392,6 @@ public class GameMap extends AppCompatActivity
                             if (myPlayer.getCountCheatingmoves() == 0)
                                 device.send(new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r, randomRoute));
                             else {
-                                System.out.println("...............");
                                 myPlayer.decCountCheatingmoves();
                                 device.send(new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r, randomRoute, true));
                             }
@@ -493,8 +493,11 @@ public class GameMap extends AppCompatActivity
         Point playerLoc = player.getPosition();
         Point newLocation = p;
         LatLng finalPos;
+
+        System.out.println("+++++"+Points.getIndex(currentPoint) +"><"+ Points.getIndex(newLocation));
         Object[] routeToTake = Routes.getRoute(Points.getIndex(currentPoint), Points.getIndex(newLocation));
         Route r = (Route) routeToTake[1];
+
         if (randomRoute) {
             r = (Route) randRoute[1];
             if (Points.getIndex(playerLoc) + 1 == r.getStartPoint()) {
@@ -733,6 +736,7 @@ public class GameMap extends AppCompatActivity
 
     @Override
     public void updateMove(Move move) {
+        System.out.println("++++++++++ IN UPDATE MOVE" + move.toString());
         Player player = ManageGameData.findPlayer(device.getGame(), move.getNickname());
         int field = move.getField();
         Point point = Points.getPoints()[field];

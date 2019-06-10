@@ -1,12 +1,14 @@
 package com.example.scotlandyard.control;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.scotlandyard.EndGame.EndGame;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.connection.ServerInterface;
 import com.example.scotlandyard.connection.ServerService;
+import com.example.scotlandyard.map.GameMap;
 import com.example.scotlandyard.map.ManageGameData;
 import com.example.scotlandyard.map.MapNotification;
 import com.example.scotlandyard.map.Point;
@@ -127,6 +129,14 @@ public class Server extends Device implements ServerInterface {
         }
         if (object instanceof Move) {
             Log.d(logTag, "move received");
+            System.out.println("---------------------- SERVER ON DATA RECIEVED MOVE" + ((Move) object).getField());
+            if(((Move) object).Ischeatingmove()){
+                Random randomNumber = new Random();
+                int i = randomNumber.nextInt(100) %20;
+                if(i > 0)
+                    printNotification("Mr X schummelt ...");
+            }
+            System.out.println(object.toString());
             manageMove((Move) object);
         }
         if (object instanceof Entry) {
@@ -147,7 +157,7 @@ public class Server extends Device implements ServerInterface {
 
     private void manageMove(Move move) {
         Player player = ManageGameData.findPlayer(this.game, move.getNickname());
-
+        System.out.println("++++++++++++++IN MANAGE MOVE" + move.toString());
         //if it is not players turn -> ignore move
         if (player.isMoved() || (player.isMrX() && !game.isRoundMrX()) || (!player.isMrX() && game.isRoundMrX())) {
             send(new MapNotification("Ein anderer Spieler ist noch nicht gezogen. Du musst noch warten."));
@@ -174,12 +184,13 @@ public class Server extends Device implements ServerInterface {
                     gameObserver.onRecievedEndOfGame(false);
                     break;
             }
-            if (gameObserver != null) {
-                gameObserver.updateMove(move);
-            } else {
-                player.setPosition(Points.POINTS[move.getField()]);
-            }
         }
+        if (gameObserver != null) {
+            gameObserver.updateMove(move);
+        } else {
+            player.setPosition(Points.POINTS[move.getField()]);
+        }
+
     }
 
     public void moveBot() {

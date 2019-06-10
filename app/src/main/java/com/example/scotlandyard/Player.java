@@ -124,6 +124,8 @@ public class Player implements Serializable {
 
     public void setMarker(Marker marker) {
         this.marker = marker;
+        /*if(isMrX)
+            marker.setVisible(false);*/
     }
 
     public void decreaseNumberOfTickets(Integer key) {

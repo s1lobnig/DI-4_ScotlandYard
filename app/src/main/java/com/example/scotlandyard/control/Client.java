@@ -1,6 +1,7 @@
 package com.example.scotlandyard.control;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.scotlandyard.EndGame.EndGame;
 import com.example.scotlandyard.Player;
@@ -9,6 +10,7 @@ import com.example.scotlandyard.connection.ClientService;
 import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.lobby.Game;
 import com.example.scotlandyard.lobby.Lobby;
+import com.example.scotlandyard.map.GameMap;
 import com.example.scotlandyard.map.ManageGameData;
 import com.example.scotlandyard.map.MapNotification;
 import com.example.scotlandyard.map.Points;
@@ -120,18 +122,19 @@ public class Client extends Device implements ClientInterface {
             Log.d(logTag, "move received");
             Player player = ManageGameData.findPlayer(game, move.getNickname());
             System.out.println("-----------"+move.Ischeatingmove());
-            if (!player.getSpecialMrXMoves()[1])
-                if(!move.Ischeatingmove())
+            if (!player.getSpecialMrXMoves()[1]) {
+                if (!move.Ischeatingmove())
                     player.setMoved(true);
-
+            }
+            if(((Move) object).Ischeatingmove()){
+                Random randomNumber = new Random();
+                int i = randomNumber.nextInt(100) %20;
+                if(i > 0)
+                    printNotification("Mr X schummelt !!!");
+            }
             if (gameObserver != null) {
                 gameObserver.updateMove(move);
 
-                Random randomNumber = new Random();
-                int i = randomNumber.nextInt(100) %20;
-
-                if(i > 15)
-                    printNotification("MrX schummelt");
 
             } else {
                 player.setPosition(Points.POINTS[move.getField()]);
