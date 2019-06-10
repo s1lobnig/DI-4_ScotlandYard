@@ -1,4 +1,4 @@
-package com.example.scotlandyard.map.routefactories;
+package com.example.scotlandyard.map.routetypes;
 
 import com.example.scotlandyard.map.Point;
 import com.example.scotlandyard.map.Route;

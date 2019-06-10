@@ -313,6 +313,10 @@ public class Player implements Serializable {
         return 0;
     }
 
+    public void setTickets(HashMap<Integer, Integer> tickets) {
+        this.tickets = tickets;
+    }
+
     public void resetPlayer() {
         isActive = true;
         moved = false;

@@ -1,7 +1,6 @@
 package com.example.scotlandyard.moving;
 
 import com.example.scotlandyard.Player;
-import com.example.scotlandyard.map.Point;
 import com.example.scotlandyard.map.Points;
 import com.example.scotlandyard.map.Route;
 import com.example.scotlandyard.map.Routes;
@@ -17,10 +16,10 @@ import org.junit.runners.Parameterized;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.example.scotlandyard.map.routefactories.BicycleRoutes.BICYCLE;
-import static com.example.scotlandyard.map.routefactories.BusRoutes.BUS;
-import static com.example.scotlandyard.map.routefactories.FootRoutes.BY_FOOT;
-import static com.example.scotlandyard.map.routefactories.TaxiRoutes.TAXI_DRAGAN;
+import static com.example.scotlandyard.map.routetypes.BicycleRoutes.BICYCLE;
+import static com.example.scotlandyard.map.routetypes.BusRoutes.BUS;
+import static com.example.scotlandyard.map.routetypes.FootRoutes.BY_FOOT;
+import static com.example.scotlandyard.map.routetypes.TaxiRoutes.TAXI_DRAGAN;
 
 @RunWith(Parameterized.class)
 public class BotMoveTest {
