@@ -32,6 +32,44 @@ public class MovingLogicTest {
     @Parameterized.Parameters(name = "{index}: {2} is tested, start = {3}, mrX: {1}, goBack: {20}, randomRoutes: {19}")
     public static Iterable data() {
         return Arrays.asList(new Object[][]{
+                /*
+                Parameters:
+                0...player name
+                1...player is mr x
+                2...route taken
+                3...start point
+                4...round
+                5...game name
+                6...max players
+                7...random events enabled
+                8...bot enabled
+                9...route type
+                10..ticket
+                11..# intermediates
+                12..# time slices
+                13..# intermediates GO BACK
+                14..# time slices GO BACK
+                15..expected Entry
+                16..expected icon
+                17..expected ticket
+                18..expected special move ticket mr x
+                19..random routes?
+                20..go back?
+                21..next point
+                22..random route
+                23..expected icon prepare
+                24..expected ticket prepare
+                25..expected current prepare
+                26..expected next prepare
+                27..expected route prepare
+                28..expected icon create
+                29..expected ticket create
+                30..expected current create
+                31..expected next create
+                32..expected route create
+                33..expected # intermediates create
+                34..expected # time slices create
+                 */
                 // genreal tests
                 {"test", false, BY_FOOT[0], Points.POINTS[0], 1, "TEST", 4, false, false, 0, R.drawable.ticket_yellow, 0, 1, 1, 2, null, R.drawable.pedestrian, R.drawable.ticket_yellow, R.drawable.ticket_yellow, false, false, Points.POINTS[1], null, R.drawable.pedestrian, R.drawable.ticket_yellow, Points.POINTS[0], Points.POINTS[1], BY_FOOT[0], R.drawable.pedestrian, R.drawable.ticket_yellow, Points.POINTS[0], Points.POINTS[1], BY_FOOT[0], 0, 1},
                 {"test", false, BICYCLE[0], Points.POINTS[0], 1, "TEST", 4, false, false, 1, R.drawable.ticket_orange, 3, 4, 7, 8, null, R.drawable.bicycle, R.drawable.ticket_orange, R.drawable.ticket_orange, false, false, Points.POINTS[3], null, R.drawable.bicycle, R.drawable.ticket_orange, Points.POINTS[0], Points.POINTS[3], BICYCLE[0], R.drawable.bicycle, R.drawable.ticket_orange, Points.POINTS[0], Points.POINTS[3], BICYCLE[0], 3, 4},
