@@ -285,13 +285,16 @@ public class GameMap extends AppCompatActivity
             roadMapDialog.show(getSupportFragmentManager(), "RoadMapDisplay");
         }else if(id == R.id.nav_logout){
             if(!device.isServer()){
+                device.send(new MapNotification("PLAYER QUITTED"));
                 ((Client) Device.getInstance()).disconnect();
-                Toast.makeText(this, myPlayer.getNickname() + " hat das Spiel erlassen", Snackbar.LENGTH_LONG).show();
-                myPlayer.setActive(false);
                 intent = new Intent(this, MainActivity.class);
             }else{
-                //Wäre ein Problem xD
-                // hier eine Nachricht an Clients schicken, dass Spiel vom Server beendet wurde
+                device.send(new MapNotification("PLAYER QUITTED"));
+                for(Player p : device.getGame().getPlayers()){
+                    p.setActive(false);
+                    intent = new Intent(this, MainActivity.class);
+                }
+                ((Server) Device.getInstance()).disconnect();
             }
 
         }

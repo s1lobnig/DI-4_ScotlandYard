@@ -93,7 +93,7 @@ public class Client extends Device implements ClientInterface {
         if (lost != null) {
             for (Endpoint e : discoveredEndpoints.values()) {
                 if (e.getId().equals(lost.getId())) {
-                    ((ClientService)connectionService).connectToEndpoint(e);
+                    ((ClientService) connectionService).connectToEndpoint(e);
                     break;
                 }
             }
@@ -157,10 +157,10 @@ public class Client extends Device implements ClientInterface {
         Log.d(logTag, "move received");
         Player player = ManageGameData.findPlayer(game, move.getNickname());
         if (!player.getSpecialMrXMoves()[1])
-                player.setMoved(true);
+            player.setMoved(true);
         if (gameObserver != null) {
             gameObserver.updateMove(move);
-        }else{
+        } else {
             player.setPosition(Points.POINTS[move.getField()]);
         }
     }
@@ -202,7 +202,14 @@ public class Client extends Device implements ClientInterface {
         if (txt.length == 3 && txt[0].equals("PLAYER") && txt[2].equals("QUITTED")) {
             Player player = ManageGameData.findPlayer(game, txt[1]);
             ManageGameData.deactivatePlayer(game, player);
+            quit = true;
             printNotification(txt[1] + " hat das Spiel verlassen");
+            return;
+        }
+        if (txt.length == 3 && txt[0].equals("PLAYER") && txt[2].equals("LOST")) {
+            Player player = ManageGameData.findPlayer(game, txt[1]);
+            ManageGameData.deactivatePlayer(game, player);
+            printNotification("Verbindung zu " + txt[1] + " verloren");
             return;
         }
         if (txt.length == 2 && txt[0].equals("END")) {
@@ -242,8 +249,14 @@ public class Client extends Device implements ClientInterface {
         if (lobbyObserver != null) {
             lobbyObserver.showDisconnected(endpoint.getName());
         }
-        lost = endpoint;
-        ((ClientService)connectionService).startDiscovery();
+        if(quit){
+            send(new MapNotification("PLAYER_QUITTED"));
+        }
+        if (!quit) {
+            send(new MapNotification("PLAYER_LOST"));
+            lost = endpoint;
+            ((ClientService) connectionService).startDiscovery();
+        }
     }
 
     @Override
@@ -324,7 +337,8 @@ public class Client extends Device implements ClientInterface {
     }
 
     public void disconnect() {
-        ((ClientService)connectionService).disconnect();
+        ((ClientService) connectionService).disconnect();
         quit = true;
     }
+
 }

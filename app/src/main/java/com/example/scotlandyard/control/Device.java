@@ -247,4 +247,5 @@ public class Device {
     public void addMessage(Message message) {
         messageList.add(message);
     }
+
 }

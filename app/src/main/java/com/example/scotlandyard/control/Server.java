@@ -70,12 +70,12 @@ public class Server extends Device implements ServerInterface {
         }
         if (!lost.isEmpty()) {
             if (gameObserver != null) {
-                gameObserver.showReconnectFailed(lost.get(lost.size()-1).getName());
+                gameObserver.showReconnectFailed(lost.get(lost.size() - 1).getName());
             }
             if (messengerObserver != null) {
-                messengerObserver.showReconnectFailed(lost.get(lost.size()-1).getName());
+                messengerObserver.showReconnectFailed(lost.get(lost.size() - 1).getName());
             }
-            lost.remove(lost.get(lost.size()-1));
+            lost.remove(lost.get(lost.size() - 1));
         }
     }
 
@@ -106,9 +106,9 @@ public class Server extends Device implements ServerInterface {
         }
         if (!lost.isEmpty()) {
             if (lost.contains(endpoint)) {
-                ((ServerService)connectionService).acceptConnection(endpoint);
+                ((ServerService) connectionService).acceptConnection(endpoint);
             } else {
-                ((ServerService)connectionService).rejectConnection(endpoint);
+                ((ServerService) connectionService).rejectConnection(endpoint);
             }
         }
     }
@@ -139,7 +139,7 @@ public class Server extends Device implements ServerInterface {
             if (messengerObserver != null) {
                 messengerObserver.updateMessages(messageList);
             }
-            if(gameObserver != null){
+            if (gameObserver != null) {
                 gameObserver.onMessage();
             }
         }
@@ -172,7 +172,7 @@ public class Server extends Device implements ServerInterface {
             case 1:
                 send(new MapNotification("NEXT_ROUND"));
                 printNotification("Runde " + game.getRound());
-                if(game.isRoundMrX() && game.isBotMrX()){
+                if (game.isRoundMrX() && game.isBotMrX()) {
                     moveBot();
                 }
                 break;
@@ -185,7 +185,7 @@ public class Server extends Device implements ServerInterface {
         }
         if (gameObserver != null) {
             gameObserver.updateMove(move);
-        }else{
+        } else {
             player.setPosition(Points.POINTS[move.getField()]);
         }
     }
@@ -193,24 +193,24 @@ public class Server extends Device implements ServerInterface {
     public void moveBot() {
         Player bot = game.getBotMrX();
         bot.setMoved(true);
-        int position = Points.getIndex(bot.getPosition())+1;
+        int position = Points.getIndex(bot.getPosition()) + 1;
         Route route = (Route) Routes.getBotRoute(position, game.getPlayers())[1];
 
         int r = (new Random()).nextInt(100) % 10;
         Object[] randomRoute = Routes.getRandomRoute(position, route.getEndPoint());
         int newPosition;
-        if(route.getEndPoint() == position){
+        if (route.getEndPoint() == position) {
             newPosition = route.getStartPoint();
-        }else{
+        } else {
             newPosition = route.getEndPoint();
         }
-        Move move = new Move(bot.getNickname(), newPosition-1, r, randomRoute);
+        Move move = new Move(bot.getNickname(), newPosition - 1, r, randomRoute);
         send(move);
         game.setRoundMrX(false);
         if (gameObserver != null) {
             gameObserver.updateMove(move);
-        }else{
-            bot.setPosition(Points.POINTS[position-1]);
+        } else {
+            bot.setPosition(Points.POINTS[position - 1]);
         }
     }
 
@@ -236,11 +236,17 @@ public class Server extends Device implements ServerInterface {
         Log.d(logTag, "endpoint disconnected");
 
         //if game has started
-        if(game != null){
+        if (game != null && !quit) {
             Player lostPlayer = ManageGameData.findPlayer(game, endpoint.getName());
             ManageGameData.deactivatePlayer(game, lostPlayer);
-            send(new MapNotification("PLAYER " + lostPlayer.getNickname() + " QUITTED"));
-            printNotification(lostPlayer.getNickname() + " hat das Spiel verlassen");
+            send(new MapNotification("PLAYER " + lostPlayer.getNickname() + " LOST"));
+            printNotification("Verbindung zu " + lostPlayer.getNickname() + " verloren");
+        }
+        if(game != null && quit){
+            Player quittedPlayer = ManageGameData.findPlayer(game, endpoint.getName());
+            ManageGameData.deactivatePlayer(game, quittedPlayer);
+            send(new MapNotification("PLAYER " + quittedPlayer.getNickname() + " QUITTED"));
+            printNotification(quittedPlayer.getNickname() + " hat das Spiel beendet");
         }
         if (gameObserver != null) {
             gameObserver.showDisconnected(endpoint);
@@ -252,8 +258,11 @@ public class Server extends Device implements ServerInterface {
             lobby.removePlayer(endpoint.getName());
             lobbyObserver.updateLobby(lobby);
         }
-        lost.add(endpoint);
-        ((ServerService)connectionService).startAdvertising();
+
+        if (!quit) {
+            lost.add(endpoint);
+            ((ServerService) connectionService).startAdvertising();
+        }
     }
 
     @Override
@@ -307,8 +316,8 @@ public class Server extends Device implements ServerInterface {
             //activate player in game (let him make moves again)
             Player player = ManageGameData.findPlayer(game, endpoint.getName());
             player.setActive(true);
-            ((ServerService)connectionService).send(this.game, endpoint);
-            if (player.isMrX()){
+            ((ServerService) connectionService).send(this.game, endpoint);
+            if (player.isMrX()) {
                 //ToDo: deactivate bot
             }
         }
@@ -325,7 +334,7 @@ public class Server extends Device implements ServerInterface {
     }
 
     public void disconnect() {
-        ((ServerService)connectionService).disconnectFromAll();
+        ((ServerService) connectionService).disconnectFromAll();
         quit = true;
     }
 
