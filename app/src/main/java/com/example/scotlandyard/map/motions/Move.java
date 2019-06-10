@@ -8,14 +8,14 @@ public class Move implements Serializable {
     private int field;
     private int randomEventTrigger;
     private Object[] randomRoute;
-    private boolean ischeatingmove;
+    private boolean isCheatingMove;
 
     public Move(String nickname, int field, int randomEventTrigger, Object[] randomRoute) {
         this.nickname = nickname;
         this.field = field;
         this.randomEventTrigger = randomEventTrigger;
         this.randomRoute = randomRoute;
-        this.ischeatingmove = false;
+        this.isCheatingMove = false;
     }
 
     public Move(String nickname, int field, int randomEventTrigger, Object[] randomRoute, boolean ischeatingmove) {
@@ -23,7 +23,7 @@ public class Move implements Serializable {
         this.field = field;
         this.randomEventTrigger = randomEventTrigger;
         this.randomRoute = randomRoute;
-        this.ischeatingmove = ischeatingmove;
+        this.isCheatingMove = ischeatingmove;
     }
 
     public String getNickname() {
@@ -59,11 +59,11 @@ public class Move implements Serializable {
         return "Nickname = " + this.nickname + "; Field = " + this.field;
     }
 
-    public boolean Ischeatingmove() {
-        return ischeatingmove;
+    public boolean isCheatingMove() {
+        return isCheatingMove;
     }
 
-    public void setIscheatingmove(boolean ischeatingmove) {
-        this.ischeatingmove = ischeatingmove;
+    public void setCheatingMove(boolean cheatingMove) {
+        this.isCheatingMove = cheatingMove;
     }
 }

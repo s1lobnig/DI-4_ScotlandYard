@@ -193,7 +193,7 @@ public class Device {
         connectionService.send(entry);
     }
 
-    public void send(EndGame hasmrxwon){connectionService.send(hasmrxwon);}
+    public void send(EndGame hasWonMrX){connectionService.send(hasWonMrX);}
     /**
      * prints txt on display
      *

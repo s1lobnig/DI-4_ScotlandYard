@@ -20,7 +20,6 @@ import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.view.menu.ShowableListMenu;
 import android.util.Log;
 
 import com.example.scotlandyard.EndGame.EndGame;
@@ -372,7 +371,7 @@ public class GameMap extends AppCompatActivity
                             int idx = Points.getIndex(newLocation);
                             Object[] randomRoute = Routes.getRandomRoute(Points.getIndex(myPlayer.getPosition()) + 1, idx + 1);
                             if (Device.isServer()) {
-                                checkIfMrXhaslost();
+                                checkIfMrXHasLost();
 
                                 if ((!myPlayer.isMrX() && device.getGame().isRoundMrX()) || (myPlayer.isMrX() && !device.getGame().isRoundMrX())) {
                                     return false;
@@ -385,7 +384,7 @@ public class GameMap extends AppCompatActivity
                                     if(myPlayer.getCountCheatingmoves() == 0)
                                         myPlayer.setMoved(true);
                                 }
-                                checkIfMrXhaslost();
+                                checkIfMrXHasLost();
 
                                 tryNextRound();
                             }
@@ -782,18 +781,18 @@ public class GameMap extends AppCompatActivity
     }
 
     @Override
-    public void onRecievedEndOfGame(boolean hasMrXWon) {
+    public void onReceivedEndOfGame(boolean hasMrXWon) {
         Intent i = new Intent(GameMap.this, GameEnd_Activity.class);
         i.putExtra("Winner", hasMrXWon);
         startActivity(i);
     }
 
     @Override
-    public void checkIfMrXhaslost() {
+    public void checkIfMrXHasLost() {
         if(ManageGameData.isMRXFound(device.getGame())) {
             System.out.println("Same Place");
             device.send(new EndGame(false));
-            onRecievedEndOfGame(false);
+            onReceivedEndOfGame(false);
         };
     }
 

@@ -1,17 +1,14 @@
 package com.example.scotlandyard.control;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.scotlandyard.EndGame.EndGame;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.connection.ServerInterface;
 import com.example.scotlandyard.connection.ServerService;
-import com.example.scotlandyard.map.GameMap;
 import com.example.scotlandyard.map.ManageGameData;
 import com.example.scotlandyard.map.MapNotification;
-import com.example.scotlandyard.map.Point;
 import com.example.scotlandyard.map.Points;
 import com.example.scotlandyard.map.Route;
 import com.example.scotlandyard.map.Routes;
@@ -20,8 +17,8 @@ import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.messenger.Message;
 import com.google.android.gms.nearby.connection.ConnectionsClient;
 
+import java.security.SecureRandom;
 import java.util.Random;
-import java.util.Set;
 
 /**
  * class representing a server in the app
@@ -123,20 +120,12 @@ public class Server extends Device implements ServerInterface {
             if (messengerObserver != null) {
                 messengerObserver.updateMessages(messageList);
             }
-            if(gameObserver != null){
+            if (gameObserver != null) {
                 gameObserver.onMessage();
             }
         }
         if (object instanceof Move) {
             Log.d(logTag, "move received");
-            System.out.println("---------------------- SERVER ON DATA RECIEVED MOVE" + ((Move) object).getField());
-            if(((Move) object).Ischeatingmove()){
-                Random randomNumber = new Random();
-                int i = randomNumber.nextInt(100) %20;
-                if(i > 0)
-                    printNotification("Mr X schummelt ...");
-            }
-            System.out.println(object.toString());
             manageMove((Move) object);
         }
         if (object instanceof Entry) {
@@ -147,73 +136,72 @@ public class Server extends Device implements ServerInterface {
                 send(entry);
             }
         }
-        if(object instanceof EndGame){
-            gameObserver.checkIfMrXhaslost();
+        if (object instanceof EndGame) {
+            gameObserver.checkIfMrXHasLost();
         }
-
 
 
     }
 
     private void manageMove(Move move) {
         Player player = ManageGameData.findPlayer(this.game, move.getNickname());
-        System.out.println("++++++++++++++IN MANAGE MOVE" + move.toString());
         //if it is not players turn -> ignore move
         if (player.isMoved() || (player.isMrX() && !game.isRoundMrX()) || (!player.isMrX() && game.isRoundMrX())) {
             send(new MapNotification("Ein anderer Spieler ist noch nicht gezogen. Du musst noch warten."));
             return;
         }
-        send(move);
-        if(!move.Ischeatingmove()) {
+        if (!move.isCheatingMove()) {
             player.setMoved(true);
+        }
 
-            switch (ManageGameData.tryNextRound(game)) {
-                case 1:
-                    send(new MapNotification("NEXT_ROUND"));
-                    printNotification("Runde " + game.getRound());
-                    if (game.isRoundMrX() && game.isBotMrX()) {
-                        moveBot();
-                    }
-                    break;
-                case 0:
-                    send(new EndGame(true)); //MisterX hat gewonnen
-                    gameObserver.onRecievedEndOfGame(true);
-                    break;
-                case 2:
-                    send(new EndGame(false));
-                    gameObserver.onRecievedEndOfGame(false);
-                    break;
-            }
+
+        send(move);
+
+        switch (ManageGameData.tryNextRound(game)) {
+            case 1:
+                send(new MapNotification("NEXT_ROUND"));
+                printNotification("Runde " + game.getRound());
+                if (game.isRoundMrX() && game.isBotMrX()) {
+                    moveBot();
+                }
+                break;
+            case 0:
+                send(new EndGame(true)); //MisterX hat gewonnen
+                gameObserver.onReceivedEndOfGame(true);
+                break;
+            case 2:
+                send(new EndGame(false));
+                gameObserver.onReceivedEndOfGame(false);
+                break;
         }
         if (gameObserver != null) {
             gameObserver.updateMove(move);
         } else {
             player.setPosition(Points.POINTS[move.getField()]);
         }
-
     }
 
     public void moveBot() {
         Player bot = game.getBotMrX();
         bot.setMoved(true);
-        int position = Points.getIndex(bot.getPosition())+1;
+        int position = Points.getIndex(bot.getPosition()) + 1;
         Route route = (Route) Routes.getBotRoute(position, game.getPlayers())[1];
 
         int r = (new Random()).nextInt(100) % 10;
         Object[] randomRoute = Routes.getRandomRoute(position, route.getEndPoint());
         int newPosition;
-        if(route.getEndPoint() == position){
+        if (route.getEndPoint() == position) {
             newPosition = route.getStartPoint();
-        }else{
+        } else {
             newPosition = route.getEndPoint();
         }
-        Move move = new Move(bot.getNickname(), newPosition-1, r, randomRoute);
+        Move move = new Move(bot.getNickname(), newPosition - 1, r, randomRoute);
         send(move);
         game.setRoundMrX(false);
         if (gameObserver != null) {
             gameObserver.updateMove(move);
-        }else{
-            bot.setPosition(Points.POINTS[position-1]);
+        } else {
+            bot.setPosition(Points.POINTS[position - 1]);
         }
     }
 
@@ -230,7 +218,7 @@ public class Server extends Device implements ServerInterface {
         Log.d(logTag, "endpoint disconnected");
 
         //if game has started
-        if(game != null){
+        if (game != null) {
             Player lostPlayer = ManageGameData.findPlayer(game, endpoint.getName());
             ManageGameData.deactivatePlayer(game, lostPlayer);
             send(new MapNotification("PLAYER " + lostPlayer.getNickname() + " QUITTED"));

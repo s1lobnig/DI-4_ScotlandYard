@@ -1,7 +1,6 @@
 package com.example.scotlandyard.control;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.scotlandyard.EndGame.EndGame;
 import com.example.scotlandyard.Player;
@@ -10,7 +9,6 @@ import com.example.scotlandyard.connection.ClientService;
 import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.lobby.Game;
 import com.example.scotlandyard.lobby.Lobby;
-import com.example.scotlandyard.map.GameMap;
 import com.example.scotlandyard.map.ManageGameData;
 import com.example.scotlandyard.map.MapNotification;
 import com.example.scotlandyard.map.Points;
@@ -19,6 +17,7 @@ import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.messenger.Message;
 import com.google.android.gms.nearby.connection.ConnectionsClient;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
@@ -121,21 +120,16 @@ public class Client extends Device implements ClientInterface {
             Move move = (Move) object;
             Log.d(logTag, "move received");
             Player player = ManageGameData.findPlayer(game, move.getNickname());
-            System.out.println("-----------"+move.Ischeatingmove());
             if (!player.getSpecialMrXMoves()[1]) {
-                if (!move.Ischeatingmove())
+                if (!move.isCheatingMove())
                     player.setMoved(true);
             }
-            if(((Move) object).Ischeatingmove()){
-                Random randomNumber = new Random();
-                int i = randomNumber.nextInt(100) %20;
-                if(i > 0)
-                    printNotification("Mr X schummelt !!!");
-            }
+
+
+
+
             if (gameObserver != null) {
                 gameObserver.updateMove(move);
-
-
             } else {
                 player.setPosition(Points.POINTS[move.getField()]);
             }
@@ -163,7 +157,7 @@ public class Client extends Device implements ClientInterface {
             }
         }
         if(object instanceof EndGame){
-            gameObserver.onRecievedEndOfGame(((EndGame) object).isHasMrxwon());
+            gameObserver.onReceivedEndOfGame(((EndGame) object).isHasMrxwon());
         }
     }
 
@@ -183,7 +177,7 @@ public class Client extends Device implements ClientInterface {
             return;
         }
         if (txt.length == 2 && txt[0].equals("END")) {
-            printNotification(txt[1] + " hat gewonnen mit einen Penis");
+            printNotification(txt[1] + " hat gewonnen.");
             return;
         }
         printNotification(notification.getNotification());

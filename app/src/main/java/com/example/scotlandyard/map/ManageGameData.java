@@ -45,17 +45,17 @@ public class ManageGameData {
         return true;
     }
 
-    public static void deactivatePlayer(Game game, Player player){
-        if(player.isMrX()){
+    public static void deactivatePlayer(Game game, Player player) {
+        if (player.isMrX()) {
             game.setBotMrX(true);
         }
         player.setActive(false);
         tryNextRound(game);
     }
 
-    public static boolean isMRXFound(Game game){
-        for (Player p : game.getPlayers()){
-            if(game.getMrX().getNickname()!= p.getNickname() && game.getMrX().getPosition().equals(p.getPosition())) {
+    public static boolean isMRXFound(Game game) {
+        for (Player p : game.getPlayers()) {
+            if (game.getMrX().getNickname() != p.getNickname() && game.getMrX().getPosition().equals(p.getPosition())) {
                 return true;
             }
         }
@@ -70,21 +70,16 @@ public class ManageGameData {
             }
         }
         if (isRoundFinished(game)) {
-            int retval;
-            for (Player p : game.getPlayers()){
-                if(game.getMrX().getNickname()!= p.getNickname() && game.getMrX().getPosition().equals(p.getPosition())) {
+            if (game.getRound() < Game.getNumRounds()) {
+                if (isMrXFound(game)) {
                     return 2;
                 }
-            }
-
-            if (game.getRound() < Game.getNumRounds()) {
                 //Round finished
                 game.nextRound();
                 game.setRoundMrX(true);
                 for (Player p : game.getPlayers()) {
                     p.setMoved(false);
                 }
-
                 return 1;
             }
             //Game finished
@@ -94,8 +89,13 @@ public class ManageGameData {
         return -1;
     }
 
-    private static boolean isMrXFound() {
-        return true;
+    private static boolean isMrXFound(Game game) {
+        for (Player p : game.getPlayers()) {
+            if (!getMrX(game).getNickname().equals(p.getNickname()) && getMrX(game).getPosition().equals(p.getPosition())) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
@@ -106,6 +106,14 @@ public class ManageGameData {
             }
         }
         return false;
+    }
+
+    private static Player getMrX(Game game) {
+        for (Player p : game.getPlayers()) {
+            if (p.isMrX())
+                return p;
+        }
+        return null;
     }
 
     private static void givePlayerPositionAndIcon(Game game) {

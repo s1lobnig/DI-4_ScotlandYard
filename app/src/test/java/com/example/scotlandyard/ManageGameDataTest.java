@@ -3,6 +3,9 @@ package com.example.scotlandyard;
 import com.example.scotlandyard.lobby.Game;
 import com.example.scotlandyard.lobby.Lobby;
 import com.example.scotlandyard.map.ManageGameData;
+import com.example.scotlandyard.map.Points;
+import com.example.scotlandyard.map.Route;
+import com.example.scotlandyard.map.Routes;
 
 import org.junit.After;
 import org.junit.Before;
@@ -20,7 +23,7 @@ public class ManageGameDataTest {
     Player p3;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         p1 = new Player("player1");
         p2 = new Player("player2");
         p3 = new Player("player3");
@@ -28,32 +31,36 @@ public class ManageGameDataTest {
         playerlist.add(p1);
         playerlist.add(p2);
         playerlist.add(p3);
-
+        int i = 0;
+        for (Player p : playerlist) {
+            p.setPosition(Points.POINTS[i]);
+            i++;
+        }
         game = new Game("Test", 4, 3, 5, false, false, playerlist);
         game.getPlayers().get(0).setMrX(true);
     }
 
     @Test
-    public void testFindPlayerTrue(){
+    public void testFindPlayerTrue() {
         Player p = ManageGameData.findPlayer(game, "player1");
         assertEquals("player1", p.getNickname());
     }
 
     @Test
-    public void testFindPlayerFalse(){
+    public void testFindPlayerFalse() {
         Player p = ManageGameData.findPlayer(game, "someone");
         assertNull(p);
     }
 
     @Test
-    public void testDeactivatePlayer(){
+    public void testDeactivatePlayer() {
         p1.setMoved(false);
         ManageGameData.deactivatePlayer(game, p1);
         assertFalse(p1.isActive());
     }
 
     @Test
-    public void testTryNextRoundTrue(){
+    public void testTryNextRoundTrue() {
         p1.setMoved(true);
         p2.setMoved(true);
         p3.setMoved(true);
@@ -64,7 +71,7 @@ public class ManageGameDataTest {
     }
 
     @Test
-    public void testTryNextRoundTrueDeacivePlayer(){
+    public void testTryNextRoundTrueDeacivePlayer() {
         p1.setMoved(true);
         p2.setMoved(false);
         p2.setActive(false);
@@ -76,7 +83,7 @@ public class ManageGameDataTest {
     }
 
     @Test
-    public void testTryNextRoundFalse(){
+    public void testTryNextRoundFalse() {
         p1.setMoved(true);
         p2.setMoved(false);
         p3.setMoved(true);
@@ -87,7 +94,7 @@ public class ManageGameDataTest {
     }
 
     @Test
-    public void testTryNextRoundEnd(){
+    public void testTryNextRoundEnd() {
         p1.setMoved(true);
         p2.setMoved(true);
         p3.setMoved(true);
@@ -99,7 +106,7 @@ public class ManageGameDataTest {
     }
 
     @Test
-    public void testmakeGame(){
+    public void testmakeGame() {
         Lobby lobby = new Lobby("Test", playerlist, false, false, false, 4);
         game = ManageGameData.makeGame(lobby);
 
@@ -114,7 +121,7 @@ public class ManageGameDataTest {
     }
 
     private void checkMarkerPositionIcon() {
-        for (Player p : game.getPlayers()){
+        for (Player p : game.getPlayers()) {
             assertNotNull(p.getIcon());
             assertNotNull(p.getPosition());
             assertNotNull(p.getTickets());
@@ -122,16 +129,16 @@ public class ManageGameDataTest {
     }
 
     private void checkMisterX(Game game) {
-        for (Player p : game.getPlayers()){
-            if(p.isMrX()){
-               return;
+        for (Player p : game.getPlayers()) {
+            if (p.isMrX()) {
+                return;
             }
         }
         fail();
     }
 
     @After
-    public void tearDown(){
+    public void tearDown() {
         game = null;
     }
 }

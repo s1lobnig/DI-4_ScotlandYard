@@ -35,7 +35,7 @@ public interface GameInterface {
      */
     void onReceivedToast(String toast);
 
-    void onRecievedEndOfGame(boolean hasMrXWon);
+    void onReceivedEndOfGame(boolean hasMrXWon);
 
-    void checkIfMrXhaslost();
+    void checkIfMrXHasLost();
 }
