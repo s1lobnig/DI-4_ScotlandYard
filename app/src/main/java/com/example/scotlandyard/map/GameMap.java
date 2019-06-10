@@ -18,6 +18,7 @@ import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
 import com.example.scotlandyard.EndGame.EndGame;
+import com.example.scotlandyard.GameEndActivity;
 import com.example.scotlandyard.GameEnd_Activity;
 import com.example.scotlandyard.control.Server;
 import com.example.scotlandyard.control.Device;
@@ -652,18 +653,18 @@ public class GameMap extends AppCompatActivity
 
     @Override
     public void onReceivedEndOfGame(boolean hasMrXWon) {
-        Intent i = new Intent(GameMap.this, GameEnd_Activity.class);
+        Intent i = new Intent(GameMap.this, GameEndActivity.class);
         i.putExtra("Winner", hasMrXWon);
         startActivity(i);
     }
 
     @Override
     public void checkIfMrXHasLost() {
-        if(ManageGameData.isMRXFound(device.getGame())) {
+/*        if(ManageGameData.isMRXFound(device.getGame())) {
             System.out.println("Same Place");
             device.send(new EndGame(false));
             onReceivedEndOfGame(false);
-        };
+        };*/
     }
 
     @Override
