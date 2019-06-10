@@ -166,7 +166,12 @@ public class Server extends Device implements ServerInterface {
                 gameObserver.onQuit(quitNotification.getPlayerName(), quitNotification.isServerQuit());
             }
             send(quitNotification);
-            //TODO make quited player inactive or whatever
+            //make quited player inactive or whatever
+            for(Player p: game.getPlayers()){
+                if(p.getNickname().equals(quitNotification.getPlayerName())){
+                    p.setActive(false);
+                }
+            }
         }
     }
 

@@ -2,6 +2,7 @@ package com.example.scotlandyard.messenger;
 
 import android.content.Intent;
 import android.os.Parcelable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -13,6 +14,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.scotlandyard.MainActivity;
 import com.example.scotlandyard.R;
 import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.control.Client;
@@ -143,9 +145,13 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
     @Override
     public void onQuit(String playerName, boolean serverQuit) {
         if (serverQuit) {
-            //TODO start new intent main activity, server has quited
+            //start new intent main activity, server has quited
+            Toast.makeText(this, playerName + " hat das Spiel beendet.", Snackbar.LENGTH_LONG).show();
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
         } else {
-            //TODO show that playerName has quited
+            //show that playerName has quited
+            Toast.makeText(this, playerName + " hat das Spiel verlassen.", Snackbar.LENGTH_LONG).show();
         }
     }
 

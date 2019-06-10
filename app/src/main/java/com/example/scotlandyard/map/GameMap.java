@@ -776,9 +776,13 @@ public class GameMap extends AppCompatActivity
     @Override
     public void onQuit(String playerName, boolean serverQuit) {
         if (serverQuit) {
-            //TODO start new intent main activity, server has quited
+            //start new intent main activity, server has quited
+            Toast.makeText(this, playerName + " hat das Spiel beendet.", Snackbar.LENGTH_LONG).show();
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
         } else {
-            //TODO show that playerName has quited
+            //show that playerName has quited
+            Toast.makeText(this, playerName + " hat das Spiel verlassen.", Snackbar.LENGTH_LONG).show();
         }
     }
 
