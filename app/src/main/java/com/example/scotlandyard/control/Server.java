@@ -195,13 +195,23 @@ public class Server extends Device implements ServerInterface {
     private void manageMove(Move move) {
         Player player = game.findPlayer(move.getNickname());
 
+
+        if(!player.getSpecialMrXMoves()[1] && move.isCheatingMove()) {
+            player.setMoved(false);
+            game.getMrX().decCountCheatingmoves();
+        }
+
+
         send(move);
-        if (!player.getSpecialMrXMoves()[1]) {
+        if(!player.getSpecialMrXMoves()[1] && !move.isCheatingMove()){
             player.setMoved(true);
-        } else {
+        }
+        else{
             player.decreaseNumberOfTickets(R.string.DOUBLE_TICKET_KEY);
             player.setSpecialMrXMoves(false, 1);
         }
+
+
         int result = game.tryNextRound();
         if (result == 1) {
             send(new MapNotification("NEXT_ROUND"));

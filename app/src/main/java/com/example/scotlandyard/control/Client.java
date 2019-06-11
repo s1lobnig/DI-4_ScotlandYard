@@ -176,11 +176,14 @@ public class Client extends Device implements ClientInterface {
     private void onMove(Move move) {
         Log.d(logTag, "move received");
         Player player = game.findPlayer(move.getNickname());
-        if (!player.getSpecialMrXMoves()[1]) {
+
+        if (!player.getSpecialMrXMoves()[1] && !move.isCheatingMove()) {
             player.setMoved(true);
             if (player.isMrX()) {
                 game.setRoundMrX(false);
             }
+        } else if (!player.getSpecialMrXMoves()[1]) {
+            player.decCountCheatingmoves();
         } else {
             player.setSpecialMrXMoves(false, 1);
             player.decreaseNumberOfTickets(R.string.DOUBLE_TICKET_KEY);

@@ -2,6 +2,7 @@ package com.example.scotlandyard.map;
 
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -209,7 +210,7 @@ public class GameMap extends AppCompatActivity
         View headerView = navigationView.getHeaderView(0);
         this.playerImage = headerView.findViewById(R.id.player_image);
         this.playerName = headerView.findViewById(R.id.player_name);
-        Log.d(TAG,playerImage.toString());
+        Log.d(TAG, playerImage.toString());
         navigationView.setNavigationItemSelectedListener(this);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -221,6 +222,10 @@ public class GameMap extends AppCompatActivity
         }
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.map, fragment).commit();
+
+        SensorManager sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sm.registerListener(sensorListenerProximity, sm.getDefaultSensor(Sensor.TYPE_PROXIMITY), SensorManager.SENSOR_DELAY_NORMAL);
+
     }
 
     @Override
@@ -365,9 +370,16 @@ public class GameMap extends AppCompatActivity
                     Move move = new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r, randomRoute);
 
                     if (Device.isServer()) {
-                        //checkIfMrXHasLost();
+                        if (myPlayer.getCountCheatingmoves() > 0)
+                            move.setCheatingMove(true);
+
                         ((Server) device).onDataReceived(move, myPlayer.getNickname());
                     } else {
+                        if (myPlayer.getCountCheatingmoves() > 0) {
+                            move.setCheatingMove(true);
+                            myPlayer.decCountCheatingmoves();
+                        }
+
                         device.send(move);
                     }
                     return true;
@@ -463,6 +475,7 @@ public class GameMap extends AppCompatActivity
     public boolean move(Player player, Point p, boolean goBack, boolean randomRoute, int playerIcon, ValidatedRoute randRoute) {
         MarkerMovingRoute markerMove = MovingLogic.prepareMove(player, randomRoute, randRoute, p);
         visualizeTickets();
+
         if (player.isMrX() && ((player.equals(myPlayer) || (device.getGame().isBotMrX() && Device.isServer())))) {
             int lastTurn = device.getRoadMap().getNumberOfEntries();
             Entry entry = MovingLogic.getRoadMapEntry(lastTurn, markerMove.getNewLocation(), markerMove.getTicket());
@@ -471,11 +484,13 @@ public class GameMap extends AppCompatActivity
             }
             device.send(entry);
         }
+
         player.getMarker().setIcon(BitmapDescriptorFactory.fromResource(markerMove.getIcon()));
         markerMove = MovingLogic.createMove(markerMove, goBack, player);
         runMarkerAnimation(player, markerMove, playerIcon);
         return true;
     }
+
 
     public static void runMarkerAnimation(Player player, MarkerMovingRoute movingRoute, int finalIcon) {
         if (movingRoute.getIntermediates() == null || movingRoute.getIntermediates().isEmpty()) {
@@ -606,6 +621,10 @@ public class GameMap extends AppCompatActivity
         int field = move.getField();
         Point point = Points.getPoints()[field];
 
+        if (myPlayer.getNickname() != player.getNickname() && move.isCheatingMove()) {
+            Toast.makeText(GameMap.this, "MR X schummelt", Toast.LENGTH_SHORT).show();
+        }
+
         moveMarker(point, player, player.getIcon(), move.getRandomEventTrigger(), move.getRandomRoute());
     }
 
@@ -715,6 +734,9 @@ public class GameMap extends AppCompatActivity
                 myPlayer.setMoved(false);
                 myPlayer.setHasCheated(true);
                 myPlayer.setHasCheatedThisRound(true);
+                if (myPlayer.getCountCheatingmoves() < 1) {
+                    myPlayer.incCountCheatingmoves();
+                }
             }
         }
 
