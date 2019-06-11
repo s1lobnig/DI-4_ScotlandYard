@@ -18,6 +18,7 @@ import com.google.android.gms.nearby.connection.ConnectionsClient;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * class representing a client in app
@@ -155,7 +156,8 @@ public class Client extends Device implements ClientInterface {
     private void onMove(Move move) {
         Log.d(logTag, "move received");
         Player player = game.findPlayer(move.getNickname());
-        if (!player.getSpecialMrXMoves()[1]){
+
+        if (!player.getSpecialMrXMoves()[1] && !player.getSpecialMrXMoves()[1] && !move.ischeatingmove()){
                 player.setMoved(true);
                 if(player.isMrX()){
                     game.setRoundMrX(false);
@@ -329,4 +331,5 @@ public class Client extends Device implements ClientInterface {
     public void connectToEndpoint(int position) {
         ((ClientService) connectionService).connectToEndpoint(serverList.get(position));
     }
+
 }

@@ -24,6 +24,8 @@ public class Player implements Serializable {
     private HashMap<Integer, Integer> tickets; //Hashmap for storing tickets
     private boolean hasCheated;
     private boolean hasCheatedThisRound;
+    private int countCheatingmoves;
+
     private boolean[] specialMrXMoves;
 
     private int penalty;
@@ -280,6 +282,7 @@ public class Player implements Serializable {
             return 2;
         }
         //if it is not players turn -> ignore move
+        System.out.println(moved + " " +game.isRoundMrX() +" " + isMrX );
         if (moved || (isMrX && !game.isRoundMrX()) || (!isMrX && game.isRoundMrX())) {
             return 3;
         }
@@ -326,4 +329,17 @@ public class Player implements Serializable {
         hasCheatedThisRound = false;
         penalty = 0;
     }
+
+    public void incCountCheatingmoves() {
+        this.countCheatingmoves++;
+    }
+
+    public void decCountCheatingmoves() {
+        this.countCheatingmoves--;
+    }
+
+    public int getCountCheatingmoves(){
+        return this.countCheatingmoves;
+    }
+
 }
