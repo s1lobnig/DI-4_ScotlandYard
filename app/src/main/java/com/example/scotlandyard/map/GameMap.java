@@ -60,7 +60,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -208,7 +207,7 @@ public class GameMap extends AppCompatActivity
         View headerView = navigationView.getHeaderView(0);
         this.playerImage = headerView.findViewById(R.id.player_image);
         this.playerName = headerView.findViewById(R.id.player_name);
-        Log.d(TAG,playerImage.toString());
+        Log.d(TAG, playerImage.toString());
         navigationView.setNavigationItemSelectedListener(this);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -367,13 +366,13 @@ public class GameMap extends AppCompatActivity
                     Move move = new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r, randomRoute);
 
                     if (Device.isServer()) {
-                        if(myPlayer.getCountCheatingmoves() > 0)
-                            move.setIscheatingmove(true);
+                        if (myPlayer.getCountCheatingmoves() > 0)
+                            move.setCheatingMove(true);
 
                         ((Server) device).onDataReceived(move, myPlayer.getNickname());
                     } else {
-                        if(myPlayer.getCountCheatingmoves() > 0) {
-                            move.setIscheatingmove(true);
+                        if (myPlayer.getCountCheatingmoves() > 0) {
+                            move.setCheatingMove(true);
                             myPlayer.decCountCheatingmoves();
                         }
 
@@ -617,7 +616,7 @@ public class GameMap extends AppCompatActivity
         int field = move.getField();
         Point point = Points.getPoints()[field];
 
-        if(myPlayer.getNickname() != player.getNickname() && move.ischeatingmove()){
+        if (myPlayer.getNickname() != player.getNickname() && move.isCheatingMove()) {
             Toast.makeText(GameMap.this, "MR X schummelt", Toast.LENGTH_SHORT).show();
         }
 
@@ -716,7 +715,9 @@ public class GameMap extends AppCompatActivity
                 myPlayer.setMoved(false);
                 myPlayer.setHasCheated(true);
                 myPlayer.setHasCheatedThisRound(true);
-                myPlayer.incCountCheatingmoves();
+                if (myPlayer.getCountCheatingmoves() < 1) {
+                    myPlayer.incCountCheatingmoves();
+                }
             }
         }
 

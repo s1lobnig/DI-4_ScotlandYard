@@ -18,7 +18,6 @@ import com.google.android.gms.nearby.connection.ConnectionsClient;
 
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Random;
 
 /**
  * class representing a client in app
@@ -93,7 +92,7 @@ public class Client extends Device implements ClientInterface {
         if (lost != null) {
             for (Endpoint e : discoveredEndpoints.values()) {
                 if (e.getId().equals(lost.getId())) {
-                    ((ClientService)connectionService).connectToEndpoint(e);
+                    ((ClientService) connectionService).connectToEndpoint(e);
                     break;
                 }
             }
@@ -157,18 +156,20 @@ public class Client extends Device implements ClientInterface {
         Log.d(logTag, "move received");
         Player player = game.findPlayer(move.getNickname());
 
-        if (!player.getSpecialMrXMoves()[1] && !player.getSpecialMrXMoves()[1] && !move.ischeatingmove()){
-                player.setMoved(true);
-                if(player.isMrX()){
-                    game.setRoundMrX(false);
-                }
-        }else{
+        if (!player.getSpecialMrXMoves()[1] && !move.isCheatingMove()) {
+            player.setMoved(true);
+            if (player.isMrX()) {
+                game.setRoundMrX(false);
+            }
+        } else if (!player.getSpecialMrXMoves()[1]) {
+            player.decCountCheatingmoves();
+        } else {
             player.setSpecialMrXMoves(false, 1);
             player.decreaseNumberOfTickets(R.string.DOUBLE_TICKET_KEY);
         }
         if (gameObserver != null) {
             gameObserver.updateMove(move);
-        }else{
+        } else {
             player.setPosition(Points.POINTS[move.getField()]);
         }
     }
@@ -252,7 +253,7 @@ public class Client extends Device implements ClientInterface {
             lobbyObserver.showDisconnected(endpoint.getName());
         }
         lost = endpoint;
-        ((ClientService)connectionService).startDiscovery();
+        ((ClientService) connectionService).startDiscovery();
     }
 
     @Override

@@ -21,7 +21,6 @@ import com.google.android.gms.nearby.connection.ConnectionsClient;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Random;
 
 /**
  * class representing a server in the app
@@ -174,15 +173,14 @@ public class Server extends Device implements ServerInterface {
         Player player = game.findPlayer(move.getNickname());
 
 
-        if(!player.getSpecialMrXMoves()[1] && move.ischeatingmove()) {
+        if(!player.getSpecialMrXMoves()[1] && move.isCheatingMove()) {
             player.setMoved(false);
             game.getMrX().decCountCheatingmoves();
-            move.setIscheatingmove(true);
         }
 
 
         send(move);
-        if(!player.getSpecialMrXMoves()[1] && !move.ischeatingmove()){
+        if(!player.getSpecialMrXMoves()[1] && !move.isCheatingMove()){
             player.setMoved(true);
         }
         else{
