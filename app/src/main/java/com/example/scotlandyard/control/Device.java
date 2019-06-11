@@ -2,7 +2,7 @@ package com.example.scotlandyard.control;
 
 import android.util.Log;
 
-import com.example.scotlandyard.Game_End.GameEnd;
+import com.example.scotlandyard.gameend.GameEnd;
 import com.example.scotlandyard.QuitNotification;
 import com.example.scotlandyard.connection.ConnectionService;
 import com.example.scotlandyard.Game;

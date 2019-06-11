@@ -4,7 +4,7 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
 
-import com.example.scotlandyard.Game_End.GameEnd;
+import com.example.scotlandyard.gameend.GameEnd;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.QuitNotification;
 import com.example.scotlandyard.R;

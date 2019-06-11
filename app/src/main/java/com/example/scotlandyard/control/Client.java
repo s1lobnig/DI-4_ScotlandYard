@@ -2,7 +2,7 @@ package com.example.scotlandyard.control;
 
 import android.util.Log;
 
-import com.example.scotlandyard.Game_End.GameEnd;
+import com.example.scotlandyard.gameend.GameEnd;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.QuitNotification;
 import com.example.scotlandyard.R;
@@ -140,7 +140,7 @@ public class Client extends Device implements ClientInterface {
             onGame((Game) object);
         }
         if(object instanceof GameEnd){
-            gameObserver.onRecievedEndOfGame(((GameEnd) object).HasMrxwon());
+            gameObserver.onRecievedEndOfGame(((GameEnd) object).hasMrxwon());
         }
         if (object instanceof QuitNotification) {
             onQuit((QuitNotification) object);

@@ -16,10 +16,9 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
-import com.example.scotlandyard.Game_End.GameEndActivity;
+import com.example.scotlandyard.gameend.GameEndActivity;
 import com.example.scotlandyard.MainActivity;
 import com.example.scotlandyard.QuitNotification;
-import com.example.scotlandyard.control.Client;
 import com.example.scotlandyard.control.Server;
 import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.control.GameInterface;
@@ -63,7 +62,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
