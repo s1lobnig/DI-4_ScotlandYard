@@ -51,4 +51,6 @@ public interface GameInterface {
      *
      */
     void showNewGame(Game game);
+
+    void onQuit(String playerName, boolean serverQuit);
 }

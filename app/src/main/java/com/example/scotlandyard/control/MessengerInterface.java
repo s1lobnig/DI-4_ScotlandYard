@@ -41,4 +41,6 @@ public interface MessengerInterface {
      * function is called, when reconnecting failed
      */
     void showReconnectFailed(String endpointName);
+
+    void onQuit(String playerName, boolean serverQuit);
 }

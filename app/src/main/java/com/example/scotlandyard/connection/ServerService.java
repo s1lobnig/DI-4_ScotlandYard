@@ -366,4 +366,18 @@ public class ServerService extends ConnectionService{
     public void setServer(ServerInterface server) {
         this.server = server;
     }
+
+    public void disconnect(String playerName){
+        if (connectionState == ConnectionState.CONNECTED) {
+            Set<String> keys = establishedConnections.keySet();
+            for (String k : keys) {
+                Endpoint endpoint = establishedConnections.get(k);
+                if (endpoint != null && k.equals(playerName)) {
+                    disconnect(endpoint);
+                    server.onDisconnected(endpoint);
+                }
+            }
+            establishedConnections.remove(playerName);
+        }
+    }
 }
