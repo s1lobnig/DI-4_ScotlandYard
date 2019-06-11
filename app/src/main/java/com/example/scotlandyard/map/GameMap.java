@@ -370,14 +370,14 @@ public class GameMap extends AppCompatActivity
                     Move move = new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r, randomRoute);
 
                     if (Device.isServer()) {
-                        if (myPlayer.getCountCheatingmoves() > 0)
+                        if (myPlayer.getCountCheatingMoves() > 0)
                             move.setCheatingMove(true);
 
                         ((Server) device).onDataReceived(move, myPlayer.getNickname());
                     } else {
-                        if (myPlayer.getCountCheatingmoves() > 0) {
+                        if (myPlayer.getCountCheatingMoves() > 0) {
                             move.setCheatingMove(true);
-                            myPlayer.decCountCheatingmoves();
+                            myPlayer.decCountCheatingMoves();
                         }
 
                         device.send(move);
@@ -731,11 +731,10 @@ public class GameMap extends AppCompatActivity
             float distance = event.values[0];
             if (distance < 5 && myPlayer.isMrX()) {
                 Toast.makeText(GameMap.this, "Weitere Bewegung ausführen", Snackbar.LENGTH_LONG).show();
-                myPlayer.setMoved(false);
                 myPlayer.setHasCheated(true);
                 myPlayer.setHasCheatedThisRound(true);
-                if (myPlayer.getCountCheatingmoves() < 1) {
-                    myPlayer.incCountCheatingmoves();
+                if (myPlayer.getCountCheatingMoves() == 0) {
+                    myPlayer.incCountCheatingMoves();
                 }
             }
         }

@@ -24,7 +24,7 @@ public class Player implements Serializable {
     private HashMap<Integer, Integer> tickets; //Hashmap for storing tickets
     private boolean hasCheated;
     private boolean hasCheatedThisRound;
-    private int countCheatingmoves;
+    private int countCheatingMoves;
 
     private boolean[] specialMrXMoves;
 
@@ -47,6 +47,7 @@ public class Player implements Serializable {
 
         this.hasCheated = false;
         this.hasCheatedThisRound = false;
+        this.countCheatingMoves = 0;
         this.penalty = 0;
         this.specialMrXMoves = new boolean[]{false, false};
     }
@@ -139,7 +140,7 @@ public class Player implements Serializable {
     }
 
     public void decreaseNumberOfTickets(Integer key) {
-        if (!this.hasCheatedThisRound && tickets.get(key) > 0)
+        if (this.countCheatingMoves == 0 && tickets.get(key) > 0)
             tickets.put(key, tickets.get(key) - 1);
     }
 
@@ -327,19 +328,20 @@ public class Player implements Serializable {
         tickets = new HashMap<>();
         hasCheated = false;
         hasCheatedThisRound = false;
+        this.countCheatingMoves = 0;
         penalty = 0;
     }
 
-    public void incCountCheatingmoves() {
-        this.countCheatingmoves++;
+    public void incCountCheatingMoves() {
+        this.countCheatingMoves++;
     }
 
-    public void decCountCheatingmoves() {
-        this.countCheatingmoves--;
+    public void decCountCheatingMoves() {
+        this.countCheatingMoves--;
     }
 
-    public int getCountCheatingmoves(){
-        return this.countCheatingmoves;
+    public int getCountCheatingMoves(){
+        return this.countCheatingMoves;
     }
 
 }

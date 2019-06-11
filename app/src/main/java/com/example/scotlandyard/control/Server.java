@@ -198,7 +198,7 @@ public class Server extends Device implements ServerInterface {
 
         if(!player.getSpecialMrXMoves()[1] && move.isCheatingMove()) {
             player.setMoved(false);
-            game.getMrX().decCountCheatingmoves();
+            game.getMrX().decCountCheatingMoves();
         }
 
 

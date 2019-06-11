@@ -183,7 +183,7 @@ public class Client extends Device implements ClientInterface {
                 game.setRoundMrX(false);
             }
         } else if (!player.getSpecialMrXMoves()[1]) {
-            player.decCountCheatingmoves();
+            player.decCountCheatingMoves();
         } else {
             player.setSpecialMrXMoves(false, 1);
             player.decreaseNumberOfTickets(R.string.DOUBLE_TICKET_KEY);
