@@ -58,6 +58,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -80,6 +82,8 @@ public class GameMap extends AppCompatActivity
     private TextView taxiTickets;
     private TextView blackTickets;
     private TextView doubleTickets;
+    private TextView playerName;
+    private ImageView playerImage;
 
     private static final String TAG = GameMap.class.getSimpleName();
     private GoogleMap mMap;
@@ -200,6 +204,10 @@ public class GameMap extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+        this.playerImage = headerView.findViewById(R.id.player_image);
+        this.playerName = headerView.findViewById(R.id.player_name);
+        Log.d(TAG,playerImage.toString());
         navigationView.setNavigationItemSelectedListener(this);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -341,7 +349,8 @@ public class GameMap extends AppCompatActivity
             visualizeTickets();
             randomEventsEnabled = device.getGame().isRandomEventsEnabled();
         }
-
+        playerName.setText(myPlayer.getNickname());
+        playerImage.setImageResource(myPlayer.getIcon());
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker field) {
