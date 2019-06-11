@@ -2,6 +2,7 @@ package com.example.scotlandyard.control;
 
 import android.util.Log;
 
+import com.example.scotlandyard.Game_End.GameEnd;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
 import com.example.scotlandyard.connection.ClientInterface;
@@ -136,6 +137,9 @@ public class Client extends Device implements ClientInterface {
         }
         if (object instanceof Game) {
             onGame((Game) object);
+        }
+        if(object instanceof GameEnd){
+            gameObserver.onRecievedEndOfGame(((GameEnd) object).HasMrxwon());
         }
     }
 

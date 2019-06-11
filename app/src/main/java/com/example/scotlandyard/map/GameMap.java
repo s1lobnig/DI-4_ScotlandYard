@@ -16,6 +16,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
+import com.example.scotlandyard.Game_End.GameEndActivity;
 import com.example.scotlandyard.control.Server;
 import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.control.GameInterface;
@@ -353,6 +354,7 @@ public class GameMap extends AppCompatActivity
                     Move move = new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r, randomRoute);
 
                     if (Device.isServer()) {
+                        //checkIfMrXHasLost();
                         ((Server) device).onDataReceived(move, myPlayer.getNickname());
                     } else {
                         device.send(move);
@@ -363,6 +365,7 @@ public class GameMap extends AppCompatActivity
             }
         });
     }
+
 
     private boolean isValidMove(Point newLocation) {
         switch (myPlayer.isValidMove(Device.getInstance().getGame(), newLocation)) {
@@ -709,5 +712,12 @@ public class GameMap extends AppCompatActivity
         }
         device = null;
         myPlayer = null;
+    }
+
+    @Override
+    public void onRecievedEndOfGame(boolean hasMrXWon) {
+        Intent i = new Intent(GameMap.this, GameEndActivity.class);
+        i.putExtra("Winner", hasMrXWon);
+        startActivity(i);
     }
 }

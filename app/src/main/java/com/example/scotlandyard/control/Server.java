@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.example.scotlandyard.Game_End.GameEnd;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
 import com.example.scotlandyard.connection.Endpoint;
@@ -203,13 +204,24 @@ public class Server extends Device implements ServerInterface {
         } else if (result == 0) {
             send(new MapNotification("END MisterX")); //MisterX hat gewonnen
             printNotification("MisterX hat gewonnen");
+            sendEnd(new GameEnd(true));
+            gameObserver.onRecievedEndOfGame(true);
         }
         if (gameObserver != null) {
             gameObserver.updateMove(move);
+
+            if(game.checkIfMrxHasLost()) {
+                sendEnd(new GameEnd(false));
+                gameObserver.onRecievedEndOfGame(false);
+            }
         } else {
             player.setPosition(Points.POINTS[move.getField()]);
         }
+
+
+
     }
+
 
     public void moveBot() {
         Player bot = game.getBotMrX();

@@ -2,6 +2,7 @@ package com.example.scotlandyard.control;
 
 import android.util.Log;
 
+import com.example.scotlandyard.Game_End.GameEnd;
 import com.example.scotlandyard.connection.ConnectionService;
 import com.example.scotlandyard.Game;
 import com.example.scotlandyard.lobby.Lobby;
@@ -193,6 +194,13 @@ public class Device {
         if (messengerObserver != null) {
             messengerObserver.onReceivedToast(txt);
         }
+    }
+
+    /**
+     * sends control to end the game to device
+    */
+    public void sendEnd(GameEnd end) {
+        connectionService.send(end);
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.example.scotlandyard;
+package com.example.scotlandyard.Game_End;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +12,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.scotlandyard.MainActivity;
+import com.example.scotlandyard.R;
 
 public class GameEndActivity extends AppCompatActivity {
     private TextView txtWinners;

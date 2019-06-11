@@ -259,12 +259,12 @@ public class Game implements Serializable {
         return point.getLatLng();
     }
 
-    /*private boolean isMrXFound(){
-        Player x = this.getMrX();
-        for(Player p : game.getPlayers()){
-            if (p.getPosition() == x.getPosition() && p.getNickname() != x.getNickname())
+    public boolean checkIfMrxHasLost(){
+        for (Player p : players){
+            if(getMrX().getNickname()!= p.getNickname() && getMrX().getPosition().equals(p.getPosition())) {
                 return true;
+            }
         }
         return false;
-    }*/
+    }
 }
