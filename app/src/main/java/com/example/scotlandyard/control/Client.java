@@ -228,8 +228,8 @@ public class Client extends Device implements ClientInterface {
             return;
         }
         if (txt.length == 3 && txt[0].equals("PLAYER") && txt[2].equals("LOST")) {
-            Player player = ManageGameData.findPlayer(game, txt[1]);
-            ManageGameData.deactivatePlayer(game, player);
+            Player player = game.findPlayer(txt[1]);
+            game.deactivatePlayer(player);
             printNotification("Verbindung zu " + txt[1] + " verloren");
             return;
         }

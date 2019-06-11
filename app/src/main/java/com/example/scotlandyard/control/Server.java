@@ -279,8 +279,8 @@ public class Server extends Device implements ServerInterface {
 
         //if game has started
         if (game != null && !quit) {
-            Player lostPlayer = game.findPlayer(game, endpoint.getName());
-            game.deactivatePlayer(game, lostPlayer);
+            Player lostPlayer = game.findPlayer(endpoint.getName());
+            game.deactivatePlayer(lostPlayer);
             send(new MapNotification("PLAYER " + lostPlayer.getNickname() + " LOST"));
             printNotification("Verbindung zu " + lostPlayer.getNickname() + " verloren");
         }
