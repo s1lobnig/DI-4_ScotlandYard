@@ -17,23 +17,16 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.scotlandyard.Game;
 import com.example.scotlandyard.control.Client;
 import com.example.scotlandyard.control.ClientLobbyInterface;
 import com.example.scotlandyard.control.Device;
-import com.example.scotlandyard.map.roadmap.Entry;
-import com.example.scotlandyard.messenger.Message;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
-import com.example.scotlandyard.map.motions.Move;
-import com.example.scotlandyard.connection.ClientInterface;
-import com.example.scotlandyard.connection.ClientService;
 import com.example.scotlandyard.connection.Endpoint;
 import com.google.android.gms.nearby.Nearby;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
 
 public class GameList extends AppCompatActivity implements ClientLobbyInterface {
     private Player player;
@@ -201,7 +194,7 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
         @NonNull
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-            ViewHolder mainViewHolder = new ViewHolder();
+            GameListViewHolder mainViewHolder = new GameListViewHolder();
             final Endpoint game = getItem(position);
 
 
@@ -226,24 +219,12 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
             }
 
             //set Text from stored variables to views
-            mainViewHolder = (ViewHolder) convertView.getTag();
+            mainViewHolder = (GameListViewHolder) convertView.getTag();
             mainViewHolder.gameName.setText(game.getName());
 
             //returns finished view
             return convertView;
 
         }
-    }
-
-    //what i need in my view
-    public class ViewHolder {
-        TextView gameName;
-        Button playGame;
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
     }
 }

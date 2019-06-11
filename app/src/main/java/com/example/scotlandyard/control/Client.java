@@ -8,9 +8,8 @@ import com.example.scotlandyard.R;
 import com.example.scotlandyard.connection.ClientInterface;
 import com.example.scotlandyard.connection.ClientService;
 import com.example.scotlandyard.connection.Endpoint;
-import com.example.scotlandyard.lobby.Game;
+import com.example.scotlandyard.Game;
 import com.example.scotlandyard.lobby.Lobby;
-import com.example.scotlandyard.map.ManageGameData;
 import com.example.scotlandyard.map.MapNotification;
 import com.example.scotlandyard.map.Points;
 import com.example.scotlandyard.map.motions.Move;
@@ -169,9 +168,16 @@ public class Client extends Device implements ClientInterface {
 
     private void onMove(Move move) {
         Log.d(logTag, "move received");
-        Player player = ManageGameData.findPlayer(game, move.getNickname());
-        if (!player.getSpecialMrXMoves()[1])
-            player.setMoved(true);
+        Player player = game.findPlayer(move.getNickname());
+        if (!player.getSpecialMrXMoves()[1]){
+                player.setMoved(true);
+                if(player.isMrX()){
+                    game.setRoundMrX(false);
+                }
+        }else{
+            player.setSpecialMrXMoves(false, 1);
+            player.decreaseNumberOfTickets(R.string.DOUBLE_TICKET_KEY);
+        }
         if (gameObserver != null) {
             gameObserver.updateMove(move);
         } else {
@@ -209,15 +215,16 @@ public class Client extends Device implements ClientInterface {
 
         if (txt[0].equals("NEXT_ROUND")) {
             game.nextRound();
-            ManageGameData.findPlayer(game, nickname).setMoved(false);
+            game.findPlayer(nickname).setMoved(false);
+            game.setRoundMrX(true);
             printNotification("Runde " + game.getRound());
             return;
         }
         if (txt.length == 3 && txt[0].equals("PLAYER") && txt[2].equals("QUITTED")) {
-            Player player = ManageGameData.findPlayer(game, txt[1]);
-            ManageGameData.deactivatePlayer(game, player);
-            quit = true;
+            Player player = game.findPlayer(txt[1]);
+            game.deactivatePlayer(player);
             printNotification(txt[1] + " hat das Spiel verlassen");
+            quit = true;
             return;
         }
         if (txt.length == 3 && txt[0].equals("PLAYER") && txt[2].equals("LOST")) {

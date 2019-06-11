@@ -23,7 +23,7 @@ public class RandomEventTEST {
         boolean equal = false;
         for(i = 0; i<=this.iterations; i++){
             toTest = new RandomEvent();
-            if(toTest.getID() < 3)
+            if(toTest.getID() <= 3)
                 equal = true;
 
             Assert.assertEquals(equal, true);

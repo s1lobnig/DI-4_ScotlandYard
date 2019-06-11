@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
             };
 
     private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
+    public static final String TAG = "MAIN_ACTIVITY";
 
     private Button createGame;
     private Button existingGames;
@@ -53,14 +54,14 @@ public class MainActivity extends AppCompatActivity {
         try {
             setContentView(R.layout.activity_main);
         } catch (Exception e) {
-            Log.d("MAIN_ACTIVITY", "EXCEPTION CAUGHT!");
+            Log.d(TAG, "EXCEPTION CAUGHT!");
         }
 
         existingGames = findViewById(R.id.btnExistingGames);
         existingGames.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("MAIN_ACTIVITY", "Starting GameJoin activity.");
+                Log.d(TAG, "Starting GameJoin activity.");
                 startActivity(new Intent(MainActivity.this, GameJoin.class));
             }
         });
@@ -69,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // temporary, to get to the map
-                Log.d("MAIN_ACTIVITY", "Starting GameCreate activity.");
+                Log.d(TAG, "Starting GameCreate activity.");
                 startActivity(new Intent(MainActivity.this, GameCreate.class));
             }
         });

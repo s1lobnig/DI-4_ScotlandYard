@@ -3,6 +3,7 @@ package com.example.scotlandyard.lobby;
 import com.example.scotlandyard.Player;
 
 import java.io.Serializable;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -22,7 +23,7 @@ public class Lobby implements Serializable {
         this.randomMrX = randomMrX;
         this.maxPlayers = maxPlayers;
         this.botMrX = botMrX;
-        random = new Random();
+        random = new SecureRandom();
     }
 
     public ArrayList<Player> getPlayerList() {
@@ -88,7 +89,6 @@ public class Lobby implements Serializable {
                 }
             }
         }
-        Random random = new Random();
         if (chooseMrXRandomly) {
             playerList.get(random.nextInt(playerList.size())).setMrX(true);
         } else {

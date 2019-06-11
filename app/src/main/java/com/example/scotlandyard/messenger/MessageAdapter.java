@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.TextView;
 
 import com.example.scotlandyard.R;
 
@@ -76,10 +75,5 @@ public class MessageAdapter extends BaseAdapter {
         return myView;
     }
 
-}
-
-class MessageViewHolder {
-    protected TextView name;
-    protected TextView messageBody;
 }
 

@@ -12,6 +12,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.scotlandyard.Game;
 import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.control.Server;
 import com.example.scotlandyard.control.ServerLobbyInterface;
@@ -73,9 +74,9 @@ public class ServerLobby extends AppCompatActivity implements ServerLobbyInterfa
                 }
 
                 Intent intent = new Intent(ServerLobby.this, GameMap.class);
-                //Game game = new Game(((Server) Device.getInstance()).getLobby().getLobbyName(), ((Server) Device.getInstance()).getLobby().getMaxPlayers());
-                //game.setPlayers(((Server) Device.getInstance()).getLobby().getPlayerList());
-                //TODO write lobby information to the game
+                Lobby lobby = Device.getInstance().getLobby();
+                lobby.chooseMrX(lobby.isRandomMrX());
+                Device.getInstance().setGame(new Game(lobby.getLobbyName(), lobby.getMaxPlayers(), 1, lobby.isRandomEvents(), lobby.isBotMrX(), lobby.getPlayerList()));
                 startActivity(intent);
             }
         });
@@ -117,7 +118,6 @@ public class ServerLobby extends AppCompatActivity implements ServerLobbyInterfa
     @Override
     public void showConnectionFailed(String endpointName) {
         //TODO show user that connection to endpoint has failed
-
         String notification = "Verbindung zum Server konnte nicht hergestellt werden.";
         Toast.makeText(getApplicationContext(), notification, Toast.LENGTH_LONG).show();
     }
@@ -146,11 +146,5 @@ public class ServerLobby extends AppCompatActivity implements ServerLobbyInterfa
     @Override
     public void updateLobby(Lobby lobby) {
         ((ArrayAdapter) connectedPlayersListAdapter).notifyDataSetChanged();
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
     }
 }

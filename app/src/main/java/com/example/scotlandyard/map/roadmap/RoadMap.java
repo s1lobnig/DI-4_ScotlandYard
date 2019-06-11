@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class RoadMap implements Serializable {
-    ArrayList<Entry> entries;
+    private ArrayList<Entry> entries;
 
     public RoadMap() {
         this.entries = new ArrayList<>();

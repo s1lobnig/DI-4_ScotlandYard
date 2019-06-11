@@ -1,7 +1,7 @@
 package com.example.scotlandyard.control;
 
 import com.example.scotlandyard.connection.Endpoint;
-import com.example.scotlandyard.lobby.Game;
+import com.example.scotlandyard.Game;
 
 import java.util.ArrayList;
 
