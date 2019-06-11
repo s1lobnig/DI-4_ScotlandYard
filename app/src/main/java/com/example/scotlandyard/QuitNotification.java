@@ -1,6 +1,8 @@
 package com.example.scotlandyard;
 
-public class QuitNotification {
+import java.io.Serializable;
+
+public class QuitNotification implements Serializable {
     private String playerName;
     private boolean serverQuit;
 

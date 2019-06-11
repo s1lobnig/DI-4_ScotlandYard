@@ -166,20 +166,17 @@ public class Server extends Device implements ServerInterface {
     }
 
     private void onQuitNotification(QuitNotification quitNotification){
-            Log.d(logTag, "quit received");
-            if (messengerObserver != null) {
-                messengerObserver.onQuit(quitNotification.getPlayerName(), quitNotification.isServerQuit());
-            }
-            if (gameObserver != null) {
-                gameObserver.onQuit(quitNotification.getPlayerName(), quitNotification.isServerQuit());
-            }
-            send(quitNotification);
-            //make quited player inactive or whatever
-            for(Player p: game.getPlayers()){
-                if(p.getNickname().equals(quitNotification.getPlayerName())){
-                    p.setActive(false);
-                }
-            }
+        Log.d(logTag, "quit received");
+        if (messengerObserver != null) {
+            messengerObserver.onQuit(quitNotification.getPlayerName(), quitNotification.isServerQuit());
+        }
+        if (gameObserver != null) {
+            gameObserver.onQuit(quitNotification.getPlayerName(), quitNotification.isServerQuit());
+        }
+        send(quitNotification);
+        //make quited player inactive or whatever
+        Player quitted = game.findPlayer(quitNotification.getPlayerName());
+        game.deactivatePlayer(quitted);
     }
 
     private void onMapNotification(MapNotification notification) {
