@@ -57,4 +57,6 @@ public interface GameInterface {
      *
      */
     void onRecievedEndOfGame(boolean hasMrXWon);
+    
+    void onQuit(String playerName, boolean serverQuit);
 }

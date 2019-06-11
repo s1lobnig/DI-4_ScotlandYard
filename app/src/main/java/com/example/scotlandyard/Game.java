@@ -14,18 +14,24 @@ public class Game implements Serializable {
 
     private static final Random RANDOM = new SecureRandom();
     private static final int NUM_ROUNDS = 12;
-    private static final int[] PLAYER_ICONS = {
-            R.drawable.player1,
-            R.drawable.player2,
-            R.drawable.player3,
-            R.drawable.player4,
-            R.drawable.player5,
-            R.drawable.player6,
-            R.drawable.player7,
-            R.drawable.player8,
-            R.drawable.player9,
-            R.drawable.player10,
-            R.drawable.player11
+    private static final int[] PLAYER_ICONS_MINION = {
+            R.drawable.minion1,
+            R.drawable.minion2,
+            R.drawable.minion3,
+            R.drawable.minion4,
+            R.drawable.minion5,
+            R.drawable.minion6,
+            R.drawable.minion7,
+            R.drawable.minion8,
+            R.drawable.minion9,
+            R.drawable.minion10,
+            R.drawable.minion11,
+            R.drawable.minion12,
+            R.drawable.minion13,
+            R.drawable.minion14,
+    };
+    private static final int[] MRX_ICONS_MINION = {
+            R.drawable.minion_mr_x1
     };
 
     private String gameName;
@@ -238,7 +244,11 @@ public class Game implements Serializable {
         Player player;
         for (int i = 0; i < players.size(); i++) {
             player = players.get(i);
-            player.setIcon(PLAYER_ICONS[i]);
+            if(player.isMrX()){
+                player.setIcon(MRX_ICONS_MINION[0]);
+            } else {
+                player.setIcon(PLAYER_ICONS_MINION[i]);
+            }
             LatLng position = getNewPlayerPosition();
             player.setPosition(new Point(position.latitude, position.longitude));
 

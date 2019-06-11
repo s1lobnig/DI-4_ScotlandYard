@@ -1,6 +1,7 @@
 package com.example.scotlandyard.messenger;
 
 import android.content.Intent;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -12,8 +13,10 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.scotlandyard.MainActivity;
 import com.example.scotlandyard.R;
 import com.example.scotlandyard.connection.Endpoint;
+import com.example.scotlandyard.control.Client;
 import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.control.MessengerInterface;
 
@@ -135,6 +138,19 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
     @Override
     public void showReconnectFailed(String endpointName) {
         Toast.makeText(Messenger.this, getString(R.string.lostConnection) + " " + endpointName + " konnte nicht wiederhergestellt werden!", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onQuit(String playerName, boolean serverQuit) {
+        if (serverQuit) {
+            //start new intent main activity, server has quited
+            Toast.makeText(this, playerName + " hat das Spiel beendet.", Snackbar.LENGTH_LONG).show();
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        } else {
+            //show that playerName has quited
+            Toast.makeText(this, playerName + " hat das Spiel verlassen.", Snackbar.LENGTH_LONG).show();
+        }
     }
 
     @Override

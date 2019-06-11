@@ -3,6 +3,7 @@ package com.example.scotlandyard.control;
 import android.util.Log;
 
 import com.example.scotlandyard.Game_End.GameEnd;
+import com.example.scotlandyard.QuitNotification;
 import com.example.scotlandyard.connection.ConnectionService;
 import com.example.scotlandyard.Game;
 import com.example.scotlandyard.lobby.Lobby;
@@ -37,10 +38,12 @@ public class Device {
     RoadMap roadMap;
     String nickname;
     ArrayList<Message> messageList;
+    boolean quit;
 
     Device() {
         messageList = new ArrayList<>();
         roadMap = new RoadMap();
+        quit = false;
     }
 
     /**
@@ -182,6 +185,10 @@ public class Device {
         connectionService.send(entry);
     }
 
+    public void send(QuitNotification quitNotification) {
+        connectionService.send(quitNotification);
+    }
+
     /**
      * prints txt on display
      *
@@ -253,4 +260,5 @@ public class Device {
     public void addMessage(Message message) {
         messageList.add(message);
     }
+
 }
