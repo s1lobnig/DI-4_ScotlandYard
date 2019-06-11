@@ -158,14 +158,14 @@ public class Server extends Device implements ServerInterface {
             }
         }
         if (object instanceof QuitNotification) {
-            onQuitNotification((QuitNotification)object);
+            onQuitNotification((QuitNotification) object);
         }
         if (object instanceof MapNotification) {
             onMapNotification((MapNotification) object);
         }
     }
 
-    private void onQuitNotification(QuitNotification quitNotification){
+    private void onQuitNotification(QuitNotification quitNotification) {
         Log.d(logTag, "quit received");
         if (messengerObserver != null) {
             messengerObserver.onQuit(quitNotification.getPlayerName(), quitNotification.isServerQuit());
@@ -174,9 +174,13 @@ public class Server extends Device implements ServerInterface {
             gameObserver.onQuit(quitNotification.getPlayerName(), quitNotification.isServerQuit());
         }
         send(quitNotification);
-        //make quited player inactive or whatever
-        Player quitted = game.findPlayer(quitNotification.getPlayerName());
-        game.deactivatePlayer(quitted);
+        if (quitNotification.isServerQuit()) {
+            disconnect();
+        } else {
+            disconnect(quitNotification.getPlayerName());
+        }
+        Player quittedPlayer = game.findPlayer(quitNotification.getPlayerName());
+        game.deactivatePlayer(quittedPlayer);
     }
 
     private void onMapNotification(MapNotification notification) {
@@ -191,9 +195,9 @@ public class Server extends Device implements ServerInterface {
         Player player = game.findPlayer(move.getNickname());
 
         send(move);
-        if(!player.getSpecialMrXMoves()[1]){
+        if (!player.getSpecialMrXMoves()[1]) {
             player.setMoved(true);
-        }else{
+        } else {
             player.decreaseNumberOfTickets(R.string.DOUBLE_TICKET_KEY);
             player.setSpecialMrXMoves(false, 1);
         }
@@ -273,20 +277,13 @@ public class Server extends Device implements ServerInterface {
     @Override
     public void onDisconnected(Endpoint endpoint) {
         Log.d(logTag, "endpoint disconnected");
-
         //if game has started
-        if (game != null && !quit) {
+        if (game != null) {
             Player lostPlayer = game.findPlayer(endpoint.getName());
             game.deactivatePlayer(lostPlayer);
             send(new MapNotification("PLAYER " + lostPlayer.getNickname() + " LOST"));
             printNotification("Verbindung zu " + lostPlayer.getNickname() + " verloren");
         }
-        /*if (game != null) {
-            Player lostPlayer = game.findPlayer(endpoint.getName());
-            game.deactivatePlayer(lostPlayer);
-            send(new MapNotification("PLAYER " + lostPlayer.getNickname() + " QUITTED"));
-            printNotification(lostPlayer.getNickname() + " hat das Spiel verlassen");
-        }*/
         if (gameObserver != null) {
             gameObserver.showDisconnected(endpoint);
         }
@@ -297,7 +294,6 @@ public class Server extends Device implements ServerInterface {
             lobby.removePlayer(endpoint.getName());
             lobbyObserver.updateLobby(lobby);
         }
-
         if (!quit) {
             lost.add(endpoint);
             ((ServerService) connectionService).startAdvertising();
@@ -374,6 +370,11 @@ public class Server extends Device implements ServerInterface {
 
     public void disconnect() {
         ((ServerService) connectionService).disconnectFromAll();
+        quit = true;
+    }
+
+    public void disconnect(String playerName) {
+        ((ServerService) connectionService).disconnect(playerName);
         quit = true;
     }
 

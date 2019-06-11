@@ -281,12 +281,10 @@ public class GameMap extends AppCompatActivity
         }else if(id == R.id.nav_logout){
             if(!device.isServer()){
                 device.send(new QuitNotification(device.getNickname(), false));
-                ((Client) Device.getInstance()).disconnect();
                 intent = new Intent(this, MainActivity.class);
             }else{
                 device.send(new QuitNotification(device.getNickname(), true));
                 intent = new Intent(this, MainActivity.class);
-                ((Server) Device.getInstance()).disconnect();
             }
 
         }
@@ -619,7 +617,8 @@ public class GameMap extends AppCompatActivity
         } else if (object instanceof Move) {
             notification = "Zug";
         }
-        Toast.makeText(GameMap.this, notification + " konnte nicht gesendet werden!", Toast.LENGTH_LONG).show();
+//        Toast.makeText(GameMap.this, notification + " konnte nicht gesendet werden!", Toast.LENGTH_LONG).show();
+        Log.d(TAG,notification + " konnte nicht gesendet werden!");
         //TODO give possibility to sync the game again
     }
 

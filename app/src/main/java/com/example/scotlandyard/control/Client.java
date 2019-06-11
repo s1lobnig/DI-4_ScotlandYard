@@ -145,12 +145,15 @@ public class Client extends Device implements ClientInterface {
 
     private void onQuit(QuitNotification quitNotification) {
         Log.d(logTag, "quit received");
+        // tell server, and therefore all others, that I wanna quit
         if (messengerObserver != null) {
             messengerObserver.onQuit(quitNotification.getPlayerName(), quitNotification.isServerQuit());
         }
         if (gameObserver != null) {
             gameObserver.onQuit(quitNotification.getPlayerName(), quitNotification.isServerQuit());
         }
+        // then me wanna disconnect
+        ((Client) Device.getInstance()).disconnect();
     }
 
     private void onMessage(Message message) {
@@ -169,12 +172,12 @@ public class Client extends Device implements ClientInterface {
     private void onMove(Move move) {
         Log.d(logTag, "move received");
         Player player = game.findPlayer(move.getNickname());
-        if (!player.getSpecialMrXMoves()[1]){
-                player.setMoved(true);
-                if(player.isMrX()){
-                    game.setRoundMrX(false);
-                }
-        }else{
+        if (!player.getSpecialMrXMoves()[1]) {
+            player.setMoved(true);
+            if (player.isMrX()) {
+                game.setRoundMrX(false);
+            }
+        } else {
             player.setSpecialMrXMoves(false, 1);
             player.decreaseNumberOfTickets(R.string.DOUBLE_TICKET_KEY);
         }
@@ -270,10 +273,15 @@ public class Client extends Device implements ClientInterface {
         if (lobbyObserver != null) {
             lobbyObserver.showDisconnected(endpoint.getName());
         }
+        if (quit) {
+            send(new MapNotification("PLAYER_QUITTED"));
+        }
         if (!quit) {
+            send(new MapNotification("PLAYER_LOST"));
             lost = endpoint;
             ((ClientService) connectionService).startDiscovery();
         }
+
     }
 
     @Override
