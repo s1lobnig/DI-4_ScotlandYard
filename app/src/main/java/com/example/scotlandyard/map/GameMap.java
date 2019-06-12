@@ -19,7 +19,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
-import com.example.scotlandyard.CheaterReport;
+import com.example.scotlandyard.reportcheater.CheaterReport;
 import com.example.scotlandyard.control.CheaterReportInterface;
 import com.example.scotlandyard.gameend.GameEndActivity;
 import com.example.scotlandyard.MainActivity;
@@ -41,6 +41,7 @@ import com.example.scotlandyard.R;
 import com.example.scotlandyard.Settings;
 import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.Game;
+import com.example.scotlandyard.reportcheater.ReportingLogic;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -105,10 +106,10 @@ public class GameMap extends AppCompatActivity
     private static final int TAXI_DRAGAN_COLOR = Color.BLUE;
 
     /* A variable that counts how many times the cheater has been caught correctly. */
-    private int CHEAT_CAUGHT_COUNT = 0;
 
     /* A variable which gives access to application's main menu. */
     private Menu menu;
+    private Menu navDrawerMenu;
 
     private SensorManager sm;
 
@@ -222,6 +223,7 @@ public class GameMap extends AppCompatActivity
         View headerView = navigationView.getHeaderView(0);
         this.playerImage = headerView.findViewById(R.id.player_image);
         this.playerName = headerView.findViewById(R.id.player_name);
+        this.navDrawerMenu = navigationView.getMenu();
         Log.d(TAG, playerImage.toString());
         navigationView.setNavigationItemSelectedListener(this);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -371,6 +373,9 @@ public class GameMap extends AppCompatActivity
         }
         playerName.setText(myPlayer.getNickname());
         playerImage.setImageResource(myPlayer.getIcon());
+        if(myPlayer.isMrX()){
+            navDrawerMenu.findItem(R.id.cheater_melden).setVisible(false);
+        }
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker field) {
@@ -496,7 +501,6 @@ public class GameMap extends AppCompatActivity
             }
             device.send(entry);
         }
-
         player.getMarker().setIcon(BitmapDescriptorFactory.fromResource(markerMove.getIcon()));
         markerMove = MovingLogic.createMove(markerMove, goBack, player);
         runMarkerAnimation(player, markerMove, playerIcon);
@@ -812,83 +816,43 @@ public class GameMap extends AppCompatActivity
 
     /* This method is responsible for reporting a cheater in different scenarios and is being received by all other players. */
     public void onCheaterReport(CheaterReport report) {
-
-        /* If a player is Mr. X. */
         if (myPlayer.isMrX()) {
-            /* Received a toast by Mr. X that one detective has reported him. */
             Toast.makeText(this, report.getReporter() + " hat dich als Cheater gemeldet.", Toast.LENGTH_LONG).show();
-
-            /* In case that Mr. X has really cheated. */
-            if (myPlayer.isHasCheated()) {
-                /* Counting how many times during the game has Mr. X cheated. */
-                CHEAT_CAUGHT_COUNT++;
-                /* Reset the variable every time after MrX has cheated and has been reported. */
-                myPlayer.setHasCheated(false);
-
-                /* If Mr. X has been caught cheating 3 or more times, he shall be punished (by losing the game). */
-                if (CHEAT_CAUGHT_COUNT >= 3) {
-                    /* Send report-notification to all other players that the game is over and Mr. X has lost. */
-
-                    /* The reports from the players weren't fake (false). */
-                    report.setFakeReport(false);
-                    /* Set true - Mr. X lost the game. */
-                    report.setMrXLost(true);
-                    /* Send the report to all devices/players. */
-                    device.send(report);
-                    /* Finish the game. */
-                    Intent i = new Intent(GameMap.this, GameEndActivity.class);
-                    i.putExtra("Winner", false);
-                    startActivity(i);
-                } else {
-                    /* The reports from the players weren't fake (false). */
-                    report.setFakeReport(false);
-                    /* Set true - Mr. X lost the game. */
-                    report.setMrXLost(false);
-                    /* Send the report to all devices/players. */
-                    device.send(report);
-                }
-                /* In case that Mr. X hasn*t cheated. */
-            } else {
-                /* The reports from the players were fake (false). */
-                report.setFakeReport(true);
-                /* Send the report to all devices/players. */
-                device.send(report);
+            report = ReportingLogic.analyseReportMrX(myPlayer, report);
+            device.send(report);
+            if (ReportingLogic.getCheatCaughtCount() >= 3) {
+                /* Finish the game. */
+                Intent i = new Intent(GameMap.this, GameEndActivity.class);
+                i.putExtra("Winner", false);
+                startActivity(i);
             }
-
-            /* If a player is a detective. */
         } else {
-            /* If report is coming back from Mr. X - Mr. X has been fakely reported. */
-            if (report.isFakeReport()) {
-
-                /* If a reporter is a detective which made that report. */
-                if (report.getReporter().equals(myPlayer.getNickname())) {
-                    /* A toast message will appear on the screen of a detective that made a fake report. */
+            switch (ReportingLogic.analyzeReportPlayer(myPlayer, report)) {
+                case 0:
+                    visualizeTickets();
+                    /* Punish the detective for a fake report by randomly taking one ticket away from him.
+                    A toast message will appear on the screen of a detective that made a fake report. */
                     Toast.makeText(this, "Du hast den Cheater falsch gemeldet.", Toast.LENGTH_LONG).show();
-
-                    /* Punish the detective for a fake report by randomly taking one ticket away from him. */
-                    punishPlayerForFakeReport(myPlayer);
-                    GameMap.this.visualizeTickets();
-
-                } else {
+                    break;
+                case 1:
                     /* A toast message will appear on the screen of all players that a current detective made a fake report. */
                     Toast.makeText(this, report.getReporter() + " hat den Cheater falsch gemeldet.", Toast.LENGTH_LONG).show();
-                }
-
-            } else {
-                /* Report is not fake and is comming from MrX. In this case MrX has lost - finish the game. */
-                if (report.isMrXLost()) {
+                    break;
+                case 2:
                     Intent i = new Intent(GameMap.this, GameEndActivity.class);
                     i.putExtra("Winner", false);
                     // Reward reporter if needed.
                     startActivity(i);
-                } else {
-                    if (report.getReporter().equals(myPlayer.getNickname())) {
-                        Toast.makeText(this, "Du hast den Cheater richtig gemeldet.", Toast.LENGTH_LONG).show();
-                    } else {
-                        /* A toast message will appear on the screen of all players that a current detective reported a cheater (Mr.X) correctly. */
-                        Toast.makeText(this, report.getReporter() + " hat den Cheater richtig gemeldet.", Toast.LENGTH_LONG).show();
-                    }
-                }
+                    break;
+                case 3:
+                    Toast.makeText(this, "Du hast den Cheater richtig gemeldet.", Toast.LENGTH_LONG).show();
+                    break;
+                case 4:
+                    /* A toast message will appear on the screen of all players that a current detective reported a cheater (Mr.X) correctly. */
+                    Toast.makeText(this, report.getReporter() + " hat den Cheater richtig gemeldet.", Toast.LENGTH_LONG).show();
+                    break;
+                default:
+                    // Nothing
             }
         }
     }
@@ -897,42 +861,5 @@ public class GameMap extends AppCompatActivity
     public void onReportReceived(CheaterReport report) {
         onCheaterReport(report);
     }
-
-    /* This method is used to punish (decrease number of tickets of) this/current player. */
-    public static void punishPlayerForFakeReport(Player player) {
-
-        List<Integer> ticketTypes = new ArrayList<>();
-
-        /* Add 4 types of tickets. */
-        ticketTypes.add(R.string.PEDESTRIAN_TICKET_KEY);
-        ticketTypes.add(R.string.BICYCLE_TICKET_KEY);
-        ticketTypes.add(R.string.BUS_TICKET_KEY);
-        ticketTypes.add(R.string.TAXI_TICKET_KEY);
-
-        /* Used to randomize order of ticket types. */
-        Collections.shuffle(ticketTypes);
-
-        /* Find at least one ticket which can be removed from player's account (if any). */
-        for (int i = 0; i < ticketTypes.size(); i++) {
-            if (player.checkForValidTicket(ticketTypes.get(i))) {
-                player.decreaseNumberOfTickets(ticketTypes.get(i));
-                break;
-            }
-        }
-    }
-
-    //TODO:
-
-    /* private void showOrHideCheaterReportMenu(Player player) {
-
-      MenuItem item = menu.findItem(R.id.cheater_melden);
-      //If a player is Mr.X he will not be able to see the "Cheating Option".
-       if (player.isMrX() && menu != null) {
-          item.setVisible(false);
-        }
-        //If a player is not Mr.X he will be able to see the "Cheating Option".
-        else {
-            item.setVisible(true);
-    } */
 }
 

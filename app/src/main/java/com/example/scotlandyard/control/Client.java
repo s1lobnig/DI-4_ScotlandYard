@@ -2,7 +2,7 @@ package com.example.scotlandyard.control;
 
 import android.util.Log;
 
-import com.example.scotlandyard.CheaterReport;
+import com.example.scotlandyard.reportcheater.CheaterReport;
 import com.example.scotlandyard.gameend.GameEnd;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.QuitNotification;

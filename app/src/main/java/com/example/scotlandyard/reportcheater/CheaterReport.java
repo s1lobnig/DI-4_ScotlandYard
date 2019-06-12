@@ -1,4 +1,4 @@
-package com.example.scotlandyard;
+package com.example.scotlandyard.reportcheater;
 
 import java.io.Serializable;
 

@@ -1,6 +1,6 @@
 package com.example.scotlandyard.control;
 
-import com.example.scotlandyard.CheaterReport;
+import com.example.scotlandyard.reportcheater.CheaterReport;
 
 public interface CheaterReportInterface {
     /**
