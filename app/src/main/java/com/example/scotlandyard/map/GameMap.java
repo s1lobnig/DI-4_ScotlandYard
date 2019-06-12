@@ -622,7 +622,7 @@ public class GameMap extends AppCompatActivity
         Point point = Points.getPoints()[field];
 
         if (myPlayer.getNickname() != player.getNickname() && move.isCheatingMove()) {
-            Toast.makeText(GameMap.this, "MR X schummelt", Toast.LENGTH_SHORT).show();
+            Log.d(TAG,"MR X schummelt");
         }
 
         moveMarker(point, player, player.getIcon(), move.getRandomEventTrigger(), move.getRandomRoute());
