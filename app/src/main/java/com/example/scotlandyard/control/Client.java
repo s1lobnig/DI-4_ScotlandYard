@@ -2,6 +2,7 @@ package com.example.scotlandyard.control;
 
 import android.util.Log;
 
+import com.example.scotlandyard.CheaterReport;
 import com.example.scotlandyard.gameend.GameEnd;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.QuitNotification;
@@ -145,6 +146,12 @@ public class Client extends Device implements ClientInterface {
         }
         if (object instanceof QuitNotification) {
             onQuit((QuitNotification) object);
+        }
+        if (object instanceof CheaterReport) {
+            /* If cheater report observer variable is set the message will be forwarded to it. */
+            if (isSetCheaterReportObserver()) {
+                getCheaterReportObserver().onReportReceived((CheaterReport) object);
+            }
         }
     }
 

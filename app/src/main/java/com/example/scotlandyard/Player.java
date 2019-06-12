@@ -1,5 +1,7 @@
 package com.example.scotlandyard;
 
+import android.util.Log;
+
 import com.example.scotlandyard.map.Point;
 import com.example.scotlandyard.map.Points;
 import com.example.scotlandyard.map.Routes;
