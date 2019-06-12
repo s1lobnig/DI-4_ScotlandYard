@@ -1,6 +1,7 @@
 package com.example.scotlandyard.control;
 
 import android.util.Log;
+import android.util.TimeUtils;
 
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.QuitNotification;
@@ -19,6 +20,7 @@ import com.google.android.gms.nearby.connection.ConnectionsClient;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * class representing a client in app
@@ -172,6 +174,7 @@ public class Client extends Device implements ClientInterface {
     private void onMove(Move move) {
         Log.d(logTag, "move received");
         Player player = game.findPlayer(move.getNickname());
+        game.checkifMrXInvisible();
         if (!player.getSpecialMrXMoves()[1]) {
             player.setMoved(true);
             if (player.isMrX()) {
@@ -186,6 +189,9 @@ public class Client extends Device implements ClientInterface {
         } else {
             player.setPosition(Points.POINTS[move.getField()]);
         }
+
+        game.checkifMrXVisible();
+
     }
 
     private void onEntry(Entry entry) {

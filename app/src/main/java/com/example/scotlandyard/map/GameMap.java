@@ -370,6 +370,7 @@ public class GameMap extends AppCompatActivity
                     } else {
                         device.send(move);
                     }
+
                     return true;
                 }
                 return false;
@@ -591,9 +592,19 @@ public class GameMap extends AppCompatActivity
                     .icon(BitmapDescriptorFactory.fromResource(p.getIcon()));
             p.setMarker(mMap.addMarker(markerOptions));
             p.getMarker().setTitle(p.getNickname());
+            System.out.println(device.getNickname());
+            System.out.println(p.getNickname());
+
+            if(p.isMrX())
+                p.getMarker().setVisible(false);
+
             if (p.getNickname().equals(device.getNickname())) {
                 myPlayer = p;
+
+                if(myPlayer.isMrX())
+                    myPlayer.getMarker().setVisible(true);
             }
+
         }
         randomEventsEnabled = device.getGame().isRandomEventsEnabled();
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myPlayer.getPosition().getLatLng(), 16f), 3000, null);

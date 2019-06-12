@@ -203,9 +203,6 @@ public class Game implements Serializable {
         }
         if (isRoundFinished()) {
             if (round < NUM_ROUNDS) {
-                /*if(this.isMrXFound()){
-                    return 2;
-                }*/
                 //Round finished
                 round++;
                 setRoundMrX(true);
@@ -220,6 +217,16 @@ public class Game implements Serializable {
         }
         //Round not finished yet
         return -1;
+    }
+
+    public void checkifMrXVisible(){
+        if(round == 3 || round == 7)
+            getMrX().getMarker().setVisible(true);
+    }
+
+    public void checkifMrXInvisible(){
+        if(round == 4 || round == 8)
+            getMrX().getMarker().setVisible(false);
     }
 
     /**
