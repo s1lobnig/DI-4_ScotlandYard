@@ -137,7 +137,7 @@ public class GameMap extends AppCompatActivity
                 useTicket.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (myPlayer.getSpecialMrXMoves()[0] && myPlayer.getTickets().get(R.string.BLACK_TICKET_KEY).intValue() == 0) {
+                        if (myPlayer.getTickets().get(R.string.BLACK_TICKET_KEY).intValue() == 0) {
                             Toast.makeText(GameMap.this, R.string.notEnoughTickets, Snackbar.LENGTH_LONG).show();
                         } else {
                             myPlayer.setSpecialMrXMoves(true, 0);
@@ -169,7 +169,7 @@ public class GameMap extends AppCompatActivity
                 useTicket.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (myPlayer.getSpecialMrXMoves()[1] && myPlayer.getTickets().get(R.string.DOUBLE_TICKET_KEY).intValue() == 0) {
+                        if (myPlayer.getTickets().get(R.string.DOUBLE_TICKET_KEY).intValue() == 0) {
                             Toast.makeText(GameMap.this, R.string.notEnoughTickets, Snackbar.LENGTH_LONG).show();
                         } else {
                             myPlayer.setSpecialMrXMoves(true, 1);
