@@ -149,7 +149,7 @@ public class Client extends Device implements ClientInterface {
 
     private void onQuit(QuitNotification quitNotification) {
         Log.d(logTag, "quit received");
-        // tell server, and therefore all others, that I wanna quit
+
         if (messengerObserver != null) {
             messengerObserver.onQuit(quitNotification.getPlayerName(), quitNotification.isServerQuit());
         }
@@ -157,7 +157,7 @@ public class Client extends Device implements ClientInterface {
             gameObserver.onQuit(quitNotification.getPlayerName(), quitNotification.isServerQuit());
         }
         // then me wanna disconnect
-        ((Client) Device.getInstance()).disconnect();
+        disconnect();
     }
 
     private void onMessage(Message message) {
@@ -288,7 +288,7 @@ public class Client extends Device implements ClientInterface {
             lost = endpoint;
             ((ClientService) connectionService).startDiscovery();
         }
-
+        quit = false;
     }
 
     @Override

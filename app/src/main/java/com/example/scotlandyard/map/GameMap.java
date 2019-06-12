@@ -646,9 +646,8 @@ public class GameMap extends AppCompatActivity
         } else if (object instanceof Move) {
             notification = "Zug";
         }
-//        Toast.makeText(GameMap.this, notification + " konnte nicht gesendet werden!", Toast.LENGTH_LONG).show();
         Log.d(TAG,notification + " konnte nicht gesendet werden!");
-        //TODO give possibility to sync the game again
+
     }
 
     @Override
@@ -684,7 +683,6 @@ public class GameMap extends AppCompatActivity
             deleteMarker();
             Device.getInstance().setGame(game);
             setupGame();
-            //ToDo: show current round
         }
     }
 

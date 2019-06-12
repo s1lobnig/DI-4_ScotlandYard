@@ -174,8 +174,8 @@ public class Server extends Device implements ServerInterface {
         if (gameObserver != null) {
             gameObserver.onQuit(quitNotification.getPlayerName(), quitNotification.isServerQuit());
         }
-        send(quitNotification);
         if (quitNotification.isServerQuit()) {
+            send(quitNotification);
             disconnect();
         } else {
             disconnect(quitNotification.getPlayerName());
@@ -320,6 +320,7 @@ public class Server extends Device implements ServerInterface {
             lost.add(endpoint);
             ((ServerService) connectionService).startAdvertising();
         }
+        quit = false;
     }
 
     @Override
