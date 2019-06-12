@@ -33,7 +33,6 @@ import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.map.roadmap.RoadMapDialog;
 import com.example.scotlandyard.messenger.Messenger;
 import com.example.scotlandyard.Player;
-import com.example.scotlandyard.PlayersOverview;
 import com.example.scotlandyard.R;
 import com.example.scotlandyard.Settings;
 import com.example.scotlandyard.connection.Endpoint;
@@ -282,8 +281,6 @@ public class GameMap extends AppCompatActivity
             fragment = getSupportFragmentManager().findFragmentById(R.id.map);
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.map, fragment).commit();
-        } else if (id == R.id.nav_overview) {
-            intent = new Intent(this, PlayersOverview.class);
         } else if (id == R.id.nav_road_map) {
             DialogFragment roadMapDialog = new RoadMapDialog();
             Bundle args = new Bundle();
