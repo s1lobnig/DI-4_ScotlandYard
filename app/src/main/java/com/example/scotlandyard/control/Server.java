@@ -195,22 +195,16 @@ public class Server extends Device implements ServerInterface {
     private void manageMove(Move move) {
         Player player = game.findPlayer(move.getNickname());
 
-
-        if(!player.getSpecialMrXMoves()[1] && move.isCheatingMove()) {
+        send(move);
+        if (!player.getSpecialMrXMoves()[1] && !move.isCheatingMove()) {
+            player.setMoved(true);
+        } else if (player.getSpecialMrXMoves()[1]) {
+            player.decreaseNumberOfTickets(R.string.DOUBLE_TICKET_KEY);
+            player.setSpecialMrXMoves(false, 1);
+        } else {
             player.setMoved(false);
             game.getMrX().decCountCheatingMoves();
         }
-
-
-        send(move);
-        if(!player.getSpecialMrXMoves()[1] && !move.isCheatingMove()){
-            player.setMoved(true);
-        }
-        else{
-            player.decreaseNumberOfTickets(R.string.DOUBLE_TICKET_KEY);
-            player.setSpecialMrXMoves(false, 1);
-        }
-
 
         int result = game.tryNextRound();
         if (result == 1) {
@@ -242,7 +236,7 @@ public class Server extends Device implements ServerInterface {
         if (gameObserver != null) {
             gameObserver.updateMove(move);
 
-            if(game.checkIfMrxHasLost()) {
+            if (game.checkIfMrxHasLost()) {
                 sendEnd(new GameEnd(false));
                 gameObserver.onRecievedEndOfGame(false);
                 disconnect();
@@ -250,7 +244,6 @@ public class Server extends Device implements ServerInterface {
         } else {
             player.setPosition(Points.POINTS[move.getField()]);
         }
-
 
 
     }
