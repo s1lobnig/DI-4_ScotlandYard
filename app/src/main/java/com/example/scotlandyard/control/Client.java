@@ -141,6 +141,7 @@ public class Client extends Device implements ClientInterface {
         }
         if(object instanceof GameEnd){
             gameObserver.onRecievedEndOfGame(((GameEnd) object).hasMrxwon());
+            disconnect();
         }
         if (object instanceof QuitNotification) {
             onQuit((QuitNotification) object);

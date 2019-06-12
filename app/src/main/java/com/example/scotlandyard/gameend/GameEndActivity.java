@@ -14,7 +14,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.scotlandyard.MainActivity;
+import com.example.scotlandyard.QuitNotification;
 import com.example.scotlandyard.R;
+import com.example.scotlandyard.control.Device;
+import com.example.scotlandyard.control.Server;
 
 public class GameEndActivity extends AppCompatActivity {
     private TextView txtWinners;
@@ -45,7 +48,12 @@ public class GameEndActivity extends AppCompatActivity {
     }
 
     public void openStart(View view) {
-        startActivity(new Intent(GameEndActivity.this, MainActivity.class));
+       if (Device.isServer()) {
+           Device device = Device.getInstance();
+           device.send(new QuitNotification(device.getNickname(), true));
+           ((Server)device).disconnect();
+       }
+       startActivity(new Intent(GameEndActivity.this, MainActivity.class));
     }
 
     private void sensors() {

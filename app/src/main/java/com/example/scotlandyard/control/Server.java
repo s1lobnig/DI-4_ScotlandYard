@@ -245,6 +245,7 @@ public class Server extends Device implements ServerInterface {
             if(game.checkIfMrxHasLost()) {
                 sendEnd(new GameEnd(false));
                 gameObserver.onRecievedEndOfGame(false);
+                disconnect();
             }
         } else {
             player.setPosition(Points.POINTS[move.getField()]);
@@ -320,7 +321,7 @@ public class Server extends Device implements ServerInterface {
             lost.add(endpoint);
             ((ServerService) connectionService).startAdvertising();
         }
-        quit = false;
+        //quit = false;
     }
 
     @Override
