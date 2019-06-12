@@ -62,28 +62,31 @@ public class ReportingLogic {
     }
 
     public static int analyzeReportPlayer(Player player, CheaterReport report) {
-        if (report.isFakeReport()) {
-            if (report.getReporter().equals(player.getNickname())) {
-                punishPlayerForFakeReport(player);
-                return 0;
-            } else {
-                return 1;
-            }
-        } else {
-            if (report.isMrXLost()) {
-                return 2;
-            } else {
+        if (!player.isMrX()) {
+            if (report.isFakeReport()) {
                 if (report.getReporter().equals(player.getNickname())) {
-                    return 3;
+                    punishPlayerForFakeReport(player);
+                    return 0;
                 } else {
-                    return 4;
+                    return 1;
+                }
+            } else {
+                if (report.isMrXLost()) {
+                    return 2;
+                } else {
+                    if (report.getReporter().equals(player.getNickname())) {
+                        return 3;
+                    } else {
+                        return 4;
+                    }
                 }
             }
         }
+        return -1;
     }
 
     /* This method is used to punish (decrease number of tickets of) this/current player. */
-    public static void punishPlayerForFakeReport(Player player) {
+    public static int punishPlayerForFakeReport(Player player) {
 
         List<Integer> ticketTypes = new ArrayList<>();
 
@@ -99,9 +102,10 @@ public class ReportingLogic {
         for (int i = 0; i < ticketTypes.size(); i++) {
             if (player.getTickets().get(ticketTypes.get(i)) > 0) {
                 player.decreaseNumberOfTickets(ticketTypes.get(i));
-                break;
+                return ticketTypes.get(i);
             }
         }
+        return -1;
     }
 
 }
