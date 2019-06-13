@@ -17,7 +17,7 @@ public class Points {
     /**
      * final Point[] which includes all fields of the game board
      */
-    public static final Point[] POINTS =
+    public static final Point[] FIELDS =
             {
                     new Point(46.621253, 14.262028, R.drawable.field1),
                     new Point(46.620646, 14.262115, R.drawable.field2),
@@ -103,7 +103,7 @@ public class Points {
      * @return double Latitude
      */
     public static double getLatFromP(int i) {
-        return POINTS[i].getLatitude();
+        return FIELDS[i].getLatitude();
     }
 
     /**
@@ -113,26 +113,26 @@ public class Points {
      * @return double Longitude
      */
     public static double getLngFromP(int i) {
-        return POINTS[i].getLongitude();
+        return FIELDS[i].getLongitude();
     }
 
     public static LatLng getLatLngFromP(int i) {
         return new LatLng(getLatFromP(i), getLngFromP(i));
     }
 
-    public static Point[] getPoints() {
-        return POINTS;
+    public static Point[] getFields() {
+        return FIELDS;
     }
 
     /**
      * get index of a Point p
      *
      * @param p
-     * @return index within @POINTS
+     * @return index within @FIELDS
      */
     public static int getIndex(Point p) {
-        for (int i = 0; i < POINTS.length; i++) {
-            if (POINTS[i].equals(p))
+        for (int i = 0; i < FIELDS.length; i++) {
+            if (FIELDS[i].equals(p))
                 return i;
         }
         return -1;

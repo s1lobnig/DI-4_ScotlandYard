@@ -5,6 +5,10 @@ import com.example.scotlandyard.map.Route;
 
 public class FootRoutes {
 
+    private FootRoutes() {
+
+    }
+
     private static final Point[] INTERMEDIATES_BY_FOOT_PTS_5_6 = {
             new Point(46.618745, 14.261462),
             new Point(46.618712, 14.261580),
@@ -238,8 +242,4 @@ public class FootRoutes {
             new Route(72, 74),
             new Route(72, 73)
     };
-
-    private FootRoutes() {
-    }
-
 }

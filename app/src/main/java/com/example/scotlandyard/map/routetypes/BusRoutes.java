@@ -5,6 +5,10 @@ import com.example.scotlandyard.map.Route;
 
 public class BusRoutes {
 
+    private BusRoutes() {
+
+    }
+
     private static final Point[] INTERMEDIATES_BY_BUS_4_16 = new Point[]{
             new Point(46.621232, 14.262722),
             new Point(46.620601, 14.266007)

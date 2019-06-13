@@ -56,10 +56,10 @@ public class BotMoveTest {
         Player[] players = new Player[playerPositions.length + 1];
         for (int i = 0; i < playerPositions.length; i++) {
             players[i] = new Player("" + i);
-            players[i].setPosition(Points.POINTS[playerPositions[i] - 1]);
+            players[i].setPosition(Points.FIELDS[playerPositions[i] - 1]);
         }
         players[players.length - 1] = new Player("BOT");
-        players[players.length - 1].setPosition(Points.POINTS[currentPosition - 1]);
+        players[players.length - 1].setPosition(Points.FIELDS[currentPosition - 1]);
         players[players.length - 1].setMrX(true);
         return Arrays.asList(players);
     }

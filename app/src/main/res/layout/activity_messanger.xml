@@ -79,7 +79,7 @@
             android:layout_marginRight="16dp"
             android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:hint="Enter message"
+            android:hint="Enter messageText"
             android:inputType="text"
             android:maxLines="6"
             android:textColor="@color/colorLightGrey" />

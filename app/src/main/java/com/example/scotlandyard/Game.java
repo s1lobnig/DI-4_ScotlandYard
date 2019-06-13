@@ -195,11 +195,11 @@ public class Game implements Serializable {
      * @return -1 if round has not finished
      * 1 if round has finished
      * 0 if game ends because last round was reached
+     * 2 if no detective can move anymore
      */
     public int tryNextRound() {
         if (isRoundMrX() && getMrX().isMoved()) {
             setRoundMrX(false);
-            //return -1;
         }
         if (isRoundFinished()) {
             if (round < NUM_ROUNDS) {
@@ -270,8 +270,8 @@ public class Game implements Serializable {
 
     //returns a free position
     private LatLng getNewPlayerPosition() {
-        int position = RANDOM.nextInt(Points.getPoints().length);
-        Point point = Points.POINTS[position];
+        int position = RANDOM.nextInt(Points.getFields().length);
+        Point point = Points.FIELDS[position];
         for (Player p : players) {
             if (point.equals(p.getPosition())) {
                 return getNewPlayerPosition();

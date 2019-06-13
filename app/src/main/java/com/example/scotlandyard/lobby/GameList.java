@@ -33,7 +33,7 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
     private ListView gameListView; /* ListView GUI Element */
     private ArrayAdapter listAdapter; /* Adapter between ListView and  ArrayList<Game> */
 
-    private String logTag = "GameList";
+    private static final String TAG = "GameList";
 
     @Override
     protected void onStop() {
@@ -74,7 +74,7 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
             client.addLobbyObserver(this);
             client.startDiscovery();
         } catch (IllegalStateException ex) {
-            Log.d(logTag, "failed setting instance", ex);
+            Log.d(TAG, "failed setting instance", ex);
         }
 
         gameListView = findViewById(R.id.list_currentGames);
@@ -140,33 +140,32 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
 
     @Override
     public void showConnected(String endpointName) {
-        /*String notification = "Sie sind verbunden und warten darauf, der Lobby beizutreten.";
-        Toast.makeText(getApplicationContext(), notification, Toast.LENGTH_LONG).show();*/
+        Log.d(TAG,"Verbunden, warten auf Lobby-Beitritt.");
     }
 
     @Override
     public void startGame(Game game) {
-        Log.d(logTag, "should not happen here");
+        Log.d(TAG, "should not happen here");
     }
 
     @Override
     public void showConnectionFailed(String endpointName) {
-        //TODO show user that connecting to that endpoint has failed
+        Log.d(TAG,"Verbundindung fehlgeschlagen.");
     }
 
     @Override
     public void showDisconnected(String endpointName) {
-        //TODO show user that we have disconnected from that endpoint
+        Log.d(TAG,"Verbundindung abgebaut.");
     }
 
     @Override
     public void showAcceptingFailed(String endpointName) {
-        //TODO show user that accepting connection of that endpoint has failed
+        Log.d(TAG,"Verbindung nicht akzeptiert");
     }
 
     @Override
     public void showSendingFailed(Object object) {
-        //TODO show user that sending of that object has failed
+        Log.d(TAG,"Senden fehlgeschlagen");
     }
 
     @Override
@@ -175,7 +174,7 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
         Device.getInstance().setNickname(player.getNickname());
 
         /* Start Client Lobby activity. */
-        Log.d(logTag, "Loading client lobby.");
+        Log.d(TAG, "Loading client lobby.");
         Intent intent = new Intent(GameList.this, ClientLobby.class);
         intent.putExtra("LOBBY", lobby);
         startActivity(intent);

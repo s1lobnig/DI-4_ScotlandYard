@@ -165,11 +165,9 @@ public class Server extends Device implements ServerInterface {
         if (object instanceof MapNotification) {
             onMapNotification((MapNotification) object);
         }
-        if (object instanceof CheaterReport) {
+        if (object instanceof CheaterReport && isSetCheaterReportObserver()) {
             /* If cheater report observer variable is set, the message will be forwarded to it. */
-            if (isSetCheaterReportObserver()) {
-                getCheaterReportObserver().onReportReceived((CheaterReport) object);
-            }
+            getCheaterReportObserver().onReportReceived((CheaterReport) object);
         }
     }
 
@@ -249,7 +247,7 @@ public class Server extends Device implements ServerInterface {
                 disconnect();
             }
         } else {
-            player.setPosition(Points.POINTS[move.getField()]);
+            player.setPosition(Points.FIELDS[move.getField()]);
         }
 
 
@@ -276,7 +274,7 @@ public class Server extends Device implements ServerInterface {
         if (gameObserver != null) {
             gameObserver.updateMove(move);
         } else {
-            bot.setPosition(Points.POINTS[position - 1]);
+            bot.setPosition(Points.FIELDS[position - 1]);
         }
     }
 
@@ -321,7 +319,6 @@ public class Server extends Device implements ServerInterface {
             lost.add(endpoint);
             ((ServerService) connectionService).startAdvertising();
         }
-        //quit = false;
     }
 
     @Override
@@ -376,8 +373,8 @@ public class Server extends Device implements ServerInterface {
             Player player = game.findPlayer(endpoint.getName());
             player.setActive(true);
             ((ServerService) connectionService).send(this.game, endpoint);
-            if (player.isMrX()) {
-                //ToDo: deactivate bot
+            if(player.isMrX()){
+                game.setBotMrX(false);
             }
         }
     }
@@ -401,5 +398,4 @@ public class Server extends Device implements ServerInterface {
         ((ServerService) connectionService).disconnect(playerName);
         quit = true;
     }
-
 }

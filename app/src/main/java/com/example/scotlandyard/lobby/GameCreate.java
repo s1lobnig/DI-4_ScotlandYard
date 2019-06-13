@@ -15,13 +15,13 @@ import java.util.ArrayList;
 
 public class GameCreate extends AppCompatActivity {
 
-    private String logTag = "GameCreate";
-    private static EditText userName; /* User name input field. */
-    private static EditText maxPlayers; /* Maximum number of players input field. */
-    private static CheckBox randomEvents;
-    private static CheckBox chooseMrXRandomly;
-    private static CheckBox botMrX;
-    private static EditText lobbyName;
+    private static final String logTag = "GameCreate";
+    private EditText userName; /* User name input field. */
+    private EditText maxPlayers; /* Maximum number of players input field. */
+    private CheckBox randomEvents;
+    private CheckBox chooseMrXRandomly;
+    private CheckBox botMrX;
+    private EditText lobbyName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

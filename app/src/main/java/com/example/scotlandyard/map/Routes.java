@@ -14,7 +14,7 @@ import static com.example.scotlandyard.map.routetypes.TaxiRoutes.TAXI_DRAGAN;
 /**
  * @author René
  * <p>
- * this class contains the routes between the @POINTS + additional methods
+ * this class contains the routes between the @FIELDS + additional methods
  */
 public class Routes {
 

@@ -1,7 +1,6 @@
 package com.example.scotlandyard.control;
 
 import android.util.Log;
-import android.util.TimeUtils;
 
 import com.example.scotlandyard.reportcheater.CheaterReport;
 import com.example.scotlandyard.gameend.GameEnd;
@@ -22,6 +21,7 @@ import com.google.android.gms.nearby.connection.ConnectionsClient;
 
 import java.util.ArrayList;
 import java.util.Map;
+
 /**
  * class representing a client in app
  * lobbyObserver:           observer of lobby
@@ -140,18 +140,16 @@ public class Client extends Device implements ClientInterface {
         if (object instanceof Game) {
             onGame((Game) object);
         }
-        if(object instanceof GameEnd){
+        if (object instanceof GameEnd) {
             gameObserver.onRecievedEndOfGame(((GameEnd) object).hasMrxwon());
             disconnect();
         }
         if (object instanceof QuitNotification) {
             onQuit((QuitNotification) object);
         }
-        if (object instanceof CheaterReport) {
+        if (object instanceof CheaterReport && isSetCheaterReportObserver()) {
             /* If cheater report observer variable is set the message will be forwarded to it. */
-            if (isSetCheaterReportObserver()) {
-                getCheaterReportObserver().onReportReceived((CheaterReport) object);
-            }
+            getCheaterReportObserver().onReportReceived((CheaterReport) object);
         }
     }
 
@@ -199,7 +197,7 @@ public class Client extends Device implements ClientInterface {
         if (gameObserver != null) {
             gameObserver.updateMove(move);
         } else {
-            player.setPosition(Points.POINTS[move.getField()]);
+            player.setPosition(Points.FIELDS[move.getField()]);
         }
     }
 

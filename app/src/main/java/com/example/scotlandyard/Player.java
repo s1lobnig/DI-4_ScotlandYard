@@ -285,7 +285,6 @@ public class Player implements Serializable {
             return 2;
         }
         //if it is not players turn -> ignore move
-        System.out.println(moved + " " +game.isRoundMrX() +" " + isMrX );
         if (moved || (isMrX && !game.isRoundMrX()) || (!isMrX && game.isRoundMrX())) {
             return 3;
         }

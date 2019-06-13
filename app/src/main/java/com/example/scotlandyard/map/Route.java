@@ -49,15 +49,15 @@ public class Route implements Serializable {
             double x2;
             double y2;
             if (i == 0) {
-                x1 = Points.POINTS[getStartPoint() - 1].getLatitude();
-                y1 = Points.POINTS[getStartPoint() - 1].getLongitude();
+                x1 = Points.FIELDS[getStartPoint() - 1].getLatitude();
+                y1 = Points.FIELDS[getStartPoint() - 1].getLongitude();
             } else {
                 x1 = getIntermediates()[i - 1].getLatitude();
                 y1 = getIntermediates()[i - 1].getLongitude();
             }
             if (i == getIntermediates().length) {
-                x2 = Points.POINTS[getEndPoint() - 1].getLatitude();
-                y2 = Points.POINTS[getEndPoint() - 1].getLongitude();
+                x2 = Points.FIELDS[getEndPoint() - 1].getLatitude();
+                y2 = Points.FIELDS[getEndPoint() - 1].getLongitude();
             } else {
                 x2 = getIntermediates()[i].getLatitude();
                 y2 = getIntermediates()[i].getLongitude();
@@ -73,19 +73,27 @@ public class Route implements Serializable {
             return false;
         if (o instanceof Route) {
             Route r = (Route) o;
-            if (r.getStartPoint() == startPoint && r.getEndPoint() == endPoint) {
-                if (r.getIntermediates() == null && intermediates == null)
-                    return true;
-                if (r.getIntermediates() != null && intermediates != null && r.getIntermediates().length == intermediates.length) {
-                    for (int i = 0; i < intermediates.length; i++) {
-                        if (!(intermediates[i]).equals(r.getIntermediates()[i]))
-                            return false;
-                    }
-                    return true;
-                }
-                return false;
+            return checkEquivalence(r);
+        }
+        return false;
+    }
+
+    private boolean checkEquivalence(Route r) {
+        if (r.getStartPoint() == startPoint && r.getEndPoint() == endPoint) {
+            return checkIfIntermediatesAreEqual(r);
+        }
+        return false;
+    }
+
+    private boolean checkIfIntermediatesAreEqual(Route r) {
+        if (r.getIntermediates() == null && intermediates == null)
+            return true;
+        if (r.getIntermediates() != null && intermediates != null && r.getIntermediates().length == intermediates.length) {
+            for (int i = 0; i < intermediates.length; i++) {
+                if (!(intermediates[i]).equals(r.getIntermediates()[i]))
+                    return false;
             }
-            return false;
+            return true;
         }
         return false;
     }

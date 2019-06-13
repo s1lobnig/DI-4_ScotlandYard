@@ -25,9 +25,9 @@ public class PlayerIsValidMoveTest {
     @Before
     public void setup(){
         player = new Player("Sophie");
-        player.setPosition(Points.getPoints()[29]);
+        player.setPosition(Points.getFields()[29]);
         player2 = new Player("Tim");
-        player2.setPosition(Points.getPoints()[65]);
+        player2.setPosition(Points.getFields()[65]);
         player.setTickets(game);
 
         ArrayList<Player> players = new ArrayList<>();
@@ -37,7 +37,7 @@ public class PlayerIsValidMoveTest {
         game = new Game("Game", 3, 3, false, false, players);
         game.setRoundMrX(false);
 
-        reachable = Points.getPoints()[30];
+        reachable = Points.getFields()[30];
     }
 
     @Test
@@ -87,7 +87,7 @@ public class PlayerIsValidMoveTest {
 
     @Test
     public void testIsValidMoveNotReachable(){
-        Point newLocation = Points.getPoints()[5];
+        Point newLocation = Points.getFields()[5];
         int result = player.isValidMove(game, newLocation);
         assertEquals(4, result);
     }

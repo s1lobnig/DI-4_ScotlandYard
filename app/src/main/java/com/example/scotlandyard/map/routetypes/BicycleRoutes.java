@@ -4,6 +4,11 @@ import com.example.scotlandyard.map.Point;
 import com.example.scotlandyard.map.Route;
 
 public class BicycleRoutes {
+
+    private BicycleRoutes(){
+
+    }
+
     private static final Point[] INTERMEDIATES_BY_BICYCLE_1_4 = new Point[]{
             new Point(46.621189, 14.262312),
             new Point(46.621058, 14.262452),

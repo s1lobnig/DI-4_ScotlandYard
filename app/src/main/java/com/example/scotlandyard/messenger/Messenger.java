@@ -16,7 +16,6 @@ import android.widget.Toast;
 import com.example.scotlandyard.MainActivity;
 import com.example.scotlandyard.R;
 import com.example.scotlandyard.connection.Endpoint;
-import com.example.scotlandyard.control.Client;
 import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.control.MessengerInterface;
 
@@ -32,7 +31,6 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
     private Message message;
     private String logTag = "Messanger";
     private String nickname;
-    private ArrayList<Message> messageArrayList = Device.getInstance().getMessageList();
 
     protected void onResume() {
         super.onResume();

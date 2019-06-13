@@ -23,9 +23,8 @@ import com.example.scotlandyard.connection.Endpoint;
 import com.google.android.gms.nearby.Nearby;
 
 public class ServerLobby extends AppCompatActivity implements ServerLobbyInterface {
-    private String logTag = "ServerLobby";
+    private static final String TAG = "ServerLobby";
     private ListAdapter connectedPlayersListAdapter;
-    private Player player;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,9 +37,7 @@ public class ServerLobby extends AppCompatActivity implements ServerLobbyInterfa
         /* Get intent data. */
         Intent intent = getIntent();
         Lobby lobby = (Lobby) intent.getSerializableExtra("LOBBY");
-        player = (Player) intent.getSerializableExtra("PLAYER");
 
-        //TODO show lobby information in this activity (maxPlayers, randomMr.X, randomEvents)
         //maxPlayers in what form?
 
         ((CheckBox) findViewById(R.id.randomEvents)).setChecked(lobby.isRandomEvents());
@@ -61,15 +58,15 @@ public class ServerLobby extends AppCompatActivity implements ServerLobbyInterfa
             server.setNickname(lobby.getPlayerList().get(0).getNickname());
             server.startAdvertising();
         } catch (IllegalStateException ex) {
-            Log.d(logTag, "failed setting instance", ex);
+            Log.d(TAG, "failed setting instance", ex);
         }
 
         /* Start game initiated by server. */
         startGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(logTag, "Loading game map.");
-                if(Device.getInstance().getLobby().isBotMrX()) {
+                Log.d(TAG, "Loading game map.");
+                if (Device.getInstance().getLobby().isBotMrX()) {
                     Device.getInstance().getLobby().addPlayer(new Player("Bot"));
                 }
 
@@ -100,47 +97,40 @@ public class ServerLobby extends AppCompatActivity implements ServerLobbyInterfa
     }
 
     public void showFailedAdvertising() {
-        //TODO show user that advertising failed
+        Log.d(TAG, "Advertising fehlgeschlagen");
     }
 
     @Override
     public void showStoppedAdvertising() {
-        //TODO show user that advertising stopped
+        Log.d(TAG, "Advertising gestopt");
     }
 
     @Override
     public void showConnectionRequest(Endpoint endpoint) {
-        //TODO ask user, if he wants to accept or reject the connection of that endpoint
         ((Server) Device.getInstance()).acceptConnection(endpoint);     //accepts the connection
-        // ((Server) Device.getInstance()).acceptConnection(endpoint);  //rejects the connection
     }
 
     @Override
     public void showConnectionFailed(String endpointName) {
-        //TODO show user that connection to endpoint has failed
-        String notification = "Verbindung zum Server konnte nicht hergestellt werden.";
-        Toast.makeText(getApplicationContext(), notification, Toast.LENGTH_LONG).show();
+        Log.d(TAG,"Verbindung zum Server konnte nicht hergestellt werden.");
     }
 
     @Override
     public void showDisconnected(String endpointName) {
-        Log.d(logTag, "should not be called.");
-
+        Log.d(TAG, "should not be called.");
         String notification = "Verbindung zum Server verloren.";
         Toast.makeText(getApplicationContext(), notification, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void showAcceptingFailed(String endpointName) {
-        //TODO show user that connection accept to endpoint has failed
-
         String notification = "Verbindung zum Server konnte nicht hergestellt werden.";
         Toast.makeText(getApplicationContext(), notification, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void showSendingFailed(Object object) {
-        //TODO show user that sending of that object has failed
+        Log.d(TAG,"Senden fehlgeschlagen");
     }
 
     @Override

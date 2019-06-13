@@ -4,6 +4,11 @@ import com.example.scotlandyard.map.Point;
 import com.example.scotlandyard.map.Route;
 
 public class TaxiRoutes {
+
+    private TaxiRoutes() {
+
+    }
+
     private static final Point[] INTERMEDIATES_BY_TAXI_DRAGAN_32_43 = new Point[]{
             new Point(46.614486, 14.264978),
             new Point(46.615011, 14.264580),

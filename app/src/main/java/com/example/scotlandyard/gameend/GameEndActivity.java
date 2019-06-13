@@ -22,11 +22,6 @@ import com.example.scotlandyard.control.Server;
 public class GameEndActivity extends AppCompatActivity {
     private TextView txtWinners;
 
-    //Variables for shaking
-    private float acelVal;  //Curr Value
-    private float acelLast; //Last value
-    private float shake;    //difference
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

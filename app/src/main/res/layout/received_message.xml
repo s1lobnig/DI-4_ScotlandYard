@@ -43,7 +43,7 @@
         android:elevation="2dp"
         android:maxWidth="240dp"
         android:padding="10dp"
-        android:text="Placeholder message"
+        android:text="Placeholder messageText"
         android:textColor="@color/colorText"
         android:textSize="18dp"
         app:layout_constraintBottom_toBottomOf="parent"

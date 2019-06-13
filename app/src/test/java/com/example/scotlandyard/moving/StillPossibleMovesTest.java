@@ -2,25 +2,17 @@ package com.example.scotlandyard.moving;
 
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
-import com.example.scotlandyard.Game;
 import com.example.scotlandyard.map.Points;
-import com.example.scotlandyard.map.Route;
 import com.example.scotlandyard.map.Routes;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
-
-import static com.example.scotlandyard.map.routetypes.BicycleRoutes.BICYCLE;
-import static com.example.scotlandyard.map.routetypes.FootRoutes.BY_FOOT;
 
 @RunWith(Parameterized.class)
 public class StillPossibleMovesTest {
@@ -69,7 +61,7 @@ public class StillPossibleMovesTest {
         setTickets(tickets);
         this.player = new Player(playerNick);
         player.setMrX(isMrX);
-        player.setPosition(Points.POINTS[position - 1]);
+        player.setPosition(Points.FIELDS[position - 1]);
         player.setTickets(this.tickets);
         this.currentPosition = position;
         this.expectedResut = expectedResut;

@@ -79,7 +79,7 @@ import static com.example.scotlandyard.R.color.colorPrimaryDark;
 public class GameMap extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, GameInterface, CheaterReportInterface {
 
-    private static Device device;
+    private Device device;
     private static final Random RANDOM = new SecureRandom();
 
     private TextView rounds;
@@ -234,7 +234,7 @@ public class GameMap extends AppCompatActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.map, fragment).commit();
 
-        SensorManager sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         sm.registerListener(sensorListenerProximity, sm.getDefaultSensor(Sensor.TYPE_PROXIMITY), SensorManager.SENSOR_DELAY_NORMAL);
     }
 
@@ -255,7 +255,6 @@ public class GameMap extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
-        // this.menu = menu;
         return true;
     }
 
@@ -491,7 +490,7 @@ public class GameMap extends AppCompatActivity
         MarkerMovingRoute markerMove = MovingLogic.prepareMove(player, randomRoute, randRoute, p);
         visualizeTickets();
         boolean[] animationVisibilities = getAnimationVisiblity(player);
-        if (player.isMrX() && ((player.equals(myPlayer) || (device.getGame().isBotMrX() && Device.isServer())))) {
+        if (player.isMrX() && (player.equals(myPlayer) || (device.getGame().isBotMrX() && Device.isServer()))) {
             int lastTurn = device.getRoadMap().getNumberOfEntries();
             Entry entry = MovingLogic.getRoadMapEntry(lastTurn, markerMove.getNewLocation(), markerMove.getTicket());
             if (Device.isServer()) {
@@ -553,7 +552,7 @@ public class GameMap extends AppCompatActivity
      * Adds all Points to the map and calls drawRoutes() at the end
      */
     private void setFields() {
-        for (Point p : Points.getPoints()) {
+        for (Point p : Points.getFields()) {
             LatLng p_LatLng = p.getLatLng();
             MarkerOptions markerOptions = new MarkerOptions()
                     .position(p_LatLng)
@@ -617,8 +616,8 @@ public class GameMap extends AppCompatActivity
      * @param color An int-value which represents the color of the route to be drawn
      */
     private void addRoute(Route r, int color) {
-        Point startPoint = Points.getPoints()[r.getStartPoint() - 1];
-        Point endPoint = Points.getPoints()[r.getEndPoint() - 1];
+        Point startPoint = Points.getFields()[r.getStartPoint() - 1];
+        Point endPoint = Points.getFields()[r.getEndPoint() - 1];
         LatLng start = startPoint.getLatLng();
         LatLng end = endPoint.getLatLng();
         PolylineOptions route = new PolylineOptions().add(start);
@@ -654,7 +653,7 @@ public class GameMap extends AppCompatActivity
     public void updateMove(Move move) {
         Player player = device.getGame().findPlayer(move.getNickname());
         int field = move.getField();
-        Point point = Points.getPoints()[field];
+        Point point = Points.getFields()[field];
 
         if (myPlayer.getNickname() != player.getNickname() && move.isCheatingMove()) {
             Log.d(TAG, "MR X schummelt");

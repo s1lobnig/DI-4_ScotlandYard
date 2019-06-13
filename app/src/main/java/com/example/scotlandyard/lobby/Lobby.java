@@ -82,25 +82,33 @@ public class Lobby implements Serializable {
 
     public void chooseMrX(boolean chooseMrXRandomly) {
         if(botMrX){
-            for (Player player : playerList) {
-                if(player.getNickname().equals("Bot")){
-                    player.setMrX(true);
-                    return;
-                }
-            }
+            makeBotMrX();
         }
         if (chooseMrXRandomly) {
             playerList.get(random.nextInt(playerList.size())).setMrX(true);
         } else {
-            ArrayList<Integer> candidatesForMrX = new ArrayList<>();
-            for (int i = 0; i < playerList.size(); i++) {
-                if (playerList.get(i).wantsToBeMrX())
-                    candidatesForMrX.add(i);
+            chooseByCandidate();
+        }
+    }
+
+    private void chooseByCandidate() {
+        ArrayList<Integer> candidatesForMrX = new ArrayList<>();
+        for (int i = 0; i < playerList.size(); i++) {
+            if (playerList.get(i).wantsToBeMrX())
+                candidatesForMrX.add(i);
+        }
+        if (candidatesForMrX.isEmpty()) {
+            playerList.get(0).setMrX(true);
+        } else
+            playerList.get(candidatesForMrX.get(random.nextInt(candidatesForMrX.size()))).setMrX(true);
+    }
+
+    private void makeBotMrX() {
+        for (Player player : playerList) {
+            if(player.getNickname().equals("Bot")){
+                player.setMrX(true);
+                return;
             }
-            if (candidatesForMrX.isEmpty()) {
-                playerList.get(0).setMrX(true);
-            } else
-                playerList.get(candidatesForMrX.get(random.nextInt(candidatesForMrX.size()))).setMrX(true);
         }
     }
 }
