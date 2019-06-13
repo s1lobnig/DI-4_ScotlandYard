@@ -23,7 +23,7 @@ public class MarkerMotion implements Runnable {
     private Handler handler;
     private LatLng current;
     private int finalIcon;
-    private boolean[] markerVisibility;
+    private boolean[] markerVisibilities;
 
     public MarkerMotion(Marker marker, LatLng nextPoint, LatLngInterpolator latLngInterpolator, float duration, int finalIcon) {
         this.marker = marker;
@@ -67,18 +67,18 @@ public class MarkerMotion implements Runnable {
         } else {
             marker.setPosition(nextPoint);
             if (nextMotion != null) {
-                marker.setVisible(markerVisibility[0]);
+                marker.setVisible(markerVisibilities[0]);
                 nextMotion.setMarker(marker);
                 nextMotion.setStart();
                 handler.post(nextMotion);
             } else {
                 marker.setIcon(BitmapDescriptorFactory.fromResource(finalIcon));
-                marker.setVisible(markerVisibility[1]);
+                marker.setVisible(markerVisibilities[1]);
             }
         }
     }
 
-    public void setVisibleMarker(boolean[] showMarkerAfterAni) {
-        this.markerVisibility = showMarkerAfterAni;
+    public void setMarkerVisibilities(boolean[] markerVisibilities) {
+        this.markerVisibilities = markerVisibilities;
     }
 }

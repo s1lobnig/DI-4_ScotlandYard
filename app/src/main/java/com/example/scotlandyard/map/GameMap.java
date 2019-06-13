@@ -71,9 +71,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 
 import static com.example.scotlandyard.R.color.colorPrimary;
@@ -493,7 +490,7 @@ public class GameMap extends AppCompatActivity
     public boolean move(Player player, Point p, boolean goBack, boolean randomRoute, int playerIcon, ValidatedRoute randRoute) {
         MarkerMovingRoute markerMove = MovingLogic.prepareMove(player, randomRoute, randRoute, p);
         visualizeTickets();
-        boolean[] showMrXAfterMove = getVisiblity(player);
+        boolean[] animationVisibilities = getAnimationVisiblity(player);
         if (player.isMrX() && ((player.equals(myPlayer) || (device.getGame().isBotMrX() && Device.isServer())))) {
             int lastTurn = device.getRoadMap().getNumberOfEntries();
             Entry entry = MovingLogic.getRoadMapEntry(lastTurn, markerMove.getNewLocation(), markerMove.getTicket());
@@ -504,11 +501,11 @@ public class GameMap extends AppCompatActivity
         }
         player.getMarker().setIcon(BitmapDescriptorFactory.fromResource(markerMove.getIcon()));
         markerMove = MovingLogic.createMove(markerMove, goBack, player);
-        runMarkerAnimation(player, markerMove, playerIcon, showMrXAfterMove);
+        runMarkerAnimation(player, markerMove, playerIcon, animationVisibilities);
         return true;
     }
 
-    private boolean[] getVisiblity(Player player) {
+    private boolean[] getAnimationVisiblity(Player player) {
         int currentRound = Device.getInstance().getGame().getRound();
         if (myPlayer.equals(player)) {
             /* if I move my player, I want to see it */
@@ -526,11 +523,11 @@ public class GameMap extends AppCompatActivity
         }
     }
 
-    public static void runMarkerAnimation(Player player, MarkerMovingRoute movingRoute, int finalIcon, boolean[] showMarkerAfterAni) {
+    public static void runMarkerAnimation(Player player, MarkerMovingRoute movingRoute, int finalIcon, boolean[] animationVisibilities) {
         if (movingRoute.getIntermediates() == null || movingRoute.getIntermediates().isEmpty()) {
-            MarkerAnimation.moveMarkerToTarget(player.getMarker(), movingRoute.getFinalPosition(), new LatLngInterpolator.Linear(), MovingLogic.ANIMATION_DURATION, movingRoute.getIcon(), finalIcon, showMarkerAfterAni);
+            MarkerAnimation.moveMarkerToTarget(player.getMarker(), movingRoute.getFinalPosition(), new LatLngInterpolator.Linear(), MovingLogic.ANIMATION_DURATION, movingRoute.getIcon(), finalIcon, animationVisibilities);
         } else {
-            MarkerAnimation.moveMarkerToTarget(player.getMarker(), movingRoute.getIntermediates(), movingRoute.getTimeSlices(), movingRoute.getFinalPosition(), new LatLngInterpolator.Linear(), movingRoute.getIcon(), finalIcon, showMarkerAfterAni);
+            MarkerAnimation.moveMarkerToTarget(player.getMarker(), movingRoute.getIntermediates(), movingRoute.getTimeSlices(), movingRoute.getFinalPosition(), new LatLngInterpolator.Linear(), movingRoute.getIcon(), finalIcon, animationVisibilities);
         }
     }
 

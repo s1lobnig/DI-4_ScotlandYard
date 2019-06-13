@@ -13,7 +13,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.scotlandyard.GameEndActivity;
 import com.example.scotlandyard.MainActivity;
 import com.example.scotlandyard.R;
 
