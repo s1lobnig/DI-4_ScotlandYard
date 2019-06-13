@@ -2,12 +2,14 @@ package com.example.scotlandyard;
 
 import com.example.scotlandyard.map.Point;
 import com.example.scotlandyard.map.Points;
+import com.example.scotlandyard.map.Routes;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
 import java.io.Serializable;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Game implements Serializable {
@@ -40,7 +42,7 @@ public class Game implements Serializable {
     private boolean roundMrX;
     private boolean randomEventsEnabled;
     private boolean botMrX;
-    private ArrayList<Player> players = new ArrayList<>(); // Changed from List to ArrayList because of serialization.
+    private List<Player> players = new ArrayList<>(); // Changed from List to ArrayList because of serialization.
 
 
     public Game(String gameName, int maxMembers) {
@@ -48,7 +50,7 @@ public class Game implements Serializable {
         this.maxMembers = maxMembers;
     }
 
-    public Game(String gameName, int maxMembers, int round, boolean randomEventsEnabled, boolean botMrX, ArrayList<Player> players) {
+    public Game(String gameName, int maxMembers, int round, boolean randomEventsEnabled, boolean botMrX, List<Player> players) {
         this(gameName, maxMembers);
         this.round = round;
         this.roundMrX = true;
@@ -113,11 +115,11 @@ public class Game implements Serializable {
         this.botMrX = botMrX;
     }
 
-    public ArrayList<Player> getPlayers() {
+    public List<Player> getPlayers() {
         return players;
     }
 
-    public void setPlayers(ArrayList<Player> players) {
+    public void setPlayers(List<Player> players) {
         this.players = players;
     }
 
@@ -226,7 +228,7 @@ public class Game implements Serializable {
 
     public boolean allDetectivesStuck() {
         for (Player p : players) {
-            if (!p.isMrX() && p.isActive()) {
+            if (!p.isMrX() && Routes.routesPossibleWithTickets(Points.getIndex(p.getPosition()) + 1, p) && p.isActive()) {
                 return false;
             }
         }

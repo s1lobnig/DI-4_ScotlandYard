@@ -15,6 +15,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author René
@@ -80,7 +81,7 @@ public class MarkerAnimation {
      * @param timeSlices         .............time the animation should last
      * @param icon               .................marker icon during the animation
      */
-    public static void moveMarkerToTarget(final Marker marker, final ArrayList<LatLng> route, final ArrayList<Float> timeSlices, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, int icon, int finalIcon, boolean[] markerVisibiities) {
+    public static void moveMarkerToTarget(final Marker marker, final List<LatLng> route, final List<Float> timeSlices, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, int icon, int finalIcon, boolean[] markerVisibiities) {
         final Handler handler = new Handler();
         marker.setIcon(BitmapDescriptorFactory.fromResource(icon));
         ArrayList<MarkerMotion> motions = new ArrayList<>();

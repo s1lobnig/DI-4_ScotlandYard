@@ -94,7 +94,7 @@ public class GameMap extends AppCompatActivity
 
     private static final String TAG = GameMap.class.getSimpleName();
     private GoogleMap mMap;
-    private static Player myPlayer;
+    private Player myPlayer;
     private boolean randomEventsEnabled;
 
     private static final int BY_FOOT_COLOR = Color.YELLOW;
@@ -107,8 +107,6 @@ public class GameMap extends AppCompatActivity
     /* A variable which gives access to application's main menu. */
     private Menu menu;
     private Menu navDrawerMenu;
-
-    private SensorManager sm;
 
     /**
      * @param savedInstanceState
@@ -234,7 +232,7 @@ public class GameMap extends AppCompatActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.map, fragment).commit();
 
-        sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        SensorManager sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         sm.registerListener(sensorListenerProximity, sm.getDefaultSensor(Sensor.TYPE_PROXIMITY), SensorManager.SENSOR_DELAY_NORMAL);
     }
 
@@ -369,7 +367,7 @@ public class GameMap extends AppCompatActivity
         }
         playerName.setText(myPlayer.getNickname());
         playerImage.setImageResource(myPlayer.getIcon());
-        if(myPlayer.isMrX()){
+        if (myPlayer.isMrX()) {
             navDrawerMenu.findItem(R.id.cheater_melden).setVisible(false);
         }
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -509,7 +507,7 @@ public class GameMap extends AppCompatActivity
         if (myPlayer.equals(player)) {
             /* if I move my player, I want to see it */
             return new boolean[]{true, true};
-        } else if (player.isMrX() && currentRound == 3 || currentRound == 7) {
+        } else if (player.isMrX() && currentRound == 2 || currentRound == 6) {
             /* if Mr.X moved in rounds 3 or 7, I want to see it */
             return new boolean[]{false, true};
         } else if (!player.isMrX()) {
@@ -553,9 +551,9 @@ public class GameMap extends AppCompatActivity
      */
     private void setFields() {
         for (Point p : Points.getFields()) {
-            LatLng p_LatLng = p.getLatLng();
+            LatLng pLatLng = p.getLatLng();
             MarkerOptions markerOptions = new MarkerOptions()
-                    .position(p_LatLng)
+                    .position(pLatLng)
                     .icon(BitmapDescriptorFactory.fromResource(p.getIcon()));
             mMap.addMarker(markerOptions.anchor(0.5f, 0.5f));
         }
@@ -666,7 +664,6 @@ public class GameMap extends AppCompatActivity
     public void showDisconnected(Endpoint endpoint) {
         if (Device.isServer()) {
             Toast.makeText(GameMap.this, "Verbindung zu Player " + endpoint.getName() + " verloren!", Toast.LENGTH_LONG).show();
-            //TODO: Server lost!
         } else {
             Toast.makeText(GameMap.this, "Verbindung zu Server verloren!", Toast.LENGTH_LONG).show();
         }
@@ -759,6 +756,7 @@ public class GameMap extends AppCompatActivity
     //If proximitry listener is activated, this methode is called
     private final SensorEventListener sensorListenerProximity = new SensorEventListener() {
         boolean trusty;
+
         @Override
         public void onSensorChanged(SensorEvent event) {
             float distance = event.values[0];
@@ -787,6 +785,8 @@ public class GameMap extends AppCompatActivity
                 case SensorManager.SENSOR_STATUS_ACCURACY_HIGH:
                     trusty = true;
                     break;
+                default:
+                    trusty = false;
             }
         }
     };
@@ -809,7 +809,7 @@ public class GameMap extends AppCompatActivity
     @Override
     public void onRecievedEndOfGame(boolean hasMrXWon) {
         Intent i = new Intent(GameMap.this, GameEndActivity.class);
-        i.putExtra("Winner", hasMrXWon);
+        i.putExtra(getString(R.string.winner), hasMrXWon);
         startActivity(i);
     }
 
@@ -837,6 +837,7 @@ public class GameMap extends AppCompatActivity
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                finish();
             }
         });
 
@@ -850,10 +851,10 @@ public class GameMap extends AppCompatActivity
             Toast.makeText(this, report.getReporter() + " hat dich als Cheater gemeldet.", Toast.LENGTH_LONG).show();
             report = ReportingLogic.analyseReportMrX(myPlayer, report);
             device.send(report);
-            if (ReportingLogic.getCheatCaughtCount() >= 3) {
+            if (ReportingLogic.getCheatingCount() >= 3) {
                 /* Finish the game. */
                 Intent i = new Intent(GameMap.this, GameEndActivity.class);
-                i.putExtra("Winner", false);
+                i.putExtra(getString(R.string.winner), false);
                 startActivity(i);
             }
         } else {
@@ -870,7 +871,7 @@ public class GameMap extends AppCompatActivity
                     break;
                 case 2:
                     Intent i = new Intent(GameMap.this, GameEndActivity.class);
-                    i.putExtra("Winner", false);
+                    i.putExtra(getString(R.string.winner), false);
                     // Reward reporter if needed.
                     startActivity(i);
                     break;

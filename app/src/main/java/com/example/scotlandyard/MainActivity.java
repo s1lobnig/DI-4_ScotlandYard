@@ -31,9 +31,6 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
     public static final String TAG = "MAIN_ACTIVITY";
 
-    private Button createGame;
-    private Button existingGames;
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -57,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "EXCEPTION CAUGHT!");
         }
 
-        existingGames = findViewById(R.id.btnExistingGames);
+        Button existingGames = findViewById(R.id.btnExistingGames);
         existingGames.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -65,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, GameJoin.class));
             }
         });
-        createGame = findViewById(R.id.btnCreateGame);
+        Button createGame = findViewById(R.id.btnCreateGame);
         createGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

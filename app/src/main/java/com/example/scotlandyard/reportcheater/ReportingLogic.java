@@ -1,12 +1,7 @@
 package com.example.scotlandyard.reportcheater;
 
-import android.content.Intent;
-import android.widget.Toast;
-
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
-import com.example.scotlandyard.gameend.GameEndActivity;
-import com.example.scotlandyard.map.GameMap;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,10 +13,10 @@ public class ReportingLogic {
 
     }
 
-    private static int CHEAT_CAUGHT_COUNT = 0;
+    private static int cheatingCount = 0;
 
-    public static int getCheatCaughtCount() {
-        return CHEAT_CAUGHT_COUNT;
+    public static int getCheatingCount() {
+        return cheatingCount;
     }
 
     public static CheaterReport analyseReportMrX(Player player, CheaterReport report) {
@@ -30,11 +25,11 @@ public class ReportingLogic {
             /* In case that Mr. X has really cheated. */
             if (player.isHasCheated()) {
                 /* Counting how many times during the game has Mr. X cheated. */
-                CHEAT_CAUGHT_COUNT++;
+                cheatingCount++;
                 /* Reset the variable every time after MrX has cheated and has been reported. */
                 player.setHasCheated(false);
                 /* If Mr. X has been caught cheating 3 or more times, he shall be punished (by losing the game). */
-                if (CHEAT_CAUGHT_COUNT >= 3) {
+                if (cheatingCount >= 3) {
                     /* Send report-notification to all other players that the game is over and Mr. X has lost.
                     The reports from the players weren't fake (false).
                     Set true - Mr. X lost the game.

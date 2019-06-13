@@ -4,7 +4,7 @@ import com.example.scotlandyard.map.Point;
 import com.example.scotlandyard.map.Route;
 import com.google.android.gms.maps.model.LatLng;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class MarkerMovingRoute {
     private int icon;
@@ -12,8 +12,8 @@ public class MarkerMovingRoute {
     private Point currentPosition;
     private Point newLocation;
     private Route route;
-    private ArrayList<LatLng> intermediates;
-    private ArrayList<Float> timeSlices;
+    private List<LatLng> intermediates;
+    private List<Float> timeSlices;
     private LatLng finalPosition;
 
     public int getTicket() {
@@ -64,19 +64,19 @@ public class MarkerMovingRoute {
         this.newLocation = newLocation;
     }
 
-    public ArrayList<LatLng> getIntermediates() {
+    public List<LatLng> getIntermediates() {
         return intermediates;
     }
 
-    public void setIntermediates(ArrayList<LatLng> intermediates) {
+    public void setIntermediates(List<LatLng> intermediates) {
         this.intermediates = intermediates;
     }
 
-    public ArrayList<Float> getTimeSlices() {
+    public List<Float> getTimeSlices() {
         return timeSlices;
     }
 
-    public void setTimeSlices(ArrayList<Float> timeSlices) {
+    public void setTimeSlices(List<Float> timeSlices) {
         this.timeSlices = timeSlices;
     }
 

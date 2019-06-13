@@ -20,6 +20,7 @@ import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.control.MessengerInterface;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Messenger extends AppCompatActivity implements MessengerInterface {
 
@@ -99,7 +100,7 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
     }
 
     @Override
-    public void updateMessages(ArrayList<Message> messages) {
+    public void updateMessages(List<Message> messages) {
         Log.d(logTag, "Chat message received!");
 
         /*display message*/
@@ -119,7 +120,6 @@ public class Messenger extends AppCompatActivity implements MessengerInterface {
     @Override
     public void showSendingFailed(Object object) {
         Toast.makeText(Messenger.this, message + " konnte nicht gesendet werden!", Toast.LENGTH_LONG).show();
-        //TODO give possibility to sync the chat again
         Log.d(logTag, "sending has failed");
     }
 

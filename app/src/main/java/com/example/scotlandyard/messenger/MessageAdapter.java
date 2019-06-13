@@ -27,7 +27,7 @@ public class MessageAdapter extends BaseAdapter {
         notifyDataSetChanged(); // to render the list we need to notify
     }
 
-    public void setMessages(ArrayList<Message> messages) {
+    public void setMessages(List<Message> messages) {
         this.messages = messages;
         notifyDataSetChanged();
     }

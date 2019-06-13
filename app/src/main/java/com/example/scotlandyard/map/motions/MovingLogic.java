@@ -13,6 +13,7 @@ import com.example.scotlandyard.map.roadmap.TicketEntry;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MovingLogic {
 
@@ -30,7 +31,7 @@ public class MovingLogic {
      * contains the animation-duration-slices according to the
      * route-part-length }
      */
-    public static ArrayList[] getRouteSlicesAndTimings(Route r, int startPos) {
+    public static List[] getRouteSlicesAndTimings(Route r, int startPos) {
         if (startPos == r.getStartPoint()) {
             return regularOrder(r);
         } else {
@@ -38,7 +39,7 @@ public class MovingLogic {
         }
     }
 
-    private static ArrayList[] reverseOrder(Route r) {
+    private static List[] reverseOrder(Route r) {
         ArrayList<Float> timeSlices = new ArrayList<>();
         ArrayList<LatLng> routePoints = new ArrayList<>();
         if (r.getIntermediates() == null) {
@@ -76,7 +77,7 @@ public class MovingLogic {
         return new ArrayList[]{routePoints, timeSlices};
     }
 
-    private static ArrayList[] regularOrder(Route r) {
+    private static List[] regularOrder(Route r) {
         ArrayList<Float> timeSlices = new ArrayList<>();
         ArrayList<LatLng> routePoints = new ArrayList<>();
         if (r.getIntermediates() == null) {
@@ -114,7 +115,7 @@ public class MovingLogic {
         return new ArrayList[]{routePoints, timeSlices};
     }
 
-    public static ArrayList[] createGoBackRoute(ArrayList<Float> timeSlices, ArrayList<LatLng> routePoints, Point p) {
+    public static List[] createGoBackRoute(List<Float> timeSlices, List<LatLng> routePoints, Point p) {
         int size = timeSlices.size();
         for (int i = size - 1; i >= 0; i--) {
             timeSlices.add(timeSlices.get(i));
@@ -124,7 +125,7 @@ public class MovingLogic {
         for (int i = size - 1; i >= 0; i--) {
             routePoints.add(routePoints.get(i));
         }
-        return new ArrayList[]{timeSlices, routePoints};
+        return new List[]{timeSlices, routePoints};
     }
 
     public static int[] getIconAndTicket(Player player, int vehicle) {
@@ -220,7 +221,7 @@ public class MovingLogic {
     }
 
     public static MarkerMovingRoute createMove(MarkerMovingRoute markerMove, boolean goBack, Player player) {
-        ArrayList[] routeSliceTimings = getRouteSlicesAndTimings(markerMove.getRoute(), Points.getIndex(markerMove.getCurrentPosition()) + 1);
+        List[] routeSliceTimings = getRouteSlicesAndTimings(markerMove.getRoute(), Points.getIndex(markerMove.getCurrentPosition()) + 1);
         ArrayList<LatLng> routePoints = (ArrayList) routeSliceTimings[0];
         ArrayList<Float> timeSlices = (ArrayList) routeSliceTimings[1];
         if (goBack) {

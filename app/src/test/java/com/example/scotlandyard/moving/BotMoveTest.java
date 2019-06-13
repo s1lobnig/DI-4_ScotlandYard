@@ -18,13 +18,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.example.scotlandyard.map.Points.getFields;
-import static com.example.scotlandyard.map.routetypes.BicycleRoutes.BICYCLE;
 import static com.example.scotlandyard.map.routetypes.BicycleRoutes.getBicycle;
-import static com.example.scotlandyard.map.routetypes.BusRoutes.BUS;
 import static com.example.scotlandyard.map.routetypes.BusRoutes.getBUS;
-import static com.example.scotlandyard.map.routetypes.FootRoutes.BY_FOOT;
 import static com.example.scotlandyard.map.routetypes.FootRoutes.getByFoot;
-import static com.example.scotlandyard.map.routetypes.TaxiRoutes.TAXI_DRAGAN;
 import static com.example.scotlandyard.map.routetypes.TaxiRoutes.getTaxiDragan;
 
 @RunWith(Parameterized.class)

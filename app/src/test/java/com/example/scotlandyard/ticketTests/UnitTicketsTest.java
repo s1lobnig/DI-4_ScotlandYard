@@ -17,7 +17,7 @@ public class UnitTicketsTest {
 
     private Player testPlayer;
     private Game game;
-    private HashMap<Integer, Integer> tickets;
+    private Map<Integer, Integer> tickets;
     private ArrayList<Player> playerList = new ArrayList<>();
 
     @Before

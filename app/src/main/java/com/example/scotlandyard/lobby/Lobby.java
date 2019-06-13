@@ -5,18 +5,19 @@ import com.example.scotlandyard.Player;
 import java.io.Serializable;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Lobby implements Serializable {
     private String lobbyName;
-    private ArrayList<Player> playerList;
+    private List<Player> playerList;
     private boolean randomEvents;
     private boolean randomMrX;
     private boolean botMrX;
     private int maxPlayers;
     private Random random;
 
-    public Lobby(String lobbyName, ArrayList<Player> playerList, boolean randomEvents, boolean randomMrX, boolean botMrX, int maxPlayers) {
+    public Lobby(String lobbyName, List<Player> playerList, boolean randomEvents, boolean randomMrX, boolean botMrX, int maxPlayers) {
         this.lobbyName = lobbyName;
         this.playerList = playerList;
         this.randomEvents = randomEvents;
@@ -26,7 +27,7 @@ public class Lobby implements Serializable {
         random = new SecureRandom();
     }
 
-    public ArrayList<Player> getPlayerList() {
+    public List<Player> getPlayerList() {
         return playerList;
     }
 

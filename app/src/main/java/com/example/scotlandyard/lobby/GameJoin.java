@@ -11,14 +11,13 @@ import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
 
 public class GameJoin extends AppCompatActivity {
-    private Button startGame;
     private EditText inputField;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration_activty);
 
-        startGame = (Button) findViewById(R.id.btnStartGame);
+        Button startGame = (Button) findViewById(R.id.btnStartGame);
         inputField = (EditText) findViewById(R.id.editTextInputField);
 
         startGame.setOnClickListener(new View.OnClickListener() {

@@ -1,17 +1,11 @@
 package com.example.scotlandyard.gameend;
 
-import android.content.Context;
 import android.content.Intent;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.scotlandyard.MainActivity;
 import com.example.scotlandyard.QuitNotification;
@@ -20,7 +14,6 @@ import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.control.Server;
 
 public class GameEndActivity extends AppCompatActivity {
-    private TextView txtWinners;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +25,7 @@ public class GameEndActivity extends AppCompatActivity {
     }
 
     private void initComp() {
-        this.txtWinners = findViewById(R.id.txtWinner);
+        TextView txtWinners = findViewById(R.id.txtWinner);
         Intent intent = getIntent();
         boolean winner = intent.getBooleanExtra("Winner", false);
         if (winner)

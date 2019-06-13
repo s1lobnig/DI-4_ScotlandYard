@@ -16,6 +16,7 @@ import com.example.scotlandyard.messenger.Message;
 import com.google.android.gms.nearby.connection.ConnectionsClient;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * class Device is representing a device in the game, it can be server or client
@@ -39,7 +40,7 @@ public class Device {
     Game game;
     RoadMap roadMap;
     String nickname;
-    ArrayList<Message> messageList;
+    List<Message> messageList;
     boolean quit;
 
     Device() {
@@ -279,10 +280,6 @@ public class Device {
         return roadMap;
     }
 
-    public void setRoadMap(RoadMap roadMap) {
-        this.roadMap = roadMap;
-    }
-
     public String getNickname() {
         return nickname;
     }
@@ -291,12 +288,8 @@ public class Device {
         this.nickname = nickname;
     }
 
-    public ArrayList<Message> getMessageList() {
+    public List<Message> getMessageList() {
         return messageList;
-    }
-
-    public void setMessageList(ArrayList<Message> messageList) {
-        this.messageList = messageList;
     }
 
     public void addMessage(Message message) {

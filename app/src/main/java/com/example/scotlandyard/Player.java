@@ -1,7 +1,5 @@
 package com.example.scotlandyard;
 
-import android.util.Log;
-
 import com.example.scotlandyard.map.Point;
 import com.example.scotlandyard.map.Points;
 import com.example.scotlandyard.map.Routes;
@@ -23,7 +21,7 @@ public class Player implements Serializable {
     private transient Marker marker;
     private boolean isMrX;
     private boolean wantsToBeMrX;
-    private HashMap<Integer, Integer> tickets; //Hashmap for storing tickets
+    private Map<Integer, Integer> tickets; //Hashmap for storing tickets
     private boolean hasCheated;
     private boolean hasCheatedThisRound;
     private int countCheatingMoves;
@@ -211,7 +209,7 @@ public class Player implements Serializable {
         return wantsToBeMrX;
     }
 
-    public HashMap<Integer, Integer> getTickets() {
+    public Map<Integer, Integer> getTickets() {
         return tickets;
     }
 
@@ -314,7 +312,7 @@ public class Player implements Serializable {
         return 0;
     }
 
-    public void setTickets(HashMap<Integer, Integer> tickets) {
+    public void setTickets(Map<Integer, Integer> tickets) {
         this.tickets = tickets;
     }
 

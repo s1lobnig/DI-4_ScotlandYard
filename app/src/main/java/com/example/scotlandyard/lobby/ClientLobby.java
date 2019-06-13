@@ -120,7 +120,6 @@ public class ClientLobby extends AppCompatActivity implements ClientLobbyInterfa
 
     @Override
     public void updateLobby(Lobby lobby) {
-        //TODO show lobby information in this activity (joined players, maxPlayers, randomMr.X, randomEvents)
 
         ((CheckBox) findViewById(R.id.randomEvents)).setChecked(lobby.isRandomEvents());
         ((CheckBox) findViewById(R.id.randomMrX)).setChecked(lobby.isRandomMrX());

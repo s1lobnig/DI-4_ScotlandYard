@@ -30,7 +30,6 @@ import java.util.ArrayList;
 
 public class GameList extends AppCompatActivity implements ClientLobbyInterface {
     private Player player;
-    private ListView gameListView; /* ListView GUI Element */
     private ArrayAdapter listAdapter; /* Adapter between ListView and  ArrayList<Game> */
 
     private static final String TAG = "GameList";
@@ -77,7 +76,7 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
             Log.d(TAG, "failed setting instance", ex);
         }
 
-        gameListView = findViewById(R.id.list_currentGames);
+        ListView gameListView = findViewById(R.id.list_currentGames);
 
         //setAdapter to listView to show all existing games
         listAdapter = new MyListAdapter(this, R.layout.game_item, ((Client) Device.getInstance()).getServerList());
@@ -140,7 +139,7 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
 
     @Override
     public void showConnected(String endpointName) {
-        Log.d(TAG,"Verbunden, warten auf Lobby-Beitritt.");
+        Log.d(TAG, "Verbunden, warten auf Lobby-Beitritt.");
     }
 
     @Override
@@ -150,22 +149,22 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
 
     @Override
     public void showConnectionFailed(String endpointName) {
-        Log.d(TAG,"Verbundindung fehlgeschlagen.");
+        Log.d(TAG, "Verbundindung fehlgeschlagen.");
     }
 
     @Override
     public void showDisconnected(String endpointName) {
-        Log.d(TAG,"Verbundindung abgebaut.");
+        Log.d(TAG, "Verbundindung abgebaut.");
     }
 
     @Override
     public void showAcceptingFailed(String endpointName) {
-        Log.d(TAG,"Verbindung nicht akzeptiert");
+        Log.d(TAG, "Verbindung nicht akzeptiert");
     }
 
     @Override
     public void showSendingFailed(Object object) {
-        Log.d(TAG,"Senden fehlgeschlagen");
+        Log.d(TAG, "Senden fehlgeschlagen");
     }
 
     @Override
@@ -208,7 +207,7 @@ public class GameList extends AppCompatActivity implements ClientLobbyInterface 
                     public void onClick(View v) {
                         // Request connection to server.
 
-                            ((Client) Device.getInstance()).connectToEndpoint(position);
+                        ((Client) Device.getInstance()).connectToEndpoint(position);
 
 
                     }

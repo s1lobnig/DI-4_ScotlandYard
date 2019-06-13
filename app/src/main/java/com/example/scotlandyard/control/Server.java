@@ -199,7 +199,6 @@ public class Server extends Device implements ServerInterface {
 
     private void manageMove(Move move) {
         Player player = game.findPlayer(move.getNickname());
-
         send(move);
         if (!player.getSpecialMrXMoves()[1] && !move.isCheatingMove()) {
             player.setMoved(true);
@@ -210,37 +209,14 @@ public class Server extends Device implements ServerInterface {
             player.setMoved(false);
             game.getMrX().decCountCheatingMoves();
         }
-
         int result = game.tryNextRound();
         if (result == 1) {
-            send(new MapNotification("NEXT_ROUND"));
-            printNotification("Runde " + game.getRound());
-            if (game.isRoundMrX() && game.isBotMrX()) {
-                final Handler handler = new Handler();
-                final long start = SystemClock.uptimeMillis();
-                final float d = 4000f;
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        long elapsed = SystemClock.uptimeMillis() - start;
-                        float t = elapsed / d;
-                        if (t < 1) {
-                            handler.postDelayed(this, 16);
-                        } else {
-                            moveBot();
-                        }
-                    }
-                });
-            }
+            sendOutNextRound();
         } else if (result == 0 || result == 2) {
-            send(new MapNotification("END MisterX")); //MisterX hat gewonnen
-            printNotification("MisterX hat gewonnen");
-            sendEnd(new GameEnd(true));
-            gameObserver.onRecievedEndOfGame(true);
+            sendOutGameEnd(player);
         }
         if (gameObserver != null) {
             gameObserver.updateMove(move);
-
             if (game.checkIfMrxHasLost()) {
                 sendEnd(new GameEnd(false));
                 gameObserver.onRecievedEndOfGame(false);
@@ -249,8 +225,35 @@ public class Server extends Device implements ServerInterface {
         } else {
             player.setPosition(Points.getFields()[move.getField()]);
         }
+    }
 
+    private void sendOutGameEnd(Player player) {
+        send(new MapNotification("END MisterX")); //MisterX hat gewonnen
+        printNotification("MisterX hat gewonnen");
+        sendEnd(new GameEnd(true));
+        gameObserver.onRecievedEndOfGame(true);
+    }
 
+    private void sendOutNextRound() {
+        send(new MapNotification("NEXT_ROUND"));
+        printNotification("Runde " + game.getRound());
+        if (game.isRoundMrX() && game.isBotMrX()) {
+            final Handler handler = new Handler();
+            final long start = SystemClock.uptimeMillis();
+            final float d = 4000f;
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    long elapsed = SystemClock.uptimeMillis() - start;
+                    float t = elapsed / d;
+                    if (t < 1) {
+                        handler.postDelayed(this, 16);
+                    } else {
+                        moveBot();
+                    }
+                }
+            });
+        }
     }
 
 
@@ -373,7 +376,7 @@ public class Server extends Device implements ServerInterface {
             Player player = game.findPlayer(endpoint.getName());
             player.setActive(true);
             ((ServerService) connectionService).send(this.game, endpoint);
-            if(player.isMrX()){
+            if (player.isMrX()) {
                 game.setBotMrX(false);
             }
         }

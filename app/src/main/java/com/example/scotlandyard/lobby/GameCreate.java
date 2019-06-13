@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+
 import com.example.scotlandyard.Player;
 
 import com.example.scotlandyard.R;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 
 public class GameCreate extends AppCompatActivity {
 
-    private static final String logTag = "GameCreate";
+    private static final String TAG = "GameCreate";
     private EditText userName; /* User name input field. */
     private EditText maxPlayers; /* Maximum number of players input field. */
     private CheckBox randomEvents;
@@ -38,7 +39,7 @@ public class GameCreate extends AppCompatActivity {
         botMrX.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(botMrX.isChecked()) {
+                if (botMrX.isChecked()) {
                     chooseMrXRandomly.setChecked(false);
                 }
             }
@@ -47,7 +48,7 @@ public class GameCreate extends AppCompatActivity {
         chooseMrXRandomly.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(chooseMrXRandomly.isChecked()) {
+                if (chooseMrXRandomly.isChecked()) {
                     botMrX.setChecked(false);
                 }
             }
@@ -61,39 +62,42 @@ public class GameCreate extends AppCompatActivity {
                 String nickname = userName.getText().toString().trim();
                 String lobbyname = lobbyName.getText().toString();
                 String[] splittedN = nickname.split(" ");
-                boolean enable = true;
+                boolean enable = checkIfValid(numPlayer, nickname, lobbyname, splittedN);
 
-                if (lobbyname.isEmpty()) {
-                    lobbyName.setError("Lobbyname darf nicht leer sein!");
-                    enable = false;
-                }
-                if (nickname.isEmpty()) {
-                    userName.setError("Spielername darf nicht leer sein!");
-                    enable = false;
-                }
-                if (splittedN.length != 1) {
-                    userName.setError("Spielername darf keine Leerzeichen enthalten!");
-                    enable = false;
-                }
-                if(numPlayer.isEmpty()){
-                    maxPlayers.setError("Sie müssen eine Maximalanzahl an Spielern eingeben!");
-                    enable = false;
-                }else if (Integer.parseInt(numPlayer) < 2 || Integer.parseInt(numPlayer) > 6) {
-                    maxPlayers.setError("Sie müssen eine gültige Maximalanzahl an Spielern eingeben! (2-6 Spieler möglich)");
-                    enable = false;
-                }
-
-                if(enable) {
+                if (enable) {
                     Intent gameStartIntent = new Intent(GameCreate.this, ServerLobby.class);
                     Player player = new Player(nickname);
                     ArrayList<Player> playerlist = new ArrayList<>();
                     playerlist.add(player);
                     Lobby lobby = new Lobby(lobbyname, playerlist, randomEvents.isChecked(), chooseMrXRandomly.isChecked(), botMrX.isChecked(), Integer.parseInt(numPlayer));
                     gameStartIntent.putExtra("LOBBY", lobby);
-                    Log.d(logTag, "starting ServerLobby");
+                    Log.d(TAG, "starting ServerLobby");
                     startActivity(gameStartIntent);
                 }
             }
         });
+    }
+
+    private boolean checkIfValid(String numPlayer, String nickname, String lobbyname, String[] splittedN) {
+        if (lobbyname.isEmpty()) {
+            lobbyName.setError("Lobbyname darf nicht leer sein!");
+            return false;
+        }
+        if (nickname.isEmpty()) {
+            userName.setError("Spielername darf nicht leer sein!");
+            return false;
+        }
+        if (splittedN.length != 1) {
+            userName.setError("Spielername darf keine Leerzeichen enthalten!");
+            return false;
+        }
+        if (numPlayer.isEmpty()) {
+            maxPlayers.setError("Sie müssen eine Maximalanzahl an Spielern eingeben!");
+            return false;
+        } else if (Integer.parseInt(numPlayer) < 2 || Integer.parseInt(numPlayer) > 6) {
+            maxPlayers.setError("Sie müssen eine gültige Maximalanzahl an Spielern eingeben! (2-6 Spieler möglich)");
+            return false;
+        }
+        return true;
     }
 }

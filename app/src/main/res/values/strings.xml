@@ -57,5 +57,6 @@
     <string name="shouldNotHappen">should not happen</string>
     <string name="notEnoughTickets">Nicht genügend Tickets</string>
     <string name="lostConnection">Verbindung zu</string>
+    <string name="winner">Winner</string>
 
 </resources>

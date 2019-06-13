@@ -21,6 +21,7 @@ import org.junit.runners.Parameterized;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static com.example.scotlandyard.map.Points.getFields;
 import static com.example.scotlandyard.map.routetypes.BicycleRoutes.getBicycle;
@@ -195,14 +196,14 @@ public class MovingLogicTest {
 
     @Test
     public void testRouteSlicesAndTimings() {
-        ArrayList[] result = MovingLogic.getRouteSlicesAndTimings(this.route, Points.getIndex(currentPos) + 1);
+        List[] result = MovingLogic.getRouteSlicesAndTimings(this.route, Points.getIndex(currentPos) + 1);
         Assert.assertEquals(numberOfIntermediates, result[0].size());
         Assert.assertEquals(numberOfTimeSlices, result[1].size());
     }
 
     @Test
     public void testGoBackRoute() {
-        ArrayList[] result = MovingLogic.getRouteSlicesAndTimings(this.route, Points.getIndex(currentPos) + 1);
+        List[] result = MovingLogic.getRouteSlicesAndTimings(this.route, Points.getIndex(currentPos) + 1);
         MovingLogic.createGoBackRoute(result[1], result[0], player.getPosition());
         Assert.assertEquals(numberOfIntermediatesGB, result[0].size());
         Assert.assertEquals(numberOfTimeSlicesGB, result[1].size());

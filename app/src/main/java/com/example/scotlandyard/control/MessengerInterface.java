@@ -3,7 +3,7 @@ package com.example.scotlandyard.control;
 import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.messenger.Message;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * interface for a Messenger
@@ -13,7 +13,7 @@ public interface MessengerInterface {
      * function is called, when a new message is received
      * @param messages          all messages, including new one
      */
-    void updateMessages(ArrayList<Message> messages);
+    void updateMessages(List<Message> messages);
 
     /**
      * function is called, when an endpoint has disconnected
