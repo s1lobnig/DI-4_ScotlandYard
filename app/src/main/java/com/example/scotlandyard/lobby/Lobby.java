@@ -82,13 +82,14 @@ public class Lobby implements Serializable {
     }
 
     public void chooseMrX(boolean chooseMrXRandomly) {
-        if(botMrX){
+        if (botMrX) {
             makeBotMrX();
-        }
-        if (chooseMrXRandomly) {
-            playerList.get(random.nextInt(playerList.size())).setMrX(true);
         } else {
-            chooseByCandidate();
+            if (chooseMrXRandomly) {
+                playerList.get(random.nextInt(playerList.size())).setMrX(true);
+            } else {
+                chooseByCandidate();
+            }
         }
     }
 
@@ -106,7 +107,7 @@ public class Lobby implements Serializable {
 
     private void makeBotMrX() {
         for (Player player : playerList) {
-            if(player.getNickname().equals("Bot")){
+            if (player.getNickname().equals("Bot")) {
                 player.setMrX(true);
                 return;
             }
