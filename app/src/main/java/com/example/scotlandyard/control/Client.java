@@ -174,7 +174,6 @@ public class Client extends Device implements ClientInterface {
     private void onMove(Move move) {
         Log.d(logTag, "move received");
         Player player = game.findPlayer(move.getNickname());
-        game.checkifMrXInvisible();
         if (!player.getSpecialMrXMoves()[1]) {
             player.setMoved(true);
             if (player.isMrX()) {
@@ -189,9 +188,6 @@ public class Client extends Device implements ClientInterface {
         } else {
             player.setPosition(Points.POINTS[move.getField()]);
         }
-
-        game.checkifMrXVisible();
-
     }
 
     private void onEntry(Entry entry) {

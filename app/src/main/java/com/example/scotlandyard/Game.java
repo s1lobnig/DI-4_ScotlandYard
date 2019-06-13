@@ -219,16 +219,6 @@ public class Game implements Serializable {
         return -1;
     }
 
-    public void checkifMrXVisible(){
-        if(round == 3 || round == 7)
-            getMrX().getMarker().setVisible(true);
-    }
-
-    public void checkifMrXInvisible(){
-        if(round == 4 || round == 8)
-            getMrX().getMarker().setVisible(false);
-    }
-
     /**
      * checks if a giver marker belongs to a Player of this game
      *

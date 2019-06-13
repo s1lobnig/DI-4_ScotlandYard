@@ -37,7 +37,7 @@ public class MarkerAnimation {
      * @param duration           .............time the animation should last
      * @param icon               .................marker icon during the animation
      */
-    public static void moveMarkerToTarget(final Marker marker, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, float duration, int icon, final int finalIcon) {
+    public static void moveMarkerToTarget(final Marker marker, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, float duration, int icon, final int finalIcon, final boolean[] showMarkerAfterAni) {
         final LatLng startPosition = marker.getPosition();
         final Handler handler = new Handler();
         final long start = SystemClock.uptimeMillis();
@@ -62,6 +62,7 @@ public class MarkerAnimation {
                 } else {
                     if (!marker.getPosition().equals(finalPosition)) {
                         marker.setPosition(finalPosition);
+                        marker.setVisible(showMarkerAfterAni[1]);
                     }
                     marker.setIcon(BitmapDescriptorFactory.fromResource(finalIcon));
                 }
@@ -79,7 +80,7 @@ public class MarkerAnimation {
      * @param timeSlices         .............time the animation should last
      * @param icon               .................marker icon during the animation
      */
-    public static void moveMarkerToTarget(final Marker marker, final ArrayList<LatLng> route, final ArrayList<Float> timeSlices, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, int icon, int finalIcon) {
+    public static void moveMarkerToTarget(final Marker marker, final ArrayList<LatLng> route, final ArrayList<Float> timeSlices, final LatLng finalPosition, final LatLngInterpolator latLngInterpolator, int icon, int finalIcon, boolean[] showMarkerAfterAni) {
         final Handler handler = new Handler();
         marker.setIcon(BitmapDescriptorFactory.fromResource(icon));
         ArrayList<MarkerMotion> motions = new ArrayList<>();
@@ -96,6 +97,7 @@ public class MarkerAnimation {
             else
                 motion = new MarkerMotion(marker, next, latLngInterpolator, timeSlices.get(i), icon);
             motion.setHandler(handler);
+            motion.setVisibleMarker(showMarkerAfterAni);
             motions.add(motion);
         }
         int i = 0;

@@ -210,7 +210,7 @@ public class GameMap extends AppCompatActivity
         View headerView = navigationView.getHeaderView(0);
         this.playerImage = headerView.findViewById(R.id.player_image);
         this.playerName = headerView.findViewById(R.id.player_name);
-        Log.d(TAG,playerImage.toString());
+        Log.d(TAG, playerImage.toString());
         navigationView.setNavigationItemSelectedListener(this);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -286,11 +286,11 @@ public class GameMap extends AppCompatActivity
             args.putSerializable("ROAD_MAP", device.getRoadMap());
             roadMapDialog.setArguments(args);
             roadMapDialog.show(getSupportFragmentManager(), "RoadMapDisplay");
-        }else if(id == R.id.nav_logout){
-            if(!device.isServer()){
+        } else if (id == R.id.nav_logout) {
+            if (!device.isServer()) {
                 device.send(new QuitNotification(device.getNickname(), false));
                 intent = new Intent(this, MainActivity.class);
-            }else{
+            } else {
                 device.send(new QuitNotification(device.getNickname(), true));
                 intent = new Intent(this, MainActivity.class);
             }
@@ -463,6 +463,7 @@ public class GameMap extends AppCompatActivity
     public boolean move(Player player, Point p, boolean goBack, boolean randomRoute, int playerIcon, ValidatedRoute randRoute) {
         MarkerMovingRoute markerMove = MovingLogic.prepareMove(player, randomRoute, randRoute, p);
         visualizeTickets();
+        boolean[] showMrXAfterMove = getVisiblity(player);
         if (player.isMrX() && ((player.equals(myPlayer) || (device.getGame().isBotMrX() && Device.isServer())))) {
             int lastTurn = device.getRoadMap().getNumberOfEntries();
             Entry entry = MovingLogic.getRoadMapEntry(lastTurn, markerMove.getNewLocation(), markerMove.getTicket());
@@ -473,15 +474,33 @@ public class GameMap extends AppCompatActivity
         }
         player.getMarker().setIcon(BitmapDescriptorFactory.fromResource(markerMove.getIcon()));
         markerMove = MovingLogic.createMove(markerMove, goBack, player);
-        runMarkerAnimation(player, markerMove, playerIcon);
+        runMarkerAnimation(player, markerMove, playerIcon, showMrXAfterMove);
         return true;
     }
 
-    public static void runMarkerAnimation(Player player, MarkerMovingRoute movingRoute, int finalIcon) {
-        if (movingRoute.getIntermediates() == null || movingRoute.getIntermediates().isEmpty()) {
-            MarkerAnimation.moveMarkerToTarget(player.getMarker(), movingRoute.getFinalPosition(), new LatLngInterpolator.Linear(), MovingLogic.ANIMATION_DURATION, movingRoute.getIcon(), finalIcon);
+    private boolean[] getVisiblity(Player player) {
+        int currentRound = Device.getInstance().getGame().getRound();
+        if (myPlayer.equals(player)) {
+            /* if I move my player, I want to see it */
+            return new boolean[]{true, true};
+        } else if (player.isMrX() && currentRound == 3 || currentRound == 7) {
+            /* if Mr.X moved in rounds 3 or 7, I want to see it */
+            return new boolean[]{false, true};
+        } else if (!player.isMrX()) {
+            /* if it is someone not Mr.X moves, I want to see it */
+            return new boolean[]{true, true};
         } else {
-            MarkerAnimation.moveMarkerToTarget(player.getMarker(), movingRoute.getIntermediates(), movingRoute.getTimeSlices(), movingRoute.getFinalPosition(), new LatLngInterpolator.Linear(), movingRoute.getIcon(), finalIcon);
+            /* in this case player is MrX but not shown! */
+            player.getMarker().setVisible(false);
+            return new boolean[]{false, false};
+        }
+    }
+
+    public static void runMarkerAnimation(Player player, MarkerMovingRoute movingRoute, int finalIcon, boolean[] showMarkerAfterAni) {
+        if (movingRoute.getIntermediates() == null || movingRoute.getIntermediates().isEmpty()) {
+            MarkerAnimation.moveMarkerToTarget(player.getMarker(), movingRoute.getFinalPosition(), new LatLngInterpolator.Linear(), MovingLogic.ANIMATION_DURATION, movingRoute.getIcon(), finalIcon, showMarkerAfterAni);
+        } else {
+            MarkerAnimation.moveMarkerToTarget(player.getMarker(), movingRoute.getIntermediates(), movingRoute.getTimeSlices(), movingRoute.getFinalPosition(), new LatLngInterpolator.Linear(), movingRoute.getIcon(), finalIcon, showMarkerAfterAni);
         }
     }
 
@@ -592,19 +611,13 @@ public class GameMap extends AppCompatActivity
                     .icon(BitmapDescriptorFactory.fromResource(p.getIcon()));
             p.setMarker(mMap.addMarker(markerOptions));
             p.getMarker().setTitle(p.getNickname());
-            System.out.println(device.getNickname());
-            System.out.println(p.getNickname());
-
-            if(p.isMrX())
+            if (p.isMrX())
                 p.getMarker().setVisible(false);
-
             if (p.getNickname().equals(device.getNickname())) {
                 myPlayer = p;
-
-                if(myPlayer.isMrX())
+                if (myPlayer.isMrX())
                     myPlayer.getMarker().setVisible(true);
             }
-
         }
         randomEventsEnabled = device.getGame().isRandomEventsEnabled();
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myPlayer.getPosition().getLatLng(), 16f), 3000, null);
@@ -638,7 +651,7 @@ public class GameMap extends AppCompatActivity
             notification = "Zug";
         }
 //        Toast.makeText(GameMap.this, notification + " konnte nicht gesendet werden!", Toast.LENGTH_LONG).show();
-        Log.d(TAG,notification + " konnte nicht gesendet werden!");
+        Log.d(TAG, notification + " konnte nicht gesendet werden!");
         //TODO give possibility to sync the game again
     }
 
@@ -694,7 +707,7 @@ public class GameMap extends AppCompatActivity
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         try {
             Device.getInstance().addGameObserver(this);
