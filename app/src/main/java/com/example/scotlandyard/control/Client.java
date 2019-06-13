@@ -22,8 +22,6 @@ import com.google.android.gms.nearby.connection.ConnectionsClient;
 
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 /**
  * class representing a client in app
  * lobbyObserver:           observer of lobby

@@ -203,7 +203,12 @@ public class Game implements Serializable {
         }
         if (isRoundFinished()) {
             if (round < NUM_ROUNDS) {
-                //Round finished
+                /*
+                If no detective can move anymore, Mr.X has won
+                 */
+                if (allDetectivesStuck()) {
+                    return 2;
+                }
                 round++;
                 setRoundMrX(true);
                 for (Player p : players) {
@@ -217,6 +222,15 @@ public class Game implements Serializable {
         }
         //Round not finished yet
         return -1;
+    }
+
+    public boolean allDetectivesStuck() {
+        for (Player p : players) {
+            if (!p.isMrX() && p.isActive()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -241,7 +255,7 @@ public class Game implements Serializable {
         Player player;
         for (int i = 0; i < players.size(); i++) {
             player = players.get(i);
-            if(player.isMrX()){
+            if (player.isMrX()) {
                 player.setIcon(MRX_ICONS_MINION[0]);
             } else {
                 player.setIcon(PLAYER_ICONS_MINION[i]);
@@ -266,9 +280,9 @@ public class Game implements Serializable {
         return point.getLatLng();
     }
 
-    public boolean checkIfMrxHasLost(){
-        for (Player p : players){
-            if(getMrX().getNickname()!= p.getNickname() && getMrX().getPosition().equals(p.getPosition())) {
+    public boolean checkIfMrxHasLost() {
+        for (Player p : players) {
+            if (getMrX().getNickname() != p.getNickname() && getMrX().getPosition().equals(p.getPosition())) {
                 return true;
             }
         }

@@ -234,7 +234,7 @@ public class Server extends Device implements ServerInterface {
                     }
                 });
             }
-        } else if (result == 0) {
+        } else if (result == 0 || result == 2) {
             send(new MapNotification("END MisterX")); //MisterX hat gewonnen
             printNotification("MisterX hat gewonnen");
             sendEnd(new GameEnd(true));
