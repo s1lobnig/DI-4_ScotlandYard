@@ -96,30 +96,6 @@ public class Points {
                     new Point(46.616090, 14.263997, R.drawable.field75)
             };
 
-    /**
-     * get coordinate Latitude from specific Point number
-     *
-     * @param i ...index of point
-     * @return double Latitude
-     */
-    public static double getLatFromP(int i) {
-        return FIELDS[i].getLatitude();
-    }
-
-    /**
-     * get coordinate Longitude from specific Point number
-     *
-     * @param i ...index of point
-     * @return double Longitude
-     */
-    public static double getLngFromP(int i) {
-        return FIELDS[i].getLongitude();
-    }
-
-    public static LatLng getLatLngFromP(int i) {
-        return new LatLng(getLatFromP(i), getLngFromP(i));
-    }
-
     public static Point[] getFields() {
         return FIELDS;
     }

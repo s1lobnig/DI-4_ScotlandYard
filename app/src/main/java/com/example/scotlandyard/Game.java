@@ -208,10 +208,10 @@ public class Game implements Serializable {
                 /*
                 If no detective can move anymore, Mr.X has won
                  */
+                round++;
                 if (allDetectivesStuck()) {
                     return 2;
                 }
-                round++;
                 setRoundMrX(true);
                 for (Player p : players) {
                     p.setMoved(false);
@@ -228,7 +228,7 @@ public class Game implements Serializable {
 
     public boolean allDetectivesStuck() {
         for (Player p : players) {
-            if (!p.isMrX() && Routes.routesPossibleWithTickets(Points.getIndex(p.getPosition()) + 1, p) && p.isActive()) {
+            if (!p.isMrX() && p.isActive()) {
                 return false;
             }
         }
