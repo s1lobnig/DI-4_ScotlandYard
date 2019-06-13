@@ -1,7 +1,10 @@
 package com.example.scotlandyard.map;
 
 
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -16,9 +19,11 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
+import com.example.scotlandyard.reportcheater.CheaterReport;
+import com.example.scotlandyard.control.CheaterReportInterface;
+import com.example.scotlandyard.gameend.GameEndActivity;
 import com.example.scotlandyard.MainActivity;
 import com.example.scotlandyard.QuitNotification;
-import com.example.scotlandyard.control.Client;
 import com.example.scotlandyard.control.Server;
 import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.control.GameInterface;
@@ -32,11 +37,11 @@ import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.map.roadmap.RoadMapDialog;
 import com.example.scotlandyard.messenger.Messenger;
 import com.example.scotlandyard.Player;
-import com.example.scotlandyard.PlayersOverview;
 import com.example.scotlandyard.R;
 import com.example.scotlandyard.Settings;
 import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.Game;
+import com.example.scotlandyard.reportcheater.ReportingLogic;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -62,18 +67,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 import static com.example.scotlandyard.R.color.colorPrimary;
 import static com.example.scotlandyard.R.color.colorPrimaryDark;
 
 public class GameMap extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, GameInterface {
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, GameInterface, CheaterReportInterface {
 
     private static Device device;
     private static final Random RANDOM = new SecureRandom();
@@ -98,6 +105,11 @@ public class GameMap extends AppCompatActivity
     private static final int BICYCLE_COLOR = Color.rgb(255, 164, 17);
     private static final int TAXI_DRAGAN_COLOR = Color.BLUE;
 
+    /* A variable that counts how many times the cheater has been caught correctly. */
+
+    /* A variable which gives access to application's main menu. */
+    private Menu menu;
+    private Menu navDrawerMenu;
 
     private SensorManager sm;
 
@@ -113,6 +125,7 @@ public class GameMap extends AppCompatActivity
         if (device == null) {
             device = Device.getInstance();
             device.addGameObserver(this);
+            device.setCheaterReportObserver(this);
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -137,7 +150,7 @@ public class GameMap extends AppCompatActivity
                 useTicket.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (myPlayer.getSpecialMrXMoves()[0] && myPlayer.getTickets().get(R.string.BLACK_TICKET_KEY).intValue() == 0) {
+                        if (myPlayer.getTickets().get(R.string.BLACK_TICKET_KEY).intValue() == 0) {
                             Toast.makeText(GameMap.this, R.string.notEnoughTickets, Snackbar.LENGTH_LONG).show();
                         } else {
                             myPlayer.setSpecialMrXMoves(true, 0);
@@ -169,7 +182,7 @@ public class GameMap extends AppCompatActivity
                 useTicket.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (myPlayer.getSpecialMrXMoves()[1] && myPlayer.getTickets().get(R.string.DOUBLE_TICKET_KEY).intValue() == 0) {
+                        if (myPlayer.getTickets().get(R.string.DOUBLE_TICKET_KEY).intValue() == 0) {
                             Toast.makeText(GameMap.this, R.string.notEnoughTickets, Snackbar.LENGTH_LONG).show();
                         } else {
                             myPlayer.setSpecialMrXMoves(true, 1);
@@ -210,6 +223,7 @@ public class GameMap extends AppCompatActivity
         View headerView = navigationView.getHeaderView(0);
         this.playerImage = headerView.findViewById(R.id.player_image);
         this.playerName = headerView.findViewById(R.id.player_name);
+        this.navDrawerMenu = navigationView.getMenu();
         Log.d(TAG, playerImage.toString());
         navigationView.setNavigationItemSelectedListener(this);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -222,6 +236,9 @@ public class GameMap extends AppCompatActivity
         }
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.map, fragment).commit();
+
+        SensorManager sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sm.registerListener(sensorListenerProximity, sm.getDefaultSensor(Sensor.TYPE_PROXIMITY), SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
@@ -241,6 +258,7 @@ public class GameMap extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
+        // this.menu = menu;
         return true;
     }
 
@@ -278,14 +296,14 @@ public class GameMap extends AppCompatActivity
             fragment = getSupportFragmentManager().findFragmentById(R.id.map);
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.map, fragment).commit();
-        } else if (id == R.id.nav_overview) {
-            intent = new Intent(this, PlayersOverview.class);
         } else if (id == R.id.nav_road_map) {
             DialogFragment roadMapDialog = new RoadMapDialog();
             Bundle args = new Bundle();
             args.putSerializable("ROAD_MAP", device.getRoadMap());
             roadMapDialog.setArguments(args);
             roadMapDialog.show(getSupportFragmentManager(), "RoadMapDisplay");
+        } else if (id == R.id.cheater_melden) {
+            showCheaterDialog();
         } else if (id == R.id.nav_logout) {
             if (!device.isServer()) {
                 device.send(new QuitNotification(device.getNickname(), false));
@@ -355,6 +373,9 @@ public class GameMap extends AppCompatActivity
         }
         playerName.setText(myPlayer.getNickname());
         playerImage.setImageResource(myPlayer.getIcon());
+        if(myPlayer.isMrX()){
+            navDrawerMenu.findItem(R.id.cheater_melden).setVisible(false);
+        }
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker field) {
@@ -366,8 +387,16 @@ public class GameMap extends AppCompatActivity
                     Move move = new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r, randomRoute);
 
                     if (Device.isServer()) {
+                        if (myPlayer.getCountCheatingMoves() > 0)
+                            move.setCheatingMove(true);
+
                         ((Server) device).onDataReceived(move, myPlayer.getNickname());
                     } else {
+                        if (myPlayer.getCountCheatingMoves() > 0) {
+                            move.setCheatingMove(true);
+                            myPlayer.decCountCheatingMoves();
+                        }
+
                         device.send(move);
                     }
 
@@ -377,6 +406,7 @@ public class GameMap extends AppCompatActivity
             }
         });
     }
+
 
     private boolean isValidMove(Point newLocation) {
         switch (myPlayer.isValidMove(Device.getInstance().getGame(), newLocation)) {
@@ -629,6 +659,10 @@ public class GameMap extends AppCompatActivity
         int field = move.getField();
         Point point = Points.getPoints()[field];
 
+        if (myPlayer.getNickname() != player.getNickname() && move.isCheatingMove()) {
+            Log.d(TAG, "MR X schummelt");
+        }
+
         moveMarker(point, player, player.getIcon(), move.getRandomEventTrigger(), move.getRandomRoute());
     }
 
@@ -650,9 +684,8 @@ public class GameMap extends AppCompatActivity
         } else if (object instanceof Move) {
             notification = "Zug";
         }
-//        Toast.makeText(GameMap.this, notification + " konnte nicht gesendet werden!", Toast.LENGTH_LONG).show();
         Log.d(TAG, notification + " konnte nicht gesendet werden!");
-        //TODO give possibility to sync the game again
+
     }
 
     @Override
@@ -688,7 +721,6 @@ public class GameMap extends AppCompatActivity
             deleteMarker();
             Device.getInstance().setGame(game);
             setupGame();
-            //ToDo: show current round
         }
     }
 
@@ -735,9 +767,11 @@ public class GameMap extends AppCompatActivity
             float distance = event.values[0];
             if (distance < 5 && myPlayer.isMrX()) {
                 Toast.makeText(GameMap.this, "Weitere Bewegung ausführen", Snackbar.LENGTH_LONG).show();
-                myPlayer.setMoved(false);
                 myPlayer.setHasCheated(true);
                 myPlayer.setHasCheatedThisRound(true);
+                if (myPlayer.getCountCheatingMoves() == 0) {
+                    myPlayer.incCountCheatingMoves();
+                }
             }
         }
 
@@ -761,4 +795,91 @@ public class GameMap extends AppCompatActivity
         device = null;
         myPlayer = null;
     }
+
+    @Override
+    public void onRecievedEndOfGame(boolean hasMrXWon) {
+        Intent i = new Intent(GameMap.this, GameEndActivity.class);
+        i.putExtra("Winner", hasMrXWon);
+        startActivity(i);
+    }
+
+    /* This method serves as a YES/NO dialog box when a detective wants to report the Mr. X. */
+    private void showCheaterDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(GameMap.this);
+
+        /* A title for reporting. */
+        builder.setTitle("Bist du sicher, dass du den Cheater melden willst?");
+
+        /* Set the alert dialog when clicking on YES. */
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                CheaterReport report = new CheaterReport(myPlayer.getNickname());
+                device.send(report);
+
+                Toast.makeText(GameMap.this,
+                        "Die Meldung wurde gesendet.", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        /* Set the alert dialog when clicking on NO. */
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    /* This method is responsible for reporting a cheater in different scenarios and is being received by all other players. */
+    public void onCheaterReport(CheaterReport report) {
+        if (myPlayer.isMrX()) {
+            Toast.makeText(this, report.getReporter() + " hat dich als Cheater gemeldet.", Toast.LENGTH_LONG).show();
+            report = ReportingLogic.analyseReportMrX(myPlayer, report);
+            device.send(report);
+            if (ReportingLogic.getCheatCaughtCount() >= 3) {
+                /* Finish the game. */
+                Intent i = new Intent(GameMap.this, GameEndActivity.class);
+                i.putExtra("Winner", false);
+                startActivity(i);
+            }
+        } else {
+            switch (ReportingLogic.analyzeReportPlayer(myPlayer, report)) {
+                case 0:
+                    visualizeTickets();
+                    /* Punish the detective for a fake report by randomly taking one ticket away from him.
+                    A toast message will appear on the screen of a detective that made a fake report. */
+                    Toast.makeText(this, "Du hast den Cheater falsch gemeldet.", Toast.LENGTH_LONG).show();
+                    break;
+                case 1:
+                    /* A toast message will appear on the screen of all players that a current detective made a fake report. */
+                    Toast.makeText(this, report.getReporter() + " hat den Cheater falsch gemeldet.", Toast.LENGTH_LONG).show();
+                    break;
+                case 2:
+                    Intent i = new Intent(GameMap.this, GameEndActivity.class);
+                    i.putExtra("Winner", false);
+                    // Reward reporter if needed.
+                    startActivity(i);
+                    break;
+                case 3:
+                    Toast.makeText(this, "Du hast den Cheater richtig gemeldet.", Toast.LENGTH_LONG).show();
+                    break;
+                case 4:
+                    /* A toast message will appear on the screen of all players that a current detective reported a cheater (Mr.X) correctly. */
+                    Toast.makeText(this, report.getReporter() + " hat den Cheater richtig gemeldet.", Toast.LENGTH_LONG).show();
+                    break;
+                default:
+                    // Nothing
+            }
+        }
+    }
+
+    @Override
+    public void onReportReceived(CheaterReport report) {
+        onCheaterReport(report);
+    }
 }
+

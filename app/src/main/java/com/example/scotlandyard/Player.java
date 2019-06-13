@@ -1,5 +1,7 @@
 package com.example.scotlandyard;
 
+import android.util.Log;
+
 import com.example.scotlandyard.map.Point;
 import com.example.scotlandyard.map.Points;
 import com.example.scotlandyard.map.Routes;
@@ -24,6 +26,8 @@ public class Player implements Serializable {
     private HashMap<Integer, Integer> tickets; //Hashmap for storing tickets
     private boolean hasCheated;
     private boolean hasCheatedThisRound;
+    private int countCheatingMoves;
+
     private boolean[] specialMrXMoves;
 
     private int penalty;
@@ -45,6 +49,7 @@ public class Player implements Serializable {
 
         this.hasCheated = false;
         this.hasCheatedThisRound = false;
+        this.countCheatingMoves = 0;
         this.penalty = 0;
         this.specialMrXMoves = new boolean[]{false, false};
     }
@@ -137,7 +142,7 @@ public class Player implements Serializable {
     }
 
     public void decreaseNumberOfTickets(Integer key) {
-        if (!this.hasCheatedThisRound && tickets.get(key) > 0)
+        if (this.countCheatingMoves == 0 && tickets.get(key) > 0)
             tickets.put(key, tickets.get(key) - 1);
     }
 
@@ -280,6 +285,7 @@ public class Player implements Serializable {
             return 2;
         }
         //if it is not players turn -> ignore move
+        System.out.println(moved + " " +game.isRoundMrX() +" " + isMrX );
         if (moved || (isMrX && !game.isRoundMrX()) || (!isMrX && game.isRoundMrX())) {
             return 3;
         }
@@ -324,6 +330,20 @@ public class Player implements Serializable {
         tickets = new HashMap<>();
         hasCheated = false;
         hasCheatedThisRound = false;
+        this.countCheatingMoves = 0;
         penalty = 0;
     }
+
+    public void incCountCheatingMoves() {
+        this.countCheatingMoves++;
+    }
+
+    public void decCountCheatingMoves() {
+        this.countCheatingMoves--;
+    }
+
+    public int getCountCheatingMoves(){
+        return this.countCheatingMoves;
+    }
+
 }

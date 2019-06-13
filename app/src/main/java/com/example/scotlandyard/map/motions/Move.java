@@ -10,12 +10,14 @@ public class Move implements Serializable {
     private int field;
     private int randomEventTrigger;
     private ValidatedRoute randomRoute;
+    private boolean cheatingMove;
 
     public Move(String nickname, int field, int randomEventTrigger, ValidatedRoute randomRoute) {
         this.nickname = nickname;
         this.field = field;
         this.randomEventTrigger = randomEventTrigger;
         this.randomRoute = randomRoute;
+        this.cheatingMove = false;
     }
 
     public String getNickname() {
@@ -30,14 +32,6 @@ public class Move implements Serializable {
         return field;
     }
 
-    public void setField(int field) {
-        this.field = field;
-    }
-
-    public void setRandomEventTrigger(int randomEventTrigger) {
-        this.randomEventTrigger = randomEventTrigger;
-    }
-
     public int getRandomEventTrigger() {
         return randomEventTrigger;
     }
@@ -49,5 +43,13 @@ public class Move implements Serializable {
     @Override
     public String toString() {
         return "Nickname = " + this.nickname + "; Field = " + this.field;
+    }
+
+    public boolean isCheatingMove() {
+        return cheatingMove;
+    }
+
+    public void setCheatingMove(boolean cheatingMove) {
+        this.cheatingMove = cheatingMove;
     }
 }

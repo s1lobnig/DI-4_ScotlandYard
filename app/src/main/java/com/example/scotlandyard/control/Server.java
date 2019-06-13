@@ -4,6 +4,8 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.example.scotlandyard.reportcheater.CheaterReport;
+import com.example.scotlandyard.gameend.GameEnd;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.QuitNotification;
 import com.example.scotlandyard.R;
@@ -163,6 +165,12 @@ public class Server extends Device implements ServerInterface {
         if (object instanceof MapNotification) {
             onMapNotification((MapNotification) object);
         }
+        if (object instanceof CheaterReport) {
+            /* If cheater report observer variable is set, the message will be forwarded to it. */
+            if (isSetCheaterReportObserver()) {
+                getCheaterReportObserver().onReportReceived((CheaterReport) object);
+            }
+        }
     }
 
     private void onQuitNotification(QuitNotification quitNotification) {
@@ -173,8 +181,8 @@ public class Server extends Device implements ServerInterface {
         if (gameObserver != null) {
             gameObserver.onQuit(quitNotification.getPlayerName(), quitNotification.isServerQuit());
         }
-        send(quitNotification);
         if (quitNotification.isServerQuit()) {
+            send(quitNotification);
             disconnect();
         } else {
             disconnect(quitNotification.getPlayerName());
@@ -195,12 +203,16 @@ public class Server extends Device implements ServerInterface {
         Player player = game.findPlayer(move.getNickname());
 
         send(move);
-        if (!player.getSpecialMrXMoves()[1]) {
+        if (!player.getSpecialMrXMoves()[1] && !move.isCheatingMove()) {
             player.setMoved(true);
-        } else {
+        } else if (player.getSpecialMrXMoves()[1]) {
             player.decreaseNumberOfTickets(R.string.DOUBLE_TICKET_KEY);
             player.setSpecialMrXMoves(false, 1);
+        } else {
+            player.setMoved(false);
+            game.getMrX().decCountCheatingMoves();
         }
+
         int result = game.tryNextRound();
         if (result == 1) {
             send(new MapNotification("NEXT_ROUND"));
@@ -225,13 +237,24 @@ public class Server extends Device implements ServerInterface {
         } else if (result == 0) {
             send(new MapNotification("END MisterX")); //MisterX hat gewonnen
             printNotification("MisterX hat gewonnen");
+            sendEnd(new GameEnd(true));
+            gameObserver.onRecievedEndOfGame(true);
         }
         if (gameObserver != null) {
             gameObserver.updateMove(move);
+
+            if (game.checkIfMrxHasLost()) {
+                sendEnd(new GameEnd(false));
+                gameObserver.onRecievedEndOfGame(false);
+                disconnect();
+            }
         } else {
             player.setPosition(Points.POINTS[move.getField()]);
         }
+
+
     }
+
 
     public void moveBot() {
         Player bot = game.getBotMrX();
@@ -298,6 +321,7 @@ public class Server extends Device implements ServerInterface {
             lost.add(endpoint);
             ((ServerService) connectionService).startAdvertising();
         }
+        //quit = false;
     }
 
     @Override

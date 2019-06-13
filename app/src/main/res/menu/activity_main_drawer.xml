@@ -23,6 +23,10 @@
             android:id="@+id/nav_logout"
             android:icon="@android:drawable/ic_lock_power_off"
             android:title="Spiel verlassen" />
+        <item
+            android:id="@+id/cheater_melden"
+            android:icon="@drawable/ic_cheater_report"
+            android:title="Cheater Melden" />
     </group>
 
 </menu>

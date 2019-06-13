@@ -52,5 +52,11 @@ public interface GameInterface {
      */
     void showNewGame(Game game);
 
+    /**
+     * function is called when a game ends
+     *
+     */
+    void onRecievedEndOfGame(boolean hasMrXWon);
+    
     void onQuit(String playerName, boolean serverQuit);
 }

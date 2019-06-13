@@ -2,6 +2,8 @@ package com.example.scotlandyard.control;
 
 import android.util.Log;
 
+import com.example.scotlandyard.reportcheater.CheaterReport;
+import com.example.scotlandyard.gameend.GameEnd;
 import com.example.scotlandyard.QuitNotification;
 import com.example.scotlandyard.connection.ConnectionService;
 import com.example.scotlandyard.Game;
@@ -31,6 +33,7 @@ public class Device {
     private static Device singleton;
     MessengerInterface messengerObserver;
     GameInterface gameObserver;
+    private CheaterReportInterface cheaterReportObserver;
     ConnectionService connectionService;
     Lobby lobby;
     Game game;
@@ -149,6 +152,37 @@ public class Device {
     }
 
     /**
+     * Function for adding a report observer.
+     * @param cheaterReportObserver cheater report observer
+     */
+    public void setCheaterReportObserver(CheaterReportInterface cheaterReportObserver) {
+        this.cheaterReportObserver = cheaterReportObserver;
+    }
+
+    /**
+     * Function for removing a report observer.
+     */
+    public void removeCheaterReportObserver() {
+        this.cheaterReportObserver = null;
+    }
+
+    /**
+     * Function for checking if the cheater report observer is set.
+     * @return
+     */
+    public boolean isSetCheaterReportObserver() {
+        return this.cheaterReportObserver != null;
+    }
+
+    /**
+     * Function for returning cheater report observer.
+     * @return
+     */
+    public CheaterReportInterface getCheaterReportObserver() {
+        return this.cheaterReportObserver;
+    }
+
+    /**
      * function for sending a message
      *
      * @param message message to send
@@ -189,6 +223,15 @@ public class Device {
     }
 
     /**
+     * function for sending a move
+     *
+     * @param report report to send
+     */
+    public void send(CheaterReport report){
+        connectionService.send(report);
+    }
+
+    /**
      * prints txt on display
      *
      * @param txt text which should be shown as a Toast
@@ -200,6 +243,13 @@ public class Device {
         if (messengerObserver != null) {
             messengerObserver.onReceivedToast(txt);
         }
+    }
+
+    /**
+     * sends control to end the game to device
+    */
+    public void sendEnd(GameEnd end) {
+        connectionService.send(end);
     }
 
     /**

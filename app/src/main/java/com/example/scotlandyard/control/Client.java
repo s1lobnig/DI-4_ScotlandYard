@@ -3,6 +3,8 @@ package com.example.scotlandyard.control;
 import android.util.Log;
 import android.util.TimeUtils;
 
+import com.example.scotlandyard.reportcheater.CheaterReport;
+import com.example.scotlandyard.gameend.GameEnd;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.QuitNotification;
 import com.example.scotlandyard.R;
@@ -140,14 +142,24 @@ public class Client extends Device implements ClientInterface {
         if (object instanceof Game) {
             onGame((Game) object);
         }
+        if(object instanceof GameEnd){
+            gameObserver.onRecievedEndOfGame(((GameEnd) object).hasMrxwon());
+            disconnect();
+        }
         if (object instanceof QuitNotification) {
             onQuit((QuitNotification) object);
+        }
+        if (object instanceof CheaterReport) {
+            /* If cheater report observer variable is set the message will be forwarded to it. */
+            if (isSetCheaterReportObserver()) {
+                getCheaterReportObserver().onReportReceived((CheaterReport) object);
+            }
         }
     }
 
     private void onQuit(QuitNotification quitNotification) {
         Log.d(logTag, "quit received");
-        // tell server, and therefore all others, that I wanna quit
+
         if (messengerObserver != null) {
             messengerObserver.onQuit(quitNotification.getPlayerName(), quitNotification.isServerQuit());
         }
@@ -155,7 +167,7 @@ public class Client extends Device implements ClientInterface {
             gameObserver.onQuit(quitNotification.getPlayerName(), quitNotification.isServerQuit());
         }
         // then me wanna disconnect
-        ((Client) Device.getInstance()).disconnect();
+        disconnect();
     }
 
     private void onMessage(Message message) {
@@ -174,11 +186,14 @@ public class Client extends Device implements ClientInterface {
     private void onMove(Move move) {
         Log.d(logTag, "move received");
         Player player = game.findPlayer(move.getNickname());
-        if (!player.getSpecialMrXMoves()[1]) {
+
+        if (!player.getSpecialMrXMoves()[1] && !move.isCheatingMove()) {
             player.setMoved(true);
             if (player.isMrX()) {
                 game.setRoundMrX(false);
             }
+        } else if (!player.getSpecialMrXMoves()[1]) {
+            player.decCountCheatingMoves();
         } else {
             player.setSpecialMrXMoves(false, 1);
             player.decreaseNumberOfTickets(R.string.DOUBLE_TICKET_KEY);
@@ -283,7 +298,7 @@ public class Client extends Device implements ClientInterface {
             lost = endpoint;
             ((ClientService) connectionService).startDiscovery();
         }
-
+        quit = false;
     }
 
     @Override

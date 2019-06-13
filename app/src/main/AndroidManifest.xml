@@ -34,7 +34,7 @@
         android:theme="@style/AppTheme.NoActionBar">
         <activity android:name=".sensorspoc.SensorsPOC"></activity>
         <activity
-            android:name=".GameEndActivity"
+            android:name=".gameend.GameEndActivity"
             android:label="@string/title_activity_game_end_"
             android:theme="@style/AppTheme.NoActionBar.NoActionBar" />
         <activity android:name=".lobby.ClientLobby" />
@@ -42,15 +42,6 @@
         <activity
             android:name=".Settings"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".map.GameMap"
-            android:theme="@style/AppTheme.NoActionBar.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.scotlandyard.map.GameMap" />
-        </activity>
-        <activity
-            android:name=".PlayersOverview"
-            android:label="@string/title_activity_players_overview"
             android:parentActivityName=".map.GameMap"
             android:theme="@style/AppTheme.NoActionBar.NoActionBar">
             <meta-data
