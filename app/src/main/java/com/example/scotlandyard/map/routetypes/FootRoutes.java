@@ -147,7 +147,7 @@ public class FootRoutes {
             new Point(46.613368, 14.264279)
     };
 
-    public static final Route[] BY_FOOT = {
+    private static final Route[] BY_FOOT = {
             new Route(1, 2),
             new Route(2, 3),
             new Route(2, 4),
@@ -242,4 +242,8 @@ public class FootRoutes {
             new Route(72, 74),
             new Route(72, 73)
     };
+
+    public static Route[] getByFoot() {
+        return BY_FOOT;
+    }
 }

@@ -6,10 +6,10 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.scotlandyard.map.routetypes.BicycleRoutes.BICYCLE;
-import static com.example.scotlandyard.map.routetypes.BusRoutes.BUS;
-import static com.example.scotlandyard.map.routetypes.FootRoutes.BY_FOOT;
-import static com.example.scotlandyard.map.routetypes.TaxiRoutes.TAXI_DRAGAN;
+import static com.example.scotlandyard.map.routetypes.BicycleRoutes.getBicycle;
+import static com.example.scotlandyard.map.routetypes.BusRoutes.getBUS;
+import static com.example.scotlandyard.map.routetypes.FootRoutes.getByFoot;
+import static com.example.scotlandyard.map.routetypes.TaxiRoutes.getTaxiDragan;
 
 /**
  * @author René
@@ -22,6 +22,10 @@ public class Routes {
 
     }
 
+    private static final Route[] BY_FOOT = getByFoot();
+    private static final Route[] BICYCLE = getBicycle();
+    private static final Route[] BUS = getBUS();
+    private static final Route[] TAXI_DRAGAN = getTaxiDragan();
     public static final float ROUTE_WIDTH = 15f;
 
     public static Route[] getBicycleRoutes() {

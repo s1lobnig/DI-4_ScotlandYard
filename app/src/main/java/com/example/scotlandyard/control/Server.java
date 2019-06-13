@@ -247,7 +247,7 @@ public class Server extends Device implements ServerInterface {
                 disconnect();
             }
         } else {
-            player.setPosition(Points.FIELDS[move.getField()]);
+            player.setPosition(Points.getFields()[move.getField()]);
         }
 
 
@@ -274,7 +274,7 @@ public class Server extends Device implements ServerInterface {
         if (gameObserver != null) {
             gameObserver.updateMove(move);
         } else {
-            bot.setPosition(Points.FIELDS[position - 1]);
+            bot.setPosition(Points.getFields()[position - 1]);
         }
     }
 

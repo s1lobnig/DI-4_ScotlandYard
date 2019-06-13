@@ -2,7 +2,9 @@ package com.example.scotlandyard.moving;
 
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
+import com.example.scotlandyard.map.Point;
 import com.example.scotlandyard.map.Points;
+import com.example.scotlandyard.map.Route;
 import com.example.scotlandyard.map.Routes;
 
 import org.junit.Assert;
@@ -14,8 +16,15 @@ import org.junit.runners.Parameterized;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import static com.example.scotlandyard.map.Points.getFields;
+import static com.example.scotlandyard.map.routetypes.BicycleRoutes.getBicycle;
+import static com.example.scotlandyard.map.routetypes.BusRoutes.getBUS;
+import static com.example.scotlandyard.map.routetypes.FootRoutes.getByFoot;
+import static com.example.scotlandyard.map.routetypes.TaxiRoutes.getTaxiDragan;
+
 @RunWith(Parameterized.class)
 public class StillPossibleMovesTest {
+    private static final Point[] FIELDS = getFields();
     @Parameterized.Parameters(name = "{index}: Player at {1}, isMrX = {0}, should be able to move: {3}, player active: {4}")
     public static Iterable data() {
         return Arrays.asList(new Object[][]{
@@ -61,7 +70,7 @@ public class StillPossibleMovesTest {
         setTickets(tickets);
         this.player = new Player(playerNick);
         player.setMrX(isMrX);
-        player.setPosition(Points.FIELDS[position - 1]);
+        player.setPosition(FIELDS[position - 1]);
         player.setTickets(this.tickets);
         this.currentPosition = position;
         this.expectedResut = expectedResut;

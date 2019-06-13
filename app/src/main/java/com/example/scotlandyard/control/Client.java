@@ -197,7 +197,7 @@ public class Client extends Device implements ClientInterface {
         if (gameObserver != null) {
             gameObserver.updateMove(move);
         } else {
-            player.setPosition(Points.FIELDS[move.getField()]);
+            player.setPosition(Points.getFields()[move.getField()]);
         }
     }
 

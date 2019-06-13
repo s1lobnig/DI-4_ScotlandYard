@@ -13,8 +13,19 @@ import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 
+import static com.example.scotlandyard.map.routetypes.BicycleRoutes.getBicycle;
+import static com.example.scotlandyard.map.routetypes.BusRoutes.getBUS;
+import static com.example.scotlandyard.map.routetypes.FootRoutes.getByFoot;
+import static com.example.scotlandyard.map.routetypes.TaxiRoutes.getTaxiDragan;
+
 @RunWith(Parameterized.class)
 public class RoutesTest {
+
+    private static final Route[] BY_FOOT = getByFoot();
+    private static final Route[] BICYCLE = getBicycle();
+    private static final Route[] BUS = getBUS();
+    private static final Route[] TAXI_DRAGAN = getTaxiDragan();
+
     @Parameterized.Parameters(name = "{index}: Route from {0} to {1} is type {2}, valid - {3}")
     public static Iterable data() {
         return Arrays.asList(new Object[][]{

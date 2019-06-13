@@ -17,7 +17,7 @@ public class Points {
     /**
      * final Point[] which includes all fields of the game board
      */
-    public static final Point[] FIELDS =
+    private static final Point[] FIELDS =
             {
                     new Point(46.621253, 14.262028, R.drawable.field1),
                     new Point(46.620646, 14.262115, R.drawable.field2),

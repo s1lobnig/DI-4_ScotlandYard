@@ -57,7 +57,7 @@ public class BusRoutes {
             new Point(46.615830, 14.261442)
     };
 
-    public static final Route[] BUS = {
+    private static final Route[] BUS = {
             new Route(4, 16, INTERMEDIATES_BY_BUS_4_16),
             new Route(12, 16, INTERMEDIATES_BY_BUS_12_16),
             new Route(11, 12),
@@ -71,4 +71,7 @@ public class BusRoutes {
             new Route(4, 41, INTERMEDIATES_BY_BUS_4_41)
     };
 
+    public static Route[] getBUS() {
+        return BUS;
+    }
 }

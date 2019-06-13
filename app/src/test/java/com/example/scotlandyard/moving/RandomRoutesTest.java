@@ -14,11 +14,15 @@ import org.junit.runners.Parameterized;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.example.scotlandyard.map.routetypes.BicycleRoutes.BICYCLE;
-import static com.example.scotlandyard.map.routetypes.FootRoutes.BY_FOOT;
+import static com.example.scotlandyard.map.routetypes.BicycleRoutes.getBicycle;
+import static com.example.scotlandyard.map.routetypes.FootRoutes.getByFoot;
 
 @RunWith(Parameterized.class)
 public class RandomRoutesTest {
+
+    private static final Route[] BY_FOOT = getByFoot();
+    private static final Route[] BICYCLE = getBicycle();
+
     @Parameterized.Parameters(name = "{index}: Bot at {0}, other players at {1}")
     public static Iterable data() {
         return Arrays.asList(new Object[][]{

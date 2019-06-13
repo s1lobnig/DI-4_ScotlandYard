@@ -1,6 +1,7 @@
 package com.example.scotlandyard.moving;
 
 import com.example.scotlandyard.Player;
+import com.example.scotlandyard.map.Point;
 import com.example.scotlandyard.map.Points;
 import com.example.scotlandyard.map.Route;
 import com.example.scotlandyard.map.Routes;
@@ -16,13 +17,25 @@ import org.junit.runners.Parameterized;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.example.scotlandyard.map.Points.getFields;
 import static com.example.scotlandyard.map.routetypes.BicycleRoutes.BICYCLE;
+import static com.example.scotlandyard.map.routetypes.BicycleRoutes.getBicycle;
 import static com.example.scotlandyard.map.routetypes.BusRoutes.BUS;
+import static com.example.scotlandyard.map.routetypes.BusRoutes.getBUS;
 import static com.example.scotlandyard.map.routetypes.FootRoutes.BY_FOOT;
+import static com.example.scotlandyard.map.routetypes.FootRoutes.getByFoot;
 import static com.example.scotlandyard.map.routetypes.TaxiRoutes.TAXI_DRAGAN;
+import static com.example.scotlandyard.map.routetypes.TaxiRoutes.getTaxiDragan;
 
 @RunWith(Parameterized.class)
 public class BotMoveTest {
+
+    private static final Route[] BY_FOOT = getByFoot();
+    private static final Route[] BICYCLE = getBicycle();
+    private static final Route[] BUS = getBUS();
+    private static final Route[] TAXI_DRAGAN = getTaxiDragan();
+    private static final Point[] FIELDS = getFields();
+
     @Parameterized.Parameters(name = "{index}: Bot at {0}, other players at {1}")
     public static Iterable data() {
         return Arrays.asList(new Object[][]{
@@ -56,10 +69,10 @@ public class BotMoveTest {
         Player[] players = new Player[playerPositions.length + 1];
         for (int i = 0; i < playerPositions.length; i++) {
             players[i] = new Player("" + i);
-            players[i].setPosition(Points.FIELDS[playerPositions[i] - 1]);
+            players[i].setPosition(FIELDS[playerPositions[i] - 1]);
         }
         players[players.length - 1] = new Player("BOT");
-        players[players.length - 1].setPosition(Points.FIELDS[currentPosition - 1]);
+        players[players.length - 1].setPosition(FIELDS[currentPosition - 1]);
         players[players.length - 1].setMrX(true);
         return Arrays.asList(players);
     }

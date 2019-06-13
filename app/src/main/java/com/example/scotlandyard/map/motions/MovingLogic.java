@@ -51,15 +51,15 @@ public class MovingLogic {
                 double x2;
                 double y2;
                 if (i == r.getIntermediates().length) {
-                    x1 = Points.FIELDS[r.getEndPoint() - 1].getLatitude();
-                    y1 = Points.FIELDS[r.getEndPoint() - 1].getLongitude();
+                    x1 = Points.getFields()[r.getEndPoint() - 1].getLatitude();
+                    y1 = Points.getFields()[r.getEndPoint() - 1].getLongitude();
                 } else {
                     x1 = r.getIntermediates()[i].getLatitude();
                     y1 = r.getIntermediates()[i].getLongitude();
                 }
                 if (i == 0) {
-                    x2 = Points.FIELDS[r.getStartPoint() - 1].getLatitude();
-                    y2 = Points.FIELDS[r.getStartPoint() - 1].getLongitude();
+                    x2 = Points.getFields()[r.getStartPoint() - 1].getLatitude();
+                    y2 = Points.getFields()[r.getStartPoint() - 1].getLongitude();
                 } else {
                     x2 = r.getIntermediates()[i - 1].getLatitude();
                     y2 = r.getIntermediates()[i - 1].getLongitude();
@@ -89,15 +89,15 @@ public class MovingLogic {
                 double x2;
                 double y2;
                 if (i == 0) {
-                    x1 = Points.FIELDS[r.getStartPoint() - 1].getLatitude();
-                    y1 = Points.FIELDS[r.getStartPoint() - 1].getLongitude();
+                    x1 = Points.getFields()[r.getStartPoint() - 1].getLatitude();
+                    y1 = Points.getFields()[r.getStartPoint() - 1].getLongitude();
                 } else {
                     x1 = r.getIntermediates()[i - 1].getLatitude();
                     y1 = r.getIntermediates()[i - 1].getLongitude();
                 }
                 if (i == r.getIntermediates().length) {
-                    x2 = Points.FIELDS[r.getEndPoint() - 1].getLatitude();
-                    y2 = Points.FIELDS[r.getEndPoint() - 1].getLongitude();
+                    x2 = Points.getFields()[r.getEndPoint() - 1].getLatitude();
+                    y2 = Points.getFields()[r.getEndPoint() - 1].getLongitude();
                 } else {
                     x2 = r.getIntermediates()[i].getLatitude();
                     y2 = r.getIntermediates()[i].getLongitude();
@@ -188,9 +188,9 @@ public class MovingLogic {
         if (randomRoute) {
             r = randRoute.getRoute();
             if (Points.getIndex(playerLoc) + 1 == r.getStartPoint()) {
-                newLocation = Points.FIELDS[r.getEndPoint() - 1];
+                newLocation = Points.getFields()[r.getEndPoint() - 1];
             } else {
-                newLocation = Points.FIELDS[r.getStartPoint() - 1];
+                newLocation = Points.getFields()[r.getStartPoint() - 1];
             }
         }
         int[] iconAndTicket = MovingLogic.getIconAndTicket(player, routeToTake.getRouteType());

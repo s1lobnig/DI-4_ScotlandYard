@@ -5,7 +5,7 @@ import com.example.scotlandyard.map.Route;
 
 public class BicycleRoutes {
 
-    private BicycleRoutes(){
+    private BicycleRoutes() {
 
     }
 
@@ -66,7 +66,7 @@ public class BicycleRoutes {
             new Point(46.617548, 14.263660),
     };
 
-    public static final Route[] BICYCLE = {
+    private static final Route[] BICYCLE = {
             new Route(1, 4, INTERMEDIATES_BY_BICYCLE_1_4),
             new Route(4, 19, INTERMEDIATES_BY_BICYCLE_4_19),
             new Route(6, 44),
@@ -100,5 +100,9 @@ public class BicycleRoutes {
             new Route(40, 42, INTERMEDIATES_BY_BICYCLE_40_42),
             new Route(39, 40)
     };
+
+    public static Route[] getBicycle() {
+        return BICYCLE;
+    }
 
 }

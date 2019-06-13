@@ -271,7 +271,7 @@ public class Game implements Serializable {
     //returns a free position
     private LatLng getNewPlayerPosition() {
         int position = RANDOM.nextInt(Points.getFields().length);
-        Point point = Points.FIELDS[position];
+        Point point = Points.getFields()[position];
         for (Player p : players) {
             if (point.equals(p.getPosition())) {
                 return getNewPlayerPosition();

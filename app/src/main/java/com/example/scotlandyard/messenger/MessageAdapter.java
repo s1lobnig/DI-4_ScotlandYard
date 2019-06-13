@@ -51,26 +51,28 @@ public class MessageAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View convertView, ViewGroup viewGroup) {
         MessageViewHolder holder = new MessageViewHolder();
+        View myView = convertView;
         LayoutInflater messageInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         Message message = messages.get(i);
 
         // this message was sent by us so let's create a basic chat bubble on the right
         if (message.getNickname().equals(nickname)) {
-            convertView = messageInflater.inflate(R.layout.sent_message, null);
-            holder.messageBody = convertView.findViewById(R.id.message_body);
-            convertView.setTag(holder);
+            myView = messageInflater.inflate(R.layout.sent_message, null);
+            holder.messageBody = myView.findViewById(R.id.message_body);
+            myView.setTag(holder);
             holder.messageBody.setText(message.getMessageText());
 
             // this message was sent by someone else so let's create an advanced chat bubble on the left
         } else {
-            convertView = messageInflater.inflate(R.layout.received_message, null);
-            holder.name = convertView.findViewById(R.id.name);
-            holder.messageBody = convertView.findViewById(R.id.message_body);
-            convertView.setTag(holder);
+            myView = messageInflater.inflate(R.layout.received_message, null);
+            holder.name = myView.findViewById(R.id.name);
+            holder.messageBody = myView.findViewById(R.id.message_body);
+            myView.setTag(holder);
             holder.messageBody.setText(message.getMessageText());
             holder.name.setText(message.getNickname());
         }
-        return convertView;
+
+        return myView;
     }
 
 }

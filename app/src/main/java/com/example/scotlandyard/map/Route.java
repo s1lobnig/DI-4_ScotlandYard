@@ -49,15 +49,15 @@ public class Route implements Serializable {
             double x2;
             double y2;
             if (i == 0) {
-                x1 = Points.FIELDS[getStartPoint() - 1].getLatitude();
-                y1 = Points.FIELDS[getStartPoint() - 1].getLongitude();
+                x1 = Points.getFields()[getStartPoint() - 1].getLatitude();
+                y1 = Points.getFields()[getStartPoint() - 1].getLongitude();
             } else {
                 x1 = getIntermediates()[i - 1].getLatitude();
                 y1 = getIntermediates()[i - 1].getLongitude();
             }
             if (i == getIntermediates().length) {
-                x2 = Points.FIELDS[getEndPoint() - 1].getLatitude();
-                y2 = Points.FIELDS[getEndPoint() - 1].getLongitude();
+                x2 = Points.getFields()[getEndPoint() - 1].getLatitude();
+                y2 = Points.getFields()[getEndPoint() - 1].getLongitude();
             } else {
                 x2 = getIntermediates()[i].getLatitude();
                 y2 = getIntermediates()[i].getLongitude();

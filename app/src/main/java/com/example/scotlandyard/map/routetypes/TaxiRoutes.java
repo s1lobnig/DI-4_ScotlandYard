@@ -32,11 +32,14 @@ public class TaxiRoutes {
             new Point(46.618582, 14.269389),
     };
 
-    public static final Route[] TAXI_DRAGAN = {
+    private static final Route[] TAXI_DRAGAN = {
             new Route(10, 40),
             new Route(32, 43, INTERMEDIATES_BY_TAXI_DRAGAN_32_43),
             new Route(12, 32, INTERMEDIATES_BY_TAXI_DRAGAN_12_32),
             new Route(12, 34, INTERMEDIATES_BY_TAXI_DRAGAN_12_34)
     };
 
+    public static Route[] getTaxiDragan() {
+        return TAXI_DRAGAN;
+    }
 }
