@@ -56,7 +56,7 @@ public class MarkerAnimation {
                 v = interpolator.getInterpolation(t);
 
                 marker.setPosition(latLngInterpolator.interpolate(v, startPosition, finalPosition));
-
+                marker.setVisible(showMarkerAfterAni[0]);
                 if (t < 1) {
                     handler.postDelayed(this, 16);
                 } else {
