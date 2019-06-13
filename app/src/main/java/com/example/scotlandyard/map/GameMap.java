@@ -759,10 +759,11 @@ public class GameMap extends AppCompatActivity
 
     //If proximitry listener is activated, this methode is called
     private final SensorEventListener sensorListenerProximity = new SensorEventListener() {
+        boolean trusty;
         @Override
         public void onSensorChanged(SensorEvent event) {
             float distance = event.values[0];
-            if (distance < 5 && myPlayer.isMrX()) {
+            if (distance == 0f && trusty && myPlayer != null && myPlayer.isMrX()) {
                 Toast.makeText(GameMap.this, "Weitere Bewegung ausführen", Snackbar.LENGTH_LONG).show();
                 myPlayer.setHasCheated(true);
                 myPlayer.setHasCheatedThisRound(true);
@@ -774,7 +775,20 @@ public class GameMap extends AppCompatActivity
 
         @Override
         public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
+            switch (accuracy) {
+                case SensorManager.SENSOR_STATUS_UNRELIABLE:
+                    trusty = false;
+                    break;
+                case SensorManager.SENSOR_STATUS_ACCURACY_LOW:
+                    trusty = false;
+                    break;
+                case SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM:
+                    trusty = false;
+                    break;
+                case SensorManager.SENSOR_STATUS_ACCURACY_HIGH:
+                    trusty = true;
+                    break;
+            }
         }
     };
 
