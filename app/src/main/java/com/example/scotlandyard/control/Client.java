@@ -141,8 +141,9 @@ public class Client extends Device implements ClientInterface {
             onGame((Game) object);
         }
         if (object instanceof GameEnd) {
-            gameObserver.onRecievedEndOfGame(((GameEnd) object).hasMrxwon());
+            quit = true;
             disconnect();
+            gameObserver.onRecievedEndOfGame(((GameEnd) object).hasMrxwon());
         }
         if (object instanceof QuitNotification) {
             onQuit((QuitNotification) object);
@@ -155,15 +156,18 @@ public class Client extends Device implements ClientInterface {
 
     private void onQuit(QuitNotification quitNotification) {
         Log.d(logTag, "quit received");
-
+        if (quitNotification.isServerQuit()) {
+            quit = true;
+            disconnect();
+        }
+        Player quittedPlayer = game.findPlayer(quitNotification.getPlayerName());
+        game.deactivatePlayer(quittedPlayer);
         if (messengerObserver != null) {
             messengerObserver.onQuit(quitNotification.getPlayerName(), quitNotification.isServerQuit());
         }
         if (gameObserver != null) {
             gameObserver.onQuit(quitNotification.getPlayerName(), quitNotification.isServerQuit());
         }
-        // then me wanna disconnect
-        disconnect();
     }
 
     private void onMessage(Message message) {
@@ -277,24 +281,19 @@ public class Client extends Device implements ClientInterface {
     public void onDisconnected(Endpoint endpoint) {
         Log.d(logTag, "disconnected");
 
-        if (gameObserver != null) {
-            gameObserver.showDisconnected(endpoint);
-        }
-        if (messengerObserver != null) {
-            messengerObserver.showDisconnected(endpoint);
-        }
         if (lobbyObserver != null) {
             lobbyObserver.showDisconnected(endpoint.getName());
         }
-        if (quit) {
-            send(new MapNotification("PLAYER_QUITTED"));
-        }
         if (!quit) {
-            send(new MapNotification("PLAYER_LOST"));
+            if (gameObserver != null) {
+                gameObserver.showDisconnected(endpoint);
+            }
+            if (messengerObserver != null) {
+                messengerObserver.showDisconnected(endpoint);
+            }
             lost = endpoint;
             ((ClientService) connectionService).startDiscovery();
         }
-        quit = false;
     }
 
     @Override
@@ -376,7 +375,6 @@ public class Client extends Device implements ClientInterface {
 
     public void disconnect() {
         ((ClientService) connectionService).disconnect();
-        quit = true;
     }
 
 }
