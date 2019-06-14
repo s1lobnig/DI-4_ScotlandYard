@@ -3,9 +3,11 @@ package com.example.scotlandyard.map;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -14,11 +16,14 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+
+import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 
+import com.example.scotlandyard.MusicService;
 import com.example.scotlandyard.reportcheater.CheaterReport;
 import com.example.scotlandyard.control.CheaterReportInterface;
 import com.example.scotlandyard.gameend.GameEndActivity;
@@ -109,11 +114,38 @@ public class GameMap extends AppCompatActivity
     private Menu navDrawerMenu;
 
     /**
+     * The following fields are used to play the background music of the game
+     */
+    MusicService musicService;
+    boolean isBound = false;
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            MusicService.LocalBinder binder = (MusicService.LocalBinder) service;
+            musicService = binder.getService();
+            isBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            isBound = false;
+        }
+    };
+    private Intent music;
+
+
+    /**
      * @param savedInstanceState
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        music = new Intent();
+        music.setClass(this, MusicService.class);
+        startService(music);
+
         setContentView(R.layout.activity_game_navigation);
 
         //if game has not started yet
@@ -234,13 +266,6 @@ public class GameMap extends AppCompatActivity
 
         SensorManager sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         sm.registerListener(sensorListenerProximity, sm.getDefaultSensor(Sensor.TYPE_PROXIMITY), SensorManager.SENSOR_DELAY_NORMAL);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        Device.getInstance().removeGameObserver();
     }
 
     /**
@@ -736,6 +761,10 @@ public class GameMap extends AppCompatActivity
     @Override
     public void onResume() {
         super.onResume();
+        if (musicService != null) {
+            Log.d(TAG, "Resume BGM");
+            musicService.resumeMusic();
+        }
         try {
             Device.getInstance().addGameObserver(this);
         } catch (IllegalStateException ex) {
@@ -895,5 +924,36 @@ public class GameMap extends AppCompatActivity
     public void onReportReceived(CheaterReport report) {
         onCheaterReport(report);
     }
-}
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(TAG, "Start BGM");
+        Intent intent = new Intent(this, MusicService.class);
+        bindService(intent, connection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "Pause BGM");
+        musicService.pauseMusic();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Device.getInstance().removeGameObserver();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.d(TAG, "Stop BGM");
+        musicService.stopMusic();
+        unbindService(connection);
+        isBound = false;
+        if (music != null)
+            stopService(music);
+        super.onDestroy();
+    }
+}
