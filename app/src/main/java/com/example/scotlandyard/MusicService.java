@@ -38,21 +38,14 @@ public class MusicService extends Service implements MediaPlayer.OnErrorListener
     @Override
     public void onCreate() {
         super.onCreate();
-
         mPlayer = MediaPlayer.create(this, R.raw.scotland_yard_bg_music);
         mPlayer.setOnErrorListener(this);
-
         if (mPlayer != null) {
             mPlayer.setLooping(true);
             mPlayer.setVolume(100, 100);
         }
-
-
         mPlayer.setOnErrorListener(new OnErrorListener() {
-
-            public boolean onError(MediaPlayer mp, int what, int
-                    extra) {
-
+            public boolean onError(MediaPlayer mp, int what, int extra) {
                 onError(mPlayer, what, extra);
                 return true;
             }
