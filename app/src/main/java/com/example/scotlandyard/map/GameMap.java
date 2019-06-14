@@ -132,6 +132,7 @@ public class GameMap extends AppCompatActivity
             isBound = false;
         }
     };
+    private Intent music;
 
 
     /**
@@ -141,7 +142,7 @@ public class GameMap extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent music = new Intent();
+        music = new Intent();
         music.setClass(this, MusicService.class);
         startService(music);
 
@@ -951,7 +952,8 @@ public class GameMap extends AppCompatActivity
         musicService.stopMusic();
         unbindService(connection);
         isBound = false;
+        if (music != null)
+            stopService(music);
         super.onDestroy();
     }
-
 }

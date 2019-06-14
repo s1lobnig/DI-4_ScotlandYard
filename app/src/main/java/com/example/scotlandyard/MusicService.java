@@ -8,6 +8,8 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+import java.io.IOException;
+
 public class MusicService extends Service implements MediaPlayer.OnErrorListener {
 
     private static final String TAG = "MusicService";
@@ -16,6 +18,19 @@ public class MusicService extends Service implements MediaPlayer.OnErrorListener
     private int length = 0;
 
     private final IBinder binder = new LocalBinder();
+
+    @Override
+    public boolean onError(MediaPlayer mp, int what, int extra) {
+        if (mPlayer != null) {
+            try {
+                mPlayer.stop();
+                mPlayer.release();
+            } finally {
+                mPlayer = null;
+            }
+        }
+        return true;
+    }
 
     /**
      * Class used for the client Binder.  Because we know this service always
@@ -40,12 +55,7 @@ public class MusicService extends Service implements MediaPlayer.OnErrorListener
         if (mPlayer != null) {
             mPlayer.setLooping(true);
             mPlayer.setVolume(100, 100);
-            mPlayer.setOnErrorListener(new OnErrorListener() {
-                public boolean onError(MediaPlayer mp, int what, int extra) {
-                    onError(mPlayer, what, extra);
-                    return true;
-                }
-            });
+            mPlayer.setOnErrorListener(this);
         }
     }
 
@@ -72,34 +82,27 @@ public class MusicService extends Service implements MediaPlayer.OnErrorListener
     }
 
     public void stopMusic() {
-        mPlayer.stop();
-        mPlayer.release();
-        mPlayer = null;
+        try {
+            mPlayer.stop();
+            mPlayer.reset();
+            mPlayer.release();
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+        } finally {
+            mPlayer = null;
+        }
         Log.d(TAG, "Stop music");
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (mPlayer != null) {
-            try {
-                mPlayer.stop();
-                mPlayer.release();
-            } finally {
-                mPlayer = null;
-            }
-        }
+    public boolean stopService(Intent name) {
+        stopMusic();
+        return super.stopService(name);
     }
 
-    public boolean onError(MediaPlayer mp, int what, int extra) {
-        if (mPlayer != null) {
-            try {
-                mPlayer.stop();
-                mPlayer.release();
-            } finally {
-                mPlayer = null;
-            }
-        }
-        return false;
+    @Override
+    public void onDestroy() {
+        stopMusic();
+        super.onDestroy();
     }
 }
