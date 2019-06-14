@@ -12,11 +12,8 @@ public class MusicService extends Service implements MediaPlayer.OnErrorListener
 
     private static final String TAG = "MusicService";
 
-    private static MediaPlayer mPlayer;
-    private static int length = 0;
-
-    public MusicService() {
-    }
+    private MediaPlayer mPlayer;
+    private int length = 0;
 
     private final IBinder binder = new LocalBinder();
 
@@ -43,13 +40,13 @@ public class MusicService extends Service implements MediaPlayer.OnErrorListener
         if (mPlayer != null) {
             mPlayer.setLooping(true);
             mPlayer.setVolume(100, 100);
+            mPlayer.setOnErrorListener(new OnErrorListener() {
+                public boolean onError(MediaPlayer mp, int what, int extra) {
+                    onError(mPlayer, what, extra);
+                    return true;
+                }
+            });
         }
-        mPlayer.setOnErrorListener(new OnErrorListener() {
-            public boolean onError(MediaPlayer mp, int what, int extra) {
-                onError(mPlayer, what, extra);
-                return true;
-            }
-        });
     }
 
     @Override
@@ -67,7 +64,7 @@ public class MusicService extends Service implements MediaPlayer.OnErrorListener
     }
 
     public void resumeMusic() {
-        if (mPlayer != null && mPlayer.isPlaying() == false) {
+        if (mPlayer != null && !mPlayer.isPlaying()) {
             Log.d(TAG, "Resume from " + length);
             mPlayer.seekTo(length);
             mPlayer.start();
