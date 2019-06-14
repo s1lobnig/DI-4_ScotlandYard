@@ -296,4 +296,7 @@ public class Device {
         messageList.add(message);
     }
 
+    public void setQuit(boolean quit) {
+        this.quit = quit;
+    }
 }

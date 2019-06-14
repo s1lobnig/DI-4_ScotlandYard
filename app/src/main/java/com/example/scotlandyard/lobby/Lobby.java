@@ -24,7 +24,7 @@ public class Lobby implements Serializable {
         this.randomMrX = randomMrX;
         this.maxPlayers = maxPlayers;
         this.botMrX = botMrX;
-        random = new SecureRandom();
+        random = new Random();
     }
 
     public List<Player> getPlayerList() {

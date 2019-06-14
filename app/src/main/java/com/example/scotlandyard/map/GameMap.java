@@ -299,14 +299,16 @@ public class GameMap extends AppCompatActivity
         } else if (id == R.id.cheater_melden) {
             showCheaterDialog();
         } else if (id == R.id.nav_logout) {
+            device.setQuit(true);
             if (!device.isServer()) {
                 device.send(new QuitNotification(device.getNickname(), false));
+                device.removeGameObserver();
                 intent = new Intent(this, MainActivity.class);
             } else {
                 device.send(new QuitNotification(device.getNickname(), true));
+                device.removeGameObserver();
                 intent = new Intent(this, MainActivity.class);
             }
-
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -808,6 +810,7 @@ public class GameMap extends AppCompatActivity
 
     @Override
     public void onRecievedEndOfGame(boolean hasMrXWon) {
+        Device.getInstance().removeGameObserver();
         Intent i = new Intent(GameMap.this, GameEndActivity.class);
         i.putExtra(getString(R.string.winner), hasMrXWon);
         startActivity(i);

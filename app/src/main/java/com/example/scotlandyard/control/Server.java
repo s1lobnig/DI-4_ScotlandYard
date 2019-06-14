@@ -33,10 +33,12 @@ public class Server extends Device implements ServerInterface {
     private String logTag = "Server";
     private ServerLobbyInterface lobbyObserver;
     private ArrayList<Endpoint> lost;
+    private ArrayList<String> quited;
 
     Server(String endpointName, ConnectionsClient connectionsClient) {
         connectionService = new ServerService(this, endpointName, connectionsClient);
         lost = new ArrayList<>();
+        quited = new ArrayList<>();
     }
 
     /**
@@ -173,20 +175,17 @@ public class Server extends Device implements ServerInterface {
 
     private void onQuitNotification(QuitNotification quitNotification) {
         Log.d(logTag, "quit received");
+        quited.add(quitNotification.getPlayerName());
+        disconnect(quitNotification.getPlayerName());
+        Player quittedPlayer = game.findPlayer(quitNotification.getPlayerName());
+        game.deactivatePlayer(quittedPlayer);
+        send(quitNotification);
         if (messengerObserver != null) {
             messengerObserver.onQuit(quitNotification.getPlayerName(), quitNotification.isServerQuit());
         }
         if (gameObserver != null) {
             gameObserver.onQuit(quitNotification.getPlayerName(), quitNotification.isServerQuit());
         }
-        if (quitNotification.isServerQuit()) {
-            send(quitNotification);
-            disconnect();
-        } else {
-            disconnect(quitNotification.getPlayerName());
-        }
-        Player quittedPlayer = game.findPlayer(quitNotification.getPlayerName());
-        game.deactivatePlayer(quittedPlayer);
     }
 
     private void onMapNotification(MapNotification notification) {
@@ -219,8 +218,8 @@ public class Server extends Device implements ServerInterface {
             gameObserver.updateMove(move);
             if (game.checkIfMrxHasLost()) {
                 sendEnd(new GameEnd(false));
+                quit = true;
                 gameObserver.onRecievedEndOfGame(false);
-                disconnect();
             }
         } else {
             player.setPosition(Points.getFields()[move.getField()]);
@@ -228,9 +227,9 @@ public class Server extends Device implements ServerInterface {
     }
 
     private void sendOutGameEnd(Player player) {
-        send(new MapNotification("END MisterX")); //MisterX hat gewonnen
-        printNotification("MisterX hat gewonnen");
         sendEnd(new GameEnd(true));
+        quit = true;
+        disconnect();
         gameObserver.onRecievedEndOfGame(true);
     }
 
@@ -308,19 +307,21 @@ public class Server extends Device implements ServerInterface {
             send(new MapNotification("PLAYER " + lostPlayer.getNickname() + " LOST"));
             printNotification("Verbindung zu " + lostPlayer.getNickname() + " verloren");
         }
-        if (gameObserver != null) {
-            gameObserver.showDisconnected(endpoint);
-        }
-        if (messengerObserver != null) {
-            messengerObserver.showDisconnected(endpoint);
-        }
         if (lobbyObserver != null) {
             lobby.removePlayer(endpoint.getName());
             lobbyObserver.updateLobby(lobby);
         }
         if (!quit) {
-            lost.add(endpoint);
-            ((ServerService) connectionService).startAdvertising();
+            if (gameObserver != null) {
+                gameObserver.showDisconnected(endpoint);
+            }
+            if (messengerObserver != null) {
+                messengerObserver.showDisconnected(endpoint);
+            }
+            if (!quited.contains(endpoint.getName())) {
+                lost.add(endpoint);
+                ((ServerService) connectionService).startAdvertising();
+            }
         }
     }
 
