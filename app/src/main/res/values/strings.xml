@@ -48,6 +48,7 @@
     <string name="TICKET_DIALOG_TITLE">Dieses Ticket wirklich einlösen?</string>
     <string name="USE_TICKET">Einlösen</string>
     <string name="NOT_USE_TICKET">Abbrechen</string>
+    <string name="LOGOUT_DIALOG_TITLE">Möchtest du das Spiel wirklich beenden?</string>
 
     <string name="lobbyname">Lobbyname</string>
 

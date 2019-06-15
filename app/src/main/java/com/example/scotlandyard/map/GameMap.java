@@ -310,7 +310,7 @@ public class GameMap extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
         Fragment fragment;
-        Intent intent = null;
+        final Intent intent = null;
         if (id == R.id.nav_game) {
             fragment = getSupportFragmentManager().findFragmentById(R.id.map);
             FragmentManager fragmentManager = getSupportFragmentManager();
@@ -324,16 +324,7 @@ public class GameMap extends AppCompatActivity
         } else if (id == R.id.cheater_melden) {
             showCheaterDialog();
         } else if (id == R.id.nav_logout) {
-            device.setQuit(true);
-            if (!device.isServer()) {
-                device.send(new QuitNotification(device.getNickname(), false));
-                device.removeGameObserver();
-                intent = new Intent(this, MainActivity.class);
-            } else {
-                device.send(new QuitNotification(device.getNickname(), true));
-                device.removeGameObserver();
-                intent = new Intent(this, MainActivity.class);
-            }
+           showLogoutDialog();
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -489,19 +480,19 @@ public class GameMap extends AppCompatActivity
 
         if (r.getID() == 0) {
             if (showMyToast)
-                Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
+                Toast.makeText(GameMap.this, r.getText(), Toast.LENGTH_LONG).show();
             doNotGo = true;
         } else if (r.getID() == 1) {
             if (showMyToast)
-                Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
+                Toast.makeText(GameMap.this, r.getText(), Toast.LENGTH_LONG).show();
             goBack = true;
         } else if (r.getID() == 2) {
             if (showMyToast)
-                Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
+                Toast.makeText(GameMap.this, r.getText(), Toast.LENGTH_LONG).show();
             player.setPenalty(3);
         } else if (r.getID() == 3) {
             if (showMyToast)
-                Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
+                Toast.makeText(GameMap.this, r.getText(), Toast.LENGTH_LONG).show();
             randomRoute = true;
         }
         if (!doNotGo) {
@@ -845,6 +836,36 @@ public class GameMap extends AppCompatActivity
         startActivity(i);
     }
 
+    private void showLogoutDialog(){
+        final Dialog dialog = new Dialog(GameMap.this);
+        dialog.setContentView(R.layout.logout_dialog);
+        Button logout = (Button) dialog.findViewById(R.id.btnUseTicket);
+        Button cancel = (Button) dialog.findViewById(R.id.btnCancel);
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                device.setQuit(true);
+                if (!device.isServer()) {
+                    device.send(new QuitNotification(device.getNickname(), false));
+                    device.removeGameObserver();
+                } else {
+                    device.send(new QuitNotification(device.getNickname(), true));
+                    device.removeGameObserver();
+                }
+                dialog.dismiss();
+                Intent intent = new Intent(GameMap.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.cancel();
+            }
+        });
+        dialog.show();
+    }
     /* This method serves as a YES/NO dialog box when a detective wants to report the Mr. X. */
     private void showCheaterDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(GameMap.this);
