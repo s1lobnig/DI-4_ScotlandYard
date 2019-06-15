@@ -67,6 +67,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -831,9 +832,11 @@ public class GameMap extends AppCompatActivity
     @Override
     public void onRecievedEndOfGame(boolean hasMrXWon) {
         Device.getInstance().removeGameObserver();
-        Intent i = new Intent(GameMap.this, GameEndActivity.class);
-        i.putExtra(getString(R.string.winner), hasMrXWon);
-        startActivity(i);
+        if (!hasMrXWon){
+            reasonForGameEnde(1);
+        }else{
+            reasonForGameEnde(2);
+        }
     }
 
     private void showLogoutDialog(){
@@ -906,9 +909,7 @@ public class GameMap extends AppCompatActivity
             device.send(report);
             if (ReportingLogic.getCheatingCount() >= 3) {
                 /* Finish the game. */
-                Intent i = new Intent(GameMap.this, GameEndActivity.class);
-                i.putExtra(getString(R.string.winner), false);
-                startActivity(i);
+                reasonForGameEnde(0);
             }
         } else {
             switch (ReportingLogic.analyzeReportPlayer(myPlayer, report)) {
@@ -923,10 +924,7 @@ public class GameMap extends AppCompatActivity
                     Toast.makeText(this, report.getReporter() + " hat den Cheater falsch gemeldet.", Toast.LENGTH_LONG).show();
                     break;
                 case 2:
-                    Intent i = new Intent(GameMap.this, GameEndActivity.class);
-                    i.putExtra(getString(R.string.winner), false);
-                    // Reward reporter if needed.
-                    startActivity(i);
+                    reasonForGameEnde(0);
                     break;
                 case 3:
                     Toast.makeText(this, "Du hast den Cheater richtig gemeldet.", Toast.LENGTH_LONG).show();
@@ -939,6 +937,50 @@ public class GameMap extends AppCompatActivity
                     // Nothing
             }
         }
+    }
+
+    private void reasonForGameEnde(int reason){
+        Intent i = new Intent(GameMap.this, GameEndActivity.class);
+        switch (reason){
+            case 0:
+                i.putExtra(getString(R.string.winner), false);
+                showGameEndDialog("Die Detektive haben Mister X 3 Mal beim Schummeln erwischt", i);
+                break;
+            case 1:
+                i.putExtra(getString(R.string.winner), false);
+                showGameEndDialog("Die Detektive haben Mister X gefangen", i);
+                break;
+            case 2:
+                i.putExtra(getString(R.string.winner), true);
+                showGameEndDialog("Die Detektive haben Mister X nicht gefangen", i);
+                break;
+            default:
+                i.putExtra(getString(R.string.winner), false);
+                showGameEndDialog("Spielende", i);
+        }
+
+    }
+
+    private void showGameEndDialog(String reason, Intent i){
+        final Intent intent = i;
+        final Dialog dialog = new Dialog(GameMap.this);
+        dialog.setContentView(R.layout.gameend_dialog);
+        dialog.setTitle(R.string.Spielende);
+
+        TextView reasonText = dialog.findViewById(R.id.txtReasonForEnd);
+        reasonText.setText(reason);
+
+        Button ok = (Button) dialog.findViewById(R.id.btnOK);
+        ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                startActivity(intent);
+            }
+        });
+
+        dialog.show();
+
     }
 
     @Override

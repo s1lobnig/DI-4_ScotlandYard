@@ -59,5 +59,6 @@
     <string name="notEnoughTickets">Nicht genügend Tickets</string>
     <string name="lostConnection">Verbindung zu</string>
     <string name="winner">Winner</string>
+    <string name="Spielende">Spielende</string>
 
 </resources>
