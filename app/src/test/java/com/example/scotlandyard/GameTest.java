@@ -1,8 +1,5 @@
 package com.example.scotlandyard;
 
-import com.example.scotlandyard.lobby.Lobby;
-import com.google.android.gms.maps.model.Marker;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -14,21 +11,21 @@ import static org.junit.Assert.*;
 
 public class GameTest {
     Game game;
-    Player p1;
-    Player p2;
-    Player p3;
+    Player mrX;
+    Player detective1;
+    Player detective2;
     ArrayList<Player> playerlist;
 
     @Before
     public void setUp() {
-        p1 = new Player("player1");
-        p2 = new Player("player2");
-        p3 = new Player("player3");
-        p1.setMrX(true);
+        mrX = new Player("player1");
+        detective1 = new Player("player2");
+        detective2 = new Player("player3");
+        mrX.setMrX(true);
         playerlist = new ArrayList<>();
-        playerlist.add(p1);
-        playerlist.add(p2);
-        playerlist.add(p3);
+        playerlist.add(mrX);
+        playerlist.add(detective1);
+        playerlist.add(detective2);
 
         game = new Game("Test", 4, 5, false, false, playerlist);
     }
@@ -47,14 +44,14 @@ public class GameTest {
     @Test
     public void testGetMrX() {
         Player mrX = game.getMrX();
-        assertEquals(p1, mrX);
+        assertEquals(this.mrX, mrX);
     }
 
     @Test
     public void testGetBotMrXtrue() {
         game.setBotMrX(true);
         Player bot = game.getBotMrX();
-        assertEquals(p1, bot);
+        assertEquals(mrX, bot);
     }
 
     @Test
@@ -77,26 +74,26 @@ public class GameTest {
 
     @Test
     public void testDeactivatePlayer() {
-        int result = game.deactivatePlayer(p2);
-        assertFalse(p2.isActive());
+        int result = game.deactivatePlayer(detective1);
+        assertFalse(detective1.isActive());
         assertEquals(-1, result);
     }
 
     @Test
     public void testDeactivatePlayerMrX() {
-        int result = game.deactivatePlayer(p1);
-        assertFalse(p1.isActive());
+        int result = game.deactivatePlayer(mrX);
+        assertFalse(mrX.isActive());
         assertTrue(game.isBotMrX());
         assertEquals(-1, result);
     }
 
     @Test
     public void testDeactivatePlayerNewRound() {
-        p1.setMoved(true);
-        p3.setMoved(true);
-        int result = game.deactivatePlayer(p2);
+        mrX.setMoved(true);
+        detective2.setMoved(true);
+        int result = game.deactivatePlayer(detective1);
 
-        assertFalse(p2.isActive());
+        assertFalse(detective1.isActive());
         assertEquals(6, game.getRound());
         assertEquals(1, result);
     }
@@ -104,11 +101,11 @@ public class GameTest {
     @Test
     public void testDeactivatePlayerGameFinished() {
         game.setRound(Game.getNumRounds());
-        p1.setMoved(true);
-        p3.setMoved(true);
-        int result = game.deactivatePlayer(p2);
+        mrX.setMoved(true);
+        detective2.setMoved(true);
+        int result = game.deactivatePlayer(detective1);
 
-        assertFalse(p2.isActive());
+        assertFalse(detective1.isActive());
         assertEquals(Game.getNumRounds() + 1, game.getRound());
         assertEquals(0, result);
     }
@@ -121,9 +118,9 @@ public class GameTest {
 
     @Test
     public void testTryNextRoundTrue() {
-        p1.setMoved(true);
-        p2.setMoved(true);
-        p3.setMoved(true);
+        mrX.setMoved(true);
+        detective1.setMoved(true);
+        detective2.setMoved(true);
 
         int result = game.tryNextRound();
         assertEquals(1, result);
@@ -133,10 +130,10 @@ public class GameTest {
 
     @Test
     public void testTryNextRoundDeactivatedPlayer() {
-        p1.setMoved(true);
-        p2.setMoved(true);
-        p3.setMoved(false);
-        p3.setActive(false);
+        mrX.setMoved(true);
+        detective1.setMoved(true);
+        detective2.setMoved(false);
+        detective2.setActive(false);
 
         int result = game.tryNextRound();
         assertEquals(1, result);
@@ -145,10 +142,20 @@ public class GameTest {
     }
 
     @Test
+    public void testTryNextRoundAllDetectivesDeactivated() {
+        mrX.setMoved(true);
+        detective1.setActive(false);
+        detective2.setActive(false);
+
+        int result = game.tryNextRound();
+        assertEquals(2, result);
+    }
+
+    @Test
     public void testTryNextRoundFalse() {
-        p1.setMoved(true);
-        p2.setMoved(false);
-        p3.setMoved(true);
+        mrX.setMoved(true);
+        detective1.setMoved(false);
+        detective2.setMoved(true);
 
         int result = game.tryNextRound();
         assertEquals(-1, result);
@@ -158,9 +165,9 @@ public class GameTest {
     @Test
     public void testTryNextRoundEnd() {
         game.setRound(Game.getNumRounds());
-        p1.setMoved(true);
-        p2.setMoved(true);
-        p3.setMoved(true);
+        mrX.setMoved(true);
+        detective1.setMoved(true);
+        detective2.setMoved(true);
 
         int result = game.tryNextRound();
         assertEquals(0, result);
@@ -179,25 +186,24 @@ public class GameTest {
                     assertNotEquals(player.getPosition(), p.getPosition());
                 }
             }
-            //ToDo: test if player has right amount of tickets @TheExecutor
         }
     }
 
     public void testTryNextRoundAllStuck() {
-        p2.setActive(false);
-        p3.setActive(false);
+        detective1.setActive(false);
+        detective2.setActive(false);
         Assert.assertEquals(2, game.tryNextRound());
     }
 
     public void testAllDetectivesStuckTrue() {
-        p2.setActive(false);
-        p3.setActive(false);
+        detective1.setActive(false);
+        detective2.setActive(false);
         Assert.assertTrue(game.allDetectivesStuck());
     }
 
     public void testAllDetectivesStuckFalse() {
-        p2.setActive(false);
-        p3.setActive(true);
+        detective1.setActive(false);
+        detective2.setActive(true);
         Assert.assertFalse(game.allDetectivesStuck());
     }
 

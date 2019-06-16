@@ -192,7 +192,16 @@ public class Server extends Device implements ServerInterface {
         Log.d(logTag, "map notification received");
         String[] txt = notification.getNotification().split(" ");
         if (txt.length == 2 && txt[1].equals("DEACTIVATED")) {
-            game.deactivatePlayer(game.findPlayer(txt[0]));
+            Player player = game.findPlayer(txt[0]);
+            isNextRound(game.deactivatePlayer(player));
+        }
+    }
+
+    private void isNextRound(int result) {
+        if (result == 1) {
+            sendOutNextRound();
+        } else if (result == 0 || result == 2) {
+            sendOutGameEnd();
         }
     }
 
@@ -208,12 +217,7 @@ public class Server extends Device implements ServerInterface {
             player.setMoved(false);
             game.getMrX().decCountCheatingMoves();
         }
-        int result = game.tryNextRound();
-        if (result == 1) {
-            sendOutNextRound();
-        } else if (result == 0 || result == 2) {
-            sendOutGameEnd(player);
-        }
+        isNextRound(game.tryNextRound());
         if (gameObserver != null) {
             gameObserver.updateMove(move);
             if (game.checkIfMrxHasLost()) {
@@ -226,11 +230,16 @@ public class Server extends Device implements ServerInterface {
         }
     }
 
-    private void sendOutGameEnd(Player player) {
+    private void sendOutGameEnd() {
         sendEnd(new GameEnd(true));
         quit = true;
         disconnect();
-        gameObserver.onRecievedEndOfGame(true);
+        //game has end
+        game = null;
+        
+        if(gameObserver != null) {
+            gameObserver.onRecievedEndOfGame(true);
+        }
     }
 
     private void sendOutNextRound() {
@@ -303,7 +312,7 @@ public class Server extends Device implements ServerInterface {
         //if game has started
         if (game != null) {
             Player lostPlayer = game.findPlayer(endpoint.getName());
-            game.deactivatePlayer(lostPlayer);
+            isNextRound(game.deactivatePlayer(lostPlayer));
             send(new MapNotification("PLAYER " + lostPlayer.getNickname() + " LOST"));
             printNotification("Verbindung zu " + lostPlayer.getNickname() + " verloren");
         }

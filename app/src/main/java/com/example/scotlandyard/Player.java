@@ -274,6 +274,8 @@ public class Player implements Serializable {
      * 4 if newLocation not reachable from current position (invalid)
      * 5 if bicycle not available (invalid)
      * 6 if not enough tickets (invalid)
+     * 7 if player has no tickets left (invalid)
+     * 8 if player is not able to move - no valid tickets (invalid)
      */
     public int isValidMove(Game game, Point newLocation) {
         if (game.getRound() > Game.getNumRounds()) {
@@ -299,8 +301,7 @@ public class Player implements Serializable {
             return 5;
         }
         if (!checkForValidTicket(routeToTake.getRouteType())) {
-            checkAmountOfTickets();
-            if (!isActive) {
+            if (!checkAmountOfTickets()) {
                 return 7;
             }
             if (!Routes.routesPossibleWithTickets(Points.getIndex(position) + 1, this)) {

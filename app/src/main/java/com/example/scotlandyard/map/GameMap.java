@@ -434,6 +434,8 @@ public class GameMap extends AppCompatActivity
                 Toast.makeText(GameMap.this, "KEIN ZUG MEHR MÖGLICH. Du wurdest deaktiviert.", Snackbar.LENGTH_LONG).show();
                 if (!Device.isServer()) {
                     device.send(new MapNotification(myPlayer.getNickname() + " DEACTIVATED"));
+                }else{
+                    ((Server)device).onDataReceived(new MapNotification(myPlayer.getNickname() + " DEACTIVATED"), null);
                 }
                 return false;
             default:
