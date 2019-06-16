@@ -236,7 +236,7 @@ public class Server extends Device implements ServerInterface {
         disconnect();
         //game has end
         game = null;
-        
+
         if(gameObserver != null) {
             gameObserver.onRecievedEndOfGame(true);
         }

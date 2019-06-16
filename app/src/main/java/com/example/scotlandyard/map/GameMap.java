@@ -147,12 +147,9 @@ public class GameMap extends AppCompatActivity
 
         setContentView(R.layout.activity_game_navigation);
 
-        //if game has not started yet
-        if (device == null) {
-            device = Device.getInstance();
-            device.addGameObserver(this);
-            device.setCheaterReportObserver(this);
-        }
+        device = Device.getInstance();
+        device.addGameObserver(this);
+        device.setCheaterReportObserver(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(device.getNickname());
@@ -305,7 +302,7 @@ public class GameMap extends AppCompatActivity
         } else if (id == R.id.cheater_melden) {
             showCheaterDialog();
         } else if (id == R.id.nav_logout) {
-           showLogoutDialog();
+            showLogoutDialog();
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -350,7 +347,7 @@ public class GameMap extends AppCompatActivity
         mMap.setMinZoomPreference(mMap.getCameraPosition().zoom);
         setFields();
         //if gmae has not started
-        if (Device.isServer() && myPlayer == null) {
+        if (Device.isServer() && device.getGame().getMrX().getPosition() == null) {
             device.getGame().givePlayerPositionAndIcon();
             device.sendGame();
             setupGame();
@@ -434,8 +431,8 @@ public class GameMap extends AppCompatActivity
                 Toast.makeText(GameMap.this, "KEIN ZUG MEHR MÖGLICH. Du wurdest deaktiviert.", Snackbar.LENGTH_LONG).show();
                 if (!Device.isServer()) {
                     device.send(new MapNotification(myPlayer.getNickname() + " DEACTIVATED"));
-                }else{
-                    ((Server)device).onDataReceived(new MapNotification(myPlayer.getNickname() + " DEACTIVATED"), null);
+                } else {
+                    ((Server) device).onDataReceived(new MapNotification(myPlayer.getNickname() + " DEACTIVATED"), null);
                 }
                 return false;
             default:
@@ -814,14 +811,14 @@ public class GameMap extends AppCompatActivity
     @Override
     public void onRecievedEndOfGame(boolean hasMrXWon) {
         Device.getInstance().removeGameObserver();
-        if (!hasMrXWon){
+        if (!hasMrXWon) {
             reasonForGameEnde(1);
-        }else{
+        } else {
             reasonForGameEnde(2);
         }
     }
 
-    private void showLogoutDialog(){
+    private void showLogoutDialog() {
         final Dialog dialog = new Dialog(GameMap.this);
         dialog.setContentView(R.layout.logout_dialog);
         Button logout = (Button) dialog.findViewById(R.id.btnUseTicket);
@@ -851,6 +848,7 @@ public class GameMap extends AppCompatActivity
         });
         dialog.show();
     }
+
     /* This method serves as a YES/NO dialog box when a detective wants to report the Mr. X. */
     private void showCheaterDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(GameMap.this);
@@ -921,9 +919,9 @@ public class GameMap extends AppCompatActivity
         }
     }
 
-    private void reasonForGameEnde(int reason){
+    private void reasonForGameEnde(int reason) {
         Intent i = new Intent(GameMap.this, GameEndActivity.class);
-        switch (reason){
+        switch (reason) {
             case 0:
                 i.putExtra(getString(R.string.winner), false);
                 showGameEndDialog("Die Detektive haben Mister X 3 Mal beim Schummeln erwischt", i);
@@ -943,7 +941,7 @@ public class GameMap extends AppCompatActivity
 
     }
 
-    private void showGameEndDialog(String reason, Intent i){
+    private void showGameEndDialog(String reason, Intent i) {
         final Intent intent = i;
         final Dialog dialog = new Dialog(GameMap.this);
         dialog.setContentView(R.layout.gameend_dialog);
