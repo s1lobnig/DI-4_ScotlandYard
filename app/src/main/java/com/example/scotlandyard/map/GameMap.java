@@ -310,7 +310,6 @@ public class GameMap extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
         Fragment fragment;
-        Intent intent = null;
         if (id == R.id.nav_game) {
             fragment = getSupportFragmentManager().findFragmentById(R.id.map);
             FragmentManager fragmentManager = getSupportFragmentManager();
@@ -328,9 +327,6 @@ public class GameMap extends AppCompatActivity
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        if (intent != null) {
-            startActivity(intent);
-        }
         return true;
     }
 
@@ -505,9 +501,9 @@ public class GameMap extends AppCompatActivity
     public boolean move(Player player, Point p, boolean goBack, boolean randomRoute, int playerIcon, ValidatedRoute randRoute) {
         MarkerMovingRoute markerMove = MovingLogic.prepareMove(player, randomRoute, randRoute, p);
         visualizeTickets();
-        boolean[] animationVisibilities = getAnimationVisiblity(player);
+        int lastTurn = device.getRoadMap().getNumberOfEntries();
+        boolean[] animationVisibilities = getAnimationVisiblity(player, lastTurn);
         if (player.isMrX() && (player.equals(myPlayer) || (device.getGame().isBotMrX() && Device.isServer()))) {
-            int lastTurn = device.getRoadMap().getNumberOfEntries();
             Entry entry = MovingLogic.getRoadMapEntry(lastTurn, markerMove.getNewLocation(), markerMove.getTicket());
             if (Device.isServer()) {
                 device.getRoadMap().addEntry(entry);
@@ -520,12 +516,11 @@ public class GameMap extends AppCompatActivity
         return true;
     }
 
-    private boolean[] getAnimationVisiblity(Player player) {
-        int currentRound = Device.getInstance().getGame().getRound();
+    private boolean[] getAnimationVisiblity(Player player, int turnMrX) {
         if (myPlayer.equals(player)) {
             /* if I move my player, I want to see it */
             return new boolean[]{true, true};
-        } else if (player.isMrX() && currentRound == 2 || currentRound == 6) {
+        } else if (player.isMrX() && turnMrX == 2 || turnMrX == 6) {
             /* if Mr.X moved in rounds 3 or 7, I want to see it */
             return new boolean[]{false, true};
         } else if (!player.isMrX()) {
@@ -892,7 +887,7 @@ public class GameMap extends AppCompatActivity
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                finish();
+                dialog.dismiss();
             }
         });
 
