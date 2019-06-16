@@ -40,15 +40,6 @@
             android:theme="@style/AppTheme.NoActionBar.NoActionBar" />
         <activity android:name=".lobby.ClientLobby" />
         <activity android:name=".lobby.GameCreate" />
-        <activity
-            android:name=".Settings"
-            android:label="@string/title_activity_settings"
-            android:parentActivityName=".map.GameMap"
-            android:theme="@style/AppTheme.NoActionBar.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.scotlandyard.map.GameMap" />
-        </activity>
         <activity android:name=".messenger.Messenger" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
