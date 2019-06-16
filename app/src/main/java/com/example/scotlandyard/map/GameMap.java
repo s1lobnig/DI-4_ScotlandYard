@@ -43,7 +43,6 @@ import com.example.scotlandyard.map.roadmap.RoadMapDialog;
 import com.example.scotlandyard.messenger.Messenger;
 import com.example.scotlandyard.Player;
 import com.example.scotlandyard.R;
-import com.example.scotlandyard.Settings;
 import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.Game;
 import com.example.scotlandyard.reportcheater.ReportingLogic;
@@ -157,7 +156,6 @@ public class GameMap extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(device.getNickname());
-        setSupportActionBar(toolbar);
 
         rounds = findViewById(R.id.round);
 
@@ -279,23 +277,6 @@ public class GameMap extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
-    }
-
-    /**
-     * Selection-Handler which is triggered by selecting a menu-item
-     *
-     * @param item
-     * @return
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            Intent settings = new Intent(this, Settings.class);
-            startActivity(settings);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     /**
