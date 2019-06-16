@@ -148,6 +148,7 @@ public class Client extends Device implements ClientInterface {
         if (object instanceof QuitNotification) {
             onQuit((QuitNotification) object);
         }
+
         if (object instanceof CheaterReport && isSetCheaterReportObserver()) {
             /* If cheater report observer variable is set the message will be forwarded to it. */
             getCheaterReportObserver().onReportReceived((CheaterReport) object);

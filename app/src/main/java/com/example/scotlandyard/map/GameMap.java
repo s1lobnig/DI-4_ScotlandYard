@@ -324,16 +324,7 @@ public class GameMap extends AppCompatActivity
         } else if (id == R.id.cheater_melden) {
             showCheaterDialog();
         } else if (id == R.id.nav_logout) {
-            device.setQuit(true);
-            if (!device.isServer()) {
-                device.send(new QuitNotification(device.getNickname(), false));
-                device.removeGameObserver();
-                intent = new Intent(this, MainActivity.class);
-            } else {
-                device.send(new QuitNotification(device.getNickname(), true));
-                device.removeGameObserver();
-                intent = new Intent(this, MainActivity.class);
-            }
+           showLogoutDialog();
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -489,19 +480,19 @@ public class GameMap extends AppCompatActivity
 
         if (r.getID() == 0) {
             if (showMyToast)
-                Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
+                Toast.makeText(GameMap.this, r.getText(), Toast.LENGTH_LONG).show();
             doNotGo = true;
         } else if (r.getID() == 1) {
             if (showMyToast)
-                Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
+                Toast.makeText(GameMap.this, r.getText(), Toast.LENGTH_LONG).show();
             goBack = true;
         } else if (r.getID() == 2) {
             if (showMyToast)
-                Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
+                Toast.makeText(GameMap.this, r.getText(), Toast.LENGTH_LONG).show();
             player.setPenalty(3);
         } else if (r.getID() == 3) {
             if (showMyToast)
-                Toast.makeText(GameMap.this, r.getText(), Snackbar.LENGTH_LONG).show();
+                Toast.makeText(GameMap.this, r.getText(), Toast.LENGTH_LONG).show();
             randomRoute = true;
         }
         if (!doNotGo) {
@@ -840,11 +831,43 @@ public class GameMap extends AppCompatActivity
     @Override
     public void onRecievedEndOfGame(boolean hasMrXWon) {
         Device.getInstance().removeGameObserver();
-        Intent i = new Intent(GameMap.this, GameEndActivity.class);
-        i.putExtra(getString(R.string.winner), hasMrXWon);
-        startActivity(i);
+        if (!hasMrXWon){
+            reasonForGameEnde(1);
+        }else{
+            reasonForGameEnde(2);
+        }
     }
 
+    private void showLogoutDialog(){
+        final Dialog dialog = new Dialog(GameMap.this);
+        dialog.setContentView(R.layout.logout_dialog);
+        Button logout = (Button) dialog.findViewById(R.id.btnUseTicket);
+        Button cancel = (Button) dialog.findViewById(R.id.btnCancel);
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                device.setQuit(true);
+                if (!device.isServer()) {
+                    device.send(new QuitNotification(device.getNickname(), false));
+                    device.removeGameObserver();
+                } else {
+                    device.send(new QuitNotification(device.getNickname(), true));
+                    device.removeGameObserver();
+                }
+                dialog.dismiss();
+                Intent intent = new Intent(GameMap.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.cancel();
+            }
+        });
+        dialog.show();
+    }
     /* This method serves as a YES/NO dialog box when a detective wants to report the Mr. X. */
     private void showCheaterDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(GameMap.this);
@@ -885,9 +908,7 @@ public class GameMap extends AppCompatActivity
             device.send(report);
             if (ReportingLogic.getCheatingCount() >= 3) {
                 /* Finish the game. */
-                Intent i = new Intent(GameMap.this, GameEndActivity.class);
-                i.putExtra(getString(R.string.winner), false);
-                startActivity(i);
+                reasonForGameEnde(0);
             }
         } else {
             switch (ReportingLogic.analyzeReportPlayer(myPlayer, report)) {
@@ -902,10 +923,7 @@ public class GameMap extends AppCompatActivity
                     Toast.makeText(this, report.getReporter() + " hat den Cheater falsch gemeldet.", Toast.LENGTH_LONG).show();
                     break;
                 case 2:
-                    Intent i = new Intent(GameMap.this, GameEndActivity.class);
-                    i.putExtra(getString(R.string.winner), false);
-                    // Reward reporter if needed.
-                    startActivity(i);
+                    reasonForGameEnde(0);
                     break;
                 case 3:
                     Toast.makeText(this, "Du hast den Cheater richtig gemeldet.", Toast.LENGTH_LONG).show();
@@ -918,6 +936,50 @@ public class GameMap extends AppCompatActivity
                     // Nothing
             }
         }
+    }
+
+    private void reasonForGameEnde(int reason){
+        Intent i = new Intent(GameMap.this, GameEndActivity.class);
+        switch (reason){
+            case 0:
+                i.putExtra(getString(R.string.winner), false);
+                showGameEndDialog("Die Detektive haben Mister X 3 Mal beim Schummeln erwischt", i);
+                break;
+            case 1:
+                i.putExtra(getString(R.string.winner), false);
+                showGameEndDialog("Die Detektive haben Mister X gefangen", i);
+                break;
+            case 2:
+                i.putExtra(getString(R.string.winner), true);
+                showGameEndDialog("Die Detektive haben Mister X nicht gefangen", i);
+                break;
+            default:
+                i.putExtra(getString(R.string.winner), false);
+                showGameEndDialog("Spielende", i);
+        }
+
+    }
+
+    private void showGameEndDialog(String reason, Intent i){
+        final Intent intent = i;
+        final Dialog dialog = new Dialog(GameMap.this);
+        dialog.setContentView(R.layout.gameend_dialog);
+        dialog.setTitle(R.string.Spielende);
+
+        TextView reasonText = dialog.findViewById(R.id.txtReasonForEnd);
+        reasonText.setText(reason);
+
+        Button ok = (Button) dialog.findViewById(R.id.btnOK);
+        ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                startActivity(intent);
+            }
+        });
+
+        dialog.show();
+
     }
 
     @Override
