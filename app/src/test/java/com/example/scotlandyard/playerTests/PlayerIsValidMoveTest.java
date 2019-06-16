@@ -116,8 +116,8 @@ public class PlayerIsValidMoveTest {
     public void testIsValidMoveNoMovePossibleWithTickets(){
         player.getTickets().put(R.string.PEDESTRIAN_TICKET_KEY, 0);
         player.getTickets().put(R.string.BICYCLE_TICKET_KEY, 0);
-        int result = player2.isValidMove(game, reachable);
-        assertEquals(7, result);
+        int result = player.isValidMove(game, reachable);
+        assertEquals(8, result);
     }
 
     @After

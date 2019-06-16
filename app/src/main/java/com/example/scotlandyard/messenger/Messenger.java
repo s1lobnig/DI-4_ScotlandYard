@@ -19,7 +19,6 @@ import com.example.scotlandyard.connection.Endpoint;
 import com.example.scotlandyard.control.Device;
 import com.example.scotlandyard.control.MessengerInterface;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Messenger extends AppCompatActivity implements MessengerInterface {

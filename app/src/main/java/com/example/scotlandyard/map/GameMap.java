@@ -395,6 +395,8 @@ public class GameMap extends AppCompatActivity
 
 
     private boolean isValidMove(Point newLocation) {
+        MapNotification mapNotification = new MapNotification(myPlayer.getNickname() + " DEACTIVATED");
+
         switch (myPlayer.isValidMove(Device.getInstance().getGame(), newLocation)) {
             case 0:
                 return true;
@@ -420,15 +422,17 @@ public class GameMap extends AppCompatActivity
             case 7:
                 Toast.makeText(GameMap.this, "KEINE TICKETS MEHR. Du wurdest deaktiviert", Snackbar.LENGTH_LONG).show();
                 if (!Device.isServer()) {
-                    device.send(new MapNotification(myPlayer.getNickname() + " DEACTIVATED"));
+                    device.send(mapNotification);
+                } else {
+                    ((Server) device).onDataReceived(mapNotification, null);
                 }
                 return false;
             case 8:
                 Toast.makeText(GameMap.this, "KEIN ZUG MEHR MÖGLICH. Du wurdest deaktiviert.", Snackbar.LENGTH_LONG).show();
                 if (!Device.isServer()) {
-                    device.send(new MapNotification(myPlayer.getNickname() + " DEACTIVATED"));
+                    device.send(mapNotification);
                 } else {
-                    ((Server) device).onDataReceived(new MapNotification(myPlayer.getNickname() + " DEACTIVATED"), null);
+                    ((Server) device).onDataReceived(mapNotification, null);
                 }
                 return false;
             default:

@@ -2,7 +2,6 @@ package com.example.scotlandyard;
 
 import com.example.scotlandyard.map.Point;
 import com.example.scotlandyard.map.Points;
-import com.example.scotlandyard.map.Routes;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
