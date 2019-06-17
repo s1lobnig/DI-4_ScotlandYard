@@ -3,7 +3,8 @@
 Repository für das SE2 Projekt der Gruppe DI-4. Mit Hilfe von SCRUM wird versucht das Brettspiel Scotland Yard für Android umzusetzen.
 
 ## Spielbeschreibung
-In diesem Spieleklassiker übernimmt ein Spieler die Rolle des geheimnisvollen Schurken Mister X, während die anderen Spieler die Rolle von Detektiven übernehmen, die dann Mister X fangen müssen. Im Gegensatz zum Original, mit der Londonkarte als Spielbrett, gestalten wir die Alpen-Adria Universität Klagenfurt mittels Google Maps und selbst arrangierten Routen als Spielumgebung. 
+In diesem Spieleklassiker übernimmt ein Spieler die Rolle des geheimnisvollen Schurken Mister X, während die anderen Spieler die Rolle von Detektiven übernehmen, die dann Mister X fangen müssen. Im Gegensatz zum Original, mit der Londonkarte als Spielbrett, gestalten wir die Alpen-Adria Universität Klagenfurt mittels Google Maps und selbst arrangierten Routen als Spielumgebung.
+
 <img width="281" height="500" src="https://raw.githubusercontent.com/s1lobnig/DI-4_ScotlandYard/master/Map.jpg">
 
 Beim Erstellen des Spiels gibt es die Auswahlmöglichkeiten zu Random Events, Mister X als Bot oder die zufällige Vergabe von Mister X. Werden weder Mister X als Bot noch die zufällige Vergabe gewählt, so wird standardmäßig der Ersteller des Spiels zu Mister X.
