@@ -309,6 +309,7 @@ public class Routes {
         int[] tickets = player.getRemainingTickets();
         for (int i = 0; i < tickets.length; i++) {
             if (tickets[i] > 0 && i < routes.length && !routes[i].isEmpty()) {
+                // TODO: Test if following if solves problem: if(i == 2 && player.getPenalty == 0)
                 return true;
             }
         }
