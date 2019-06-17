@@ -367,7 +367,7 @@ public class GameMap extends AppCompatActivity
             public boolean onMarkerClick(final Marker field) {
                 Point newLocation = new Point(field.getPosition().latitude, field.getPosition().longitude);
                 if (!Device.getInstance().getGame().isPlayer(field) && isValidMove(newLocation)) {
-                    int r = RANDOM.nextInt(100) % 10;
+                    int r = RANDOM.nextInt(100) % 20;
                     int idx = Points.getIndex(newLocation);
                     ValidatedRoute randomRoute = Routes.getRandomRoute(Points.getIndex(myPlayer.getPosition()) + 1, idx + 1);
                     Move move = new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r, randomRoute);
