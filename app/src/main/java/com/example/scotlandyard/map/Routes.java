@@ -307,10 +307,13 @@ public class Routes {
     public static boolean routesPossibleWithTickets(int current, Player player) {
         ArrayList[] routes = getAll(current, -1);
         int[] tickets = player.getRemainingTickets();
+        if (player.getPenalty() > 0) {
+           tickets[1] = 0;
+        }
         for (int i = 0; i < tickets.length; i++) {
             if (tickets[i] > 0 && i < routes.length && !routes[i].isEmpty()) {
-                // TODO: Test if following if solves problem: if(i == 2 && player.getPenalty == 0)
                 return true;
+
             }
         }
         player.setActive(false);

@@ -218,6 +218,11 @@ public class Server extends Device implements ServerInterface {
             game.getMrX().decCountCheatingMoves();
         }
         isNextRound(game.tryNextRound());
+        /*if(!player.checkAmountOfTickets()){
+            String text = player.getNickname() + " wurde deaktiviert.";
+            printNotification(text);
+            send(new MapNotification(text));
+        }*/
         if (gameObserver != null) {
             gameObserver.updateMove(move);
             if (game.checkIfMrxHasLost()) {
