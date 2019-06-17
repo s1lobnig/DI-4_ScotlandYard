@@ -17,7 +17,6 @@ public class RandomEvent {
         secID = randomNumber.nextInt(100) % 4;
         fillText();
 
-        this.text = allTexts[id][secID];
     }
 
 
@@ -26,7 +25,7 @@ public class RandomEvent {
     }
 
     public String getText() {
-        return this.text;
+        return allTexts[id][secID];
     }
 
     public int getSecID() {
