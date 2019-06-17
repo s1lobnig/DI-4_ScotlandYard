@@ -60,5 +60,6 @@
     <string name="lostConnection">Verbindung zu</string>
     <string name="winner">Winner</string>
     <string name="Spielende">Spielende</string>
+    <string name="RandomEvent">Random Event</string>
 
 </resources>

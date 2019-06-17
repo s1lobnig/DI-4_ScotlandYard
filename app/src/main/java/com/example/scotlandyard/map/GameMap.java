@@ -460,19 +460,19 @@ public class GameMap extends AppCompatActivity
 
         if (r.getID() == 0) {
             if (showMyToast)
-                Toast.makeText(GameMap.this, r.getText(), Toast.LENGTH_LONG).show();
+                createRandomEventDialog(r.getText());
             doNotGo = true;
         } else if (r.getID() == 1) {
             if (showMyToast)
-                Toast.makeText(GameMap.this, r.getText(), Toast.LENGTH_LONG).show();
+                createRandomEventDialog(r.getText());
             goBack = true;
         } else if (r.getID() == 2) {
             if (showMyToast)
-                Toast.makeText(GameMap.this, r.getText(), Toast.LENGTH_LONG).show();
+                createRandomEventDialog(r.getText());
             player.setPenalty(3);
         } else if (r.getID() == 3) {
             if (showMyToast)
-                Toast.makeText(GameMap.this, r.getText(), Toast.LENGTH_LONG).show();
+                createRandomEventDialog(r.getText());
             randomRoute = true;
         }
         if (!doNotGo) {
@@ -480,6 +480,25 @@ public class GameMap extends AppCompatActivity
         }
         visualizeTickets();
         return false;
+    }
+
+    private void createRandomEventDialog(String text){
+        final Dialog dialog = new Dialog(GameMap.this);
+        dialog.setContentView(R.layout.randomevent_dialog);
+        dialog.setTitle(R.string.RandomEvent);
+
+        TextView eventText = dialog.findViewById(R.id.txtEvent);
+        eventText.setText(text);
+
+        Button ok = (Button) dialog.findViewById(R.id.btnOK);
+        ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
     }
 
     public boolean move(Player player, Point p, boolean goBack, boolean randomRoute, int playerIcon, ValidatedRoute randRoute) {
