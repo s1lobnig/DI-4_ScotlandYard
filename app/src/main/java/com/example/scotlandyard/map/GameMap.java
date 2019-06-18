@@ -368,6 +368,10 @@ public class GameMap extends AppCompatActivity
                 Point newLocation = new Point(field.getPosition().latitude, field.getPosition().longitude);
                 if (!Device.getInstance().getGame().isPlayer(field) && isValidMove(newLocation)) {
                     int r = RANDOM.nextInt(100) % 20;
+                    if (myPlayer.isMrX() && r == 0) {
+                        // Mr.X has no "Paus for this round"-Random-Event! - RoadMap conflicts!
+                        r = RANDOM.nextInt(3) + 1;
+                    }
                     int idx = Points.getIndex(newLocation);
                     ValidatedRoute randomRoute = Routes.getRandomRoute(Points.getIndex(myPlayer.getPosition()) + 1, idx + 1);
                     Move move = new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r, randomRoute);
@@ -482,7 +486,7 @@ public class GameMap extends AppCompatActivity
         return false;
     }
 
-    private void createRandomEventDialog(String text){
+    private void createRandomEventDialog(String text) {
         final Dialog dialog = new Dialog(GameMap.this);
         dialog.setContentView(R.layout.randomevent_dialog);
         dialog.setTitle(R.string.RandomEvent);
