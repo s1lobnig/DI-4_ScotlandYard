@@ -238,13 +238,12 @@ public class Server extends Device implements ServerInterface {
     private void sendOutGameEnd() {
         sendEnd(new GameEnd(true));
         quit = true;
-        disconnect();
-        //game has end
-        game = null;
-
         if (gameObserver != null) {
             gameObserver.onRecievedEndOfGame(true);
         }
+        disconnect();
+        //game has end
+        game = null;
     }
 
     private void sendOutNextRound() {
