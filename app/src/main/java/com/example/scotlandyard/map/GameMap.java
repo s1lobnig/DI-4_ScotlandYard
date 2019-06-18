@@ -173,7 +173,7 @@ public class GameMap extends AppCompatActivity
                     @Override
                     public void onClick(View v) {
                         if (myPlayer.getTickets().get(R.string.BLACK_TICKET_KEY).intValue() == 0) {
-                            Toast.makeText(GameMap.this, R.string.notEnoughTickets, Snackbar.LENGTH_LONG).show();
+                            Toast.makeText(GameMap.this, R.string.notEnoughTickets, Toast.LENGTH_LONG).show();
                         } else {
                             myPlayer.setSpecialMrXMoves(true, 0);
                         }
@@ -205,7 +205,7 @@ public class GameMap extends AppCompatActivity
                     @Override
                     public void onClick(View v) {
                         if (myPlayer.getTickets().get(R.string.DOUBLE_TICKET_KEY).intValue() == 0) {
-                            Toast.makeText(GameMap.this, R.string.notEnoughTickets, Snackbar.LENGTH_LONG).show();
+                            Toast.makeText(GameMap.this, R.string.notEnoughTickets, Toast.LENGTH_LONG).show();
                         } else {
                             myPlayer.setSpecialMrXMoves(true, 1);
                         }
@@ -368,10 +368,6 @@ public class GameMap extends AppCompatActivity
                 Point newLocation = new Point(field.getPosition().latitude, field.getPosition().longitude);
                 if (!Device.getInstance().getGame().isPlayer(field) && isValidMove(newLocation)) {
                     int r = RANDOM.nextInt(100) % 20;
-                    if (myPlayer.isMrX() && r == 0) {
-                        // Mr.X has no "Paus for this round"-Random-Event! - RoadMap conflicts!
-                        r = RANDOM.nextInt(3) + 1;
-                    }
                     int idx = Points.getIndex(newLocation);
                     ValidatedRoute randomRoute = Routes.getRandomRoute(Points.getIndex(myPlayer.getPosition()) + 1, idx + 1);
                     Move move = new Move(myPlayer.getNickname(), Points.getIndex(newLocation), r, randomRoute);
@@ -406,25 +402,25 @@ public class GameMap extends AppCompatActivity
                 return true;
             case 2:
                 // Toast to indicate that it is not your turn
-                Toast.makeText(GameMap.this, "Du kannst nicht mehr ziehen und bist daher deaktiviert.", Snackbar.LENGTH_LONG).show();
+                Toast.makeText(GameMap.this, "Du kannst nicht mehr ziehen und bist daher deaktiviert.", Toast.LENGTH_LONG).show();
                 return false;
             case 3:
-                Toast.makeText(GameMap.this, "Ein anderer Spieler ist noch nicht gezogen. Du musst noch warten.", Snackbar.LENGTH_LONG).show();
+                Toast.makeText(GameMap.this, "Ein anderer Spieler ist noch nicht gezogen. Du musst noch warten.", Toast.LENGTH_LONG).show();
                 return false;
             case 4:
                 // Toast to indicate that the clicked location is not reachable from the current
                 // location
-                Toast.makeText(GameMap.this, "Feld nicht erreichbar", Snackbar.LENGTH_LONG).show();
+                Toast.makeText(GameMap.this, "Feld nicht erreichbar", Toast.LENGTH_LONG).show();
                 return false;
             case 5:
-                Toast.makeText(GameMap.this, "Das Fahrrad ist noch nicht verfügbar!", Snackbar.LENGTH_LONG).show();
+                Toast.makeText(GameMap.this, "Das Fahrrad ist noch nicht verfügbar!", Toast.LENGTH_LONG).show();
                 return false;
             case 6:
                 //Toast to indicate that player has not enough tickets for reachable field
-                Toast.makeText(GameMap.this, R.string.notEnoughTickets, Snackbar.LENGTH_LONG).show();
+                Toast.makeText(GameMap.this, R.string.notEnoughTickets, Toast.LENGTH_LONG).show();
                 return false;
             case 7:
-                Toast.makeText(GameMap.this, "KEINE TICKETS MEHR. Du wurdest deaktiviert", Snackbar.LENGTH_LONG).show();
+                Toast.makeText(GameMap.this, "KEINE TICKETS MEHR. Du wurdest deaktiviert", Toast.LENGTH_LONG).show();
                 if (!Device.isServer()) {
                     device.send(mapNotification);
                 } else {
@@ -432,7 +428,7 @@ public class GameMap extends AppCompatActivity
                 }
                 return false;
             case 8:
-                Toast.makeText(GameMap.this, "KEIN ZUG MEHR MÖGLICH. Du wurdest deaktiviert.", Snackbar.LENGTH_LONG).show();
+                Toast.makeText(GameMap.this, "KEIN ZUG MEHR MÖGLICH. Du wurdest deaktiviert.", Toast.LENGTH_LONG).show();
                 if (!Device.isServer()) {
                     device.send(mapNotification);
                 } else {
@@ -453,6 +449,10 @@ public class GameMap extends AppCompatActivity
 
     public boolean moveWithRandomEvent(Player player, Point p, int playerIcon, int randomEvent, ValidatedRoute route) {
         RandomEvent r = new RandomEvent();
+        if (player.isMrX() && randomEvent == 0) {
+            // Mr.X has no "Paus for this round"-Random-Event! - RoadMap conflicts!
+            randomEvent = RANDOM.nextInt(3) + 1;
+        }
         /*
         The randomEvent-paramter is already random generated - use it as id - random event is displayed equally on every device
          */
@@ -461,24 +461,17 @@ public class GameMap extends AppCompatActivity
         boolean doNotGo = false;
         boolean randomRoute = false;
         boolean showMyToast = myPlayer.equals(player);
-
         if (r.getID() == 0) {
-            if (showMyToast)
-                createRandomEventDialog(r.getText());
             doNotGo = true;
         } else if (r.getID() == 1) {
-            if (showMyToast)
-                createRandomEventDialog(r.getText());
             goBack = true;
         } else if (r.getID() == 2) {
-            if (showMyToast)
-                createRandomEventDialog(r.getText());
             player.setPenalty(3);
         } else if (r.getID() == 3) {
-            if (showMyToast)
-                createRandomEventDialog(r.getText());
             randomRoute = true;
         }
+        if (showMyToast)
+            createSnackbar(r.getText());
         if (!doNotGo) {
             return move(player, p, goBack, randomRoute, playerIcon, route);
         }
@@ -486,23 +479,18 @@ public class GameMap extends AppCompatActivity
         return false;
     }
 
-    private void createRandomEventDialog(String text) {
-        final Dialog dialog = new Dialog(GameMap.this);
-        dialog.setContentView(R.layout.randomevent_dialog);
-        dialog.setTitle(R.string.RandomEvent);
-
-        TextView eventText = dialog.findViewById(R.id.txtEvent);
-        eventText.setText(text);
-
-        Button ok = (Button) dialog.findViewById(R.id.btnOK);
-        ok.setOnClickListener(new View.OnClickListener() {
+    private void createSnackbar(String text) {
+        Snackbar sb = Snackbar.make(findViewById(R.id.coordinator), text, Snackbar.LENGTH_INDEFINITE);
+        sb.setAction("OK", new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                dialog.dismiss();
+            public void onClick(View v) {
+                Log.d(TAG,"Snackbar OK clicked");
             }
         });
-
-        dialog.show();
+        View sbV = sb.getView();
+        ((TextView)sbV.findViewById(android.support.design.R.id.snackbar_text)).setMaxLines(5);
+        sbV.setMinimumHeight(300);
+        sb.show();
     }
 
     public boolean move(Player player, Point p, boolean goBack, boolean randomRoute, int playerIcon, ValidatedRoute randRoute) {
@@ -742,12 +730,12 @@ public class GameMap extends AppCompatActivity
     public void onQuit(String playerName, boolean serverQuit) {
         if (serverQuit) {
             //start new intent main activity, server has quited
-            Toast.makeText(this, playerName + " hat das Spiel beendet.", Snackbar.LENGTH_LONG).show();
+            Toast.makeText(this, playerName + " hat das Spiel beendet.", Toast.LENGTH_LONG).show();
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         } else {
             //show that playerName has quited
-            Toast.makeText(this, playerName + " hat das Spiel verlassen.", Snackbar.LENGTH_LONG).show();
+            Toast.makeText(this, playerName + " hat das Spiel verlassen.", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -785,7 +773,7 @@ public class GameMap extends AppCompatActivity
         public void onSensorChanged(SensorEvent event) {
             float distance = event.values[0];
             if (distance == 0f && trusty && myPlayer != null && myPlayer.isMrX()) {
-                Toast.makeText(GameMap.this, "Weitere Bewegung ausführen", Snackbar.LENGTH_LONG).show();
+                Toast.makeText(GameMap.this, "Weitere Bewegung ausführen", Toast.LENGTH_LONG).show();
                 myPlayer.setHasCheated(true);
                 myPlayer.setHasCheatedThisRound(true);
                 if (myPlayer.getCountCheatingMoves() == 0) {

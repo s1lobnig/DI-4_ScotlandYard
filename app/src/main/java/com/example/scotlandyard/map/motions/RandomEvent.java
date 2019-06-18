@@ -35,7 +35,7 @@ public class RandomEvent {
         //Diese Runde aussetzen
         this.allTexts[0][0] = "Anstatt dich weiter auf die Suche zu begeben, Spielst du lieber eine Runde Fußball mit deinen Freunden! Diese Runde setzt du aus.";
         this.allTexts[0][1] = "Du entscheidest dich spontan ein kleines Schläfchen einzulegen. Setze diese Runde aus";
-        this.allTexts[0][2] = "Dieser Tag ist ein schöner Tag. Anstatt dich weiter zu bewegen, entscheidest du dich, einen Abstecher zum Wörthersee zu machen. Setze diese Runde aus.";
+        this.allTexts[0][2] = "Aufgrund des schönen Wetters entscheidest du dich, baden zu gehen. Setze diese Runde aus.";
         this.allTexts[0][3] = "Das ganze Suchen hat dich durstig gemacht. Du gönnst dir ein Bier beim Uniwirt und setzt deshalb eine Runde aus";
 
         //Rückgängig
