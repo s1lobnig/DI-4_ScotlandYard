@@ -6,7 +6,6 @@ import java.util.Random;
 public class RandomEvent {
     private int id;
     private String[][] allTexts;
-    private String text;
     private Random randomNumber;
     private int secID;
 

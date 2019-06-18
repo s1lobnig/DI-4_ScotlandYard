@@ -22,7 +22,6 @@ import com.example.scotlandyard.map.roadmap.Entry;
 import com.example.scotlandyard.messenger.Message;
 import com.google.android.gms.nearby.connection.ConnectionsClient;
 
-import java.security.SecureRandom;
 import java.util.ArrayList;
 
 /**
@@ -243,7 +242,7 @@ public class Server extends Device implements ServerInterface {
         //game has end
         game = null;
 
-        if(gameObserver != null) {
+        if (gameObserver != null) {
             gameObserver.onRecievedEndOfGame(true);
         }
     }
