@@ -34,6 +34,7 @@ public class Server extends Device implements ServerInterface {
     private ServerLobbyInterface lobbyObserver;
     private ArrayList<Endpoint> lost;
     private ArrayList<String> quited;
+    private static final int BOT_MOVE_RANDOM_EVENT_TRIGGER = Integer.MAX_VALUE;
 
     Server(String endpointName, ConnectionsClient connectionsClient) {
         connectionService = new ServerService(this, endpointName, connectionsClient);
@@ -276,7 +277,6 @@ public class Server extends Device implements ServerInterface {
         int position = Points.getIndex(bot.getPosition()) + 1;
         Route route = Routes.getBotRoute(position, game.getPlayers()).getRoute();
 
-        int r = (new SecureRandom()).nextInt(100) % 10;
         ValidatedRoute randomRoute = Routes.getRandomRoute(position, route.getEndPoint());
         int newPosition;
         if (route.getEndPoint() == position) {
@@ -284,7 +284,7 @@ public class Server extends Device implements ServerInterface {
         } else {
             newPosition = route.getEndPoint();
         }
-        Move move = new Move(bot.getNickname(), newPosition - 1, r, randomRoute);
+        Move move = new Move(bot.getNickname(), newPosition - 1, BOT_MOVE_RANDOM_EVENT_TRIGGER, randomRoute);
         send(move);
         game.setRoundMrX(false);
         if (gameObserver != null) {
